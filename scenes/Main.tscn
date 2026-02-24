@@ -1,0 +1,367 @@
+[gd_scene load_steps=15 format=3 uid="uid://ghoststreamer_main"]
+
+[ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://scripts/HUD.gd" id="3_hud"]
+[ext_resource type="Shader" path="res://shaders/vhs_effect.gdshader" id="4_shader"]
+[ext_resource type="PackedScene" path="res://scenes/Stage.tscn" id="5_stage"]
+[ext_resource type="PackedScene" path="res://scenes/Ghost.tscn" id="6_ghost"]
+[ext_resource type="PackedScene" path="res://scenes/Item.tscn" id="7_item"]
+[ext_resource type="Script" path="res://scripts/Exit.gd" id="8_exit"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.03, 0.03, 0.05, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.12, 0.12, 0.18, 1)
+ambient_light_energy = 0.42
+fog_enabled = true
+fog_light_color = Color(0.02, 0.02, 0.06, 1)
+fog_light_energy = 0.3
+fog_density = 0.005
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
+shader = ExtResource("4_shader")
+shader_parameter/scanline_intensity = 0.08
+shader_parameter/noise_strength = 0.022
+shader_parameter/vignette_power = 0.65
+shader_parameter/chroma_offset = 0.002
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_exit"]
+size = Vector3(3.0, 3.0, 2.0)
+
+; ---- Root ----
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+; 薄明かり (廃工場に差し込む僅かな月光)
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.35, 0.354, 0, 0.71, 0.7, -0.5, -0.609, 0.612, 0, 10, 0)
+light_color = Color(0.4, 0.42, 0.6, 1)
+light_energy = 0.12
+shadow_enabled = true
+
+; ━━ エリア照明 ━━
+
+; 南ホール (スタートエリア): 錆びた蛍光灯色
+[node name="OmniLight_Start" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 15)
+light_color = Color(0.65, 0.38, 0.12, 1)
+light_energy = 0.55
+omni_range = 22.0
+
+; 中央ハブ: 微かな青白い照明 (視認性確保)
+[node name="OmniLight_Hub" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, -2)
+light_color = Color(0.35, 0.38, 0.60, 1)
+light_energy = 0.50
+omni_range = 24.0
+
+; NW機械室: 赤い死の光 (Ghost1縄張り)
+[node name="OmniLight_NW" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 3.5, -14)
+light_color = Color(0.85, 0.04, 0.04, 1)
+light_energy = 0.60
+omni_range = 14.0
+
+; NE制御室: ボイラーの緑がかった光
+[node name="OmniLight_NE" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 3.5, -14)
+light_color = Color(0.12, 0.50, 0.18, 1)
+light_energy = 0.50
+omni_range = 14.0
+
+; W通路: 薄暗いオレンジ
+[node name="OmniLight_West" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3.5, -2)
+light_color = Color(0.6, 0.32, 0.08, 1)
+light_energy = 0.38
+omni_range = 14.0
+
+; E通路: 冷たい工業用ライト
+[node name="OmniLight_East" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3.5, -2)
+light_color = Color(0.30, 0.35, 0.55, 1)
+light_energy = 0.40
+omni_range = 14.0
+
+; SW倉庫: 暗くてじめじめした色
+[node name="OmniLight_SW" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3.5, 12)
+light_color = Color(0.5, 0.30, 0.08, 1)
+light_energy = 0.32
+omni_range = 14.0
+
+; ---- ステージ ----
+[node name="Stage" parent="." instance=ExtResource("5_stage")]
+
+; ---- 幽霊 x4 (新マップ対応位置) ----
+; Ghost_1: NW 機械室 (最凶エリア)
+[node name="Ghost" parent="." instance=ExtResource("6_ghost")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0.5, -14)
+
+; Ghost_2: SE 荷物エリア (出口付近)
+[node name="Ghost_2" parent="." instance=ExtResource("6_ghost")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0.5, 13)
+
+; Ghost_3: NE 制御室 (アイテム3エリア)
+[node name="Ghost_3" parent="." instance=ExtResource("6_ghost")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.5, -5)
+
+; Ghost_4: W 通路 (中央封鎖)
+[node name="Ghost_4" parent="." instance=ExtResource("6_ghost")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.5, -2)
+
+; ---- VHSテープ 5本 (難易度順) ----
+; Item_1: 中央ハブ (比較的安全)
+[node name="Item_1" parent="." instance=ExtResource("7_item")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, -2)
+
+; Item_2: W通路 (Ghost4の縄張り)
+[node name="Item_2" parent="." instance=ExtResource("7_item")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1, -5)
+
+; Item_3: NE制御室 (Ghost3エリア)
+[node name="Item_3" parent="." instance=ExtResource("7_item")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 1, -14)
+
+; Item_4: NW機械室最奥 (Ghost1の縄張り！)
+[node name="Item_4" parent="." instance=ExtResource("7_item")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 1, -15)
+
+; Item_5: SE荷物エリア (出口そばの高難度)
+[node name="Item_5" parent="." instance=ExtResource("7_item")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1, 13)
+
+; ---- 脱出ポイント (SE荷物エリア奥) ----
+[node name="Exit" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 1.5, 15)
+script = ExtResource("8_exit")
+
+[node name="ExitShape" type="CollisionShape3D" parent="Exit"]
+shape = SubResource("BoxShape3D_exit")
+
+[node name="ExitMesh" type="CSGBox3D" parent="Exit"]
+size = Vector3(3.0, 3.5, 0.3)
+use_collision = false
+
+[node name="ExitLight" type="OmniLight3D" parent="Exit"]
+light_color = Color(0.2, 1.0, 0.35, 1)
+light_energy = 0.45
+omni_range = 10.0
+
+; ---- プレイヤー (南ホール スタート) ----
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 15)
+
+; ==== HUD (CanvasLayer layer=2) ====
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="HUDRoot" type="Control" parent="HUDLayer"]
+script = ExtResource("3_hud")
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+; VHSシェーダーオーバーレイ
+[node name="VHSOverlay" type="ColorRect" parent="HUDLayer/HUDRoot"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0)
+material = SubResource("ShaderMaterial_1")
+mouse_filter = 2
+
+; スケアフラッシュ
+[node name="ScareFlash" type="ColorRect" parent="HUDLayer/HUDRoot"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(1, 1, 1, 0)
+mouse_filter = 2
+
+; 上部バー: REC / タイムコード / バッテリー
+[node name="TopBar" type="HBoxContainer" parent="HUDLayer/HUDRoot"]
+anchor_right = 1.0
+offset_left = 10.0
+offset_top = 8.0
+offset_bottom = 50.0
+theme_override_constants/separation = 14
+
+[node name="RecLabel" type="Label" parent="HUDLayer/HUDRoot/TopBar"]
+text = "● REC"
+theme_override_colors/font_color = Color(1, 0.15, 0.15, 1)
+theme_override_font_sizes/font_size = 16
+
+[node name="TopSpacer" type="Control" parent="HUDLayer/HUDRoot/TopBar"]
+size_flags_horizontal = 3
+
+[node name="TimecodeLabel" type="Label" parent="HUDLayer/HUDRoot/TopBar"]
+text = "00:00:00"
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+theme_override_font_sizes/font_size = 15
+
+[node name="BatteryLabel" type="Label" parent="HUDLayer/HUDRoot/TopBar"]
+text = " BAT [IIIII] "
+theme_override_colors/font_color = Color(0.3, 1, 0.3, 0.9)
+theme_override_font_sizes/font_size = 14
+
+; 下部バー: CAM / アイテム数 / 日時
+[node name="BottomBar" type="HBoxContainer" parent="HUDLayer/HUDRoot"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -40.0
+offset_right = -10.0
+theme_override_constants/separation = 12
+
+[node name="CamLabel" type="Label" parent="HUDLayer/HUDRoot/BottomBar"]
+text = "CAM 1"
+theme_override_colors/font_color = Color(1, 1, 1, 0.8)
+theme_override_font_sizes/font_size = 13
+
+[node name="BottomSpacer" type="Control" parent="HUDLayer/HUDRoot/BottomBar"]
+size_flags_horizontal = 3
+
+[node name="ItemLabel" type="Label" parent="HUDLayer/HUDRoot/BottomBar"]
+text = "VHS  0 / 5"
+theme_override_colors/font_color = Color(0.7, 0.85, 1, 0.9)
+theme_override_font_sizes/font_size = 14
+
+[node name="BottomSpacer2" type="Control" parent="HUDLayer/HUDRoot/BottomBar"]
+size_flags_horizontal = 3
+
+[node name="DateLabel" type="Label" parent="HUDLayer/HUDRoot/BottomBar"]
+text = "2026/02/24  23:48"
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+theme_override_font_sizes/font_size = 13
+
+; チャットウィンドウ
+[node name="ChatWindow" type="Control" parent="HUDLayer/HUDRoot"]
+anchor_left = 0.70
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.88
+offset_left = 0.0
+offset_top = 55.0
+offset_right = -8.0
+mouse_filter = 2
+
+[node name="ViewersLabel" type="Label" parent="HUDLayer/HUDRoot/ChatWindow"]
+anchor_right = 1.0
+offset_bottom = 26.0
+text = "● LIVE  143 人視聴中"
+theme_override_colors/font_color = Color(1, 0.28, 0.28, 1)
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HUDLayer/HUDRoot/ChatWindow"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 30.0
+horizontal_scroll_mode = 0
+
+[node name="ChatVBox" type="VBoxContainer" parent="HUDLayer/HUDRoot/ChatWindow/ScrollContainer"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+; ==== ゲーム開始 イントロオーバーレイ (layer=5) ====
+[node name="IntroLayer" type="CanvasLayer" parent="."]
+layer = 5
+visible = true
+
+[node name="IntroRoot" type="Control" parent="IntroLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="IntroBG" type="ColorRect" parent="IntroLayer/IntroRoot"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.0, 0.0, 0.02, 0.90)
+mouse_filter = 2
+
+[node name="IntroText" type="RichTextLabel" parent="IntroLayer/IntroRoot"]
+anchor_left = 0.15
+anchor_top = 0.10
+anchor_right = 0.85
+anchor_bottom = 0.90
+bbcode_enabled = true
+scroll_active = false
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 17
+theme_override_font_sizes/bold_font_size = 19
+theme_override_font_sizes/italics_font_size = 15
+
+[node name="SkipHint" type="Label" parent="IntroLayer/IntroRoot"]
+anchor_left = 0.0
+anchor_top = 0.90
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "任意のキー / クリックでスキップ"
+theme_override_colors/font_color = Color(0.38, 0.38, 0.38, 0.9)
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
+
+; ==== ゲームオーバー / クリアオーバーレイ (layer=10) ====
+[node name="OverlayLayer" type="CanvasLayer" parent="."]
+layer = 10
+visible = false
+
+[node name="Overlay" type="Control" parent="OverlayLayer"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 0
+
+[node name="BG" type="ColorRect" parent="OverlayLayer/Overlay"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.0, 0.0, 0.0, 0.82)
+
+[node name="VBox" type="VBoxContainer" parent="OverlayLayer/Overlay"]
+anchor_left = 0.25
+anchor_top = 0.25
+anchor_right = 0.75
+anchor_bottom = 0.75
+theme_override_constants/separation = 24
+
+[node name="CaughtLabel" type="Label" parent="OverlayLayer/Overlay/VBox"]
+text = "捕まった..."
+theme_override_colors/font_color = Color(1, 0.15, 0.15, 1)
+theme_override_font_sizes/font_size = 52
+horizontal_alignment = 1
+visible = true
+
+[node name="WinLabel" type="Label" parent="OverlayLayer/Overlay/VBox"]
+text = "脱出成功！"
+theme_override_colors/font_color = Color(0.3, 1, 0.45, 1)
+theme_override_font_sizes/font_size = 52
+horizontal_alignment = 1
+visible = false
+
+[node name="SubLabel" type="Label" parent="OverlayLayer/Overlay/VBox"]
+text = ""
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+
+[node name="RetryButton" type="Button" parent="OverlayLayer/Overlay/VBox"]
+text = "もう一度配信する"
+theme_override_font_sizes/font_size = 20
+
+[connection signal="pressed" from="OverlayLayer/Overlay/VBox/RetryButton" to="." method="_on_retry_pressed"]

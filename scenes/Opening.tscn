@@ -1,0 +1,184 @@
+[gd_scene load_steps=3 format=3 uid="uid://gs_opening_scene"]
+
+[ext_resource type="Script" path="res://scripts/Opening.gd" id="1_opening"]
+[ext_resource type="Texture2D" path="res://assets/textures/title_bg.png" id="2_titlebg"]
+
+; ── ルート: 全画面 Control ──
+[node name="Opening" type="Control"]
+script = ExtResource("1_opening")
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+; 暗い背景 (プロローグ中の下地)
+[node name="BG" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.03, 0.02, 0.04, 1)
+mouse_filter = 2
+
+; ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+; タイトル画面パネル
+; ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[node name="PanelTitle" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+mouse_filter = 2
+
+; タイトル背景画像 (全画面カバー)
+[node name="TitleBG" type="TextureRect" parent="PanelTitle"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("2_titlebg")
+expand_mode = 1
+stretch_mode = 6
+mouse_filter = 2
+
+; 画像を少し暗くするオーバーレイ
+[node name="TitleDim" type="ColorRect" parent="PanelTitle"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.42)
+mouse_filter = 2
+
+; ゲームタイトル
+[node name="TitleText" type="Label" parent="PanelTitle"]
+anchor_left = 0.0
+anchor_top = 0.30
+anchor_right = 1.0
+anchor_bottom = 0.52
+text = "GHOST STREAMER"
+theme_override_colors/font_color = Color(0.95, 0.92, 0.88, 1)
+theme_override_font_sizes/font_size = 68
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
+
+; サブタイトル
+[node name="SubTitleText" type="Label" parent="PanelTitle"]
+anchor_left = 0.0
+anchor_top = 0.53
+anchor_right = 1.0
+anchor_bottom = 0.63
+text = "廃工場配信、始まります。"
+theme_override_colors/font_color = Color(0.75, 0.72, 0.68, 0.9)
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
+
+; Press any key (点滅)
+[node name="PressAnyKey" type="Label" parent="PanelTitle"]
+anchor_left = 0.0
+anchor_top = 0.82
+anchor_right = 1.0
+anchor_bottom = 0.92
+text = "▶  Press any key"
+theme_override_colors/font_color = Color(0.88, 0.84, 0.78, 0.95)
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
+
+; グリッチフラッシュオーバーレイ (タイトル・プロローグ共通)
+[node name="GlitchOverlay" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(1, 1, 1, 0)
+mouse_filter = 2
+
+; ━━ Panel 1: SNS プロフィール ━━
+[node name="PanelProfile" type="Control" parent="."]
+anchor_left = 0.10
+anchor_top = 0.08
+anchor_right = 0.90
+anchor_bottom = 0.92
+clip_contents = false
+visible = false
+mouse_filter = 2
+
+[node name="ProfileText" type="RichTextLabel" parent="PanelProfile"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+bbcode_enabled = true
+scroll_active = false
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/bold_font_size = 20
+
+; ━━ Panel 2: DM ━━
+[node name="PanelDM" type="Control" parent="."]
+anchor_left = 0.08
+anchor_top = 0.06
+anchor_right = 0.92
+anchor_bottom = 0.94
+clip_contents = false
+visible = false
+mouse_filter = 2
+
+[node name="DMText" type="RichTextLabel" parent="PanelDM"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+bbcode_enabled = true
+scroll_active = false
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/bold_font_size = 19
+
+; ━━ Panel 3: 主人公独白 ━━
+[node name="PanelMonologue" type="Control" parent="."]
+anchor_left = 0.12
+anchor_top = 0.12
+anchor_right = 0.88
+anchor_bottom = 0.88
+clip_contents = false
+visible = false
+mouse_filter = 2
+
+[node name="MonologueText" type="RichTextLabel" parent="PanelMonologue"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+bbcode_enabled = true
+scroll_active = false
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 21
+theme_override_font_sizes/bold_font_size = 23
+theme_override_font_sizes/italics_font_size = 17
+
+; ━━ Panel 4: 場所テロップ ━━
+[node name="PanelCaption" type="Control" parent="."]
+anchor_left = 0.10
+anchor_top = 0.28
+anchor_right = 0.90
+anchor_bottom = 0.72
+visible = false
+mouse_filter = 2
+
+[node name="CaptionText" type="Label" parent="PanelCaption"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "2026 / 02 / 24  23:47\n\n旧・ヤマネ精工\n第三工場跡"
+theme_override_colors/font_color = Color(0.88, 0.88, 0.82, 1)
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+mouse_filter = 2
+
+; ━━ Panel 5: スタートボタン ━━
+[node name="PanelStart" type="Control" parent="."]
+anchor_left = 0.22
+anchor_top = 0.53
+anchor_right = 0.78
+anchor_bottom = 0.73
+visible = false
+mouse_filter = 2
+
+[node name="StartButton" type="Button" parent="PanelStart"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "▶  配信を開始する"
+theme_override_font_sizes/font_size = 28

@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://gs_ghost_scene"]
+
+[ext_resource type="Script" path="res://scripts/Ghost.gd" id="1_gscript"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/killers/Character_Monster.fbx" id="2_gmesh"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+radius = 0.35
+height = 1.8
+
+[node name="Ghost" type="CharacterBody3D"]
+script = ExtResource("1_gscript")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_1")
+
+; ---- キャラクターメッシュ ----
+; FBXがセンチメートル単位でエクスポートされた場合は scale = 0.01 に変更
+[node name="GhostMesh" parent="." instance=ExtResource("2_gmesh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+; ---- 幽霊の周囲に赤い不気味な光 ----
+[node name="GhostLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+light_color = Color(0.6, 0.05, 0.05, 1)
+light_energy = 0.7
+omni_range = 5.0

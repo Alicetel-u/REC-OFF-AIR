@@ -1,0 +1,18 @@
+# Godot 4 generated files
+.godot/
+*.uid
+
+# Import cache
+.import/
+
+# Export presets
+export_presets.cfg
+
+# Mono-specific
+.mono/
+data_*/
+mono_crash.*.txt
+
+# OS
+.DS_Store
+Thumbs.db

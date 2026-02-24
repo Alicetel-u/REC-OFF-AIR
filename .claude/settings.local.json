@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo === $f ===:*)",
+      "Bash(unrar l \"C:\\\\Users\\\\【RST-9】リバイブ新所沢\\\\Downloads\\\\Characters_psx.rar\" 2>/dev/null || 7z l \"C:\\\\Users\\\\【RST-9】リバイブ新所沢\\\\Downloads\\\\Characters_psx.rar\" 2>/dev/null)",
+      "Bash(\"C:/Program Files \\(x86\\)/7-Zip/7z.exe\" l:*)",
+      "Bash(\"/c/Program Files \\(x86\\)/7-Zip/7z.exe\" l:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(ls:*)"
+    ]
+  }
+}
