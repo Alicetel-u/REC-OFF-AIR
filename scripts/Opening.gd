@@ -9,17 +9,18 @@ extends Control
 @onready var panel_monologue : Control       = $PanelMonologue
 @onready var panel_caption   : Control       = $PanelCaption
 @onready var panel_start     : Control       = $PanelStart
+@onready var panel_map_select: Control       = $PanelMapSelect
 @onready var profile_text    : RichTextLabel = $PanelProfile/ProfileText
 @onready var dm_text         : RichTextLabel = $PanelDM/DMText
 @onready var monologue_text  : RichTextLabel = $PanelMonologue/MonologueText
 @onready var caption_text    : Label         = $PanelCaption/CaptionText
 @onready var start_button    : Button        = $PanelStart/StartButton
 
-enum Phase { TITLE, PROLOGUE, DONE }
+enum Phase { TITLE, PROLOGUE, MAP_SELECT, DONE }
 
 var _phase       : Phase = Phase.TITLE
-var _title_ready : bool  = false   # フェードイン完了後にキー受付
-var _skipped     : bool  = false   # プロローグスキップ済み
+var _title_ready : bool  = false
+var _skipped     : bool  = false
 
 
 func _ready() -> void:
@@ -27,6 +28,11 @@ func _ready() -> void:
 	_hide_all_panels()
 	glitch_overlay.color = Color(1, 1, 1, 0)
 	start_button.pressed.connect(_on_start_pressed)
+	# マップ選択ボタンのシグナル接続
+	var btn_haison  := $PanelMapSelect/VBox/BtnHaison  as Button
+	var btn_factory := $PanelMapSelect/VBox/BtnFactory as Button
+	btn_haison.pressed.connect(_on_map_selected.bind(1))   # HAISON WFC
+	btn_factory.pressed.connect(_on_map_selected.bind(0))  # INDUSTRIAL WFC
 	_run_title()
 
 
@@ -46,12 +52,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _hide_all_panels() -> void:
-	panel_title.visible     = false
-	panel_profile.visible   = false
-	panel_dm.visible        = false
-	panel_monologue.visible = false
-	panel_caption.visible   = false
-	panel_start.visible     = false
+	panel_title.visible      = false
+	panel_profile.visible    = false
+	panel_dm.visible         = false
+	panel_monologue.visible  = false
+	panel_caption.visible    = false
+	panel_map_select.visible = false
+	panel_start.visible      = false
 
 
 # ──────────────────────────────────────────────
@@ -94,9 +101,8 @@ func _advance_from_title() -> void:
 func _skip_to_start() -> void:
 	_skipped = true
 	_hide_all_panels()
-	glitch_overlay.color   = Color(1, 1, 1, 0)
-	panel_start.visible    = true
-	panel_start.modulate.a = 1.0
+	glitch_overlay.color = Color(1, 1, 1, 0)
+	_show_map_select()
 
 
 func _run_sequence() -> void:
@@ -164,11 +170,8 @@ func _run_sequence() -> void:
 	await get_tree().create_timer(0.5).timeout
 	if _skipped: return
 
-	# ━━ Panel 5: スタートボタン ━━
-	_phase = Phase.DONE
-	panel_start.visible    = true
-	panel_start.modulate.a = 0.0
-	await _fade(panel_start, 1.0, 1.2)
+	# ━━ マップ選択画面へ ━━
+	_show_map_select()
 
 
 # ──────────────────────────────────────────────
@@ -217,6 +220,23 @@ func _caption_warning_glitch() -> void:
 	caption_text.text = orig_text
 	caption_text.remove_theme_color_override("font_color")
 	glitch_overlay.color = Color(1, 1, 1, 0)
+
+
+func _show_map_select() -> void:
+	_phase = Phase.MAP_SELECT
+	_hide_all_panels()
+	panel_map_select.visible    = true
+	panel_map_select.modulate.a = 0.0
+	await _fade(panel_map_select, 1.0, 0.8)
+
+
+func _on_map_selected(map_type: int) -> void:
+	GameManager.selected_map_type = map_type
+	_phase = Phase.DONE
+	panel_map_select.visible = false
+	panel_start.visible      = true
+	panel_start.modulate.a   = 0.0
+	await _fade(panel_start, 1.0, 0.6)
 
 
 func _on_start_pressed() -> void:
