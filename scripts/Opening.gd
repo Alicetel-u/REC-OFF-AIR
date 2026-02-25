@@ -135,6 +135,7 @@ func _run_sequence() -> void:
 	if _skipped: return
 
 	# ━━ Panel 4: 場所テロップ ━━
+	caption_text.text = "廃村・霧原村　深夜 0:00"
 	panel_caption.visible    = true
 	panel_caption.modulate.a = 0.0
 	await _fade(panel_caption, 1.0, 0.9)
@@ -209,7 +210,7 @@ func _show_map_select() -> void:
 	var tw := create_tween()
 	tw.tween_property(self, "modulate:a", 0.0, 1.3)
 	await tw.finished
-	get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	get_tree().change_scene_to_file("res://scenes/GameScene.tscn")
 
 
 # ──────────────────────────────────────────────
@@ -218,39 +219,38 @@ func _show_map_select() -> void:
 
 func _profile_bbcode() -> String:
 	var s := "[color=#666666]━━━  SnapshotTube  ━━━━━━━━━━━━━━━━━━━━━━━━━━[/color]\n\n"
-	s += "[color=#f0f0f0][font_size=22][b]夜道 サクラ[/b][/font_size][/color]"
-	s += "   [color=#888888]@yami_sakura_ch[/color]\n\n"
-	s += "[color=#cccccc]廃墟探索 × ホラー配信　女子高生 YouTuber\n"
-	s += "「見てくれる人がいる限り、どこでも行く」[/color]\n\n"
-	s += "[color=#888888]▶ 動画  [color=#ffffff]12 本[/color]　　"
-	s += "👥 [color=#ffffff]12,847[/color] 人登録[/color]\n\n"
+	s += "[color=#f0f0f0][font_size=22][b]しゅっち ch[/b][/font_size][/color]"
+	s += "   [color=#888888]@shucchi_horror[/color]\n\n"
+	s += "[color=#cccccc]ホラー配信　フリーター\n"
+	s += "「バズるためなら、どこへでも行く」[/color]\n\n"
+	s += "[color=#888888]▶ 動画  [color=#ffffff]7 本[/color]　　"
+	s += "👥 [color=#ffffff]347[/color] 人登録[/color]\n\n"
 	s += "[color=#444444]─────────────────────────────────────────────[/color]\n"
 	s += "[color=#555555]最近の投稿\n"
-	s += "　・廃病院に一人で行ったら本当に怖かった話\n"
-	s += "　・夜の工場地帯、侵入して追いかけられた[/color]"
+	s += "　・深夜の廃病院、一人で行ってみた（再生数 210）\n"
+	s += "　・心霊スポット行ったけど何も起きなかった（再生数 83）[/color]"
 	return s
 
 
 func _dm_bbcode() -> String:
 	var s := "[color=#888888]✉  ダイレクトメッセージ[/color]\n\n"
-	s += "[color=#ff3333][b]⚠ アカウント削除済み[/b][/color]   [color=#555555]23:02[/color]\n"
+	s += "[color=#ff3333][b]⚠ アカウント削除済み[/b][/color]   [color=#555555]23:47[/color]\n"
 	s += "[color=#3a3a3a]─────────────────────────────────────────────[/color]\n\n"
-	s += "[color=#dddddd]はじめまして。夜道サクラさんですよね。\n\n"
-	s += "廃工場に [b]VHS テープを 5 本[/b]、\n"
-	s += "置き忘れてしまいました。\n\n"
-	s += "取ってきてもらえますか？\n"
-	s += "謝礼はします。[/color]\n\n"
+	s += "[color=#dddddd]はじめまして。しゅっちさんですよね。\n\n"
+	s += "[b]今夜、霧原村に行ってみてください。[/b]\n\n"
+	s += "昔、事件があった廃村です。\n"
+	s += "配信すれば、きっとバズりますよ。[/color]\n\n"
 	s += "[color=#3a3a3a]─────────────────────────────────────────────[/color]\n\n"
-	s += "[color=#dddddd]場所は「旧ヤマネ精工　第三工場跡」です。\n\n"
-	s += "[b]必ず、5 本全部、持ってきてください。[/b][/color]"
+	s += "[color=#dddddd]場所は県道沿い、霧の多い山道を進んだ先です。\n\n"
+	s += "[b]必ず、深夜0時に入ってください。[/b][/color]"
 	return s
 
 
 func _monologue_bbcode() -> String:
 	var s := "[color=#555555][i]（自室、深夜 ── 画面の外）[/i][/color]\n\n"
-	s += "[color=#ffffff]「…あやしすぎる」[/color]\n\n"
-	s += "[color=#cccccc]「でも廃工場か……」[/color]\n\n"
-	s += "[color=#cccccc]「絶対バズるじゃん」[/color]\n\n"
-	s += "[color=#aaaaaa]「配信してる間は大丈夫でしょ。\n視聴者もいるし。」[/color]\n\n"
+	s += "[color=#ffffff]「…あやしいDMだな」[/color]\n\n"
+	s += "[color=#cccccc]「でも廃村か……」[/color]\n\n"
+	s += "[color=#cccccc]「再生数、全然伸びないし」[/color]\n\n"
+	s += "[color=#aaaaaa]「配信してる間は大丈夫でしょ。\n視聴者もいるし。バズれば万事OK。」[/color]\n\n"
 	s += "[color=#ffffff][font_size=22][b]「──行こう。」[/b][/font_size][/color]"
 	return s

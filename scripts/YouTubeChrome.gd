@@ -543,6 +543,44 @@ func add_message(msg: String, user: String, user_type: String = "viewer") -> voi
 		_chat_scroll.scroll_vertical = int(_chat_scroll.get_v_scroll_bar().max_value)
 
 
+# ストーリー用スーパーチャット（名前・メッセージ・金額を指定）
+func spawn_story_superchat(sc_name: String, sc_msg: String, amount: int) -> void:
+	if not is_instance_valid(_superchat_area):
+		return
+	var tiers := [
+		{ "min": 10000, "bg": Color(0.90, 0.10, 0.29) },
+		{ "min": 5000,  "bg": Color(0.96, 0.45, 0.00) },
+		{ "min": 2000,  "bg": Color(1.00, 0.76, 0.03) },
+		{ "min": 1000,  "bg": Color(0.00, 0.74, 0.63) },
+		{ "min": 200,   "bg": Color(0.13, 0.59, 0.95) },
+	]
+	var tier_col := Color(0.13, 0.59, 0.95)
+	for t in tiers:
+		if amount >= int(t["min"]):
+			tier_col = t["bg"]
+			break
+	var card := PanelContainer.new()
+	card.custom_minimum_size = Vector2(0, 52)
+	var sc := StyleBoxFlat.new()
+	sc.bg_color = tier_col
+	sc.set_corner_radius_all(4)
+	card.add_theme_stylebox_override("panel", sc)
+	_superchat_area.add_child(card)
+	var cvbox := VBoxContainer.new()
+	cvbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	card.add_child(cvbox)
+	var crow := _hbox(cvbox, 6)
+	_pad(crow, 8)
+	_avatar_circle(crow, tier_col.darkened(0.4), sc_name.substr(0, 1), 20)
+	var nl := _lbl(crow, sc_name, 12, C_TEXT)
+	nl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_lbl(crow, "¥%d" % amount, 13, C_TEXT)
+	_pad(crow, 8)
+	var ml := _lbl(cvbox, "  " + sc_msg, 12, C_TEXT)
+	ml.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	get_tree().create_timer(12.0).timeout.connect(card.queue_free, CONNECT_ONE_SHOT)
+
+
 func _spawn_superchat() -> void:
 	if not is_instance_valid(_superchat_area):
 		return

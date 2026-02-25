@@ -1,0 +1,575 @@
+{
+  "beats": [
+    {
+      "id": "prologue_01",
+      "background": "#0d0d18",
+      "location": "廃村・霧原村　深夜0:00",
+      "narration": "配信を、始める。\n再生数が伸びない日が続いた。\nでも今夜は違う。\n霧原村——都市伝説に出てくる廃村——に来た。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "prologue_02",
+      "chat_events": [
+        {"delay": 1.5, "user": "ゴーレム999", "msg": "キターーー！！", "type": "viewer"},
+        {"delay": 2.5, "user": "夜行列車", "msg": "深夜ホラー配信！！待ってた！！", "type": "viewer"},
+        {"delay": 3.5, "user": "みおみお", "msg": "しゅっちさん大好き！！", "type": "member"},
+        {"delay": 5.0, "user": "ゴーレム999", "msg": "霧原村って実在するの？", "type": "viewer"},
+        {"delay": 6.5, "user": "月詠", "msg": "モデレーターです。チャット荒らしは通報します", "type": "moderator"},
+        {"delay": 8.0, "user": "ぷるりん", "msg": "廃村か…怖いのにみたい", "type": "viewer"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "prologue_02",
+      "background": "#0d0d18",
+      "location": "廃村・霧原村　深夜0:00",
+      "narration": "スマホを空に向ける。星はない。\n深い霧が村全体を包んでいる。\n一週間前、見知らぬDMが届いた。\n「今夜、霧原村に行ってみて。きっとバズるよ」",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "prologue_03",
+      "chat_events": [
+        {"delay": 1.5, "user": "夜行列車", "msg": "霧こわすぎる", "type": "viewer"},
+        {"delay": 3.0, "user": "ぷるりん", "msg": "深夜に一人で大丈夫？", "type": "viewer"},
+        {"delay": 4.5, "user": "ゴーレム999", "msg": "そのDMめちゃくちゃ怪しいｗ", "type": "viewer"},
+        {"delay": 6.0, "user": "名無し12345", "msg": "引き返したほうがいいよ", "type": "viewer"},
+        {"delay": 8.0, "user": "みおみお", "msg": "怖いけど見たい！！頑張って！", "type": "member"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "prologue_03",
+      "background": "#080810",
+      "location": "廃村・入り口　深夜0:02",
+      "narration": "村の中に入った。\n廃屋が並んでいる。ガラスの割れた窓。\n腐った木の臭い。誰もいないはずなのに。\n……なんか、見られてる気がする。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch1_exterior",
+      "chat_events": [
+        {"delay": 1.0, "user": "夜行列車", "msg": "空気やばそう", "type": "viewer"},
+        {"delay": 2.5, "user": "ぷるりん", "msg": "廃村の写真ってなんでこんな怖いんだろ", "type": "viewer"},
+        {"delay": 4.0, "user": "名無し12345", "msg": "その村...知ってる", "type": "viewer"},
+        {"delay": 5.5, "user": "ゴーレム999", "msg": "知ってるってどういうことｗ", "type": "viewer"},
+        {"delay": 7.0, "user": "名無し12345", "msg": "30年前、ここで子供が一人消えた", "type": "viewer"},
+        {"delay": 9.0, "user": "みおみお", "msg": "え…本当に？", "type": "member"},
+        {"delay": 11.0, "user": "名無し12345", "msg": "消えたんじゃなくて——連れていかれた", "type": "viewer"}
+      ],
+      "effects": {"glitch_count": 1}
+    },
+    {
+      "id": "ch1_exterior",
+      "background": "#080808",
+      "location": "廃村・公衆トイレ前　深夜0:05",
+      "narration": "古い公衆トイレが見えた。\nコンクリートが苔で覆われている。\nドアが半開きになっている。\n風で開いた……わけじゃないよね。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch1_enter",
+      "chat_events": [
+        {"delay": 1.0, "user": "夜行列車", "msg": "いやいや絶対入るなよ", "type": "viewer"},
+        {"delay": 2.5, "user": "ゴーレム999", "msg": "ホラー映画の典型やんｗ", "type": "viewer"},
+        {"delay": 4.0, "user": "みおみお", "msg": "やめて〜！！！", "type": "member"},
+        {"delay": 5.5, "user": "ぷるりん", "msg": "入ってほしい入ってほしい入ってほしい", "type": "viewer"},
+        {"delay": 7.0, "user": "名無し12345", "msg": "その場所…今から入るの？", "type": "viewer"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "ch1_enter",
+      "background": "#050505",
+      "location": "公衆トイレ内　深夜0:06",
+      "narration": "足音が響く。懐中電灯アプリをオン。\n個室が並んでいる。三つ。\n最初の個室……ドアが開いている。\n床が……濡れている。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch1_newspaper",
+      "chat_events": [
+        {"delay": 1.5, "user": "夜行列車", "msg": "画質がザラザラしてる", "type": "viewer"},
+        {"delay": 3.0, "user": "ゴーレム999", "msg": "暗い！暗すぎる！！", "type": "viewer"},
+        {"delay": 4.5, "user": "みおみお", "msg": "濡れてる…何で…", "type": "member"},
+        {"delay": 6.0, "user": "ぷるりん", "msg": "中に何かいるかも…", "type": "viewer"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "ch1_newspaper",
+      "background": "#070712",
+      "location": "公衆トイレ内　深夜0:07",
+      "narration": "床に、何かが落ちている。\n新聞の切り抜き。日付は30年前。\n「行方不明の少女、遺体で発見——霧原村の公衆トイレにて」\n被害者の名前は……みゆき。享年17歳。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch1_ofuda",
+      "chat_events": [
+        {"delay": 2.0, "user": "夜行列車", "msg": "え…", "type": "viewer"},
+        {"delay": 3.5, "user": "ゴーレム999", "msg": "17歳…かわいそう", "type": "viewer"},
+        {"delay": 5.0, "user": "みおみお", "msg": "みゆきさん……", "type": "member"},
+        {"delay": 6.5, "user": "ぷるりん", "msg": "これ本当に実話？", "type": "viewer"},
+        {"delay": 8.0, "user": "名無し12345", "msg": "今でも村では、みゆきの声が聞こえるそうだよ", "type": "viewer"},
+        {"delay": 9.5, "user": "夜行列車", "msg": "↑キモｗ", "type": "viewer"},
+        {"delay": 11.0, "user": "月詠", "msg": "荒らしコメント通報済み", "type": "moderator"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "ch1_ofuda",
+      "background": "#0d0810",
+      "location": "公衆トイレ内　深夜0:09",
+      "narration": "ポケットのお札を取り出した。\n出発前に神社でもらった護符。\n「どんな場所でも守ってくれる」って言ってたのに。\n……白かったはずのお札が、少し——黄ばんでいる？",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch1_mannequin",
+      "chat_events": [
+        {"delay": 2.0, "user": "ゴーレム999", "msg": "お札！？", "type": "viewer"},
+        {"delay": 3.5, "user": "夜行列車", "msg": "え色変わってない？", "type": "viewer"},
+        {"delay": 5.0, "user": "みおみお", "msg": "黄ばんでる！？", "type": "member"},
+        {"delay": 6.5, "user": "ぷるりん", "msg": "それって普通じゃないよね", "type": "viewer"},
+        {"delay": 8.0, "user": "名無し12345", "msg": "その護符はもう機能していない。手遅れだ", "type": "viewer"},
+        {"delay": 9.5, "user": "夜行列車", "msg": "↑こういうコメ怖すぎる", "type": "viewer"}
+      ],
+      "effects": {"glitch_count": 2}
+    },
+    {
+      "id": "ch1_mannequin",
+      "background": "#050505",
+      "location": "公衆トイレ内　深夜0:10",
+      "narration": "三番目の個室。覗いてみると。\n……。\n女の子の頭が、便座の上に置いてある。\nいや——マネキンだ。マネキンの頭。\nなんで、こんな場所に——",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch1_choice",
+      "chat_events": [
+        {"delay": 0.5, "user": "ゴーレム999", "msg": "！！！！！！！！！", "type": "viewer"},
+        {"delay": 1.0, "user": "みおみお", "msg": "うわあああ！！！！", "type": "member"},
+        {"delay": 1.8, "user": "夜行列車", "msg": "びっくりしたｗｗｗ", "type": "viewer"},
+        {"delay": 3.0, "user": "ぷるりん", "msg": "なんでそこに頭が！？", "type": "viewer"},
+        {"delay": 4.5, "user": "配信タロウ", "msg": "「霧原村の人形師」という話が地元にある", "type": "owner"},
+        {"delay": 5.5, "user": "ゴーレム999", "msg": "タロウさん！？知ってんの！？", "type": "viewer"},
+        {"delay": 7.0, "user": "名無し12345", "msg": "人形師は今も村に住んでいる", "type": "viewer"},
+        {"delay": 9.0, "user": "みおみお", "msg": "逃げて！！！", "type": "member"}
+      ],
+      "effects": {"flash": "#ff0000", "glitch_count": 3}
+    },
+    {
+      "id": "ch1_choice",
+      "background": "#050508",
+      "location": "公衆トイレ前　深夜0:11",
+      "narration": "トイレから飛び出した。\n外の空気を吸う。でも霧は濃くなっている。\nどうしよう。視聴者数は増えてる。\nここでやめたら——また誰にも見てもらえない。",
+      "speaker": "しゅっち",
+      "chat_events": [
+        {"delay": 1.0, "user": "ぷるりん", "msg": "次どこ行く？", "type": "viewer"},
+        {"delay": 2.5, "user": "夜行列車", "msg": "村の奥に集会場があるはず", "type": "viewer"},
+        {"delay": 4.0, "user": "みおみお", "msg": "帰って帰って！！", "type": "member"},
+        {"delay": 5.5, "user": "ゴーレム999", "msg": "せっかくバズってるんだから続けてよ！", "type": "viewer"}
+      ],
+      "choices": [
+        {"text": "村の奥へ進む", "next": "ch2_village"},
+        {"text": "帰ろうとする", "next": "ch2_cantleave"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "ch2_cantleave",
+      "background": "#050510",
+      "location": "村の入り口　深夜0:13",
+      "narration": "来た道を戻ろうとした。\nでも——霧が濃すぎて方向が分からない。\nスマホのGPSは「圏外」を示している。\n……行くしかない。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch2_village",
+      "chat_events": [
+        {"delay": 1.5, "user": "夜行列車", "msg": "あっ帰れないやつだ", "type": "viewer"},
+        {"delay": 3.0, "user": "ゴーレム999", "msg": "やっぱり！続きみれる！！", "type": "viewer"},
+        {"delay": 4.5, "user": "みおみお", "msg": "圏外は怖すぎる…", "type": "member"},
+        {"delay": 6.0, "user": "名無し12345", "msg": "ようこそ霧原村へ。もう出られないよ", "type": "viewer"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "ch2_village",
+      "background": "#0a0a0c",
+      "location": "廃村・中央路　深夜0:15",
+      "narration": "村の奥へと続く道を歩く。\n廃屋の窓が黒い。どこも真っ暗。\n人の気配はない——はずなのに。\n足音？自分の足音だけ？",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch2_private1",
+      "chat_events": [
+        {"delay": 1.5, "user": "ゴーレム999", "msg": "視聴者数500超えた！！", "type": "viewer"},
+        {"delay": 3.0, "user": "ぷるりん", "msg": "バズってるじゃん！", "type": "viewer"},
+        {"delay": 4.5, "user": "夜行列車", "msg": "ちょっとあの窓に人影ない？", "type": "viewer"},
+        {"delay": 6.0, "user": "ゴーレム999", "msg": "どこ！？どこ！？", "type": "viewer"},
+        {"delay": 8.0, "user": "夜行列車", "msg": "…気のせいかな。でも確かに動いた", "type": "viewer"},
+        {"delay": 10.0, "user": "視聴者A", "msg": "しゅっちさん、今日コンビニで弁当食べてたよね", "type": "viewer"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "ch2_private1",
+      "background": "#0a0a0c",
+      "location": "廃村・中央路　深夜0:15",
+      "narration": "え——待って、今なんて？\nコンビニで弁当……今日食べた。\nでも配信じゃ言ってない。\n…誰？",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch2_private2",
+      "chat_events": [
+        {"delay": 1.0, "user": "ゴーレム999", "msg": "↑どういうこと？", "type": "viewer"},
+        {"delay": 2.5, "user": "みおみお", "msg": "え？知り合い？", "type": "member"},
+        {"delay": 4.0, "user": "視聴者A", "msg": "鮭フレークのおにぎりと唐揚げ弁当でしょ？", "type": "viewer"},
+        {"delay": 5.5, "user": "ゴーレム999", "msg": "こわ！！！！！！", "type": "viewer"},
+        {"delay": 7.0, "user": "夜行列車", "msg": "誰これ！？ストーカー？！", "type": "viewer"},
+        {"delay": 8.5, "user": "みおみお", "msg": "通報して！！！", "type": "member"},
+        {"delay": 10.0, "user": "月詠", "msg": "該当ユーザーをBANしました", "type": "moderator"},
+        {"delay": 12.0, "user": "視聴者A", "msg": "消しても意味ないよ。ちゃんと見てるから", "type": "viewer"}
+      ],
+      "effects": {"glitch_count": 2}
+    },
+    {
+      "id": "ch2_private2",
+      "background": "#0a0808",
+      "location": "廃村・中央路　深夜0:17",
+      "narration": "気持ち悪い。でも、続けなきゃ。\nバズってる。こんなに見てる人がいる。\nもう少しだけ——もう少しだけ奥に行こう。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch2_private3",
+      "chat_events": [
+        {"delay": 2.0, "user": "視聴者B", "msg": "ねえ、部屋の引き出しにお札入れてあるよね？", "type": "viewer"},
+        {"delay": 3.5, "user": "みおみお", "msg": "え！？！？！？！？", "type": "member"},
+        {"delay": 4.5, "user": "夜行列車", "msg": "誰なん！？なんで知ってんの！？", "type": "viewer"},
+        {"delay": 6.0, "user": "視聴者B", "msg": "ベッドサイドの引き出しって言えばわかる？", "type": "viewer"},
+        {"delay": 7.5, "user": "ゴーレム999", "msg": "通報通報通報！！！！", "type": "viewer"},
+        {"delay": 9.0, "user": "月詠", "msg": "BAN済み。しゅっちさん大丈夫？", "type": "moderator"},
+        {"delay": 11.0, "user": "視聴者B", "msg": "それが今どんな色になってるか——知りたいでしょ？", "type": "viewer"}
+      ],
+      "effects": {"glitch_count": 2}
+    },
+    {
+      "id": "ch2_private3",
+      "background": "#100808",
+      "location": "廃村・奥　深夜0:20",
+      "narration": "なんで知ってるの。\nなんで知ってるの。\nなんで——",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch2_ofuda_black",
+      "chat_events": [
+        {"delay": 1.5, "user": "視聴者C", "msg": "バイト先の店長、結衣のこと嫌いらしいね", "type": "viewer"},
+        {"delay": 3.0, "user": "ゴーレム999", "msg": "名前！！本名呼んだ！！！！", "type": "viewer"},
+        {"delay": 4.0, "user": "みおみお", "msg": "本名！？！？！？", "type": "member"},
+        {"delay": 5.5, "user": "視聴者C", "msg": "「結衣は使えない、すぐクビにする」って言ってたよ", "type": "viewer"},
+        {"delay": 7.0, "user": "夜行列車", "msg": "知らない人が本名知ってる！！警察！！", "type": "viewer"},
+        {"delay": 8.5, "user": "視聴者C", "msg": "逃げようとしても無駄だよ、結衣ちゃん", "type": "viewer"},
+        {"delay": 10.0, "user": "みおみお", "msg": "逃げて！！今すぐ！！！！", "type": "member"},
+        {"delay": 12.0, "user": "名無し12345", "msg": "今夜のゲストは決まってる。ずっと前から", "type": "viewer"}
+      ],
+      "effects": {"glitch_count": 3}
+    },
+    {
+      "id": "ch2_ofuda_black",
+      "background": "#0d0808",
+      "location": "廃村・奥　深夜0:21",
+      "narration": "お札を見た。\n……真っ黒になっている。\nぐにゃぐにゃとした文字が浮かび上がっている。\n読めない。でも——怖い。ものすごく怖い。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch2_choice",
+      "chat_events": [
+        {"delay": 1.0, "user": "ゴーレム999", "msg": "黒い！！！！！", "type": "viewer"},
+        {"delay": 2.0, "user": "夜行列車", "msg": "やばい色してる", "type": "viewer"},
+        {"delay": 3.5, "user": "みおみお", "msg": "呪われてる！！？！？！", "type": "member"},
+        {"delay": 5.0, "user": "配信タロウ", "msg": "これは……護符が限界まで吸い込んだサインだ", "type": "owner"},
+        {"delay": 6.5, "user": "ゴーレム999", "msg": "タロウさん！なんで止めないの！！", "type": "viewer"},
+        {"delay": 8.0, "user": "配信タロウ", "msg": "止めるわけにはいかない", "type": "owner"},
+        {"delay": 10.0, "user": "夜行列車", "msg": "タロウさん…それどういう意味？", "type": "viewer"}
+      ],
+      "effects": {"flash": "#ff0000", "glitch_count": 4}
+    },
+    {
+      "id": "ch2_choice",
+      "background": "#0d0808",
+      "location": "廃村・奥　深夜0:22",
+      "narration": "向こうに——建物が見える。\n集会場と書かれた看板。\nでも足が震えて動かない。\nここで終わりにする？それとも——",
+      "speaker": "しゅっち",
+      "chat_events": [
+        {"delay": 1.5, "user": "ぷるりん", "msg": "集会場！行ってみよう！！", "type": "viewer"},
+        {"delay": 3.0, "user": "みおみお", "msg": "逃げて逃げて逃げて", "type": "member"},
+        {"delay": 4.5, "user": "ゴーレム999", "msg": "視聴者数1000人超えたよ！！すごい！！", "type": "viewer"},
+        {"delay": 6.0, "user": "夜行列車", "msg": "帰れる道わかんないんじゃないの…", "type": "viewer"}
+      ],
+      "choices": [
+        {"text": "集会場へ向かう", "next": "ch3_approach"},
+        {"text": "逃げようとする", "next": "ch3_escape_fail"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "ch3_escape_fail",
+      "background": "#080808",
+      "location": "廃村　深夜0:23",
+      "narration": "走った。ひたすら走った。\nでも霧の中を走っていたら——\nいつの間にか集会場の前に立っていた。\n村が、私を誘導している。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch3_approach",
+      "chat_events": [
+        {"delay": 2.0, "user": "夜行列車", "msg": "やっぱり！逃げれない！", "type": "viewer"},
+        {"delay": 3.5, "user": "ゴーレム999", "msg": "逃げれないやつじゃん！！続きみれる！！", "type": "viewer"},
+        {"delay": 5.0, "user": "みおみお", "msg": "こわいこわいこわいこわい", "type": "member"},
+        {"delay": 7.0, "user": "名無し12345", "msg": "ようやく来た。みんな待ってるよ", "type": "viewer"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "ch3_approach",
+      "background": "#060608",
+      "location": "霧原村・集会場前　深夜0:25",
+      "narration": "集会場の前に立った。\n古い木造建築。窓から——光が漏れている。\n電気が通っているはずのない廃村なのに。\nドアに手をかける。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch3_enter",
+      "chat_events": [
+        {"delay": 2.0, "user": "ゴーレム999", "msg": "電気ついてる！！！！", "type": "viewer"},
+        {"delay": 3.5, "user": "夜行列車", "msg": "誰かいる！！！！！！", "type": "viewer"},
+        {"delay": 5.0, "user": "みおみお", "msg": "入らないで！！！！", "type": "member"},
+        {"delay": 7.0, "user": "ぷるりん", "msg": "でも中に人がいるなら助けてもらえるんじゃ", "type": "viewer"},
+        {"delay": 9.0, "user": "夜行列車", "msg": "それか充電もできるかも", "type": "viewer"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "ch3_enter",
+      "background": "#050510",
+      "location": "霧原村・集会場内　深夜0:26",
+      "narration": "ドアを開けた。\nがらんどうの広間。\nでも——正面の壁に、複数のモニターが並んでいる。\nすべての画面に、人が映っている。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch3_monitors",
+      "chat_events": [
+        {"delay": 1.5, "user": "ゴーレム999", "msg": "モニター！？！？！？", "type": "viewer"},
+        {"delay": 3.0, "user": "夜行列車", "msg": "人が映ってる！？誰！？", "type": "viewer"},
+        {"delay": 4.5, "user": "みおみお", "msg": "ヤバい場所！！逃げて！！！", "type": "member"},
+        {"delay": 6.0, "user": "ぷるりん", "msg": "スタジオみたいな感じ？", "type": "viewer"},
+        {"delay": 8.0, "user": "名無し12345", "msg": "ようこそ、ステージへ。君が今夜の主役だ", "type": "viewer"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "ch3_monitors",
+      "background": "#040414",
+      "location": "霧原村・集会場内　深夜0:27",
+      "narration": "画面に映っているのは——\n若い女の子たち。全員、怯えた顔をしている。\nいや、過去の配信映像だ。\nここで行われた、過去の配信の記録。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch3_script",
+      "chat_events": [
+        {"delay": 1.5, "user": "ゴーレム999", "msg": "え…前にも誰かいたの？", "type": "viewer"},
+        {"delay": 3.0, "user": "夜行列車", "msg": "全員怯えてる…なんで？", "type": "viewer"},
+        {"delay": 4.5, "user": "みおみお", "msg": "過去の配信って…それって……", "type": "member"},
+        {"delay": 6.0, "user": "ぷるりん", "msg": "みんな今どこにいるの", "type": "viewer"},
+        {"delay": 8.0, "user": "夜行列車", "msg": "いない。消えた。それが答えだ", "type": "viewer"},
+        {"delay": 10.0, "user": "名無し12345", "msg": "高級会員様向けの、特別なコンテンツさ", "type": "viewer"},
+        {"delay": 12.0, "user": "ゴーレム999", "msg": "高級会員って誰！？誰が見てるの！？", "type": "viewer"}
+      ],
+      "effects": {"glitch_count": 3}
+    },
+    {
+      "id": "ch3_script",
+      "background": "#040414",
+      "location": "霧原村・集会場内　深夜0:28",
+      "narration": "机の上に、一冊のノートが置いてあった。\n表紙に書かれた文字：「配信の台本」\n今夜の日付。そして——\n被験者名：「霧原 結衣（しゅっち）」",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch3_realization",
+      "chat_events": [
+        {"delay": 1.0, "user": "ゴーレム999", "msg": "！！！！！！！！！！！！！！！", "type": "viewer"},
+        {"delay": 2.0, "user": "みおみお", "msg": "名前！名前書いてある！！！！", "type": "member"},
+        {"delay": 3.5, "user": "夜行列車", "msg": "全部計画されてたんだ", "type": "viewer"},
+        {"delay": 5.0, "user": "ぷるりん", "msg": "そのDM送ってきたのも全部仕組まれてた！？", "type": "viewer"},
+        {"delay": 7.0, "user": "ゴーレム999", "msg": "警察に通報した！！！！！！", "type": "viewer"},
+        {"delay": 9.0, "user": "月詠", "msg": "110番しました。位置情報追ってます", "type": "moderator"},
+        {"delay": 11.0, "user": "名無し12345", "msg": "無駄だよ。この村に電波は届かない", "type": "viewer"}
+      ],
+      "effects": {"glitch_count": 5}
+    },
+    {
+      "id": "ch3_realization",
+      "background": "#030308",
+      "location": "霧原村・集会場内　深夜0:29",
+      "narration": "台本を読んだ。\n全部書いてあった。\nDMの送り主の名前。依頼主リスト。入金額。\nそして——「処理方法」。\nあのお札をくれた、あの人が——",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch3_footsteps",
+      "chat_events": [
+        {"delay": 2.0, "user": "夜行列車", "msg": "処理方法って何！？！？！？", "type": "viewer"},
+        {"delay": 3.5, "user": "みおみお", "msg": "お札の人って誰！？", "type": "member"},
+        {"delay": 5.0, "user": "ゴーレム999", "msg": "逃げて！！今すぐ！！！！！！", "type": "viewer"},
+        {"delay": 7.0, "user": "名無し12345", "msg": "気づくのが遅かったね。もうすぐ会えるよ", "type": "viewer"},
+        {"delay": 9.0, "user": "夜行列車", "msg": "来る！！来るって！！！", "type": "viewer"}
+      ],
+      "effects": {"glitch_count": 6}
+    },
+    {
+      "id": "ch3_footsteps",
+      "background": "#030308",
+      "location": "霧原村・集会場内　深夜0:30",
+      "narration": "足音が聞こえる。\n重い、ゆっくりとした足音。\n外から。ドアに近づいてくる。\nバッテリーが——5%になった。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "ch3_final_choice",
+      "chat_events": [
+        {"delay": 1.0, "user": "ゴーレム999", "msg": "バッテリー！！！", "type": "viewer"},
+        {"delay": 2.0, "user": "みおみお", "msg": "充電して！！充電！！！", "type": "member"},
+        {"delay": 3.5, "user": "夜行列車", "msg": "誰か来てる！！！！！！", "type": "viewer"},
+        {"delay": 5.0, "user": "ぷるりん", "msg": "逃げ場所は！？！？", "type": "viewer"},
+        {"delay": 7.0, "user": "ゴーレム999", "msg": "後ろ！！後ろ！！！", "type": "viewer"},
+        {"delay": 9.0, "user": "夜行列車", "msg": "逃げて逃げてください！！！", "type": "viewer"}
+      ],
+      "effects": {"battery_set": 0.05}
+    },
+    {
+      "id": "ch3_final_choice",
+      "background": "#020208",
+      "location": "霧原村・集会場内　深夜0:30",
+      "narration": "ドアが開いた。\n人影が見える。手に——何かを持っている。\n暗くて顔が見えない。\n…どうする。",
+      "speaker": "しゅっち",
+      "chat_events": [
+        {"delay": 1.0, "user": "みおみお", "msg": "！！！！！！！", "type": "member"},
+        {"delay": 2.0, "user": "ゴーレム999", "msg": "逃げて！！！！！！！！！", "type": "viewer"},
+        {"delay": 3.5, "user": "夜行列車", "msg": "カメラ向けて！！顔撮れるかも！！！", "type": "viewer"},
+        {"delay": 5.0, "user": "ぷるりん", "msg": "証拠を残して！！！", "type": "viewer"}
+      ],
+      "choices": [
+        {"text": "カメラを相手に向ける", "next": "true_01"},
+        {"text": "逃げようとする", "next": "bad_01"}
+      ],
+      "effects": {"battery_set": 0.03}
+    },
+    {
+      "id": "bad_01",
+      "background": "#010101",
+      "location": "霧原村・集会場内　深夜0:31",
+      "narration": "走った。でも足がもつれる。\n暗い。暗すぎる。\nドアを探す。窓を探す。\nバッテリーが——",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "bad_02",
+      "chat_events": [
+        {"delay": 1.5, "user": "ゴーレム999", "msg": "バッテリー1%！！！充電！！", "type": "viewer"},
+        {"delay": 3.0, "user": "みおみお", "msg": "嘘！！切れないで！！！！", "type": "member"},
+        {"delay": 4.5, "user": "夜行列車", "msg": "助けてあげられない…！！", "type": "viewer"},
+        {"delay": 6.0, "user": "依頼主", "msg": "最高のフィナーレを期待してるよ、結衣ちゃん", "type": "owner"},
+        {"delay": 7.5, "user": "ゴーレム999", "msg": "↑誰！？！？！？！？！？！？", "type": "viewer"},
+        {"delay": 9.0, "user": "みおみお", "msg": "やだ！！やだ！！！！", "type": "member"}
+      ],
+      "effects": {"battery_set": 0.01}
+    },
+    {
+      "id": "bad_02",
+      "background": "#000000",
+      "narration": "——",
+      "advance_type": "timed",
+      "advance_delay": 4.5,
+      "advance_next": "bad_end",
+      "chat_events": [
+        {"delay": 0.5, "user": "ゴーレム999", "msg": "配信が！！！", "type": "viewer"},
+        {"delay": 1.5, "user": "みおみお", "msg": "しゅっちさん！！！！！！", "type": "member"},
+        {"delay": 3.0, "user": "夜行列車", "msg": "配信落ちた…？", "type": "viewer"}
+      ],
+      "effects": {"battery_set": 0.0, "flash": "#ffffff", "glitch_count": 10}
+    },
+    {
+      "id": "bad_end",
+      "background": "#000000",
+      "narration": "配信終了\n\n視聴者数：1,247人\n\n——",
+      "chat_events": [],
+      "effects": {"meta_end": "bad"}
+    },
+    {
+      "id": "true_01",
+      "background": "#020208",
+      "location": "霧原村・集会場内　深夜0:31",
+      "narration": "カメラを向けた。\nスマホを相手の顔に向けて——\n懐中電灯アプリで照らした。\n顔が——映った。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "true_02",
+      "chat_events": [
+        {"delay": 1.0, "user": "ゴーレム999", "msg": "顔！！顔撮れてる！！！", "type": "viewer"},
+        {"delay": 2.0, "user": "夜行列車", "msg": "スクショした！！！！！", "type": "viewer"},
+        {"delay": 3.5, "user": "みおみお", "msg": "顔見えた！！！！誰これ！！！！", "type": "member"},
+        {"delay": 5.0, "user": "ゴーレム999", "msg": "スクショスクショ！！拡散するよ！！！！", "type": "viewer"},
+        {"delay": 7.0, "user": "ぷるりん", "msg": "警察に送れ！！！！！！", "type": "viewer"}
+      ],
+      "effects": {"flash": "#ffffff"}
+    },
+    {
+      "id": "true_02",
+      "background": "#020210",
+      "location": "霧原村・集会場内　深夜0:31",
+      "narration": "顔を見た瞬間、思い出した。\nバイト先の常連客。\nいつも静かで、でも——なんとなく気持ち悪かった。\nあの人が、ここにいる。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "true_03",
+      "chat_events": [
+        {"delay": 2.0, "user": "夜行列車", "msg": "知り合い！？！？", "type": "viewer"},
+        {"delay": 3.5, "user": "みおみお", "msg": "バイト先の人！？！？！？！？", "type": "member"},
+        {"delay": 5.0, "user": "ゴーレム999", "msg": "近所の人とか知り合いが一番怖いやつ！！", "type": "viewer"},
+        {"delay": 7.0, "user": "ぷるりん", "msg": "お札くれた人もグルなの！？", "type": "viewer"},
+        {"delay": 9.0, "user": "夜行列車", "msg": "全部最初から仕組まれてたんだ…", "type": "viewer"}
+      ],
+      "effects": {"glitch_count": 3}
+    },
+    {
+      "id": "true_03",
+      "background": "#020210",
+      "location": "霧原村・集会場内　深夜0:32",
+      "narration": "叫んだ。\n「助けてください！警察の人、見てたら来てください！\nここは霧原村の集会場です！この人が——！」\n…コメントが流れてくる。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "true_04",
+      "chat_events": [
+        {"delay": 1.5, "user": "ゴーレム999", "msg": "演技上手すぎｗｗｗ", "type": "viewer"},
+        {"delay": 2.5, "user": "夜行列車", "msg": "リアルすぎて笑えるｗ", "type": "viewer"},
+        {"delay": 3.5, "user": "ぷるりん", "msg": "作り込みがすごいwww", "type": "viewer"},
+        {"delay": 5.0, "user": "みおみお", "msg": "えっ…これ演技じゃないよね？", "type": "member"},
+        {"delay": 6.5, "user": "ゴーレム999", "msg": "↑演技に決まってるじゃんｗｗｗ", "type": "viewer"},
+        {"delay": 8.0, "user": "新規視聴者", "msg": "ホラーコンテンツここまでやるのかwすごいな", "type": "viewer"},
+        {"delay": 10.0, "user": "みおみお", "msg": "しゅっちさん…これ本当に大丈夫？", "type": "member"},
+        {"delay": 12.0, "user": "ゴーレム999", "msg": "でもすごいクオリティ！！バズるわ！！", "type": "viewer"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "true_04",
+      "background": "#020210",
+      "location": "霧原村・集会場内　深夜0:32",
+      "narration": "誰も信じてくれない。\n視聴者には演技に見えている。\nスーパーチャットが届く。\n誰も——本当のことに気づいていない。",
+      "speaker": "しゅっち",
+      "advance_type": "click",
+      "advance_next": "true_05",
+      "chat_events": [
+        {"delay": 1.0, "user": "大口スーパーサポーター", "msg": "臨場感最高！ ¥5000", "type": "superchat"},
+        {"delay": 2.5, "user": "ホラー好き太郎", "msg": "本物みたいなリアクションｗ ¥1000", "type": "superchat"},
+        {"delay": 4.0, "user": "配信ファン", "msg": "これ本当に怖い演出だww ¥500", "type": "superchat"},
+        {"delay": 5.5, "user": "ゴーレム999", "msg": "急に金持ちのスパチャ増えたｗｗ", "type": "viewer"},
+        {"delay": 7.0, "user": "夜行列車", "msg": "VIPっぽい人たち参加してきたな", "type": "viewer"},
+        {"delay": 9.0, "user": "依頼主", "msg": "素晴らしい配信でした。次の子を探しますね", "type": "owner"},
+        {"delay": 11.0, "user": "みおみお", "msg": "えっ次の子って何？？？", "type": "member"},
+        {"delay": 13.0, "user": "ゴーレム999", "msg": "続編告知？演出うまいｗ", "type": "viewer"}
+      ],
+      "effects": {}
+    },
+    {
+      "id": "true_05",
+      "background": "#010108",
+      "narration": "スマホを奪われた。\n画面が横を向く。\n天井。暗い天井。\n最後のコメントが流れる。",
+      "advance_type": "timed",
+      "advance_delay": 14.0,
+      "advance_next": "true_end",
+      "chat_events": [
+        {"delay": 1.5, "user": "みおみお", "msg": "配信が！！！", "type": "member"},
+        {"delay": 3.0, "user": "夜行列車", "msg": "画面が横になった！？", "type": "viewer"},
+        {"delay": 4.5, "user": "ゴーレム999", "msg": "え！？スマホ落とした？！", "type": "viewer"},
+        {"delay": 6.5, "user": "不明なユーザー", "msg": "次は今これを見てる『君』の番だよ。", "type": "owner"},
+        {"delay": 8.0, "user": "ゴーレム999", "msg": "↑え！？誰！？！？！？！？！？", "type": "viewer"},
+        {"delay": 9.5, "user": "夜行列車", "msg": "『君』って…視聴者に言ってる？", "type": "viewer"},
+        {"delay": 11.5, "user": "みおみお", "msg": "こっちを見てる気がする…", "type": "member"}
+      ],
+      "effects": {"battery_set": 0.01, "glitch_count": 5}
+    },
+    {
+      "id": "true_end",
+      "background": "#000000",
+      "narration": "",
+      "chat_events": [],
+      "effects": {"meta_end": "true"}
+    }
+  ]
+}
