@@ -63,6 +63,12 @@ jobs:
           progressive_web_app/enabled=false
           EOF
 
+      - name: Install Japanese fonts
+        run: |
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p assets/fonts
+          find /usr/share/fonts -name "NotoSansCJK-Regular.ttc" | head -1 | xargs -I{} cp {} assets/fonts/NotoSansCJK-Regular.ttc
+
       - name: Web export
         run: |
           mkdir -p web

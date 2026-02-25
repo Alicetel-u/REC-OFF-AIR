@@ -26,6 +26,10 @@ config/run/main_scene="res://scenes/Opening.tscn"
 GameManager="*res://scripts/GameManager.gd"
 ScenarioManager="*res://scripts/ScenarioManager.gd"
 
+[gui]
+
+theme/custom="res://theme.tres"
+
 [display]
 
 window/size/viewport_width=1280
