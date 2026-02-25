@@ -3,7 +3,7 @@ extends Node
 ## ホラーゲーム「REC:OFF-ARE —霧原村の惨劇—」
 ## YouTubeChrome UI を使ったビジュアルノベル形式メインディレクター
 
-# ── レイアウト定数（1280×720） ──────────────────────────────────
+# ── レイアウト定数（1280×720）──────────────────────────────────
 const VW        = 1280
 const VH        = 720
 const TOP_H     = 56
@@ -12,10 +12,18 @@ const VIDEO_BOT = 624   # VH - CTRL_H(32) - ENGAGE_H(64)
 const NARR_H    = 200
 const NARR_Y    = VIDEO_BOT - NARR_H  # 424
 
+const TACHIE_W  = 480
+const TACHIE_H  = 560
+const TACHIE_X  = 40
+const TACHIE_Y  = VIDEO_BOT - TACHIE_H  # 64
+
+const BG_IMAGE_PATH = "res://assets/textures/_8542c43a02.png"
+
 # ── ノード参照 ────────────────────────────────────────────────────
 var _chrome     : YouTubeChrome
 
 var _bg_c       : CanvasLayer
+var _bg_img     : TextureRect
 var _bg_rect    : ColorRect
 
 var _hud_c      : CanvasLayer
@@ -38,6 +46,11 @@ var _fade       : ColorRect
 
 var _meta_c     : CanvasLayer
 var _meta_lbl   : RichTextLabel
+
+var _tachie_c    : CanvasLayer
+var _tachie_rect : TextureRect
+var _tachie_cur  : String = ""
+var _tachie_tw   : Tween  = null
 
 # ── ゲーム状態 ────────────────────────────────────────────────────
 var _beats      : Dictionary = {}
@@ -65,7 +78,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	# バッテリーの微細ドレイン（演出リアリティ用）
+	# バッテリーの微細ドレイン（演出・リアリティ用）
 	if _battery > 0.0 and not _meta_active:
 		_battery = max(0.0, _battery - delta * 0.0003)
 		_update_battery()
@@ -82,10 +95,27 @@ func _build_ui() -> void:
 	_bg_c.layer = 1
 	add_child(_bg_c)
 
+	# 背景画像
+	_bg_img = TextureRect.new()
+	_bg_img.position = Vector2.ZERO
+	_bg_img.size = Vector2(VW, VH)
+	_bg_img.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_bg_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	_bg_img.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if ResourceLoader.exists(BG_IMAGE_PATH):
+		_bg_img.texture = load(BG_IMAGE_PATH) as Texture2D
+	else:
+		var raw := Image.load_from_file(ProjectSettings.globalize_path(BG_IMAGE_PATH))
+		if raw:
+			_bg_img.texture = ImageTexture.create_from_image(raw)
+	_bg_c.add_child(_bg_img)
+
+	# 雰囲気用の暗色オーバーレイ
 	_bg_rect = ColorRect.new()
 	_bg_rect.position = Vector2.ZERO
 	_bg_rect.size = Vector2(VW, VH)
-	_bg_rect.color = Color(0.05, 0.05, 0.08)
+	_bg_rect.color = Color(0.05, 0.05, 0.08, 0.45)
+	_bg_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_bg_c.add_child(_bg_rect)
 
 	# ── Layer 20: YouTubeChrome ──────────────────────────────
@@ -116,6 +146,20 @@ func _build_ui() -> void:
 	_loc_lbl.add_theme_font_size_override("font_size", 12)
 	_loc_lbl.add_theme_color_override("font_color", Color(0.65, 0.65, 0.75, 0.9))
 	_hud_c.add_child(_loc_lbl)
+
+	# ── Layer 24: 立ち絵 ─────────────────────────────────────
+	_tachie_c = CanvasLayer.new()
+	_tachie_c.layer = 24
+	add_child(_tachie_c)
+
+	_tachie_rect = TextureRect.new()
+	_tachie_rect.position = Vector2(TACHIE_X, TACHIE_Y)
+	_tachie_rect.size = Vector2(TACHIE_W, TACHIE_H)
+	_tachie_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_tachie_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	_tachie_rect.modulate.a = 0.0
+	_tachie_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tachie_c.add_child(_tachie_rect)
 
 	# ── Layer 25: 語り欄 ─────────────────────────────────────
 	_narr_c = CanvasLayer.new()
@@ -241,12 +285,18 @@ func _play(beat_id: String) -> void:
 
 	# 背景色
 	var bg_str: String = b.get("background", "#0a0a0a")
-	_bg_rect.color = Color(bg_str)
+	var bg_color := Color(bg_str)
+	bg_color.a = 0.45
+	_bg_rect.color = bg_color
 
 	# 場所ラベル
 	var loc: String = b.get("location", "")
 	_loc_lbl.text = loc
 	_loc_lbl.visible = not loc.is_empty()
+
+	# 立ち絵
+	if b.has("tachie"):
+		_update_tachie(b.get("tachie", ""))
 
 	# 即時エフェクト
 	_apply_effects(b.get("effects", {}))
@@ -258,25 +308,16 @@ func _play(beat_id: String) -> void:
 	_schedule_chats(b.get("chat_events", []), seq)
 
 	# 進行設定
-	var choices: Array = b.get("choices", [])
 	var adv_type: String = b.get("advance_type", "click")
 
-	if choices.size() > 0:
-		var max_delay: float = 0.0
-		for ce: Dictionary in b.get("chat_events", []):
-			max_delay = max(max_delay, float(ce.get("delay", 0.0)))
-		var cb_choices := func():
-			if _beat_seq == seq:
-				_show_choices(choices)
-		get_tree().create_timer(max_delay + 1.5).timeout.connect(cb_choices, CONNECT_ONE_SHOT)
-	elif adv_type == "timed":
+	if adv_type == "timed":
 		var delay: float = float(b.get("advance_delay", 3.0))
 		var nxt: String  = b.get("advance_next", "")
 		var cb_timed := func():
 			if _beat_seq == seq and not nxt.is_empty():
 				_play(nxt)
 		get_tree().create_timer(delay).timeout.connect(cb_timed, CONNECT_ONE_SHOT)
-	# advance_type == "click" はタイプライター完了後に _waiting = true になる
+	# choices / click → タイプライター完了後に _on_narr_done() で処理
 
 
 # ════════════════════════════════════════════════════════════════
@@ -321,7 +362,9 @@ func _tw_skip() -> void:
 
 func _on_narr_done() -> void:
 	var b: Dictionary = _beats.get(_cur, {})
-	if b.get("choices", []).size() > 0:
+	var choices: Array = b.get("choices", [])
+	if choices.size() > 0:
+		_show_choices(choices)
 		return
 	if b.get("advance_type", "click") == "click":
 		_waiting = true
@@ -402,7 +445,7 @@ func _show_choices(choices: Array) -> void:
 		c.queue_free()
 	for ch_data: Dictionary in choices:
 		var btn := Button.new()
-		btn.text = ch_data.get("text", "？")
+		btn.text = ch_data.get("text", "")
 		btn.custom_minimum_size = Vector2(430, 54)
 		btn.size_flags_horizontal = Control.SIZE_FILL
 		_style_btn(btn)
@@ -521,6 +564,43 @@ func _blink_rec() -> void:
 
 
 # ════════════════════════════════════════════════════════════════
+# 立ち絵
+# ════════════════════════════════════════════════════════════════
+
+func _update_tachie(path: String) -> void:
+	if _tachie_tw != null and _tachie_tw.is_valid():
+		_tachie_tw.kill()
+	if path == _tachie_cur:
+		return
+	_tachie_cur = path
+	if path.is_empty():
+		_tachie_tw = create_tween()
+		_tachie_tw.tween_property(_tachie_rect, "modulate:a", 0.0, 0.35)
+	elif _tachie_rect.modulate.a < 0.05:
+		_load_tachie_texture(path)
+		_tachie_tw = create_tween()
+		_tachie_tw.tween_property(_tachie_rect, "modulate:a", 1.0, 0.45)
+	else:
+		_tachie_tw = create_tween()
+		_tachie_tw.tween_property(_tachie_rect, "modulate:a", 0.0, 0.25)
+		_tachie_tw.tween_callback(func(): _load_tachie_texture(path))
+		_tachie_tw.tween_property(_tachie_rect, "modulate:a", 1.0, 0.45)
+
+
+func _load_tachie_texture(path: String) -> void:
+	if not ResourceLoader.exists(path):
+		push_warning("立ち絵が見つかりません: " + path)
+		_tachie_rect.texture = null
+		return
+	var tex: Texture2D = load(path)
+	# バストアップ: 上部45%を切り出して表示
+	var atlas := AtlasTexture.new()
+	atlas.atlas = tex
+	atlas.region = Rect2(0, 0, tex.get_width(), tex.get_height() * 0.45)
+	_tachie_rect.texture = atlas
+
+
+# ════════════════════════════════════════════════════════════════
 # メタエンディング
 # ════════════════════════════════════════════════════════════════
 
@@ -528,8 +608,9 @@ func _trigger_meta(ending: String) -> void:
 	_meta_active = true
 	_waiting     = false
 	_tw_active   = false
+	_update_tachie("")
 
-	# 全 UI を黒くフェード
+	# 全 UI を黒くフェードアウト
 	var tw := create_tween()
 	tw.tween_property(_fade, "color:a", 1.0, 2.5)
 	await tw.finished
@@ -548,7 +629,7 @@ func _play_bad_end() -> void:
 	await get_tree().create_timer(1.5).timeout
 
 	var content := "[center]\n\n\n\n"
-	content += "配信終了\n\n"
+	content += "配信終了\n"
 	content += "[color=#555555]視聴者数：1,247人[/color]\n\n\n\n"
 	content += "[color=#222222]——[/color]\n"
 	content += "[/center]"
@@ -583,15 +664,15 @@ func _play_true_end() -> void:
 
 	await get_tree().create_timer(1.5).timeout
 
-	# 「…あなたが映っている」を徐々に浮かび上がらせる
+	# 「…あなたが映ってる」を徐々に浮かび上がらせる
 	var base := "[center]\n\n\n\n" + final_msg + "\n\n"
-	_meta_lbl.bbcode_text = base + "[color=#111111]…あなたが映っている[/color][/center]"
+	_meta_lbl.bbcode_text = base + "[color=#111111]…あなたが映ってる[/color][/center]"
 
 	await get_tree().create_timer(1.5).timeout
-	_meta_lbl.bbcode_text = base + "[color=#3a3a3a]…あなたが映っている[/color][/center]"
+	_meta_lbl.bbcode_text = base + "[color=#3a3a3a]…あなたが映ってる[/color][/center]"
 
 	await get_tree().create_timer(1.5).timeout
-	_meta_lbl.bbcode_text = base + "[color=#777777]…あなたが映っている[/color][/center]"
+	_meta_lbl.bbcode_text = base + "[color=#777777]…あなたが映ってる[/color][/center]"
 
 	await get_tree().create_timer(3.0).timeout
 	var tw := create_tween()

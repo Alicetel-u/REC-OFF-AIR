@@ -1,0 +1,36 @@
+[gd_scene load_steps=6 format=3 uid="uid://brq6b1cfuv5q0"]
+
+[ext_resource type="Script" path="res://Interaction/Items/PowerCell/power_cell.gd" id="1_pc"]
+[ext_resource type="Script" path="res://Inventory/ItemResource.gd" id="2_item"]
+[ext_resource type="Script" path="res://Inventory/CraftItemResource.gd" id="3_craft"]
+
+[sub_resource type="Resource" id="Resource_pc"]
+script = ExtResource("2_item")
+item_name = "Power Cell"
+texture = null
+quantity = 1
+crafted_items = Array[ExtResource("3_craft")]([])
+description = "カムコーダー用バッテリー"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_pc"]
+radius = 0.08
+height = 0.25
+
+[node name="Power Cell" type="StaticBody3D"]
+collision_layer = 8
+script = ExtResource("1_pc")
+item = SubResource("Resource_pc")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_pc")
+
+[node name="BatteryMesh" type="Node3D" parent="."]
+
+[node name="Body" type="CSGBox3D" parent="BatteryMesh"]
+size = Vector3(0.06, 0.14, 0.035)
+
+[node name="Terminal" type="CSGCylinder3D" parent="BatteryMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+radius = 0.015
+height = 0.02
+sides = 8

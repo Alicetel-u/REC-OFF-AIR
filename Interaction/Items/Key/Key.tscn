@@ -1,0 +1,50 @@
+[gd_scene load_steps=7 format=3 uid="uid://kml8qcwn13ln"]
+
+[ext_resource type="Script" path="res://Interaction/Items/CollectibleItem.gd" id="1_collect"]
+[ext_resource type="Script" path="res://Inventory/CraftItemResource.gd" id="2_craft"]
+[ext_resource type="Script" path="res://Inventory/ItemResource.gd" id="3_item"]
+[ext_resource type="Texture2D" uid="uid://c0bqmyt265x3m" path="res://Interaction/Items/Key/Key.png" id="4_tex"]
+
+[sub_resource type="Resource" id="Resource_key"]
+script = ExtResource("3_item")
+item_name = "Key1"
+texture = ExtResource("4_tex")
+quantity = 1
+crafted_items = Array[ExtResource("2_craft")]([])
+description = "錆びた古い鍵。かすかに振動している。"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_key"]
+radius = 0.075
+height = 0.4
+
+[node name="CollectibleItem" type="StaticBody3D"]
+collision_layer = 8
+script = ExtResource("1_collect")
+item = SubResource("Resource_key")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 0)
+shape = SubResource("CapsuleShape3D_key")
+
+[node name="KeyMesh" type="Node3D" parent="."]
+
+[node name="Shaft" type="CSGCylinder3D" parent="KeyMesh"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.1, 0)
+radius = 0.012
+height = 0.18
+sides = 8
+material_override = null
+
+[node name="Handle" type="CSGCylinder3D" parent="KeyMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23, 0)
+radius = 0.04
+height = 0.01
+sides = 16
+
+[node name="Tooth1" type="CSGBox3D" parent="KeyMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.015, 0.03, 0)
+size = Vector3(0.02, 0.025, 0.01)
+
+[node name="Tooth2" type="CSGBox3D" parent="KeyMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.015, 0.06, 0)
+size = Vector3(0.015, 0.02, 0.01)
