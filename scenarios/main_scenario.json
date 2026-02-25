@@ -1,0 +1,70 @@
+{
+  "scenarios": [
+    {
+      "id": "start_choice",
+      "trigger": { "type": "game_start", "delay": 12.0 },
+      "prompt": "最初にどこを探索する？",
+      "choices": [
+        {
+          "text": "北の機械室へ行く",
+          "streamer_reaction": "agree",
+          "response": "じゃあ北に行ってみますか…怖いけど"
+        },
+        {
+          "text": "中央ホールを調べる",
+          "streamer_reaction": "agree",
+          "response": "まず中央から探していきましょう"
+        },
+        {
+          "text": "すぐ脱出する！",
+          "streamer_reaction": "disagree",
+          "response": "いや…まだアイテムが揃ってないです"
+        }
+      ]
+    },
+    {
+      "id": "ghost_encounter",
+      "trigger": { "type": "ghost_spotted" },
+      "prompt": "どうする！？",
+      "choices": [
+        {
+          "text": "全力で逃げる！",
+          "streamer_reaction": "agree",
+          "response": "逃げますっ！！"
+        },
+        {
+          "text": "カメラで撮る！",
+          "streamer_reaction": "agree",
+          "response": "撮ります！証拠映像！"
+        },
+        {
+          "text": "隠れてやり過ごす",
+          "streamer_reaction": "agree",
+          "response": "…静かにして…息を殺して…"
+        }
+      ]
+    },
+    {
+      "id": "items_half",
+      "trigger": { "type": "items_collected", "count": 3 },
+      "prompt": "あと2本。次はどうする？",
+      "choices": [
+        {
+          "text": "危険エリアに突入する",
+          "streamer_reaction": "agree",
+          "response": "行きます…視聴者さんと一緒なら"
+        },
+        {
+          "text": "慎重に安全ルートを探す",
+          "streamer_reaction": "agree",
+          "response": "慎重にいきましょう。焦らず焦らず"
+        },
+        {
+          "text": "このまま脱出したい",
+          "streamer_reaction": "disagree",
+          "response": "でもまだ2本足りないんですよね…無理です"
+        }
+      ]
+    }
+  ]
+}

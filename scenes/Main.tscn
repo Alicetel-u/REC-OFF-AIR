@@ -1,6 +1,9 @@
-[gd_scene load_steps=15 format=3 uid="uid://ghoststreamer_main"]
+[gd_scene load_steps=18 format=3 uid="uid://ghoststreamer_main"]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/StageGenerator.gd" id="9_stagegen"]
+[ext_resource type="Script" path="res://scripts/YouTubeChrome.gd" id="10_ytchrome"]
+[ext_resource type="Script" path="res://scripts/ScenarioUI.gd" id="11_scenarioui"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/HUD.gd" id="3_hud"]
 [ext_resource type="Shader" path="res://shaders/vhs_effect.gdshader" id="4_shader"]
@@ -94,6 +97,20 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3.5, 12)
 light_color = Color(0.5, 0.30, 0.08, 1)
 light_energy = 0.32
 omni_range = 14.0
+
+; ---- YouTube UI フレーム (layer=20, 最前面) ----
+[node name="YouTubeChrome" type="CanvasLayer" parent="."]
+layer = 20
+script = ExtResource("10_ytchrome")
+
+; ---- 視聴者投票パネル (layer=8) ----
+[node name="ScenarioUI" type="CanvasLayer" parent="."]
+layer = 8
+script = ExtResource("11_scenarioui")
+
+; ---- ステージ生成管理 ----
+[node name="StageGenerator" type="Node" parent="."]
+script = ExtResource("9_stagegen")
 
 ; ---- ステージ ----
 [node name="Stage" parent="." instance=ExtResource("5_stage")]
@@ -190,10 +207,10 @@ mouse_filter = 2
 
 ; 上部バー: REC / タイムコード / バッテリー
 [node name="TopBar" type="HBoxContainer" parent="HUDLayer/HUDRoot"]
-anchor_right = 1.0
+anchor_right = 0.75
 offset_left = 10.0
-offset_top = 8.0
-offset_bottom = 50.0
+offset_top = 52.0
+offset_bottom = 88.0
 theme_override_constants/separation = 14
 
 [node name="RecLabel" type="Label" parent="HUDLayer/HUDRoot/TopBar"]
@@ -217,10 +234,10 @@ theme_override_font_sizes/font_size = 14
 ; 下部バー: CAM / アイテム数 / 日時
 [node name="BottomBar" type="HBoxContainer" parent="HUDLayer/HUDRoot"]
 anchor_top = 1.0
-anchor_right = 1.0
+anchor_right = 0.75
 anchor_bottom = 1.0
 offset_left = 10.0
-offset_top = -40.0
+offset_top = -108.0
 offset_right = -10.0
 theme_override_constants/separation = 12
 
@@ -247,13 +264,15 @@ theme_override_font_sizes/font_size = 13
 
 ; チャットウィンドウ
 [node name="ChatWindow" type="Control" parent="HUDLayer/HUDRoot"]
-anchor_left = 0.70
+anchor_left = 0.75
 anchor_top = 0.0
 anchor_right = 1.0
-anchor_bottom = 0.88
+anchor_bottom = 1.0
 offset_left = 0.0
-offset_top = 55.0
-offset_right = -8.0
+offset_top = 88.0
+offset_right = 0.0
+offset_bottom = -64.0
+visible = false
 mouse_filter = 2
 
 [node name="ViewersLabel" type="Label" parent="HUDLayer/HUDRoot/ChatWindow"]
@@ -263,11 +282,12 @@ text = "● LIVE  143 人視聴中"
 theme_override_colors/font_color = Color(1, 0.28, 0.28, 1)
 theme_override_font_sizes/font_size = 13
 horizontal_alignment = 1
+visible = false
 
 [node name="ScrollContainer" type="ScrollContainer" parent="HUDLayer/HUDRoot/ChatWindow"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 30.0
+offset_top = 0.0
 horizontal_scroll_mode = 0
 
 [node name="ChatVBox" type="VBoxContainer" parent="HUDLayer/HUDRoot/ChatWindow/ScrollContainer"]

@@ -9,8 +9,8 @@ extends Node3D
 @onready var intro_layer  : CanvasLayer     = $IntroLayer
 @onready var intro_root   : Control         = $IntroLayer/IntroRoot
 @onready var intro_text   : RichTextLabel   = $IntroLayer/IntroRoot/IntroText
-@onready var inventory_ui : Control         = $InventoryLayer/InventoryUI
 @onready var stage_gen    : StageGenerator  = $StageGenerator
+@onready var scenario_ui  : ScenarioUI      = $ScenarioUI
 
 var _intro_skip : bool = false
 
@@ -25,9 +25,6 @@ func _ready() -> void:
 
 	# プレイヤー位置をマップ結果に合わせる
 	player.position = result.spawns.player
-
-	# Inventory UI をプレイヤーに接続
-	player.inventory = inventory_ui
 
 	# シグナル接続
 	player.player_moved.connect(_on_player_moved)
@@ -46,8 +43,11 @@ func _ready() -> void:
 	# 出口方向ガイド用の参照をHUDに渡す
 	hud.set_exit_guide_refs($Player/Head/Camcorder, stage_gen.exit_node)
 
-	# カムコーダーの参照をHUDに渡す（バッテリー表示用）
-	hud.set_camcorder_ref($Player/Head/Camcorder)
+	# バッテリーシグナルをHUDに接続
+	hud.set_camcorder_ref(player)
+
+	# YouTube Chrome をHUDに渡してチャットを接続
+	hud.set_chrome($YouTubeChrome as YouTubeChrome)
 
 	await _run_intro()
 
@@ -59,6 +59,10 @@ func _ready() -> void:
 
 	# マップ上でキャラのセリフによる状況説明
 	hud.play_monologue()
+
+	# シナリオシステム接続
+	ScenarioManager.scenario_triggered.connect(_on_scenario_triggered)
+	ScenarioManager.trigger("game_start")
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -125,6 +129,7 @@ func _on_player_moved() -> void:
 
 func _on_ghost_spotted() -> void:
 	hud.trigger_chat_event("ghost_spotted")
+	ScenarioManager.trigger("ghost_spotted")
 
 
 func _on_ghost_lost() -> void:
@@ -147,6 +152,14 @@ func _show_win() -> void:
 	sub_label.text        = "証拠映像を持ち帰った。"
 	overlay_layer.visible = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+
+func _on_scenario_triggered(scenario: Dictionary) -> void:
+	scenario_ui.show_scenario(scenario)
+	scenario_ui.choice_made.connect(
+		func(s: Dictionary, idx: int) -> void: ScenarioManager.resolve(s, idx),
+		CONNECT_ONE_SHOT
+	)
 
 
 func _on_retry_pressed() -> void:

@@ -1,3 +1,6 @@
+# Godot executable (local only)
+Godot_v*.exe
+
 # Godot 4 generated files
 .godot/
 *.uid
@@ -12,6 +15,11 @@ export_presets.cfg
 .mono/
 data_*/
 mono_crash.*.txt
+
+# Build output
+web/
+build/
+GhostStreamer_build.zip
 
 # OS
 .DS_Store

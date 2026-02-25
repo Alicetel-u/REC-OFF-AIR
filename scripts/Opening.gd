@@ -3,18 +3,16 @@ extends Control
 # ── ノード参照 ──
 @onready var glitch_overlay  : ColorRect     = $GlitchOverlay
 @onready var panel_title     : Control       = $PanelTitle
-@onready var press_any_key   : Label         = $PanelTitle/PressAnyKey
 @onready var panel_profile   : Control       = $PanelProfile
 @onready var panel_dm        : Control       = $PanelDM
 @onready var panel_monologue : Control       = $PanelMonologue
 @onready var panel_caption   : Control       = $PanelCaption
-@onready var panel_start     : Control       = $PanelStart
 @onready var panel_map_select: Control       = $PanelMapSelect
+@onready var panel_start     : Control       = $PanelStart
 @onready var profile_text    : RichTextLabel = $PanelProfile/ProfileText
 @onready var dm_text         : RichTextLabel = $PanelDM/DMText
 @onready var monologue_text  : RichTextLabel = $PanelMonologue/MonologueText
 @onready var caption_text    : Label         = $PanelCaption/CaptionText
-@onready var start_button    : Button        = $PanelStart/StartButton
 
 enum Phase { TITLE, PROLOGUE, MAP_SELECT, DONE }
 
@@ -27,12 +25,6 @@ func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	_hide_all_panels()
 	glitch_overlay.color = Color(1, 1, 1, 0)
-	start_button.pressed.connect(_on_start_pressed)
-	# マップ選択ボタンのシグナル接続
-	var btn_haison  := $PanelMapSelect/VBox/BtnHaison  as Button
-	var btn_factory := $PanelMapSelect/VBox/BtnFactory as Button
-	btn_haison.pressed.connect(_on_map_selected.bind(1))   # HAISON WFC
-	btn_factory.pressed.connect(_on_map_selected.bind(0))  # INDUSTRIAL WFC
 	_run_title()
 
 
@@ -70,24 +62,12 @@ func _run_title() -> void:
 	panel_title.modulate.a = 0.0
 	await get_tree().create_timer(0.4).timeout
 	await _fade(panel_title, 1.0, 1.6)
-	_blink_press_any_key()
 	_title_ready = true
-
-
-func _blink_press_any_key() -> void:
-	while _phase == Phase.TITLE:
-		press_any_key.visible = true
-		await get_tree().create_timer(0.75).timeout
-		if _phase != Phase.TITLE:
-			return
-		press_any_key.visible = false
-		await get_tree().create_timer(0.45).timeout
 
 
 func _advance_from_title() -> void:
 	_title_ready = false             # 二重起動防止
 	_phase       = Phase.PROLOGUE
-	press_any_key.visible = false
 	await _fade(panel_title, 0.0, 1.1)
 	panel_title.visible = false
 	await get_tree().create_timer(0.3).timeout
@@ -223,25 +203,9 @@ func _caption_warning_glitch() -> void:
 
 
 func _show_map_select() -> void:
-	_phase = Phase.MAP_SELECT
-	_hide_all_panels()
-	panel_map_select.visible    = true
-	panel_map_select.modulate.a = 0.0
-	await _fade(panel_map_select, 1.0, 0.8)
-
-
-func _on_map_selected(map_type: int) -> void:
-	GameManager.selected_map_type = map_type
 	_phase = Phase.DONE
-	panel_map_select.visible = false
-	panel_start.visible      = true
-	panel_start.modulate.a   = 0.0
-	await _fade(panel_start, 1.0, 0.6)
-
-
-func _on_start_pressed() -> void:
-	_phase   = Phase.DONE
-	_skipped = true
+	GameManager.selected_map_type = 0  # 廃工場固定
+	_hide_all_panels()
 	var tw := create_tween()
 	tw.tween_property(self, "modulate:a", 0.0, 1.3)
 	await tw.finished

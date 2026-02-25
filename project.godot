@@ -24,6 +24,7 @@ config/run/main_scene="res://scenes/Opening.tscn"
 [autoload]
 
 GameManager="*res://scripts/GameManager.gd"
+ScenarioManager="*res://scripts/ScenarioManager.gd"
 
 [display]
 
