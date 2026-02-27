@@ -21,10 +21,11 @@ fov = 75.0
 near = 0.05
 
 [node name="Flashlight" type="SpotLight3D" parent="Head/Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3)
-visible = true
-light_color = Color(1, 0.98, 0.93, 1)
-light_energy = 3.8
-spot_range = 22.0
-spot_angle = 38.0
-spot_angle_attenuation = 0.5
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0.1)
+visible = false
+light_color = Color(1, 0.97, 0.88, 1)
+light_energy = 8.0
+spot_range = 30.0
+spot_angle = 40.0
+spot_angle_attenuation = 0.3
+shadow_enabled = true

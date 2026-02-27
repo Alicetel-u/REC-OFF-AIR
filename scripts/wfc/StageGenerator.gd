@@ -1,4 +1,4 @@
-class_name StageGenerator
+class_name WFCStageGenerator
 extends Node3D
 
 ## マップジオメトリ＋オブジェクト生成器

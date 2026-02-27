@@ -14,18 +14,31 @@ extends Control
 @onready var monologue_text  : RichTextLabel = $PanelMonologue/MonologueText
 @onready var caption_text    : Label         = $PanelCaption/CaptionText
 
-enum Phase { TITLE, PROLOGUE, MAP_SELECT, DONE }
+enum Phase { VIDEO, TITLE, PROLOGUE, MAP_SELECT, DONE }
 
-var _phase       : Phase = Phase.TITLE
-var _title_ready : bool  = false
-var _skipped     : bool  = false
+var _phase         : Phase = Phase.VIDEO
+var _title_ready   : bool  = false
+var _skipped       : bool  = false
+var _video_player  : VideoStreamPlayer = null
+var _video_started : bool  = false
 
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	_hide_all_panels()
 	glitch_overlay.color = Color(1, 1, 1, 0)
+	_phase = Phase.TITLE
 	_run_title()
+
+
+func _process(_delta: float) -> void:
+	if _phase != Phase.VIDEO or _video_player == null or not is_instance_valid(_video_player):
+		return
+	if not _video_started and _video_player.is_playing():
+		_video_started = true
+	elif _video_started and not _video_player.is_playing():
+		_phase = Phase.PROLOGUE          # ← 先にフェーズ変更して重複防止
+		_on_video_finished()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -35,6 +48,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	match _phase:
+		Phase.VIDEO:
+			_skip_video()
 		Phase.TITLE:
 			if _title_ready:
 				_advance_from_title()
@@ -54,6 +69,50 @@ func _hide_all_panels() -> void:
 
 
 # ──────────────────────────────────────────────
+# オープニング動画
+# ──────────────────────────────────────────────
+
+func _play_video() -> void:
+	const VIDEO_PATH := "res://assets/video/opm.ogv"
+	if not ResourceLoader.exists(VIDEO_PATH):
+		_phase = Phase.TITLE
+		_run_title()
+		return
+
+	_video_player = VideoStreamPlayer.new()
+	_video_player.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_video_player.expand = true
+	_video_player.stream = load(VIDEO_PATH)
+	add_child(_video_player)
+	_video_player.play()
+	_video_started = false
+
+
+func _on_video_finished() -> void:
+	_video_started = false
+	_cleanup_video()
+	_phase = Phase.PROLOGUE
+	await get_tree().create_timer(0.3).timeout
+	_run_sequence()
+
+
+func _skip_video() -> void:
+	if _phase != Phase.VIDEO:
+		return                            # 既にスキップ済み
+	_phase = Phase.PROLOGUE               # 先にフェーズ変更して _process 重複防止
+	if _video_player and is_instance_valid(_video_player):
+		_video_player.stop()
+	_cleanup_video()
+	_run_sequence()
+
+
+func _cleanup_video() -> void:
+	if _video_player and is_instance_valid(_video_player):
+		_video_player.queue_free()
+	_video_player = null
+
+
+# ──────────────────────────────────────────────
 # タイトル画面
 # ──────────────────────────────────────────────
 
@@ -66,12 +125,12 @@ func _run_title() -> void:
 
 
 func _advance_from_title() -> void:
-	_title_ready = false             # 二重起動防止
-	_phase       = Phase.PROLOGUE
+	_title_ready = false
+	_phase       = Phase.VIDEO
 	await _fade(panel_title, 0.0, 1.1)
 	panel_title.visible = false
-	await get_tree().create_timer(0.3).timeout
-	_run_sequence()
+	await get_tree().create_timer(0.1).timeout
+	_play_video()
 
 
 # ──────────────────────────────────────────────
@@ -210,7 +269,7 @@ func _show_map_select() -> void:
 	var tw := create_tween()
 	tw.tween_property(self, "modulate:a", 0.0, 1.3)
 	await tw.finished
-	get_tree().change_scene_to_file("res://scenes/GameScene.tscn")
+	get_tree().change_scene_to_file("res://scenes/Main.tscn")
 
 
 # ──────────────────────────────────────────────

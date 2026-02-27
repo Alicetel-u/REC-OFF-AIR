@@ -1,4 +1,5 @@
 extends CharacterBody3D
+class_name Ghost
 
 ## 幽霊AI: PATROL → ALERT → CHASE → CATCH の状態遷移
 

@@ -1,7 +1,14 @@
 extends Node3D
 
-@onready var player       : CharacterBody3D = $Player
-@onready var hud          : Control         = $HUDLayer/HUDRoot
+# ── 弾幕レイヤー定数（YouTubeChrome と同じ座標系）──────────────
+const _DANK_VIDEO_W   = 960
+const _DANK_TOP_H     = 56
+const _DANK_VIDEO_BOT = 624
+const _DANK_ROWS      = 7
+const _DANK_ROW_H     = 34
+
+@onready var player       : Player          = $Player
+@onready var hud          : HUD             = $HUDLayer/HUDRoot
 @onready var overlay_layer: CanvasLayer     = $OverlayLayer
 @onready var caught_label : Label           = $OverlayLayer/Overlay/VBox/CaughtLabel
 @onready var win_label    : Label           = $OverlayLayer/Overlay/VBox/WinLabel
@@ -12,7 +19,9 @@ extends Node3D
 @onready var stage_gen    : StageGenerator  = $StageGenerator
 @onready var scenario_ui  : ScenarioUI      = $ScenarioUI
 
-var _intro_skip : bool = false
+var _intro_skip   : bool    = false
+var _danmaku_clip : Control = null
+var _danmaku_row  : int     = 0
 
 
 func _ready() -> void:
@@ -33,7 +42,7 @@ func _ready() -> void:
 	GameManager.player_won.connect(_show_win)
 
 	# ゴーストをイントロ中は停止
-	for ghost in get_tree().get_nodes_in_group("ghost"):
+	for ghost: Ghost in get_tree().get_nodes_in_group("ghost"):
 		ghost.ghost_spotted_player.connect(_on_ghost_spotted)
 		ghost.ghost_lost_player.connect(_on_ghost_lost)
 		ghost.process_mode = Node.PROCESS_MODE_DISABLED
@@ -41,7 +50,7 @@ func _ready() -> void:
 	overlay_layer.visible = false
 
 	# 出口方向ガイド用の参照をHUDに渡す
-	hud.set_exit_guide_refs($Player/Head/Camcorder, stage_gen.exit_node)
+	hud.set_exit_guide_refs($Player/Head/Camera3D, stage_gen.exit_node)
 
 	# バッテリーシグナルをHUDに接続
 	hud.set_camcorder_ref(player)
@@ -49,12 +58,20 @@ func _ready() -> void:
 	# YouTube Chrome をHUDに渡してチャットを接続
 	hud.set_chrome($YouTubeChrome as YouTubeChrome)
 
+	# 弾幕レイヤーを構築してHUDに接続
+	_setup_danmaku()
+	hud.danmaku_func = Callable(self, "_spawn_danmaku")
+
+	# Inventory シングルトンに参照を渡す
+	Inventory.player = player
+	Inventory.inventory_ui = $InventoryLayer/InventoryUI
+
 	await _run_intro()
 
 	# プレイヤー＆ゴースト再開
 	player.process_mode = Node.PROCESS_MODE_INHERIT
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	for ghost in get_tree().get_nodes_in_group("ghost"):
+	for ghost: Ghost in get_tree().get_nodes_in_group("ghost"):
 		ghost.process_mode = Node.PROCESS_MODE_INHERIT
 
 	# マップ上でキャラのセリフによる状況説明
@@ -138,6 +155,7 @@ func _on_ghost_lost() -> void:
 
 func _show_caught() -> void:
 	await get_tree().create_timer(1.4).timeout
+	_close_inventory()
 	caught_label.visible  = true
 	win_label.visible     = false
 	sub_label.text        = "カメラの電源が切れた..."
@@ -147,11 +165,18 @@ func _show_caught() -> void:
 
 func _show_win() -> void:
 	await get_tree().create_timer(0.6).timeout
+	_close_inventory()
 	caught_label.visible  = false
 	win_label.visible     = true
 	sub_label.text        = "証拠映像を持ち帰った。"
 	overlay_layer.visible = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+
+func _close_inventory() -> void:
+	var inv_ui = $InventoryLayer/InventoryUI
+	if inv_ui and inv_ui.is_open():
+		inv_ui.close_inventory()
 
 
 func _on_scenario_triggered(scenario: Dictionary) -> void:
@@ -164,3 +189,63 @@ func _on_scenario_triggered(scenario: Dictionary) -> void:
 
 func _on_retry_pressed() -> void:
 	GameManager.restart()
+
+
+# ════════════════════════════════════════════════════════════════
+# 弾幕コメント（ニコニコ風・動画エリアにクリップ）
+# ════════════════════════════════════════════════════════════════
+
+func _setup_danmaku() -> void:
+	var dank_c := CanvasLayer.new()
+	dank_c.layer = 15  # HUD(2)より上、YouTubeChrome(20)より下
+	add_child(dank_c)
+
+	var dank_cont := SubViewportContainer.new()
+	dank_cont.position = Vector2(0, _DANK_TOP_H)
+	dank_cont.size = Vector2(_DANK_VIDEO_W, _DANK_VIDEO_BOT - _DANK_TOP_H)
+	dank_cont.stretch = true
+	dank_cont.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dank_c.add_child(dank_cont)
+
+	var dank_sv := SubViewport.new()
+	dank_sv.size = Vector2i(_DANK_VIDEO_W, int(_DANK_VIDEO_BOT - _DANK_TOP_H))
+	dank_sv.transparent_bg = true
+	dank_sv.disable_3d = true
+	dank_sv.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	dank_cont.add_child(dank_sv)
+
+	_danmaku_clip = Control.new()
+	_danmaku_clip.size = Vector2(_DANK_VIDEO_W, _DANK_VIDEO_BOT - _DANK_TOP_H)
+	_danmaku_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dank_sv.add_child(_danmaku_clip)
+
+
+func _spawn_danmaku(msg: String, utype: String) -> void:
+	if not is_instance_valid(_danmaku_clip):
+		return
+
+	var lbl := Label.new()
+	lbl.text = msg
+	lbl.add_theme_font_size_override("font_size", 19)
+	lbl.add_theme_constant_override("shadow_offset_x", 1)
+	lbl.add_theme_constant_override("shadow_offset_y", 1)
+	lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.88))
+
+	var col := Color(1.0, 1.0, 1.0, 0.86)
+	match utype:
+		"member":    col = Color(0.35, 1.0,  0.55, 0.92)
+		"moderator": col = Color(0.55, 0.82, 1.0,  0.92)
+		"owner":     col = Color(1.0,  0.85, 0.2,  0.95)
+	lbl.add_theme_color_override("font_color", col)
+
+	var row := _danmaku_row % _DANK_ROWS
+	_danmaku_row += 1
+	lbl.position = Vector2(_DANK_VIDEO_W + 4.0, 8.0 + row * _DANK_ROW_H)
+	_danmaku_clip.add_child(lbl)
+
+	await get_tree().process_frame
+	var travel := _DANK_VIDEO_W + lbl.size.x + 20.0
+	var speed  := randf_range(130.0, 185.0)
+	var tw := create_tween()
+	tw.tween_property(lbl, "position:x", -lbl.size.x - 20.0, travel / speed)
+	tw.tween_callback(lbl.queue_free)

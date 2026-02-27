@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://ghoststreamer_main"]
+[gd_scene load_steps=19 format=3 uid="uid://ghoststreamer_main"]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/StageGenerator.gd" id="9_stagegen"]
@@ -11,24 +11,22 @@
 [ext_resource type="PackedScene" path="res://scenes/Ghost.tscn" id="6_ghost"]
 [ext_resource type="PackedScene" path="res://scenes/Item.tscn" id="7_item"]
 [ext_resource type="Script" path="res://scripts/Exit.gd" id="8_exit"]
+[ext_resource type="PackedScene" path="res://Inventory/UI/Inventory.tscn" id="12_inventory"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
-background_color = Color(0.03, 0.03, 0.05, 1)
+background_color = Color(0.3, 0.35, 0.5, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.12, 0.12, 0.18, 1)
-ambient_light_energy = 0.42
-fog_enabled = true
-fog_light_color = Color(0.02, 0.02, 0.06, 1)
-fog_light_energy = 0.3
-fog_density = 0.005
+ambient_light_color = Color(1.0, 1.0, 1.0, 1)
+ambient_light_energy = 3.0
+fog_enabled = false
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
 shader = ExtResource("4_shader")
-shader_parameter/scanline_intensity = 0.08
-shader_parameter/noise_strength = 0.022
-shader_parameter/vignette_power = 0.65
-shader_parameter/chroma_offset = 0.002
+shader_parameter/scanline_intensity = 0.04
+shader_parameter/noise_strength = 0.015
+shader_parameter/vignette_power = 0.15
+shader_parameter/chroma_offset = 0.001
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_exit"]
 size = Vector3(3.0, 3.0, 2.0)
@@ -43,9 +41,9 @@ environment = SubResource("Environment_1")
 ; 薄明かり (廃工場に差し込む僅かな月光)
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866, -0.35, 0.354, 0, 0.71, 0.7, -0.5, -0.609, 0.612, 0, 10, 0)
-light_color = Color(0.4, 0.42, 0.6, 1)
-light_energy = 0.12
-shadow_enabled = true
+light_color = Color(1.0, 1.0, 1.0, 1)
+light_energy = 2.0
+shadow_enabled = false
 
 ; ━━ エリア照明 ━━
 
@@ -186,8 +184,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-; VHSシェーダーオーバーレイ
+; VHSシェーダーオーバーレイ（一時的に無効化）
 [node name="VHSOverlay" type="ColorRect" parent="HUDLayer/HUDRoot"]
+visible = false
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
@@ -333,6 +332,13 @@ theme_override_font_sizes/font_size = 13
 horizontal_alignment = 1
 vertical_alignment = 1
 mouse_filter = 2
+
+; ---- インベントリ UI (layer=9) ----
+[node name="InventoryLayer" type="CanvasLayer" parent="."]
+layer = 9
+visible = false
+
+[node name="InventoryUI" parent="InventoryLayer" instance=ExtResource("12_inventory")]
 
 ; ==== ゲームオーバー / クリアオーバーレイ (layer=10) ====
 [node name="OverlayLayer" type="CanvasLayer" parent="."]

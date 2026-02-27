@@ -1,4 +1,5 @@
 extends Control
+class_name HUD
 
 @onready var rec_label     : Label    = $TopBar/RecLabel
 @onready var timecode_label: Label    = $TopBar/TimecodeLabel
@@ -14,6 +15,7 @@ var idle_chat_t : float = 0.0
 var _chat_next  : float = 0.0
 
 var _chrome: YouTubeChrome = null
+var danmaku_func: Callable = Callable()
 
 # ユーザーとコメントのデータ
 const CHAT_LINES: Array[String] = [
@@ -168,3 +170,5 @@ func _add_chat(msg: String, user: String = "", user_type: String = "") -> void:
 
 	if is_instance_valid(_chrome):
 		_chrome.add_message(msg, user, user_type)
+	if danmaku_func.is_valid():
+		danmaku_func.call(msg, user_type)

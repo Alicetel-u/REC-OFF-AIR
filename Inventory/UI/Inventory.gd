@@ -15,13 +15,15 @@ var slots = []
 var selected_slot 
 var used_slots = {}
 
+var _inventory_layer: CanvasLayer
+
 func _ready():
 	Inventory.add_new_item.connect(on_new_item_collected)
 	Inventory.update_item.connect(on_item_updated)
 	Inventory.item_removed.connect(reload_items)
 	Inventory.unselect_item.connect(unselect_item)
-	container.visible = false
-	selected_item_texture.visible = true
+	# 親の CanvasLayer を取得して開閉制御に使う
+	_inventory_layer = get_parent() as CanvasLayer
 	title_label.text = ""
 	description_label.text = ""
 	var slots_group = get_tree().get_nodes_in_group("slots")
@@ -30,7 +32,7 @@ func _ready():
 		var slot = slots_group[index]
 		slots.append(slot)
 		slot.index = index
-		
+
 		var params = slots[index]
 
 		slot.button.connect("pressed", Callable(self, "on_slot_pressed").bind(params))
@@ -140,7 +142,7 @@ func _on_use_item_button_pressed():
 		item.use_item_function.call()
 		if item.quantity == 0:
 			use_item_button.disabled = true
-			Inventory.player.unset_selected_item()
+			Inventory.unselect_item.emit()
 		return
 
 
@@ -149,10 +151,31 @@ func _on_drop_item_button_pressed():
 	
 
 		
+func is_open() -> bool:
+	return _inventory_layer and _inventory_layer.visible
+
+func open_inventory() -> void:
+	if not _inventory_layer:
+		return
+	_inventory_layer.visible = true
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+func close_inventory() -> void:
+	if not _inventory_layer:
+		return
+	_inventory_layer.visible = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
 func _input(event):
 	if event.is_action_pressed("ToggleInventory"):
-		container.visible = not container.visible
-		selected_item_texture.visible = not selected_item_texture.visible
+		# マウスがキャプチャされていない（イントロ・ゲームオーバー中）かつ
+		# インベントリが閉じている場合は無視
+		if Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED and not is_open():
+			return
+		if is_open():
+			close_inventory()
+		else:
+			open_inventory()
 		
 
 func get_selected_item():
