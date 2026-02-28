@@ -1,6 +1,5 @@
 shader_type canvas_item;
 
-uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mip;
 uniform float scanline_intensity : hint_range(0.0, 1.0) = 0.10;
 uniform float noise_strength     : hint_range(0.0, 0.15) = 0.035;
 uniform float vignette_power     : hint_range(0.0, 2.0) = 0.9;
@@ -14,9 +13,9 @@ void fragment() {
 	vec2 uv = SCREEN_UV;
 
 	// --- Chromatic aberration (RGB split) ---
-	float cr = texture(SCREEN_TEXTURE, uv + vec2(chroma_offset,  0.0)).r;
-	float cg = texture(SCREEN_TEXTURE, uv).g;
-	float cb = texture(SCREEN_TEXTURE, uv - vec2(chroma_offset,  0.0)).b;
+	float cr = textureLod(SCREEN_TEXTURE, uv + vec2(chroma_offset,  0.0), 0.0).r;
+	float cg = textureLod(SCREEN_TEXTURE, uv, 0.0).g;
+	float cb = textureLod(SCREEN_TEXTURE, uv - vec2(chroma_offset,  0.0), 0.0).b;
 	vec3 col = vec3(cr, cg, cb);
 
 	// --- Scanlines ---

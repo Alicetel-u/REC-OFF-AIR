@@ -32,6 +32,7 @@ func _ready() -> void:
 	var result: Dictionary = stage_gen.generate(GameManager.selected_map_type)
 	GameManager.items_total = stage_gen.item_count
 
+
 	# プレイヤー位置をマップ結果に合わせる
 	player.position = result.spawns.player
 
@@ -249,3 +250,5 @@ func _spawn_danmaku(msg: String, utype: String) -> void:
 	var tw := create_tween()
 	tw.tween_property(lbl, "position:x", -lbl.size.x - 20.0, travel / speed)
 	tw.tween_callback(lbl.queue_free)
+
+

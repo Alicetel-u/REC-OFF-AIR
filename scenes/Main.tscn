@@ -18,7 +18,7 @@ background_mode = 1
 background_color = Color(0.3, 0.35, 0.5, 1)
 ambient_light_source = 2
 ambient_light_color = Color(1.0, 1.0, 1.0, 1)
-ambient_light_energy = 3.0
+ambient_light_energy = 0.4
 fog_enabled = false
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
@@ -42,7 +42,7 @@ environment = SubResource("Environment_1")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866, -0.35, 0.354, 0, 0.71, 0.7, -0.5, -0.609, 0.612, 0, 10, 0)
 light_color = Color(1.0, 1.0, 1.0, 1)
-light_energy = 2.0
+light_energy = 0.3
 shadow_enabled = false
 
 ; ━━ エリア照明 ━━
