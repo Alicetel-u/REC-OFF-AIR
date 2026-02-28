@@ -20,10 +20,13 @@ const SWAY_MOVE_MULT := 2.5    # 移動時の揺れ倍率
 @onready var flashlight : SpotLight3D = $Head/Camera3D/Flashlight
 
 var bob_t        : float = 0.0
-var flashlight_on: bool  = false
+var flashlight_on: bool  = true
 var _prev_moving : bool  = false
 var battery      : float = 1.0   # 0.0 〜 1.0
 var _sway_t      : float = 0.0   # 手ブレ用タイマー
+var _screenshot_timer : float = 0.0
+var _screenshot_taken : bool  = false
+const SCREENSHOT_DELAY := 3.0   # ゲーム開始後3秒でスクショ
 
 signal player_moved
 signal flashlight_toggled(on: bool)
@@ -95,6 +98,7 @@ func _physics_process(delta: float) -> void:
 
 	_do_camera_bob(delta, now_moving)
 	_do_flashlight_sway(delta, now_moving)
+	_auto_screenshot(delta)
 
 
 func _update_battery(delta: float) -> void:
@@ -140,3 +144,16 @@ func _do_flashlight_sway(delta: float, moving: bool) -> void:
 
 	var target_rot := Vector3(sway_x, sway_y, 0.0)
 	flashlight.rotation = flashlight.rotation.lerp(target_rot, delta * 6.0)
+
+
+func _auto_screenshot(delta: float) -> void:
+	if _screenshot_taken:
+		return
+	_screenshot_timer += delta
+	if _screenshot_timer >= SCREENSHOT_DELAY:
+		_screenshot_taken = true
+		var img := get_viewport().get_texture().get_image()
+		var home := OS.get_environment("USERPROFILE")
+		var path := home + "/Downloads/ghost_streamer_debug.png"
+		img.save_png(path)
+		print("[AutoScreenshot] Saved to: ", path)
