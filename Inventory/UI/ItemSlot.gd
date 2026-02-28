@@ -2,17 +2,19 @@ extends ColorRect
 
 class_name InventorySlot
 
+const ItemResourceScript := preload("res://Inventory/ItemResource.gd")
+
 @onready var button = $Slot
 @onready var quantity_label = $Slot/QuantityLabel
 
-var item: ItemResource
+var item: Resource
 var selected: bool = false
 var index: int
 var empty: bool = true
 
-func set_item(new_item: ItemResource):
+func set_item(new_item: Resource):
 	empty = false
-	item = ItemResource.create_new_item(new_item)
+	item = ItemResourceScript.create_new_item(new_item)
 	button.texture_normal = new_item.texture
 	quantity_label.text = str(new_item.quantity)
 

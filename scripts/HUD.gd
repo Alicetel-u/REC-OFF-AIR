@@ -14,7 +14,7 @@ var scare_t     : float = 0.0
 var idle_chat_t : float = 0.0
 var _chat_next  : float = 0.0
 
-var _chrome: YouTubeChrome = null
+var _chrome: CanvasLayer = null
 var danmaku_func: Callable = Callable()
 
 # ユーザーとコメントのデータ
@@ -44,7 +44,7 @@ func _ready() -> void:
 	_update_item_label(0)
 
 
-func set_chrome(chrome: YouTubeChrome) -> void:
+func set_chrome(chrome: CanvasLayer) -> void:
 	_chrome = chrome
 	# 最初のウェルカムチャット
 	_add_chat("配信始まったー！", "視聴者A")
@@ -147,8 +147,13 @@ func set_camcorder_ref(camcorder: Node) -> void:
 
 
 func play_monologue() -> void:
-	_add_chat("ここが…例の廃工場か", "しゅっち", "owner")
-	_add_chat("VHSテープを全部回収して脱出しよう", "しゅっち", "owner")
+	var chapter := GameManager.current_chapter
+	if chapter and chapter.monologue_lines.size() > 0:
+		for line: String in chapter.monologue_lines:
+			_add_chat(line, "しゅっち", "owner")
+	else:
+		_add_chat("ここが…例の場所か", "しゅっち", "owner")
+		_add_chat("VHSテープを全部回収して脱出しよう", "しゅっち", "owner")
 
 
 func _update_item_label(count: int) -> void:

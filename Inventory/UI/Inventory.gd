@@ -1,5 +1,8 @@
 extends CenterContainer
 
+const ItemResourceScript := preload("res://Inventory/ItemResource.gd")
+const CraftItemPanelScript := preload("res://Inventory/UI/CraftItemPanel.gd")
+
 @onready var use_item_button: Button= $MarginContainer/FlowContainer/MarginContainer/MarginContainer/VBoxContainer/UseItemButton
 @onready var drop_button: Button = $MarginContainer/FlowContainer/MarginContainer/MarginContainer/VBoxContainer/DropItemContainer/DropItemButton
 @onready var drop_spin:SpinBox = $MarginContainer/FlowContainer/MarginContainer/MarginContainer/VBoxContainer/DropItemContainer/DropSpinBox
@@ -60,13 +63,13 @@ func clear_ui():
 func unselect_item():
 	if selected_slot:
 		unselect(selected_slot)
-func on_item_updated(item: ItemResource):
+func on_item_updated(item: Resource):
 	var slot = used_slots.get(item.item_name)
 	slot.set_item(item)
 	return
 	
 			
-func on_new_item_collected(item: ItemResource):
+func on_new_item_collected(item: Resource):
 	for slot in slots:
 		if slot.empty:
 			slot.set_item(item)
@@ -117,9 +120,9 @@ func on_slot_pressed(slot):
 		
 	toggle_use_item_button()
 
-func create_craft_items(item: ItemResource):
+func create_craft_items(item: Resource):
 	for i in item.crafted_items:
-		var craft_panel = CraftItemPanel.create(i)
+		var craft_panel = CraftItemPanelScript.create(i)
 		craft_container.add_child(craft_panel)
 		
 func clear_craft_items():

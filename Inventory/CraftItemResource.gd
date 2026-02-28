@@ -1,8 +1,8 @@
-extends ItemResource
+extends "res://Inventory/ItemResource.gd"
 
 class_name CraftItem
 
-@export var itemsNeeded: Array[ItemResource]
+@export var itemsNeeded: Array[Resource]
 
-func _init(p_itemsNeeded=[ItemResource.new()] as Array[ItemResource]):
+func _init(p_itemsNeeded=[] as Array[Resource]):
 	itemsNeeded = p_itemsNeeded

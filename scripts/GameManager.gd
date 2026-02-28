@@ -8,15 +8,38 @@ var state      : State = State.PLAYING
 var items_found: int   = 0
 var items_total: int   = 5
 
-## 選択されたマップ種別
-## 0 = INDUSTRIAL (廃工場・WFC生成)
-## 1 = HAISON     (廃村・WFC生成)
-## Opening.gd でセットされ、Main.gd が使用する
-var selected_map_type: int = 1  # デフォルト: HAISON
+## ── チャプターシステム ──
+const ChapterDataScript := preload("res://scripts/ChapterData.gd")
+var current_chapter: Resource = null
+var chapter_index: int = 0
+
+var chapter_order: Array[String] = [
+	"res://chapters/ch01_haison_souko.tres",
+]
+
+## 後方互換用
+var selected_map_type: int:
+	get: return 0
 
 signal item_collected(count: int, total: int)
 signal player_caught
 signal player_won
+
+
+func load_chapter(index: int) -> void:
+	chapter_index = index
+	if index < chapter_order.size():
+		current_chapter = load(chapter_order[index])
+	else:
+		push_error("Chapter index %d out of range" % index)
+
+
+func advance_chapter() -> bool:
+	if chapter_index + 1 < chapter_order.size():
+		chapter_index += 1
+		load_chapter(chapter_index)
+		return true
+	return false
 
 
 func collect_item() -> void:

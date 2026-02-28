@@ -298,7 +298,7 @@ func _caption_warning_glitch() -> void:
 func _show_map_select() -> void:
 	_phase = Phase.DONE
 	_remove_skip_button()
-	GameManager.selected_map_type = 0  # 廃工場固定
+	GameManager.load_chapter(0)  # 最初のチャプターをロード
 	_hide_all_panels()
 	var tw := create_tween()
 	tw.tween_property(self, "modulate:a", 0.0, 1.3)

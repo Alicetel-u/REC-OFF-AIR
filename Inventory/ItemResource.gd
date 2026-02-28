@@ -6,15 +6,16 @@ class_name ItemResource
 @export var texture: CompressedTexture2D
 @export var mesh: Mesh
 @export var quantity: int = 0
-@export var crafted_items: Array[CraftItem]
+@export var crafted_items: Array[Resource]
 @export_multiline var description: String
 
 var use_item_function: Callable
 
 signal use_item
 
-static func create_new_item(item: ItemResource):
-	var new_item: ItemResource = ItemResource.new()
+static func create_new_item(item: Resource):
+	var script = load("res://Inventory/ItemResource.gd")
+	var new_item = script.new()
 	new_item.item_name = item.item_name
 	new_item.texture = item.texture
 	new_item.quantity = item.quantity

@@ -1,14 +1,14 @@
 extends Node3D
 
 # ── 弾幕レイヤー定数（YouTubeChrome と同じ座標系）──────────────
-const _DANK_VIDEO_W   = 960
-const _DANK_TOP_H     = 56
-const _DANK_VIDEO_BOT = 624
+const _DANK_VIDEO_W   = 940
+const _DANK_TOP_H     = 48
+const _DANK_VIDEO_BOT = 612
 const _DANK_ROWS      = 7
 const _DANK_ROW_H     = 34
 
-@onready var player       : Player          = $Player
-@onready var hud          : HUD             = $HUDLayer/HUDRoot
+@onready var player       : CharacterBody3D = $Player
+@onready var hud          : Control         = $HUDLayer/HUDRoot
 @onready var overlay_layer: CanvasLayer     = $OverlayLayer
 @onready var caught_label : Label           = $OverlayLayer/Overlay/VBox/CaughtLabel
 @onready var win_label    : Label           = $OverlayLayer/Overlay/VBox/WinLabel
@@ -16,8 +16,8 @@ const _DANK_ROW_H     = 34
 @onready var intro_layer  : CanvasLayer     = $IntroLayer
 @onready var intro_root   : Control         = $IntroLayer/IntroRoot
 @onready var intro_text   : RichTextLabel   = $IntroLayer/IntroRoot/IntroText
-@onready var stage_gen    : StageGenerator  = $StageGenerator
-@onready var scenario_ui  : ScenarioUI      = $ScenarioUI
+@onready var stage_gen    : Node            = $StageGenerator
+@onready var scenario_ui  : CanvasLayer     = $ScenarioUI
 
 var _intro_skip   : bool    = false
 var _danmaku_clip : Control = null
@@ -29,12 +29,21 @@ func _ready() -> void:
 	player.process_mode = Node.PROCESS_MODE_DISABLED
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-	var result: Dictionary = stage_gen.generate(GameManager.selected_map_type)
+	# チャプターデータからステージを動的生成
+	var chapter := GameManager.current_chapter
+	if chapter == null:
+		# フォールバック: チャプター未ロード時はデフォルトをロード
+		GameManager.load_chapter(0)
+		chapter = GameManager.current_chapter
+
+	var result: Dictionary = stage_gen.generate(chapter)
 	GameManager.items_total = stage_gen.item_count
 
-
-	# プレイヤー位置をマップ結果に合わせる
+	# プレイヤー位置をチャプターデータに合わせる
 	player.position = result.spawns.player
+
+	# 環境設定をチャプターデータから適用
+	_apply_environment(chapter)
 
 	# シグナル接続
 	player.player_moved.connect(_on_player_moved)
@@ -43,7 +52,7 @@ func _ready() -> void:
 	GameManager.player_won.connect(_show_win)
 
 	# ゴーストをイントロ中は停止
-	for ghost: Ghost in get_tree().get_nodes_in_group("ghost"):
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
 		ghost.ghost_spotted_player.connect(_on_ghost_spotted)
 		ghost.ghost_lost_player.connect(_on_ghost_lost)
 		ghost.process_mode = Node.PROCESS_MODE_DISABLED
@@ -57,7 +66,7 @@ func _ready() -> void:
 	hud.set_camcorder_ref(player)
 
 	# YouTube Chrome をHUDに渡してチャットを接続
-	hud.set_chrome($YouTubeChrome as YouTubeChrome)
+	hud.set_chrome($YouTubeChrome)
 
 	# 弾幕レイヤーを構築してHUDに接続
 	_setup_danmaku()
@@ -72,7 +81,7 @@ func _ready() -> void:
 	# プレイヤー＆ゴースト再開
 	player.process_mode = Node.PROCESS_MODE_INHERIT
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	for ghost: Ghost in get_tree().get_nodes_in_group("ghost"):
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
 		ghost.process_mode = Node.PROCESS_MODE_INHERIT
 
 	# マップ上でキャラのセリフによる状況説明
@@ -88,6 +97,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	var is_click : bool = event is InputEventMouseButton and event.pressed
 	if (is_key or is_click) and not _intro_skip:
 		_intro_skip = true
+
+
+# ──────────────────────────────────────────────
+# 環境設定
+# ──────────────────────────────────────────────
+
+func _apply_environment(chapter: Resource) -> void:
+	var env := $WorldEnvironment.environment as Environment
+	env.background_color = chapter.background_color
+	env.ambient_light_energy = chapter.ambient_light_energy
+	env.fog_enabled = chapter.fog_enabled
+	if chapter.fog_enabled:
+		env.fog_density = chapter.fog_density
+	$DirectionalLight3D.light_energy = chapter.directional_light_energy
 
 
 # ──────────────────────────────────────────────
@@ -127,13 +150,13 @@ func _run_intro() -> void:
 
 
 func _intro_bbcode() -> String:
-	var location_text := "廃村・深夜配信"
-	match GameManager.selected_map_type:
-		0: location_text = "廃工場・深夜配信"
+	var chapter := GameManager.current_chapter
+	var loc : String = chapter.location_text if chapter else "深夜配信"
+	var dt  : String = chapter.date_text if chapter else "2026/02/24  23:47"
 	var s := "\n\n\n"
 	s += "[center][color=#ff2222][font_size=42][b]● REC[/b][/font_size][/color][/center]\n\n"
-	s += "[center][color=#888888][font_size=16]2026/02/24  23:47[/font_size][/color][/center]\n"
-	s += "[center][color=#666666][font_size=15]%s[/font_size][/color][/center]\n" % location_text
+	s += "[center][color=#888888][font_size=16]%s[/font_size][/color][/center]\n" % dt
+	s += "[center][color=#666666][font_size=15]%s[/font_size][/color][/center]\n" % loc
 	return s
 
 
@@ -250,5 +273,3 @@ func _spawn_danmaku(msg: String, utype: String) -> void:
 	var tw := create_tween()
 	tw.tween_property(lbl, "position:x", -lbl.size.x - 20.0, travel / speed)
 	tw.tween_callback(lbl.queue_free)
-
-

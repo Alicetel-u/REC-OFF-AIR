@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://ghoststreamer_main"]
+[gd_scene load_steps=8 format=3 uid="uid://ghoststreamer_main"]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/StageGenerator.gd" id="9_stagegen"]
@@ -7,10 +7,6 @@
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/HUD.gd" id="3_hud"]
 [ext_resource type="Shader" path="res://shaders/vhs_effect.gdshader" id="4_shader"]
-[ext_resource type="PackedScene" path="res://scenes/Stage.tscn" id="5_stage"]
-[ext_resource type="PackedScene" path="res://scenes/Ghost.tscn" id="6_ghost"]
-[ext_resource type="PackedScene" path="res://scenes/Item.tscn" id="7_item"]
-[ext_resource type="Script" path="res://scripts/Exit.gd" id="8_exit"]
 [ext_resource type="PackedScene" path="res://Inventory/UI/Inventory.tscn" id="12_inventory"]
 
 [sub_resource type="Environment" id="Environment_1"]
@@ -28,9 +24,6 @@ shader_parameter/noise_strength = 0.015
 shader_parameter/vignette_power = 0.15
 shader_parameter/chroma_offset = 0.001
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_exit"]
-size = Vector3(3.0, 3.0, 2.0)
-
 ; ---- Root ----
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -38,63 +31,12 @@ script = ExtResource("1_main")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1")
 
-; 薄明かり (廃工場に差し込む僅かな月光)
+; 薄明かり (チャプターデータで制御)
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866, -0.35, 0.354, 0, 0.71, 0.7, -0.5, -0.609, 0.612, 0, 10, 0)
 light_color = Color(1.0, 1.0, 1.0, 1)
 light_energy = 0.0
 shadow_enabled = false
-
-; ━━ エリア照明 ━━
-
-; 南ホール (スタートエリア): 錆びた蛍光灯色
-[node name="OmniLight_Start" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 15)
-light_color = Color(0.65, 0.38, 0.12, 1)
-light_energy = 0.0
-omni_range = 22.0
-
-; 中央ハブ: 微かな青白い照明 (視認性確保)
-[node name="OmniLight_Hub" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, -2)
-light_color = Color(0.35, 0.38, 0.60, 1)
-light_energy = 0.0
-omni_range = 24.0
-
-; NW機械室: 赤い死の光 (Ghost1縄張り)
-[node name="OmniLight_NW" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 3.5, -14)
-light_color = Color(0.85, 0.04, 0.04, 1)
-light_energy = 0.0
-omni_range = 14.0
-
-; NE制御室: ボイラーの緑がかった光
-[node name="OmniLight_NE" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 3.5, -14)
-light_color = Color(0.12, 0.50, 0.18, 1)
-light_energy = 0.0
-omni_range = 14.0
-
-; W通路: 薄暗いオレンジ
-[node name="OmniLight_West" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3.5, -2)
-light_color = Color(0.6, 0.32, 0.08, 1)
-light_energy = 0.0
-omni_range = 14.0
-
-; E通路: 冷たい工業用ライト
-[node name="OmniLight_East" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3.5, -2)
-light_color = Color(0.30, 0.35, 0.55, 1)
-light_energy = 0.0
-omni_range = 14.0
-
-; SW倉庫: 暗くてじめじめした色
-[node name="OmniLight_SW" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3.5, 12)
-light_color = Color(0.5, 0.30, 0.08, 1)
-light_energy = 0.0
-omni_range = 14.0
 
 ; ---- YouTube UI フレーム (layer=20, 最前面) ----
 [node name="YouTubeChrome" type="CanvasLayer" parent="."]
@@ -106,69 +48,11 @@ script = ExtResource("10_ytchrome")
 layer = 8
 script = ExtResource("11_scenarioui")
 
-; ---- ステージ生成管理 ----
+; ---- ステージ生成管理 (ChapterDataから動的生成) ----
 [node name="StageGenerator" type="Node" parent="."]
 script = ExtResource("9_stagegen")
 
-; ---- ステージ ----
-[node name="Stage" parent="." instance=ExtResource("5_stage")]
-
-; ---- 幽霊 x4 (新マップ対応位置) ----
-; Ghost_1: NW 機械室 (最凶エリア)
-[node name="Ghost" parent="." instance=ExtResource("6_ghost")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0.5, -14)
-
-; Ghost_2: SE 荷物エリア (出口付近)
-[node name="Ghost_2" parent="." instance=ExtResource("6_ghost")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0.5, 13)
-
-; Ghost_3: NE 制御室 (アイテム3エリア)
-[node name="Ghost_3" parent="." instance=ExtResource("6_ghost")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.5, -5)
-
-; Ghost_4: W 通路 (中央封鎖)
-[node name="Ghost_4" parent="." instance=ExtResource("6_ghost")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.5, -2)
-
-; ---- VHSテープ 5本 (難易度順) ----
-; Item_1: 中央ハブ (比較的安全)
-[node name="Item_1" parent="." instance=ExtResource("7_item")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, -2)
-
-; Item_2: W通路 (Ghost4の縄張り)
-[node name="Item_2" parent="." instance=ExtResource("7_item")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1, -5)
-
-; Item_3: NE制御室 (Ghost3エリア)
-[node name="Item_3" parent="." instance=ExtResource("7_item")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 1, -14)
-
-; Item_4: NW機械室最奥 (Ghost1の縄張り！)
-[node name="Item_4" parent="." instance=ExtResource("7_item")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 1, -15)
-
-; Item_5: SE荷物エリア (出口そばの高難度)
-[node name="Item_5" parent="." instance=ExtResource("7_item")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1, 13)
-
-; ---- 脱出ポイント (SE荷物エリア奥) ----
-[node name="Exit" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 1.5, 15)
-script = ExtResource("8_exit")
-
-[node name="ExitShape" type="CollisionShape3D" parent="Exit"]
-shape = SubResource("BoxShape3D_exit")
-
-[node name="ExitMesh" type="CSGBox3D" parent="Exit"]
-size = Vector3(3.0, 3.5, 0.3)
-use_collision = false
-
-[node name="ExitLight" type="OmniLight3D" parent="Exit"]
-light_color = Color(0.2, 1.0, 0.35, 1)
-light_energy = 0.45
-omni_range = 10.0
-
-; ---- プレイヤー (南ホール スタート) ----
+; ---- プレイヤー (位置はChapterDataから設定) ----
 [node name="Player" parent="." instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 15)
 

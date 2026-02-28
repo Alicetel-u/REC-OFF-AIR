@@ -10,14 +10,14 @@ var item
 var needed_items = []
 static func create(_item):
 	var scene = load("res://Inventory/UI/CraftItemPanel.tscn")
-	var panel: CraftItemPanel = scene.instantiate()	
+	var panel = scene.instantiate()
 	panel.item = _item
 	return panel
-	
+
 func _ready():
 	reload()
 	Inventory.add_new_item.connect(update_label)
-func update_label(_item: ItemResource):
+func update_label(_item: Resource):
 	if _item.item_name in needed_items:
 		for child in req_container.get_children():
 			child.queue_free()
@@ -28,7 +28,7 @@ func reload():
 	craft_button.disabled = false
 	needed_items.clear()
 	for item_req in item.itemsNeeded:
-		var new_req: CraftReqLabel = scene.instantiate() 
+		var new_req: MarginContainer = scene.instantiate()
 		
 		var inventory_quantity = 0
 		var _item = Inventory.get_item(item_req.item_name)

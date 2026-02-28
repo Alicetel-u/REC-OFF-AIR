@@ -1,31 +1,83 @@
 extends Node
 class_name StageGenerator
 
-## ステージ情報を収集し、スポーン情報を返す
-## (マップはシーンに静的配置済み。このクラスは情報の集約のみ担当)
+## チャプターデータからステージ・ゴースト・アイテム・出口・ライトを動的生成
 
-var item_count: int   = 0
+const GhostScene := preload("res://scenes/Ghost.tscn")
+const ItemScene  := preload("res://scenes/Item.tscn")
+const ExitScript := preload("res://scripts/Exit.gd")
+const ChapterDataScript := preload("res://scripts/ChapterData.gd")
+const GhostConfigScript := preload("res://scripts/GhostConfig.gd")
+const LightConfigScript := preload("res://scripts/LightConfig.gd")
+
+var item_count: int    = 0
 var exit_node : Node3D = null
 
-## map_type 別プレイヤースポーン位置
-const PLAYER_SPAWNS := {
-	0: Vector3(0.0, 1.0, 15.0),  # INDUSTRIAL (廃工場)
-	1: Vector3(0.0, 1.0, 15.0),  # HAISON     (廃村)
-}
 
-
-func generate(map_type: int) -> Dictionary:
+func generate(chapter: Resource) -> Dictionary:
 	var parent := get_parent()
 
-	# シーン内のアイテムをカウント
-	item_count = 0
-	for child in parent.get_children():
-		var s = child.get_script()
-		if s and (s as Script).resource_path.ends_with("Item.gd"):
-			item_count += 1
+	# 1. ステージシーンをインスタンス化
+	if not chapter.stage_scene_path.is_empty():
+		var stage_scene := load(chapter.stage_scene_path) as PackedScene
+		if stage_scene:
+			var stage := stage_scene.instantiate()
+			stage.name = "Stage"
+			parent.add_child(stage)
 
-	# 出口ノードを取得
-	exit_node = parent.get_node_or_null("Exit")
+	# 2. ゴーストをスポーン
+	for gc: Resource in chapter.ghost_configs:
+		var ghost := GhostScene.instantiate()
+		ghost.position = gc.position
+		# パトロールポイントがあればMarker3Dとして追加
+		for i in range(gc.patrol_points.size()):
+			var marker := Marker3D.new()
+			marker.name = "Patrol_%d" % i
+			marker.position = gc.patrol_points[i] - gc.position
+			ghost.add_child(marker)
+		parent.add_child(ghost)
 
-	var spawn: Vector3 = PLAYER_SPAWNS.get(map_type, Vector3(0.0, 1.0, 15.0))
-	return { "spawns": { "player": spawn } }
+	# 3. アイテムをスポーン
+	item_count = chapter.item_positions.size()
+	for i in range(item_count):
+		var item := ItemScene.instantiate()
+		item.name = "Item_%d" % (i + 1)
+		item.position = chapter.item_positions[i]
+		parent.add_child(item)
+
+	# 4. 出口を生成
+	exit_node = _create_exit(chapter.exit_position)
+	parent.add_child(exit_node)
+
+	# 5. エリアライトを生成
+	for lc: Resource in chapter.lights:
+		var light := OmniLight3D.new()
+		light.position = lc.position
+		light.light_color = lc.color
+		light.light_energy = lc.energy
+		light.omni_range = lc.omni_range
+		parent.add_child(light)
+
+	return { "spawns": { "player": chapter.player_spawn } }
+
+
+func _create_exit(pos: Vector3) -> Area3D:
+	var exit := Area3D.new()
+	exit.name = "Exit"
+	exit.position = pos
+	exit.set_script(ExitScript)
+
+	var col := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = Vector3(3.0, 3.0, 2.0)
+	col.shape = shape
+	exit.add_child(col)
+
+	var light := OmniLight3D.new()
+	light.name = "ExitLight"
+	light.light_color = Color(0.2, 1.0, 0.35)
+	light.light_energy = 0.45
+	light.omni_range = 10.0
+	exit.add_child(light)
+
+	return exit

@@ -2,6 +2,7 @@ extends CharacterBody3D
 class_name Ghost
 
 ## 幽霊AI: PATROL → ALERT → CHASE → CATCH の状態遷移
+## + 3Dモデル＋ゴーストシェーダーによる恐怖演出
 
 enum GhostState { PATROL, ALERT, CHASE, CAUGHT }
 
@@ -9,10 +10,30 @@ const PATROL_SPEED : float = 1.8
 const ALERT_SPEED  : float = 3.2
 const CHASE_SPEED  : float = 5.6
 const GRAVITY      : float = 9.8
-const SIGHT_RANGE  : float = 18.0   # 視線検知距離
-const PROX_DETECT  : float = 4.5    # 視線なしの近接検知距離
-const CATCH_DIST   : float = 1.5    # 捕捉距離
-const ALERT_TIME   : float = 7.0    # 最後に見た位置で待機する時間
+const SIGHT_RANGE  : float = 18.0
+const PROX_DETECT  : float = 4.5
+const CATCH_DIST   : float = 1.5
+const ALERT_TIME   : float = 7.0
+
+# Monsterモデルのパス（GLB）
+const GHOST_MODELS : Array[String] = [
+	"res://assets/models/characters/killers/Character_Monster.glb",
+	"res://assets/models/characters/killers/Character_Monster_01.glb",
+	"res://assets/models/characters/killers/Character_Monster_02.glb",
+	"res://assets/models/characters/killers/Character_Monster_03.glb",
+	"res://assets/models/characters/killers/Character_Monster_04.glb",
+	"res://assets/models/characters/killers/Character_Monster_05.glb",
+]
+# テクスチャパス
+const GHOST_TEXTURES : Array[String] = [
+	"res://assets/textures/characters/Character_Monster.png",
+	"res://assets/textures/characters/Character_Monster_01.png",
+	"res://assets/textures/characters/Character_Monster_02.png",
+	"res://assets/textures/characters/Character_Monster_03.png",
+	"res://assets/textures/characters/Character_Monster_04.png",
+	"res://assets/textures/characters/Character_Monster_05.png",
+]
+const GHOST_SHADER := preload("res://shaders/ghost_material.gdshader")
 
 var ghost_state : GhostState = GhostState.PATROL
 var player      : Node3D     = null
@@ -21,6 +42,17 @@ var alert_t     : float      = 0.0
 var patrol_pts  : Array[Vector3] = []
 var patrol_idx  : int   = 0
 var patrol_wait : float = 0.0
+
+# ── ビジュアル演出用 ──
+var _ghost_body   : Node3D      = null
+var _ghost_light  : OmniLight3D = null
+var _mesh_parts   : Array[MeshInstance3D] = []
+var _ghost_mat    : ShaderMaterial = null
+var _rage_current : float = 0.0
+var _flicker_t    : float = 0.0
+var _flicker_next : float = 0.0
+var _bob_phase    : float = 0.0
+var _head_tilt_t  : float = 0.0
 
 signal ghost_spotted_player
 signal ghost_lost_player
@@ -32,6 +64,7 @@ func _ready() -> void:
 	if p is Node3D:
 		player = p
 	_build_patrol()
+	_init_visuals()
 
 
 func _build_patrol() -> void:
@@ -46,6 +79,98 @@ func _build_patrol() -> void:
 			o + Vector3(-8, 0, -8),
 			o + Vector3( 8, 0, -8),
 		]
+
+
+func _init_visuals() -> void:
+	_ghost_body = get_node_or_null("GhostBody")
+	_ghost_light = get_node_or_null("GhostLight") as OmniLight3D
+	_bob_phase = randf() * TAU
+	_flicker_next = randf_range(4.0, 12.0)
+
+	if not _ghost_body:
+		return
+
+	# ゴーストシェーダーマテリアルを作成
+	_ghost_mat = ShaderMaterial.new()
+	_ghost_mat.shader = GHOST_SHADER
+	_ghost_mat.set_shader_parameter("ghost_color", Vector3(0.7, 0.85, 1.0))
+	_ghost_mat.set_shader_parameter("base_alpha", 0.55)
+	_ghost_mat.set_shader_parameter("rim_power", 2.0)
+	_ghost_mat.set_shader_parameter("rim_strength", 2.0)
+	_ghost_mat.set_shader_parameter("rage", 0.0)
+	_ghost_mat.set_shader_parameter("wobble_amp", 0.03)
+	_ghost_mat.set_shader_parameter("dissolve", 0.0)
+
+	# ランダムに1体のMonsterモデルをロード
+	var model_idx := randi() % GHOST_MODELS.size()
+	var model_scene : PackedScene = load(GHOST_MODELS[model_idx]) as PackedScene
+	if model_scene:
+		var model_inst := model_scene.instantiate()
+		model_inst.name = "Model"
+		# FBX→GLB変換後のスケール調整
+		# mixamoモデルはcm単位のため0.01、ただしモデルによる
+		model_inst.scale = Vector3(0.4, 0.4, 0.4)
+		_ghost_body.add_child(model_inst)
+
+		# テクスチャをロード
+		var tex : Texture2D = null
+		if model_idx < GHOST_TEXTURES.size():
+			tex = load(GHOST_TEXTURES[model_idx]) as Texture2D
+
+		# 全MeshInstance3Dにゴーストシェーダーを適用
+		_apply_ghost_material(model_inst, tex)
+	else:
+		_create_fallback_mesh()
+
+
+func _apply_ghost_material(node: Node, tex: Texture2D) -> void:
+	if node is MeshInstance3D:
+		var mi := node as MeshInstance3D
+		# シェーダーマテリアルを適用
+		var mat := _ghost_mat.duplicate() as ShaderMaterial
+		if tex:
+			mat.set_shader_parameter("ghost_texture", tex)
+		mi.material_override = mat
+		_mesh_parts.append(mi)
+	for child in node.get_children():
+		_apply_ghost_material(child, tex)
+
+
+func _create_fallback_mesh() -> void:
+	# GLBが読めない場合のプリミティブメッシュ
+	var head := MeshInstance3D.new()
+	head.name = "Head"
+	var head_mesh := SphereMesh.new()
+	head_mesh.radius = 0.16
+	head_mesh.height = 0.32
+	head.mesh = head_mesh
+	head.position = Vector3(0, 1.55, 0)
+	head.material_override = _ghost_mat
+	_ghost_body.add_child(head)
+	_mesh_parts.append(head)
+
+	var torso := MeshInstance3D.new()
+	torso.name = "Torso"
+	var torso_mesh := CapsuleMesh.new()
+	torso_mesh.radius = 0.18
+	torso_mesh.height = 0.7
+	torso.mesh = torso_mesh
+	torso.position = Vector3(0, 1.05, 0)
+	torso.material_override = _ghost_mat
+	_ghost_body.add_child(torso)
+	_mesh_parts.append(torso)
+
+	var skirt := MeshInstance3D.new()
+	skirt.name = "Skirt"
+	var skirt_mesh := CylinderMesh.new()
+	skirt_mesh.top_radius = 0.2
+	skirt_mesh.bottom_radius = 0.42
+	skirt_mesh.height = 0.95
+	skirt.mesh = skirt_mesh
+	skirt.position = Vector3(0, 0.35, 0)
+	skirt.material_override = _ghost_mat
+	_ghost_body.add_child(skirt)
+	_mesh_parts.append(skirt)
 
 
 func _physics_process(delta: float) -> void:
@@ -71,6 +196,7 @@ func _physics_process(delta: float) -> void:
 			velocity.z = 0.0
 
 	move_and_slide()
+	_update_visuals(delta)
 
 
 # ---- 巡回 ----
@@ -137,7 +263,6 @@ func _do_chase(delta: float) -> void:
 	velocity.z = dir.z * CHASE_SPEED
 	_face(tgt)
 
-	# 視線が切れて距離が離れたら警戒に移行
 	if not _can_see_player() and \
 	   global_position.distance_to(player.global_position) > PROX_DETECT * 1.5:
 		ghost_state = GhostState.ALERT
@@ -176,3 +301,74 @@ func _face(target: Vector3) -> void:
 	t.y = global_position.y
 	if t.distance_to(global_position) > 0.1:
 		look_at(t, Vector3.UP)
+
+
+# ════════════════════════════════════════════════════════════════
+# 恐怖ビジュアル演出
+# ════════════════════════════════════════════════════════════════
+
+func _update_visuals(delta: float) -> void:
+	if not _ghost_body:
+		return
+
+	# ── rage 補間 ──
+	var target_rage := 0.0
+	match ghost_state:
+		GhostState.CHASE:
+			target_rage = 1.0
+		GhostState.ALERT:
+			target_rage = 0.4
+		GhostState.CAUGHT:
+			target_rage = 1.0
+	_rage_current = lerp(_rage_current, target_rage, delta * 3.0)
+
+	# ── シェーダーパラメータ更新 ──
+	for mesh in _mesh_parts:
+		var mat : Material = mesh.material_override
+		if mat and mat is ShaderMaterial:
+			(mat as ShaderMaterial).set_shader_parameter("rage", _rage_current)
+
+	# ── 浮遊ボブ ──
+	_bob_phase += delta * 1.5
+	var bob_y := sin(_bob_phase) * 0.12
+	_ghost_body.position.y = bob_y
+
+	# ── GhostLight 状態連動 ──
+	if _ghost_light:
+		var base_energy := 0.8
+		var chase_energy := 2.5
+		_ghost_light.light_energy = lerp(base_energy, chase_energy, _rage_current)
+		var base_col := Color(0.6, 0.08, 0.08)
+		var chase_col := Color(1.0, 0.02, 0.02)
+		_ghost_light.light_color = base_col.lerp(chase_col, _rage_current)
+
+	# ── ちらつき ──
+	_flicker_t += delta
+	if _flicker_t >= _flicker_next:
+		_flicker_t = 0.0
+		_flicker_next = randf_range(3.0, 10.0)
+		_do_flicker()
+
+	# ── 接近膨張 ──
+	if is_instance_valid(player):
+		var dist := global_position.distance_to(player.global_position)
+		var swell : float = clampf(1.0 + (1.0 - dist / SIGHT_RANGE) * 0.25, 1.0, 1.3)
+		if ghost_state == GhostState.CAUGHT:
+			swell = 2.0
+		_ghost_body.scale = Vector3(swell, swell, swell)
+
+
+func _do_flicker() -> void:
+	if not _ghost_body:
+		return
+	_ghost_body.visible = false
+	await get_tree().create_timer(randf_range(0.05, 0.15)).timeout
+	if is_instance_valid(_ghost_body):
+		_ghost_body.visible = true
+	if randf() < 0.4:
+		await get_tree().create_timer(0.08).timeout
+		if is_instance_valid(_ghost_body):
+			_ghost_body.visible = false
+		await get_tree().create_timer(randf_range(0.03, 0.1)).timeout
+		if is_instance_valid(_ghost_body):
+			_ghost_body.visible = true
