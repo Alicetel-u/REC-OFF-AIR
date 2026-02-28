@@ -10,6 +10,11 @@ const BOB_AMP        := 0.06
 const BATTERY_DRAIN  := 0.045   # 懐中電灯ON時の消耗 /sec
 const BATTERY_CHARGE := 0.018   # 懐中電灯OFF時の回復 /sec
 
+# 手ブレ定数
+const SWAY_SPEED     := 1.8    # 揺れの速度
+const SWAY_AMOUNT    := 0.004  # 静止時の揺れ幅 (rad)
+const SWAY_MOVE_MULT := 2.5    # 移動時の揺れ倍率
+
 @onready var head       : Node3D      = $Head
 @onready var camera     : Camera3D    = $Head/Camera3D
 @onready var flashlight : SpotLight3D = $Head/Camera3D/Flashlight
@@ -18,6 +23,7 @@ var bob_t        : float = 0.0
 var flashlight_on: bool  = false
 var _prev_moving : bool  = false
 var battery      : float = 1.0   # 0.0 〜 1.0
+var _sway_t      : float = 0.0   # 手ブレ用タイマー
 
 signal player_moved
 signal flashlight_toggled(on: bool)
@@ -88,6 +94,7 @@ func _physics_process(delta: float) -> void:
 	_prev_moving = now_moving
 
 	_do_camera_bob(delta, now_moving)
+	_do_flashlight_sway(delta, now_moving)
 
 
 func _update_battery(delta: float) -> void:
@@ -115,3 +122,21 @@ func _do_camera_bob(delta: float, moving: bool) -> void:
 	else:
 		bob_t = 0.0
 		camera.position = camera.position.lerp(Vector3.ZERO, delta * 6.0)
+
+
+func _do_flashlight_sway(delta: float, moving: bool) -> void:
+	if not flashlight_on:
+		flashlight.rotation = flashlight.rotation.lerp(Vector3.ZERO, delta * 8.0)
+		return
+
+	_sway_t += delta * SWAY_SPEED
+	var mult := SWAY_MOVE_MULT if moving else 1.0
+	var dash_mult := 1.6 if Input.is_action_pressed("dash") else 1.0
+	var amt := SWAY_AMOUNT * mult * dash_mult
+
+	# 複数のsin波を重ねて自然な手ブレに
+	var sway_x := sin(_sway_t * 1.0) * amt + sin(_sway_t * 2.7) * amt * 0.4
+	var sway_y := sin(_sway_t * 1.3) * amt * 0.7 + cos(_sway_t * 2.1) * amt * 0.3
+
+	var target_rot := Vector3(sway_x, sway_y, 0.0)
+	flashlight.rotation = flashlight.rotation.lerp(target_rot, delta * 6.0)
