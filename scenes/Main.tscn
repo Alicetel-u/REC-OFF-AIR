@@ -18,7 +18,7 @@ background_mode = 1
 background_color = Color(0.3, 0.35, 0.5, 1)
 ambient_light_source = 2
 ambient_light_color = Color(1.0, 1.0, 1.0, 1)
-ambient_light_energy = 0.4
+ambient_light_energy = 0.0
 fog_enabled = false
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
@@ -42,7 +42,7 @@ environment = SubResource("Environment_1")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866, -0.35, 0.354, 0, 0.71, 0.7, -0.5, -0.609, 0.612, 0, 10, 0)
 light_color = Color(1.0, 1.0, 1.0, 1)
-light_energy = 0.3
+light_energy = 0.0
 shadow_enabled = false
 
 ; ━━ エリア照明 ━━
@@ -51,49 +51,49 @@ shadow_enabled = false
 [node name="OmniLight_Start" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 15)
 light_color = Color(0.65, 0.38, 0.12, 1)
-light_energy = 0.55
+light_energy = 0.0
 omni_range = 22.0
 
 ; 中央ハブ: 微かな青白い照明 (視認性確保)
 [node name="OmniLight_Hub" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, -2)
 light_color = Color(0.35, 0.38, 0.60, 1)
-light_energy = 0.50
+light_energy = 0.0
 omni_range = 24.0
 
 ; NW機械室: 赤い死の光 (Ghost1縄張り)
 [node name="OmniLight_NW" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 3.5, -14)
 light_color = Color(0.85, 0.04, 0.04, 1)
-light_energy = 0.60
+light_energy = 0.0
 omni_range = 14.0
 
 ; NE制御室: ボイラーの緑がかった光
 [node name="OmniLight_NE" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 3.5, -14)
 light_color = Color(0.12, 0.50, 0.18, 1)
-light_energy = 0.50
+light_energy = 0.0
 omni_range = 14.0
 
 ; W通路: 薄暗いオレンジ
 [node name="OmniLight_West" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3.5, -2)
 light_color = Color(0.6, 0.32, 0.08, 1)
-light_energy = 0.38
+light_energy = 0.0
 omni_range = 14.0
 
 ; E通路: 冷たい工業用ライト
 [node name="OmniLight_East" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3.5, -2)
 light_color = Color(0.30, 0.35, 0.55, 1)
-light_energy = 0.40
+light_energy = 0.0
 omni_range = 14.0
 
 ; SW倉庫: 暗くてじめじめした色
 [node name="OmniLight_SW" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3.5, 12)
 light_color = Color(0.5, 0.30, 0.08, 1)
-light_energy = 0.32
+light_energy = 0.0
 omni_range = 14.0
 
 ; ---- YouTube UI フレーム (layer=20, 最前面) ----
@@ -296,7 +296,7 @@ theme_override_constants/separation = 2
 ; ==== ゲーム開始 イントロオーバーレイ (layer=5) ====
 [node name="IntroLayer" type="CanvasLayer" parent="."]
 layer = 5
-visible = true
+visible = false
 
 [node name="IntroRoot" type="Control" parent="IntroLayer"]
 anchor_right = 1.0

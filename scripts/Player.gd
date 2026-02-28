@@ -61,11 +61,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _toggle_flashlight() -> void:
-	if not flashlight_on and battery <= 0.0:
-		return
-	flashlight_on = not flashlight_on
-	flashlight.visible = flashlight_on
-	flashlight_toggled.emit(flashlight_on)
+	# デバッグ中: 懐中電灯は常時ON
+	return
+	#if not flashlight_on and battery <= 0.0:
+	#	return
+	#flashlight_on = not flashlight_on
+	#flashlight.visible = flashlight_on
+	#flashlight_toggled.emit(flashlight_on)
 
 
 func _physics_process(delta: float) -> void:
@@ -101,16 +103,11 @@ func _physics_process(delta: float) -> void:
 	_auto_screenshot(delta)
 
 
-func _update_battery(delta: float) -> void:
-	if flashlight_on:
-		battery = max(0.0, battery - BATTERY_DRAIN * delta)
-		if battery <= 0.0:
-			flashlight_on = false
-			flashlight.visible = false
-			flashlight_toggled.emit(false)
-	else:
-		battery = min(1.0, battery + BATTERY_CHARGE * delta)
-	battery_changed.emit(battery)
+func _update_battery(_delta: float) -> void:
+	# デバッグ中: バッテリー消耗なし・常時ON
+	battery = 1.0
+	flashlight_on = true
+	flashlight.visible = true
 
 
 func _do_camera_bob(delta: float, moving: bool) -> void:

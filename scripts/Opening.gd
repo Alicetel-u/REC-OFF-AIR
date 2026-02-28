@@ -21,6 +21,7 @@ var _title_ready   : bool  = false
 var _skipped       : bool  = false
 var _video_player  : VideoStreamPlayer = null
 var _video_started : bool  = false
+var _skip_btn      : Button = null
 
 
 func _ready() -> void:
@@ -49,13 +50,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	match _phase:
 		Phase.VIDEO:
-			_skip_video()
+			return   # 動画スキップはボタンのみ
 		Phase.TITLE:
 			if _title_ready:
 				_advance_from_title()
 		Phase.PROLOGUE:
-			if not _skipped:
-				_skip_to_start()
+			return   # プロローグスキップはボタンのみ
 
 
 func _hide_all_panels() -> void:
@@ -86,6 +86,7 @@ func _play_video() -> void:
 	add_child(_video_player)
 	_video_player.play()
 	_video_started = false
+	_create_skip_button()
 
 
 func _on_video_finished() -> void:
@@ -106,7 +107,37 @@ func _skip_video() -> void:
 	_run_sequence()
 
 
+func _create_skip_button() -> void:
+	_remove_skip_button()
+	_skip_btn = Button.new()
+	_skip_btn.text = "スキップ ▶▶"
+	_skip_btn.add_theme_font_size_override("font_size", 18)
+	_skip_btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
+	_skip_btn.flat = true
+	_skip_btn.anchor_left = 1.0
+	_skip_btn.anchor_top = 0.0
+	_skip_btn.anchor_right = 1.0
+	_skip_btn.anchor_bottom = 0.0
+	_skip_btn.offset_left = -160
+	_skip_btn.offset_top = 16
+	_skip_btn.offset_right = -16
+	_skip_btn.offset_bottom = 52
+	_skip_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	if _phase == Phase.VIDEO:
+		_skip_btn.pressed.connect(_skip_video)
+	else:
+		_skip_btn.pressed.connect(_skip_to_start)
+	add_child(_skip_btn)
+
+
+func _remove_skip_button() -> void:
+	if _skip_btn and is_instance_valid(_skip_btn):
+		_skip_btn.queue_free()
+	_skip_btn = null
+
+
 func _cleanup_video() -> void:
+	_remove_skip_button()
 	if _video_player and is_instance_valid(_video_player):
 		_video_player.queue_free()
 	_video_player = null
@@ -139,12 +170,14 @@ func _advance_from_title() -> void:
 
 func _skip_to_start() -> void:
 	_skipped = true
+	_remove_skip_button()
 	_hide_all_panels()
 	glitch_overlay.color = Color(1, 1, 1, 0)
 	_show_map_select()
 
 
 func _run_sequence() -> void:
+	_create_skip_button()
 	await get_tree().create_timer(1.0).timeout
 
 	# ━━ Panel 1: SNS プロフィール ━━
@@ -264,6 +297,7 @@ func _caption_warning_glitch() -> void:
 
 func _show_map_select() -> void:
 	_phase = Phase.DONE
+	_remove_skip_button()
 	GameManager.selected_map_type = 0  # 廃工場固定
 	_hide_all_panels()
 	var tw := create_tween()

@@ -147,8 +147,8 @@ func set_camcorder_ref(camcorder: Node) -> void:
 
 
 func play_monologue() -> void:
-	_add_chat("ここが…例の廃工場か", "配信タロウ", "owner")
-	_add_chat("VHSテープを全部回収して脱出しよう", "配信タロウ", "owner")
+	_add_chat("ここが…例の廃工場か", "しゅっち", "owner")
+	_add_chat("VHSテープを全部回収して脱出しよう", "しゅっち", "owner")
 
 
 func _update_item_label(count: int) -> void:
