@@ -279,7 +279,7 @@ func _move_event(idx: int, delta: int) -> void:
 	var new_idx := idx + delta
 	if new_idx < 0 or new_idx >= _events.size():
 		return
-	var tmp := _events[idx]
+	var tmp: Variant = _events[idx]
 	_events[idx]     = _events[new_idx]
 	_events[new_idx] = tmp
 	_mark_dirty()
