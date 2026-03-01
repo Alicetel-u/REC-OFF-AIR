@@ -47,6 +47,10 @@ func trigger(trigger_type: String, context: Dictionary = {}) -> void:
 
 func resolve(scenario: Dictionary, choice_idx: int) -> void:
 	var choices: Array = scenario["choices"]
+	if choice_idx < 0 or choice_idx >= choices.size():
+		push_error("ScenarioManager: choice_idx %d が範囲外 (size=%d)" % [choice_idx, choices.size()])
+		_active = false
+		return
 	var choice: Dictionary = choices[choice_idx]
 	var agreed: bool = choice["streamer_reaction"] == "agree"
 	_active = false

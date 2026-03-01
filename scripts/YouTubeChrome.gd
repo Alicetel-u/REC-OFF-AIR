@@ -635,42 +635,51 @@ func add_message(msg: String, user: String, user_type: String = "viewer") -> voi
 		return
 
 	var user_colors: Dictionary = {
-		"owner": Color(1.00, 0.84, 0.00),
+		"owner":     Color(1.00, 0.84, 0.00),
 		"moderator": Color(0.37, 0.52, 0.95),
-		"member": Color(0.17, 0.65, 0.25),
-		"viewer": Color(0.78, 0.78, 0.78),
+		"member":    Color(0.17, 0.65, 0.25),
+		"viewer":    Color(0.78, 0.78, 0.78),
 	}
+	var col: Color = user_colors.get(user_type, Color(0.78, 0.78, 0.78))
 
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 0)
+	row.add_theme_constant_override("separation", 4)
 	_chat_vbox.add_child(row)
 
 	_pad(row, 8)
 
 	# ミニアバター
-	var av_col : Color = user_colors.get(user_type, Color(0.50, 0.50, 0.50))
-	_avatar_circle(row, av_col.darkened(0.2), user.substr(0, 1), 18)
+	_avatar_circle(row, col.darkened(0.3), user.substr(0, 1), 18)
 	_pad(row, 6)
 
-	# メッセージ本体
-	var txt := RichTextLabel.new()
-	txt.bbcode_enabled = true
-	txt.scroll_active = false
-	txt.fit_content = true
-	txt.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	txt.add_theme_font_size_override("normal_font_size", 12)
+	# ユーザー名ラベル（軽量Label、BBCode不使用）
+	var badge: String = USER_BADGES.get(user_type, "")
+	var name_lbl := Label.new()
+	name_lbl.text = badge + user
+	name_lbl.add_theme_font_size_override("font_size", 11)
+	name_lbl.add_theme_color_override("font_color", col)
+	name_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row.add_child(name_lbl)
 
-	var badge   : String = USER_BADGES.get(user_type, "")
-	var col     : Color  = user_colors.get(user_type, Color(0.78, 0.78, 0.78))
-	var col_hex : String = _col_to_hex(col)
-	txt.bbcode_text = "%s[color=%s]%s[/color]  [color=#c8c8c8]%s[/color]" \
-		% [badge, col_hex, user, msg]
-	row.add_child(txt)
+	_pad(row, 4)
+
+	# メッセージ本体（RichTextLabel→Label に変更してメモリ削減）
+	var msg_lbl := Label.new()
+	msg_lbl.text = msg
+	msg_lbl.add_theme_font_size_override("font_size", 12)
+	msg_lbl.add_theme_color_override("font_color", Color(0.88, 0.88, 0.88))
+	msg_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	msg_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	msg_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	row.add_child(msg_lbl)
+
 	_pad(row, 8)
 
-	# 上限30件
-	while _chat_vbox.get_child_count() > 30:
-		_chat_vbox.get_child(0).queue_free()
+	# 上限15件（remove_childで即座に親から切り離してからfree）
+	while _chat_vbox.get_child_count() > 15:
+		var old := _chat_vbox.get_child(0)
+		_chat_vbox.remove_child(old)
+		old.queue_free()
 
 	await get_tree().process_frame
 	if is_instance_valid(_chat_scroll):

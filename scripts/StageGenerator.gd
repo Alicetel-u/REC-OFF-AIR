@@ -1,5 +1,4 @@
 extends Node
-class_name StageGenerator
 
 ## チャプターデータからステージ・ゴースト・アイテム・出口・ライトを動的生成
 
@@ -24,12 +23,16 @@ func generate(chapter: Resource) -> Dictionary:
 			var stage := stage_scene.instantiate()
 			stage.name = "Stage"
 			parent.add_child(stage)
+			# デバッグ: CSGのシャドウを無効化（ドローコール削減）
+			_disable_csg_shadows(stage)
 
-	# 2. ゴーストをスポーン
+	# 2. ゴーストをスポーン（デバッグ時は _DEBUG_NO_GHOST = true でスキップ）
+	const _DEBUG_NO_GHOST := false
 	for gc: Resource in chapter.ghost_configs:
+		if _DEBUG_NO_GHOST:
+			break
 		var ghost := GhostScene.instantiate()
 		ghost.position = gc.position
-		# パトロールポイントがあればMarker3Dとして追加
 		for i in range(gc.patrol_points.size()):
 			var marker := Marker3D.new()
 			marker.name = "Patrol_%d" % i
@@ -59,6 +62,13 @@ func generate(chapter: Resource) -> Dictionary:
 		parent.add_child(light)
 
 	return { "spawns": { "player": chapter.player_spawn } }
+
+
+func _disable_csg_shadows(node: Node) -> void:
+	if node is CSGShape3D:
+		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	for child in node.get_children():
+		_disable_csg_shadows(child)
 
 
 func _create_exit(pos: Vector3) -> Area3D:

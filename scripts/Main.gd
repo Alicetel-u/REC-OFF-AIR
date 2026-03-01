@@ -59,9 +59,6 @@ func _ready() -> void:
 
 	overlay_layer.visible = false
 
-	# 出口方向ガイド用の参照をHUDに渡す
-	hud.set_exit_guide_refs($Player/Head/Camera3D, stage_gen.exit_node)
-
 	# バッテリーシグナルをHUDに接続
 	hud.set_camcorder_ref(player)
 
@@ -78,11 +75,9 @@ func _ready() -> void:
 
 	await _run_intro()
 
-	# プレイヤー＆ゴースト再開
+	# プレイヤーを即座に再開
 	player.process_mode = Node.PROCESS_MODE_INHERIT
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
-		ghost.process_mode = Node.PROCESS_MODE_INHERIT
 
 	# マップ上でキャラのセリフによる状況説明
 	hud.play_monologue()
@@ -90,6 +85,11 @@ func _ready() -> void:
 	# シナリオシステム接続
 	ScenarioManager.scenario_triggered.connect(_on_scenario_triggered)
 	ScenarioManager.trigger("game_start")
+
+	# ゴーストは1フレーム遅らせて有効化（初回フレームのGPU負荷分散）
+	await get_tree().process_frame
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		ghost.process_mode = Node.PROCESS_MODE_INHERIT
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -178,7 +178,12 @@ func _on_ghost_lost() -> void:
 
 
 func _show_caught() -> void:
-	await get_tree().create_timer(1.4).timeout
+	# デバッグ: 自動リスタートは _DEBUG_AUTO_RESTART = true で有効
+	const _DEBUG_AUTO_RESTART := false
+	if _DEBUG_AUTO_RESTART:
+		await get_tree().create_timer(1.5).timeout
+		GameManager.restart()
+		return
 	_close_inventory()
 	caught_label.visible  = true
 	win_label.visible     = false
@@ -188,7 +193,12 @@ func _show_caught() -> void:
 
 
 func _show_win() -> void:
-	await get_tree().create_timer(0.6).timeout
+	# デバッグ: 自動リスタートは _DEBUG_AUTO_RESTART = true で有効
+	const _DEBUG_AUTO_RESTART := false
+	if _DEBUG_AUTO_RESTART:
+		await get_tree().create_timer(1.0).timeout
+		GameManager.restart()
+		return
 	_close_inventory()
 	caught_label.visible  = false
 	win_label.visible     = true
@@ -235,7 +245,7 @@ func _setup_danmaku() -> void:
 	dank_sv.size = Vector2i(_DANK_VIDEO_W, int(_DANK_VIDEO_BOT - _DANK_TOP_H))
 	dank_sv.transparent_bg = true
 	dank_sv.disable_3d = true
-	dank_sv.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	dank_sv.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	dank_cont.add_child(dank_sv)
 
 	_danmaku_clip = Control.new()

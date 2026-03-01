@@ -28,6 +28,11 @@ func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	_hide_all_panels()
 	glitch_overlay.color = Color(1, 1, 1, 0)
+	# デバッグ: タイトル・プロローグをスキップして直接ゲームへ（デバッグ時は true に）
+	const _DEBUG_SKIP_INTRO := false
+	if _DEBUG_SKIP_INTRO:
+		_show_map_select()
+		return
 	_phase = Phase.TITLE
 	_run_title()
 
@@ -75,8 +80,8 @@ func _hide_all_panels() -> void:
 func _play_video() -> void:
 	const VIDEO_PATH := "res://assets/video/opm.ogv"
 	if not ResourceLoader.exists(VIDEO_PATH):
-		_phase = Phase.TITLE
-		_run_title()
+		_phase = Phase.PROLOGUE
+		_run_sequence()
 		return
 
 	_video_player = VideoStreamPlayer.new()

@@ -17,10 +17,6 @@ var chapter_order: Array[String] = [
 	"res://chapters/ch01_haison_souko.tres",
 ]
 
-## 後方互換用
-var selected_map_type: int:
-	get: return 0
-
 signal item_collected(count: int, total: int)
 signal player_caught
 signal player_won

@@ -24,9 +24,15 @@ var flashlight_on: bool  = true
 var _prev_moving : bool  = false
 var battery      : float = 1.0   # 0.0 〜 1.0
 var _sway_t      : float = 0.0   # 手ブレ用タイマー
-var _screenshot_timer : float = 0.0
-var _screenshot_taken : bool  = false
-const SCREENSHOT_DELAY := 3.0   # ゲーム開始後3秒でスクショ
+
+# ── デバッグ自動歩行 ──
+var _auto_walk    : bool  = false  # デバッグ時は true に
+var _auto_timer   : float = 0.0
+var _auto_dir     : Vector3 = Vector3.FORWARD
+var _auto_turn_t  : float = 3.0
+var _log_timer    : float = 0.0
+var _log_prev_nodes : float = 0.0
+var _log_prev_mem   : float = 0.0
 
 signal player_moved
 signal flashlight_toggled(on: bool)
@@ -36,6 +42,10 @@ signal battery_changed(level: float)
 func _ready() -> void:
 	add_to_group("player")
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	# バッテリー・懐中電灯は常時ON（実装前の固定値）
+	battery = 1.0
+	flashlight_on = true
+	flashlight.visible = true
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -61,13 +71,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _toggle_flashlight() -> void:
-	# デバッグ中: 懐中電灯は常時ON
-	return
-	#if not flashlight_on and battery <= 0.0:
-	#	return
-	#flashlight_on = not flashlight_on
-	#flashlight.visible = flashlight_on
-	#flashlight_toggled.emit(flashlight_on)
+	# TODO: バッテリーシステム実装後に有効化
+	pass
 
 
 func _physics_process(delta: float) -> void:
@@ -78,11 +83,44 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= GRAVITY * delta
 
-	_update_battery(delta)
+	var dir := Vector3.ZERO
+	var spd := WALK_SPEED
 
-	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
-	var dir   := (transform.basis * Vector3(input.x, 0.0, input.y)).normalized()
-	var spd   := DASH_SPEED if Input.is_action_pressed("dash") else WALK_SPEED
+	if _auto_walk:
+		# 自動歩行: ランダムに方向転換しながら歩く
+		_auto_timer += delta
+		if _auto_timer >= _auto_turn_t:
+			_auto_timer = 0.0
+			_auto_turn_t = randf_range(2.0, 5.0)
+			rotate_y(randf_range(-PI * 0.5, PI * 0.5))
+		dir = -transform.basis.z
+		# FPS・メモリログ（5秒ごと）
+		_log_timer += delta
+		if _log_timer >= 5.0:
+			_log_timer = 0.0
+			var fps := Engine.get_frames_per_second()
+			var mem := OS.get_static_memory_usage() / 1048576.0
+			var vram := Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED) / 1048576.0
+			var tex_mem := Performance.get_monitor(Performance.RENDER_TEXTURE_MEM_USED) / 1048576.0
+			var nodes := Performance.get_monitor(Performance.OBJECT_NODE_COUNT)
+			var resources := Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)
+			var phys3d := Performance.get_monitor(Performance.PHYSICS_3D_ACTIVE_OBJECTS)
+			var phys_pairs := Performance.get_monitor(Performance.PHYSICS_3D_COLLISION_PAIRS)
+			var t := Time.get_ticks_msec() / 1000.0
+			print("[DEBUG] t=%.0fs FPS=%d MEM=%.0fMB VRAM=%.0fMB TEX=%.0fMB NODES=%.0f RES=%.0f PHYS3D=%.0f PAIRS=%.0f pos=%s" % [t, fps, mem, vram, tex_mem, nodes, resources, phys3d, phys_pairs, str(global_position)])
+			# ノード・メモリの急増を警告（リーク早期検知）
+			var node_diff := nodes - _log_prev_nodes
+			var mem_diff  := mem   - _log_prev_mem
+			if _log_prev_nodes > 0 and node_diff > 20:
+				print("[WARN] NODE SPIKE +%.0f in 5s — possible node leak!" % node_diff)
+			if _log_prev_mem > 0 and mem_diff > 5.0:
+				print("[WARN] MEM SPIKE +%.1fMB in 5s — possible memory leak!" % mem_diff)
+			_log_prev_nodes = nodes
+			_log_prev_mem   = mem
+	else:
+		var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+		dir = (transform.basis * Vector3(input.x, 0.0, input.y)).normalized()
+		spd = DASH_SPEED if Input.is_action_pressed("dash") else WALK_SPEED
 
 	if dir != Vector3.ZERO:
 		velocity.x = dir.x * spd
@@ -100,14 +138,8 @@ func _physics_process(delta: float) -> void:
 
 	_do_camera_bob(delta, now_moving)
 	_do_flashlight_sway(delta, now_moving)
-	_auto_screenshot(delta)
 
 
-func _update_battery(_delta: float) -> void:
-	# デバッグ中: バッテリー消耗なし・常時ON
-	battery = 1.0
-	flashlight_on = true
-	flashlight.visible = true
 
 
 func _do_camera_bob(delta: float, moving: bool) -> void:
@@ -143,14 +175,3 @@ func _do_flashlight_sway(delta: float, moving: bool) -> void:
 	flashlight.rotation = flashlight.rotation.lerp(target_rot, delta * 6.0)
 
 
-func _auto_screenshot(delta: float) -> void:
-	if _screenshot_taken:
-		return
-	_screenshot_timer += delta
-	if _screenshot_timer >= SCREENSHOT_DELAY:
-		_screenshot_taken = true
-		var img := get_viewport().get_texture().get_image()
-		var home := OS.get_environment("USERPROFILE")
-		var path := home + "/Downloads/ghost_streamer_debug.png"
-		img.save_png(path)
-		print("[AutoScreenshot] Saved to: ", path)

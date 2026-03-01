@@ -17,15 +17,24 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="Ghost Streamer"
 config/description="YouTuberホラー配信ゲーム プロトタイプ"
 run/main_scene="res://scenes/Opening.tscn"
-config/features=PackedStringArray("4.6", "Forward Plus")
+config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 config/run/main_scene="res://scenes/Opening.tscn"
+run/max_fps=30
 
 [autoload]
 
 GameManager="*res://scripts/GameManager.gd"
 ScenarioManager="*res://scripts/ScenarioManager.gd"
 Inventory="*res://Inventory/InventorySingleton.gd"
+
+[physics]
+
+common/physics_ticks_per_second=30
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
 
 [display]
 

@@ -137,10 +137,6 @@ func _do_scare_flash(col: Color) -> void:
 	scare_t = 1.0
 
 
-func set_exit_guide_refs(_camcorder: Node3D, _exit: Node3D) -> void:
-	pass
-
-
 func set_camcorder_ref(camcorder: Node) -> void:
 	if camcorder and camcorder.has_signal("battery_changed"):
 		camcorder.battery_changed.connect(update_battery)
