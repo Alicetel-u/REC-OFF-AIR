@@ -1,5 +1,7 @@
 extends Node3D
 
+const EntranceDirectorScript := preload("res://scripts/EntranceDirector.gd")
+
 # ── 弾幕レイヤー定数（YouTubeChrome と同じ座標系）──────────────
 const _DANK_VIDEO_W   = 940
 const _DANK_TOP_H     = 48
@@ -35,9 +37,13 @@ func _ready() -> void:
 		# フォールバック: チャプター未ロード時はデフォルトをロード
 		GameManager.load_chapter(0)
 		chapter = GameManager.current_chapter
+	if chapter == null:
+		push_error("Main: chapter data failed to load — aborting _ready()")
+		return
 
+	# items_total を generate() より前に設定（Exit._ready() が参照するため）
+	GameManager.items_total = chapter.item_positions.size()
 	var result: Dictionary = stage_gen.generate(chapter)
-	GameManager.items_total = stage_gen.item_count
 
 	# プレイヤー位置をチャプターデータに合わせる
 	player.position = result.spawns.player
@@ -64,6 +70,8 @@ func _ready() -> void:
 
 	# YouTube Chrome をHUDに渡してチャットを接続
 	hud.set_chrome($YouTubeChrome)
+	# items_totalが確定した後でHUDラベルを更新（0個のときは非表示にするため）
+	hud.refresh_item_label()
 
 	# 弾幕レイヤーを構築してHUDに接続
 	_setup_danmaku()
@@ -73,7 +81,20 @@ func _ready() -> void:
 	Inventory.player = player
 	Inventory.inventory_ui = $InventoryLayer/InventoryUI
 
+	# 廃村入口: イントロ前（画面が黒い間）に初期状態を設定してスナップを防ぐ
+	if chapter.chapter_id == "ch01_haison_iriguchi":
+		player.rotation.y      = -1.2   # バス停方向を向く（+X方向 → rotation.y 負値）
+		player.head.rotation.x = -0.06
+		player.flashlight.visible  = false
+		player.flashlight_on       = false
+
 	await _run_intro()
+
+	# 廃村入口チャプターは自動演出シーケンスを実行して次チャプターへ進む
+	var cur_chapter := GameManager.current_chapter
+	if cur_chapter and cur_chapter.chapter_id == "ch01_haison_iriguchi":
+		await _run_entrance_sequence()
+		return
 
 	# プレイヤーを即座に再開
 	player.process_mode = Node.PROCESS_MODE_INHERIT
@@ -92,6 +113,17 @@ func _ready() -> void:
 		ghost.process_mode = Node.PROCESS_MODE_INHERIT
 
 
+func _run_entrance_sequence() -> void:
+	## 廃村入口: EntranceDirector に演出を委譲し、完了後に次チャプターへ進む
+	var director: Node = EntranceDirectorScript.new()
+	director.set("player", player)
+	director.set("hud", hud)
+	add_child(director)
+	await director.run()
+	director.queue_free()
+	GameManager.advance_to_next_chapter()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	var is_key   : bool = event is InputEventKey         and event.pressed and not event.echo
 	var is_click : bool = event is InputEventMouseButton and event.pressed
@@ -105,11 +137,21 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _apply_environment(chapter: Resource) -> void:
 	var env := $WorldEnvironment.environment as Environment
+	# 背景を単色に固定
+	env.background_mode  = Environment.BG_COLOR
 	env.background_color = chapter.background_color
+	# アンビエントをカラー固定（Skyからの間接光を遮断）
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color  = Color(0, 0, 0, 1)
 	env.ambient_light_energy = chapter.ambient_light_energy
+	# フォグ設定
+	# fog_light_color を背景色に合わせないと、遠方が Godot デフォルトの
+	# グレーブルー(≈0.5,0.6,0.7)にブレンドされてしまい「白っぽい空・灰色の地面」になる
 	env.fog_enabled = chapter.fog_enabled
 	if chapter.fog_enabled:
-		env.fog_density = chapter.fog_density
+		env.fog_density      = chapter.fog_density
+		env.fog_light_color  = chapter.background_color  # フォグ色を背景（漆黒）に統一
+		env.fog_light_energy = 0.0
 	$DirectionalLight3D.light_energy = chapter.directional_light_energy
 
 

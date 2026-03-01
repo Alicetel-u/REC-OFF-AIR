@@ -6,35 +6,33 @@ class_name Ghost
 
 enum GhostState { PATROL, ALERT, CHASE, CAUGHT }
 
-const PATROL_SPEED : float = 1.8
-const ALERT_SPEED  : float = 3.2
-const CHASE_SPEED  : float = 5.6
+const PATROL_SPEED : float = 0.5
+const ALERT_SPEED  : float = 0.9
+const CHASE_SPEED  : float = 1.4
 const GRAVITY      : float = 9.8
 const SIGHT_RANGE  : float = 18.0
 const PROX_DETECT  : float = 4.5
 const CATCH_DIST   : float = 1.5
 const ALERT_TIME   : float = 7.0
 
-# Monsterモデルのパス（GLB）
+# 人型キャラクターモデルのパス（FBX）
 const GHOST_MODELS : Array[String] = [
-	"res://assets/models/characters/killers/Character_Monster.glb",
-	"res://assets/models/characters/killers/Character_Monster_01.glb",
-	"res://assets/models/characters/killers/Character_Monster_02.glb",
-	"res://assets/models/characters/killers/Character_Monster_03.glb",
-	"res://assets/models/characters/killers/Character_Monster_04.glb",
-	"res://assets/models/characters/killers/Character_Monster_05.glb",
+	"res://assets/models/characters/female/Character_17_Female_Police.fbx",
+	"res://assets/models/characters/female/Character_18_Female_Police.fbx",
+	"res://assets/models/characters/female/Character_23_Female_Doctor.fbx",
+	"res://assets/models/characters/female/Character_24_Female_Doctor.fbx",
+	"res://assets/models/characters/female/Character_29_Female.fbx",
+	"res://assets/models/characters/female/Character_30_Female.fbx",
 ]
-# テクスチャパス
+# テクスチャパス（モデルと対応）
 const GHOST_TEXTURES : Array[String] = [
-	"res://assets/textures/characters/Character_Monster.png",
-	"res://assets/textures/characters/Character_Monster_01.png",
-	"res://assets/textures/characters/Character_Monster_02.png",
-	"res://assets/textures/characters/Character_Monster_03.png",
-	"res://assets/textures/characters/Character_Monster_04.png",
-	"res://assets/textures/characters/Character_Monster_05.png",
+	"res://assets/textures/characters/Character_17_Female_Police.png",
+	"res://assets/textures/characters/Character_18_Female_Police.png",
+	"res://assets/textures/characters/Character_23_Female_Doctor.png",
+	"res://assets/textures/characters/Character_24_Female_Doctor.png",
+	"res://assets/textures/characters/Character_29_Female.png",
+	"res://assets/textures/characters/Character_30_Female.png",
 ]
-const GHOST_SHADER := preload("res://shaders/ghost_material.gdshader")
-
 var ghost_state : GhostState = GhostState.PATROL
 var player      : Node3D     = null
 var last_known  : Vector3    = Vector3.ZERO
@@ -47,15 +45,20 @@ var patrol_wait : float = 0.0
 var _ghost_body   : Node3D      = null
 var _ghost_light  : OmniLight3D = null
 var _mesh_parts   : Array[MeshInstance3D] = []
-var _ghost_mat    : ShaderMaterial = null
 var _rage_current : float = 0.0
 var _flicker_t    : float = 0.0
 var _flicker_next : float = 0.0
 var _bob_phase    : float = 0.0
 var _head_tilt_t  : float = 0.0
+var _lean_current : float = 0.0
+var _is_alive     : bool  = true
 
 signal ghost_spotted_player
 signal ghost_lost_player
+
+
+func _exit_tree() -> void:
+	_is_alive = false
 
 
 func _ready() -> void:
@@ -90,26 +93,14 @@ func _init_visuals() -> void:
 	if not _ghost_body:
 		return
 
-	# ゴーストシェーダーマテリアルを作成
-	_ghost_mat = ShaderMaterial.new()
-	_ghost_mat.shader = GHOST_SHADER
-	_ghost_mat.set_shader_parameter("ghost_color", Vector3(0.7, 0.85, 1.0))
-	_ghost_mat.set_shader_parameter("base_alpha", 0.55)
-	_ghost_mat.set_shader_parameter("rim_power", 2.0)
-	_ghost_mat.set_shader_parameter("rim_strength", 2.0)
-	_ghost_mat.set_shader_parameter("rage", 0.0)
-	_ghost_mat.set_shader_parameter("wobble_amp", 0.03)
-	_ghost_mat.set_shader_parameter("dissolve", 0.0)
-
 	# ランダムに1体のMonsterモデルをロード
 	var model_idx := randi() % GHOST_MODELS.size()
 	var model_scene : PackedScene = load(GHOST_MODELS[model_idx]) as PackedScene
 	if model_scene:
 		var model_inst := model_scene.instantiate()
 		model_inst.name = "Model"
-		# FBX→GLB変換後のスケール調整
-		# mixamoモデルはcm単位のため0.01、ただしモデルによる
-		model_inst.scale = Vector3(0.4, 0.4, 0.4)
+		model_inst.scale = Vector3(0.3, 0.3, 0.3)
+		model_inst.rotation_degrees.y = 180.0
 		_ghost_body.add_child(model_inst)
 
 		# テクスチャをロード
@@ -117,27 +108,34 @@ func _init_visuals() -> void:
 		if model_idx < GHOST_TEXTURES.size():
 			tex = load(GHOST_TEXTURES[model_idx]) as Texture2D
 
-		# 全MeshInstance3Dにゴーストシェーダーを適用
-		_apply_ghost_material(model_inst, tex)
+		# 不透明StandardMaterial3Dでテクスチャを適用
+		_apply_standard_material(model_inst, tex)
+
 	else:
 		_create_fallback_mesh()
 
 
-func _apply_ghost_material(node: Node, tex: Texture2D) -> void:
+
+func _apply_standard_material(node: Node, tex: Texture2D) -> void:
 	if node is MeshInstance3D:
 		var mi := node as MeshInstance3D
-		# シェーダーマテリアルを適用
-		var mat := _ghost_mat.duplicate() as ShaderMaterial
+		var mat := StandardMaterial3D.new()
 		if tex:
-			mat.set_shader_parameter("ghost_texture", tex)
+			mat.albedo_texture = tex
 		mi.material_override = mat
 		_mesh_parts.append(mi)
 	for child in node.get_children():
-		_apply_ghost_material(child, tex)
+		_apply_standard_material(child, tex)
 
 
 func _create_fallback_mesh() -> void:
-	# GLBが読めない場合のプリミティブメッシュ
+	# FBXが読めない場合のプリミティブメッシュ（StandardMaterial3D使用）
+	var fallback_mat := StandardMaterial3D.new()
+	fallback_mat.albedo_color = Color(0.8, 0.85, 1.0)
+	fallback_mat.emission_enabled = true
+	fallback_mat.emission = Color(0.3, 0.4, 0.8)
+	fallback_mat.emission_energy_multiplier = 0.5
+
 	var head := MeshInstance3D.new()
 	head.name = "Head"
 	var head_mesh := SphereMesh.new()
@@ -145,7 +143,7 @@ func _create_fallback_mesh() -> void:
 	head_mesh.height = 0.32
 	head.mesh = head_mesh
 	head.position = Vector3(0, 1.55, 0)
-	head.material_override = _ghost_mat
+	head.material_override = fallback_mat
 	_ghost_body.add_child(head)
 	_mesh_parts.append(head)
 
@@ -156,7 +154,7 @@ func _create_fallback_mesh() -> void:
 	torso_mesh.height = 0.7
 	torso.mesh = torso_mesh
 	torso.position = Vector3(0, 1.05, 0)
-	torso.material_override = _ghost_mat
+	torso.material_override = fallback_mat
 	_ghost_body.add_child(torso)
 	_mesh_parts.append(torso)
 
@@ -168,7 +166,7 @@ func _create_fallback_mesh() -> void:
 	skirt_mesh.height = 0.95
 	skirt.mesh = skirt_mesh
 	skirt.position = Vector3(0, 0.35, 0)
-	skirt.material_override = _ghost_mat
+	skirt.material_override = fallback_mat
 	_ghost_body.add_child(skirt)
 	_mesh_parts.append(skirt)
 
@@ -194,6 +192,7 @@ func _physics_process(delta: float) -> void:
 		GhostState.CAUGHT:
 			velocity.x = 0.0
 			velocity.z = 0.0
+			_face(player.global_position)
 
 	move_and_slide()
 	_update_visuals(delta)
@@ -214,6 +213,8 @@ func _do_patrol(delta: float) -> void:
 		if patrol_wait >= 2.5:
 			patrol_wait = 0.0
 			patrol_idx = (patrol_idx + 1) % patrol_pts.size()
+		if is_instance_valid(player):
+			_face(player.global_position)
 	else:
 		var dir := (tgt - global_position).normalized()
 		velocity.x = dir.x * PATROL_SPEED
@@ -324,14 +325,35 @@ func _update_visuals(delta: float) -> void:
 
 	# ── シェーダーパラメータ更新 ──
 	for mesh in _mesh_parts:
+		if not is_instance_valid(mesh):
+			continue
 		var mat : Material = mesh.material_override
 		if mat and mat is ShaderMaterial:
 			(mat as ShaderMaterial).set_shader_parameter("rage", _rage_current)
 
-	# ── 浮遊ボブ ──
-	_bob_phase += delta * 1.5
-	var bob_y := sin(_bob_phase) * 0.12
-	_ghost_body.position.y = bob_y
+	# ── 状態別パラメータ ──
+	var bob_speed   := 1.5
+	var bob_amp     := 0.06
+	var target_lean := 0.0
+	var sway_amp    := 1.5
+	match ghost_state:
+		GhostState.PATROL:
+			bob_speed   = 2.0;  bob_amp = 0.06;  target_lean =  8.0;  sway_amp = 2.0
+		GhostState.ALERT:
+			bob_speed   = 2.8;  bob_amp = 0.08;  target_lean = 14.0;  sway_amp = 2.5
+		GhostState.CHASE:
+			bob_speed   = 4.5;  bob_amp = 0.10;  target_lean = 26.0;  sway_amp = 3.5
+		GhostState.CAUGHT:
+			bob_speed   = 0.5;  bob_amp = 0.02;  target_lean = -4.0;  sway_amp = 0.5
+
+	# ── ボブ・前傾き・スウェイ ──
+	_bob_phase    += delta * bob_speed
+	_lean_current  = lerp(_lean_current, target_lean, delta * 5.0)
+	var bob_y  := sin(_bob_phase) * bob_amp
+	var sway_z := sin(_bob_phase * 0.6) * sway_amp
+	_ghost_body.position.y          = bob_y
+	_ghost_body.rotation_degrees.x  = _lean_current
+	_ghost_body.rotation_degrees.z  = sway_z
 
 	# ── GhostLight 状態連動 ──
 	if _ghost_light:
@@ -363,12 +385,15 @@ func _do_flicker() -> void:
 		return
 	_ghost_body.visible = false
 	await get_tree().create_timer(randf_range(0.05, 0.15)).timeout
-	if is_instance_valid(_ghost_body):
-		_ghost_body.visible = true
+	if not _is_alive or not is_instance_valid(_ghost_body):
+		return
+	_ghost_body.visible = true
 	if randf() < 0.4:
 		await get_tree().create_timer(0.08).timeout
-		if is_instance_valid(_ghost_body):
-			_ghost_body.visible = false
+		if not _is_alive or not is_instance_valid(_ghost_body):
+			return
+		_ghost_body.visible = false
 		await get_tree().create_timer(randf_range(0.03, 0.1)).timeout
-		if is_instance_valid(_ghost_body):
-			_ghost_body.visible = true
+		if not _is_alive or not is_instance_valid(_ghost_body):
+			return
+		_ghost_body.visible = true

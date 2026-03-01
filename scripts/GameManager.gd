@@ -14,6 +14,7 @@ var current_chapter: Resource = null
 var chapter_index: int = 0
 
 var chapter_order: Array[String] = [
+	"res://chapters/ch01_haison_iriguchi.tres",
 	"res://chapters/ch01_haison_souko.tres",
 ]
 
@@ -57,6 +58,15 @@ func trigger_win() -> void:
 		return
 	state = State.WIN
 	player_won.emit()
+
+
+func advance_to_next_chapter() -> void:
+	## 次チャプターへ進む。最終チャプターならWINにする
+	if advance_chapter():
+		items_found = 0
+		get_tree().reload_current_scene()
+	else:
+		trigger_win()
 
 
 func restart() -> void:

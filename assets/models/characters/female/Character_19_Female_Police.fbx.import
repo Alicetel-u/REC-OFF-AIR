@@ -4,11 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://c301sc3la208t"
-valid=false
+path="res://.godot/imported/Character_19_Female_Police.fbx-c621a157467973403f456c00baa28f5d.scn"
 
 [deps]
 
 source_file="res://assets/models/characters/female/Character_19_Female_Police.fbx"
+dest_files=["res://.godot/imported/Character_19_Female_Police.fbx-c621a157467973403f456c00baa28f5d.scn"]
 
 [params]
 
@@ -37,7 +38,7 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={}
-fbx/importer=1
+fbx/importer=0
 fbx/allow_geometry_helper_nodes=false
 fbx/embedded_image_handling=1
 fbx/naming_version=2

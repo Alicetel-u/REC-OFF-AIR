@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ChapterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ChapterData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+chapter_id = "ch01_haison_iriguchi"
+chapter_name = "廃村入口"
+location_text = "霧原村　廃村入口"
+date_text = "2026/02/24  23:31"
+stage_scene_path = "res://scenes/Stage_Iriguchi.tscn"
+player_spawn = Vector3(0, 1.0, 15)
+item_positions = PackedVector3Array()
+exit_position = Vector3(0, 1.5, -18)
+ambient_light_energy = 0.0
+directional_light_energy = 0.0
+background_color = Color(0.0, 0.0, 0.0, 1)
+fog_enabled = true
+fog_density = 0.007
+monologue_lines = PackedStringArray("深夜0時…バスを降りたらすごい霧だ", "ここが霧原村の入口か…", "奥の倉庫にVHSテープがあるって情報があった", "門をくぐって奥に進もう")
+next_chapter_id = "ch01_haison_souko"

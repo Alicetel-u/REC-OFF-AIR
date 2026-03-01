@@ -4,11 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://cqbiy4xxx53ld"
-valid=false
+path="res://.godot/imported/Character_Monster_03.fbx-6560bc19190b13cd67bc31da49a7aa57.scn"
 
 [deps]
 
 source_file="res://assets/models/characters/killers/Character_Monster_03.fbx"
+dest_files=["res://.godot/imported/Character_Monster_03.fbx-6560bc19190b13cd67bc31da49a7aa57.scn"]
 
 [params]
 
@@ -37,7 +38,7 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={}
-fbx/importer=1
+fbx/importer=0
 fbx/allow_geometry_helper_nodes=false
 fbx/embedded_image_handling=1
 fbx/naming_version=2

@@ -4,11 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://brffod8iya4h8"
-valid=false
+path="res://.godot/imported/Character_30_Female.fbx-1de95c21c51591994a6decadd3effb7b.scn"
 
 [deps]
 
 source_file="res://assets/models/characters/female/Character_30_Female.fbx"
+dest_files=["res://.godot/imported/Character_30_Female.fbx-1de95c21c51591994a6decadd3effb7b.scn"]
 
 [params]
 
@@ -37,7 +38,7 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={}
-fbx/importer=1
+fbx/importer=0
 fbx/allow_geometry_helper_nodes=false
 fbx/embedded_image_handling=1
 fbx/naming_version=2

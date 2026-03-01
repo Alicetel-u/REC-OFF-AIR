@@ -1,6 +1,7 @@
 extends Area3D
 
 ## 脱出ポイント: 全テープ収集後に有効化
+## アイテムが0個のチャプターでは最初からアクティブになり、次チャプターへ進む
 
 @onready var exit_light : OmniLight3D = $ExitLight
 
@@ -11,7 +12,12 @@ var pulse_t : float = 0.0
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	GameManager.item_collected.connect(_on_item_collected)
-	exit_light.light_energy = 0.3   # 最初は薄暗く
+	# アイテムなしのチャプターは最初からアクティブ
+	if GameManager.items_total == 0:
+		active = true
+		exit_light.light_energy = 3.0
+	else:
+		exit_light.light_energy = 0.3   # 最初は薄暗く
 
 
 func _process(delta: float) -> void:
@@ -29,4 +35,4 @@ func _on_item_collected(count: int, total: int) -> void:
 
 func _on_body_entered(body: Node3D) -> void:
 	if active and body.is_in_group("player"):
-		GameManager.trigger_win()
+		GameManager.advance_to_next_chapter()

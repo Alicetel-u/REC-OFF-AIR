@@ -11,61 +11,61 @@
 [ext_resource type="Texture2D" path="res://assets/models/Industrial_exterior_v2_Palet.png" id="tex_palet"]
 
 ; ── マテリアル ──
-; 壁・天井・仕切り・柱: Wall テクスチャ (48% → 2.0倍補正)
+; 壁・天井・仕切り・柱: Wall テクスチャ
 [sub_resource type="StandardMaterial3D" id="Mat_Concrete"]
-albedo_color = Color(2.0, 2.0, 2.0, 1)
+albedo_color = Color(1.0, 1.0, 1.0, 1)
 albedo_texture = ExtResource("tex_wall")
 uv1_scale = Vector3(3.0, 2.0, 3.0)
 roughness = 0.92
 
-; 床: Concrete テクスチャ (48% → 2.0倍補正)
+; 床: Concrete テクスチャ
 [sub_resource type="StandardMaterial3D" id="Mat_Floor"]
-albedo_color = Color(2.0, 2.0, 2.0, 1)
+albedo_color = Color(1.0, 1.0, 1.0, 1)
 albedo_texture = ExtResource("tex_concrete")
 uv1_scale = Vector3(8.0, 8.0, 8.0)
 roughness = 0.96
 
-; 金属小道具・棚・ロッカー (33% → 2.5倍補正)
+; 金属小道具・棚・ロッカー
 [sub_resource type="StandardMaterial3D" id="Mat_Metal"]
-albedo_color = Color(2.5, 2.5, 2.5, 1)
+albedo_color = Color(1.0, 1.0, 1.0, 1)
 albedo_texture = ExtResource("tex_cabinet")
 uv1_scale = Vector3(2.0, 2.0, 2.0)
 roughness = 0.72
 metallic = 0.28
 
-; ドラム缶・バレル (44% → 2.0倍補正)
+; ドラム缶・バレル
 [sub_resource type="StandardMaterial3D" id="Mat_Barrel"]
-albedo_color = Color(2.0, 2.0, 2.0, 1)
+albedo_color = Color(1.0, 1.0, 1.0, 1)
 albedo_texture = ExtResource("tex_barrel")
 uv1_scale = Vector3(2.0, 2.0, 2.0)
 roughness = 0.75
 metallic = 0.2
 
-; 木箱 (32% → 2.5倍補正)
+; 木箱
 [sub_resource type="StandardMaterial3D" id="Mat_Wood"]
-albedo_color = Color(2.5, 2.5, 2.5, 1)
+albedo_color = Color(1.0, 1.0, 1.0, 1)
 albedo_texture = ExtResource("tex_wood")
 uv1_scale = Vector3(2.0, 2.0, 2.0)
 roughness = 0.92
 
-; カーゴコンテナ (30% → 2.8倍補正)
+; カーゴコンテナ
 [sub_resource type="StandardMaterial3D" id="Mat_Cargo"]
-albedo_color = Color(2.8, 2.8, 2.8, 1)
+albedo_color = Color(1.0, 1.0, 1.0, 1)
 albedo_texture = ExtResource("tex_cargo")
 uv1_scale = Vector3(2.0, 2.0, 2.0)
 roughness = 0.82
 
-; 配管 (39% → 2.2倍補正)
+; 配管
 [sub_resource type="StandardMaterial3D" id="Mat_Pipes"]
-albedo_color = Color(2.2, 2.2, 2.2, 1)
+albedo_color = Color(1.0, 1.0, 1.0, 1)
 albedo_texture = ExtResource("tex_pipes")
 uv1_scale = Vector3(2.0, 2.0, 2.0)
 roughness = 0.62
 metallic = 0.45
 
-; パレット (55% → 1.8倍補正)
+; パレット
 [sub_resource type="StandardMaterial3D" id="Mat_Pallet"]
-albedo_color = Color(1.8, 1.8, 1.8, 1)
+albedo_color = Color(1.0, 1.0, 1.0, 1)
 albedo_texture = ExtResource("tex_palet")
 uv1_scale = Vector3(2.0, 2.0, 2.0)
 roughness = 0.94
@@ -1130,4 +1130,5 @@ material = SubResource("Mat_Metal")
 ; ================================================================
 [node name="Building_Backdrop" parent="." instance=ExtResource("1_building")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -38)
+visible = false
 

@@ -17,6 +17,9 @@ var _chat_next  : float = 0.0
 var _chrome: CanvasLayer = null
 var danmaku_func: Callable = Callable()
 
+var _mono_panel : PanelContainer = null
+var _mono_text  : RichTextLabel  = null
+
 # ユーザーとコメントのデータ
 const CHAT_LINES: Array[String] = [
 	"wwwww", "こわすぎｗｗｗ", "うわあああ", "まじかよ",
@@ -42,6 +45,7 @@ func _ready() -> void:
 	GameManager.player_caught.connect(_on_caught)
 	GameManager.player_won.connect(_on_won)
 	_update_item_label(0)
+	_build_monologue_window()
 
 
 func set_chrome(chrome: CanvasLayer) -> void:
@@ -152,8 +156,97 @@ func play_monologue() -> void:
 		_add_chat("VHSテープを全部回収して脱出しよう", "しゅっち", "owner")
 
 
+func refresh_item_label() -> void:
+	_update_item_label(GameManager.items_found)
+
+
 func _update_item_label(count: int) -> void:
-	item_label.text = "VHS  %d / %d" % [count, GameManager.items_total]
+	var total := GameManager.items_total
+	item_label.visible = total > 0
+	item_label.text = "VHS  %d / %d" % [count, total]
+
+
+func add_chat(msg: String, user: String = "", user_type: String = "") -> void:
+	_add_chat(msg, user, user_type)
+
+
+# ════════════════════════════════════════════════════════════════
+# 主人公モノローグウィンドウ（下部メッセージ表示）
+# ════════════════════════════════════════════════════════════════
+
+func _build_monologue_window() -> void:
+	# YouTubeChrome レイアウト: 映像エリアは y=48〜612（layer20の不透明UIで隠れる領域は y>612）
+	# HUD(layer2)はlayer20の下に描画されるため、パネル全体を y=612より上に収める
+	# ウィンドウ高さ≈65px → top=540, bottom=605 → 映像エリア内に収まる
+	_mono_panel = PanelContainer.new()
+	_mono_panel.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	_mono_panel.position = Vector2(20, -180)
+	_mono_panel.custom_minimum_size = Vector2(860, 0)
+	_mono_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mono_panel.modulate.a = 0.0
+	_mono_panel.visible = false
+
+	# 漆黒＋血赤ボーダーのホラーパネル
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.03, 0.0, 0.0, 0.90)
+	style.border_color = Color(0.60, 0.0, 0.0, 0.95)
+	style.border_width_left = 3
+	style.set_corner_radius_all(3)
+	style.set_content_margin_all(10)
+	_mono_panel.add_theme_stylebox_override("panel", style)
+	add_child(_mono_panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 3)
+	_mono_panel.add_child(vbox)
+
+	# 名前ラベル（血赤＋赤い影）
+	var name_lbl := Label.new()
+	name_lbl.text = "▶  しゅっち"
+	name_lbl.add_theme_font_size_override("font_size", 11)
+	name_lbl.add_theme_color_override("font_color", Color(0.85, 0.06, 0.06))
+	name_lbl.add_theme_color_override("font_shadow_color", Color(0.5, 0.0, 0.0, 1.0))
+	name_lbl.add_theme_constant_override("shadow_offset_x", 1)
+	name_lbl.add_theme_constant_override("shadow_offset_y", 1)
+	vbox.add_child(name_lbl)
+
+	# セリフ本文（RichTextLabel で BBCode shake エフェクト対応）
+	_mono_text = RichTextLabel.new()
+	_mono_text.bbcode_enabled = true
+	_mono_text.fit_content = true
+	_mono_text.scroll_active = false
+	_mono_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_mono_text.add_theme_font_size_override("normal_font_size", 22)
+	_mono_text.add_theme_color_override("default_color", Color(0.82, 0.76, 0.68))
+	vbox.add_child(_mono_text)
+
+
+func show_monologue(text: String) -> void:
+	if not is_instance_valid(_mono_panel):
+		return
+	# [shake rate=25 level=2] → 微細な震えでホラー感演出
+	# ユーザー名を自動色付け（モデレーター=青、メンバー=緑）
+	_mono_text.bbcode_text = "[shake rate=25 level=2][color=#d0c8bc]%s[/color][/shake]" % _colorize_usernames(text)
+	_mono_panel.visible = true
+	var tw := create_tween()
+	tw.tween_property(_mono_panel, "modulate:a", 1.0, 0.2)
+
+
+func _colorize_usernames(text: String) -> String:
+	var result := text
+	for user in MODERATORS:
+		result = result.replace(user, "[color=#7aa8ff]%s[/color]" % user)
+	for user in MEMBERS:
+		result = result.replace(user, "[color=#5fd67a]%s[/color]" % user)
+	return result
+
+
+func hide_monologue() -> void:
+	if not is_instance_valid(_mono_panel) or not _mono_panel.visible:
+		return
+	var tw := create_tween()
+	tw.tween_property(_mono_panel, "modulate:a", 0.0, 0.35)
+	tw.tween_callback(func() -> void: _mono_panel.visible = false)
 
 
 func _add_chat(msg: String, user: String = "", user_type: String = "") -> void:
