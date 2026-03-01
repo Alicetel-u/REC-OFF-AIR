@@ -1,15 +1,16 @@
 extends Node
 
 ## 廃村入口チャプター専用: バス降車〜村の門くぐりまでの自動演出
-## 主人公セリフ: 下部メッセージウィンドウ (_say)
-## 視聴者コメント: チャット欄 (_chat)
+## セリフデータは res://dialogue/ch01_entrance.json から読み込む
+
+const DIALOGUE_JSON := "res://dialogue/ch01_entrance.json"
 
 var player: CharacterBody3D = null
 var hud: Control = null
 
-var _walking        := false
-var _bob_t          := 0.0
-var _flash_orig_energy : float = 1.0   # 懐中電灯の元の明るさ
+var _walking           := false
+var _bob_t             := 0.0
+var _flash_orig_energy : float = 1.0
 
 
 func _process(delta: float) -> void:
@@ -25,9 +26,9 @@ func _process(delta: float) -> void:
 		player.camera.position = player.camera.position.lerp(Vector3.ZERO, delta * 5.0)
 
 
-# ════════════════════════════════════════════════════════════════
-# メインシーケンス
-# ════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════
+# メインシーケンス（JSON 駆動）
+# ════════════════════════════════════════════════════════════════════
 
 func run() -> void:
 	if not is_instance_valid(player):
@@ -35,220 +36,81 @@ func run() -> void:
 
 	_flash_orig_energy = player.flashlight.light_energy
 
-	# ──────────────────────────────────────────────
-	# 0. 開幕: バス停前・暗闇
-	# ──────────────────────────────────────────────
-	_chat("配信始まったー！")
-	await _w(0.5)
-	_chat("あれ？真っ暗……", "ゆきんこ77")
-	await _w(0.4)
-	_chat("何も見えないんだけどｗ", "配信民99")
-	await _w(0.4)
-	_chat("え、本当に来たの？", "幽霊ガチ勢")
-	await _w(0.6)
+	# JSON 読み込み
+	var abs_path := ProjectSettings.globalize_path(DIALOGUE_JSON)
+	if not FileAccess.file_exists(abs_path):
+		push_error("EntranceDirector: dialogue JSON not found: " + DIALOGUE_JSON)
+		return
 
-	_say("来た来た…霧原村。バス降りたら…なにこの霧")
-	await _w(1.4)
-	_chat("懐中電灯！！", "ホラー好き太郎")
-	await _w(0.4)
-	_chat("真っ暗すぎるｗｗ")
-	await _w(0.5)
+	var text := FileAccess.get_file_as_string(abs_path)
+	var json  := JSON.new()
+	if json.parse(text) != OK:
+		push_error("EntranceDirector: JSON parse error — " + json.get_error_message())
+		return
 
-	_say("ホラー好き太郎さん、懐中電灯ね、今出す今出す！ちょっと待って")
-	await _w(1.7)
-	_chat("はよはよｗ", "配信民99")
-	await _w(0.4)
-	_chat("バス停しか見えないじゃん", "視聴者A")
-	await _w(0.6)
+	var data   : Dictionary = json.get_data()
+	var events : Array      = data.get("events", [])
 
-	_say("霧やばくない？バス停しか見えない…")
-	await _w(1.3)
-	_chat("霧やばすぎｗ", "幽霊ガチ勢")
-	await _w(0.5)
-	_chat("深夜0時に一人でここ来るとか", "ゆきんこ77")
-	await _w(1.0)
+	# 並行 Tween を id で管理（pos_z の非同期歩行用）
+	var active_tweens : Dictionary = {}
 
-	# ──────────────────────────────────────────────
-	# 1. 正面に向き直す → 懐中電灯を点灯
-	# ──────────────────────────────────────────────
-	_say_clear()
-	_rot_y(0.0, 1.6)
-	_head_x(0.0, 0.8)
-	await _w(0.9)
+	for ev: Dictionary in events:
+		var t : String = ev.get("type", "")
+		match t:
 
-	_say("よし、ライトつけよう")
-	await _w(0.6)
-	await _flashlight_on()
+			"say":
+				_say(ev.get("text", ""))
 
-	_say_clear()
-	_chat("きたーーー！！！", "ホラー好き太郎")
-	await _w(0.3)
-	_chat("明るくなったｗ", "配信民99")
-	await _w(0.4)
-	_chat("よかったぁ…", "ゆきんこ77")
-	await _w(0.8)
+			"say_clear":
+				_say_clear()
 
-	_say("怖そうって言ってる人いるけど、怖いわ実際。でもほら、霧の中に道がある")
-	await _w(1.8)
-	_chat("うわぁ…道がある", "視聴者A")
-	await _w(0.5)
-	_chat("引き返せ引き返せｗｗｗ", "ゆきんこ77")
-	await _w(0.5)
-	_chat("絶対ヤバいって", "幽霊ガチ勢")
-	await _w(0.8)
+			"chat":
+				_chat(ev.get("msg", ""), ev.get("user", ""), ev.get("utype", ""))
 
-	# ──────────────────────────────────────────────
-	# 2. コメント読み上げ・状況説明
-	# ──────────────────────────────────────────────
-	_say("ゆきんこ77さん、引き返せって？ざんね～んもうここまで来たら引き返せないよ")
-	await _w(2.0)
-	_chat("ｗｗｗｗ", "配信民99")
-	await _w(0.4)
-	_chat("覚悟完了してて草", "幽霊ガチ勢")
-	await _w(0.7)
+			"wait":
+				await get_tree().create_timer(float(ev.get("sec", 0.5))).timeout
 
-	_say("奥の倉庫にVHSテープが隠されてるって情報があってさ")
-	await _w(1.5)
-	_chat("VHSって何？", "視聴者A")
-	await _w(0.5)
-	_chat("証拠映像的なやつ？", "配信民99")
-	await _w(0.7)
+			"rot_y":
+				_rot_y(float(ev.get("target", 0.0)), float(ev.get("dur", 1.0)))
 
-	_say("そう、証拠の映像テープ。持ち帰れたら完璧なんだよね")
-	await _w(1.5)
-	_chat("ガチ勢すぎるｗ", "ホラー好き太郎")
-	await _w(0.4)
-	_chat("応援してるよ！！", "ゆきんこ77")
-	await _w(0.7)
+			"head_x":
+				_head_x(float(ev.get("target", 0.0)), float(ev.get("dur", 1.0)))
 
-	_head_x(-0.05, 0.3)
-	await _w(0.4)
-	_head_x(0.0, 0.3)
-	await _w(0.3)
+			"pos_z":
+				var tw := _pos_z(float(ev.get("target", 0.0)), float(ev.get("dur", 5.0)))
+				var id : String = ev.get("id", "")
+				if not id.is_empty():
+					active_tweens[id] = tw
 
-	_say("よし、行くよ。みんなついてきて")
-	await _w(1.2)
-	_chat("ついてく！！", "ゆきんこ77")
-	await _w(0.4)
-	_chat("やめろやめろｗ", "配信民99")
-	await _w(0.7)
+			"pos_z_await":
+				var id : String = ev.get("id", "")
+				if id in active_tweens and is_instance_valid(active_tweens[id]):
+					await active_tweens[id].finished
+					active_tweens.erase(id)
 
-	# ──────────────────────────────────────────────
-	# 3. 歩き始める（Z=15 → Z=-1）
-	# ──────────────────────────────────────────────
-	_say_clear()
-	_walking = true
-	_chat("行くな行くな", "ホラー好き太郎")
-	await _w(0.5)
-	_chat("絶対ヤバいって", "配信民99")
-	var walk1 := _pos_z(-1.0, 10.0)
+			"walk_set":
+				_walking = ev.get("on", false)
 
-	await _w(2.5)
-	_rot_y(-0.55, 1.0)
-	await _w(0.7)
-	_say("畑か…もう誰も手入れしてないんだな")
-	await _w(1.2)
-	_chat("廃村感えぐい", "幽霊ガチ勢")
-	await _w(0.5)
-	_chat("本当に誰もいないんだ…", "視聴者A")
-	await _w(0.8)
+			"flashlight_on":
+				await _flashlight_on()
 
-	_say_clear()
-	_rot_y(0.45, 0.9)
-	await _w(0.9)
-	_chat("こっちも同じだ", "ゆきんこ77")
-	await _w(0.5)
-	_chat("足元気をつけて", "配信民99")
-	await _w(0.5)
-	_say("本当に人の気配が全くない。廃村ってこういうことか")
-	await _w(1.2)
-	_rot_y(0.0, 0.8)
-	await walk1.finished
+			_:
+				pass  # 未知タイプは無視
 
-	# ──────────────────────────────────────────────
-	# 4. 門へ近づく（Z=-1 → Z=-12）
-	# ──────────────────────────────────────────────
-	_say_clear()
-	_say("あれ…あれが村の門か")
-	await _w(0.9)
-	_chat("でかいな！！", "ホラー好き太郎")
-	await _w(0.5)
-	_chat("立入禁止じゃない？ｗ", "ゆきんこ77")
-	await _w(0.6)
-	_say("ゆきんこ77さん立入禁止じゃないかって…うん、まあたぶんそう（笑）")
-	await _w(1.6)
-	_chat("開き直ってて草ｗ", "配信民99")
-	await _w(0.4)
-	_chat("霧の中に浮かんでてこわ…", "幽霊ガチ勢")
-	var walk2 := _pos_z(-12.0, 5.0)
-
-	await _w(2.0)
-	_say_clear()
-	_chat("霧が濃くなってる…", "視聴者A")
-	await _w(0.5)
-	_chat("なんか雰囲気やばすぎ", "ゆきんこ77")
-	await walk2.finished
-
-	# ──────────────────────────────────────────────
-	# 5. 門の前で立ち止まり、看板を見上げる
-	# ──────────────────────────────────────────────
-	_walking = false
-	await _w(0.5)
-
-	_say("あ、看板がある。なんて書いてある？")
-	await _w(0.9)
-	_head_x(1.0, 1.0)
-	await _w(0.5)
-	_chat("読める？", "配信民99")
-	await _w(0.4)
-	_chat("霧原村って書いてある！", "視聴者A")
-	await _w(0.5)
-	_chat("不吉すぎるｗ", "幽霊ガチ勢")
-	await _w(0.5)
-
-	_say("霧原村…か。")
-	await _w(1.0)
-	_chat("引き返してーー！！", "ホラー好き太郎")
-	await _w(0.4)
-	_chat("ひぃぃ…", "ゆきんこ77")
-	await _w(0.8)
-
-	# ──────────────────────────────────────────────
-	# 6. 正面に向き直して門をくぐる
-	# ──────────────────────────────────────────────
-	_head_x(0.0, 0.6)
-	await _w(0.5)
-	_say("行くよ。絶対配信事故にしてみせる")
-	await _w(1.0)
-	_chat("行くな！！", "ホラー好き太郎")
-	await _w(0.3)
-	_chat("配信事故って言い方ｗ", "配信民99")
-	await _w(0.4)
-	_chat("ついてく…ついてくよ…", "ゆきんこ77")
-	await _w(0.5)
-
-	_say_clear()
-	_walking = true
-	await _w(0.2)
-	_chat("入ったｗｗ", "視聴者A")
-	await _w(0.3)
-	_chat("もう戻れないｗ", "配信民99")
-	await _pos_z(-21.0, 5.0).finished
 	_walking = false
 	if is_instance_valid(hud):
 		hud.hide_monologue()
 
 
-# ════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════
 # 懐中電灯フリッカー点灯
-# ════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════
 
 func _flashlight_on() -> void:
 	player.flashlight.light_energy = 0.0
 	player.flashlight.visible = true
 	player.flashlight_on = true
 
-	# チラつき → 安定のフリッカー演出
 	var tw := create_tween()
 	tw.tween_property(player.flashlight, "light_energy", 0.6,                 0.04)  # ぱっと
 	tw.tween_property(player.flashlight, "light_energy", 0.0,                 0.06)  # 消える
@@ -258,9 +120,9 @@ func _flashlight_on() -> void:
 	await tw.finished
 
 
-# ════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════
 # プライベートヘルパー
-# ════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════
 
 func _say(text: String) -> void:
 	if is_instance_valid(hud):
