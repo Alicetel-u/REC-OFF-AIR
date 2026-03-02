@@ -1,6 +1,8 @@
 {
   "chapter": "ch01_haison_iriguchi",
   "events": [
+    {"type": "polaroid_video", "path": "res://assets/video/bus_arrival.ogv"},
+    {"type": "wait",    "sec": 0.3},
     {"type": "chat",    "msg": "配信始まったー！",               "user": "",           "utype": ""},
     {"type": "wait",    "sec": 0.5},
     {"type": "chat",    "msg": "あれ？真っ暗……",                "user": "ゆきんこ77", "utype": ""},

@@ -94,6 +94,9 @@ func run() -> void:
 			"flashlight_on":
 				await _flashlight_on()
 
+			"polaroid_video":
+				await _polaroid_video(ev.get("path", ""))
+
 			_:
 				pass  # 未知タイプは無視
 
@@ -160,3 +163,130 @@ func _pos_z(target_z: float, dur: float) -> Tween:
 	tw.tween_property(player, "position:z", target_z, dur) \
 			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	return tw
+
+
+# ════════════════════════════════════════════════════════════════════
+# ポラロイド風動画表示
+# ════════════════════════════════════════════════════════════════════
+
+func _polaroid_video(video_path: String) -> void:
+	# video_path はフレームディレクトリ (例: "res://assets/video/bus_frames")
+	# または旧OGVパス → フレームディレクトリに自動変換
+	var frames_dir := video_path
+	if frames_dir.ends_with(".ogv") or frames_dir.ends_with(".webm"):
+		frames_dir = frames_dir.get_base_dir() + "/bus_frames"
+
+	# フレーム画像をプリロード
+	var frames: Array[Texture2D] = []
+	var idx := 1
+	while true:
+		var path := "%s/frame_%03d.png" % [frames_dir, idx]
+		if not ResourceLoader.exists(path):
+			break
+		frames.append(load(path))
+		idx += 1
+
+	if frames.is_empty():
+		push_warning("EntranceDirector: polaroid_video — no frames in: " + frames_dir)
+		return
+
+	const FPS := 25.0
+	# YouTubeChrome 映像エリア座標系: (0,48)〜(940,612) = 940×564
+	const VIDEO_AREA_X := 0
+	const VIDEO_AREA_Y := 48
+	const VIDEO_AREA_W := 940
+	const VIDEO_AREA_H := 564  # 612 - 48
+
+	# ポラロイド寸法
+	const PHOTO_W := 380      # 写真部分の幅
+	const PHOTO_H := 254      # 写真部分の高さ (3:2比率)
+	const BORDER_SIDE := 14   # 左右・上の白枠
+	const BORDER_BOT  := 44   # 下の白枠（ポラロイド特有の広い下余白）
+	const FRAME_W := PHOTO_W + BORDER_SIDE * 2   # 408
+	const FRAME_H := PHOTO_H + BORDER_SIDE + BORDER_BOT  # 312
+
+	# 中央位置
+	var cx := VIDEO_AREA_X + (VIDEO_AREA_W - FRAME_W) / 2
+	var cy := VIDEO_AREA_Y + (VIDEO_AREA_H - FRAME_H) / 2
+
+	# ── CanvasLayer (layer=18: HUD(2)より上、YouTubeChrome(20)より下) ──
+	var canvas := CanvasLayer.new()
+	canvas.layer = 18
+	get_tree().root.add_child(canvas)
+
+	# ── コンテナ（回転・移動のルート） ──
+	var container := Control.new()
+	container.position = Vector2(cx + FRAME_W / 2, cy + FRAME_H / 2)
+	container.pivot_offset = Vector2.ZERO
+	container.rotation = deg_to_rad(-2.5)
+	canvas.add_child(container)
+
+	# ── ドロップシャドウ ──
+	var shadow := PanelContainer.new()
+	shadow.position = Vector2(-FRAME_W / 2 + 6, -FRAME_H / 2 + 6)
+	shadow.size = Vector2(FRAME_W, FRAME_H)
+	var shadow_style := StyleBoxFlat.new()
+	shadow_style.bg_color = Color(0.0, 0.0, 0.0, 0.45)
+	shadow_style.set_corner_radius_all(2)
+	shadow.add_theme_stylebox_override("panel", shadow_style)
+	container.add_child(shadow)
+
+	# ── 白いポラロイドフレーム ──
+	var frame := PanelContainer.new()
+	frame.position = Vector2(-FRAME_W / 2, -FRAME_H / 2)
+	frame.size = Vector2(FRAME_W, FRAME_H)
+	var frame_style := StyleBoxFlat.new()
+	frame_style.bg_color = Color(0.96, 0.94, 0.92, 1.0)  # やや温かみのある白
+	frame_style.set_corner_radius_all(2)
+	frame.add_theme_stylebox_override("panel", frame_style)
+	container.add_child(frame)
+
+	# ── フレーム表示用 TextureRect ──
+	var tex_rect := TextureRect.new()
+	tex_rect.position = Vector2(-FRAME_W / 2 + BORDER_SIDE, -FRAME_H / 2 + BORDER_SIDE)
+	tex_rect.size = Vector2(PHOTO_W, PHOTO_H)
+	tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	tex_rect.texture = frames[0]
+	container.add_child(tex_rect)
+
+	# ── 下部テキスト（手書き風メモ） ──
+	var memo := Label.new()
+	memo.text = "2026.02.24  霧原村"
+	memo.add_theme_font_size_override("font_size", 13)
+	memo.add_theme_color_override("font_color", Color(0.35, 0.30, 0.28, 0.85))
+	memo.position = Vector2(-FRAME_W / 2 + BORDER_SIDE + 8, -FRAME_H / 2 + BORDER_SIDE + PHOTO_H + 8)
+	memo.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	container.add_child(memo)
+
+	# ── スライドインアニメーション ──
+	var start_y := container.position.y
+	container.position.y = 720 + FRAME_H
+	container.modulate.a = 0.0
+
+	var tw_in := create_tween()
+	tw_in.set_parallel(true)
+	tw_in.tween_property(container, "position:y", start_y, 0.6) \
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw_in.tween_property(container, "modulate:a", 1.0, 0.3)
+	await tw_in.finished
+
+	# ── フレームアニメーション再生（PNG連番 → 劣化なし） ──
+	var frame_dur := 1.0 / FPS
+	for i in range(frames.size()):
+		tex_rect.texture = frames[i]
+		await get_tree().create_timer(frame_dur).timeout
+
+	# 少し余韻
+	await get_tree().create_timer(0.5).timeout
+
+	# ── フェードアウト ──
+	var tw_out := create_tween()
+	tw_out.set_parallel(true)
+	tw_out.tween_property(container, "modulate:a", 0.0, 0.8)
+	tw_out.tween_property(container, "position:y", start_y - 30, 0.8) \
+			.set_trans(Tween.TRANS_SINE)
+	await tw_out.finished
+
+	# クリーンアップ
+	canvas.queue_free()
