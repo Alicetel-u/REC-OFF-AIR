@@ -27,6 +27,7 @@ config/run/main_scene="res://scenes/Opening.tscn"
 GameManager="*res://scripts/GameManager.gd"
 ScenarioManager="*res://scripts/ScenarioManager.gd"
 Inventory="*res://Inventory/InventorySingleton.gd"
+SoundManager="*res://scripts/SoundManager.gd"
 
 [display]
 

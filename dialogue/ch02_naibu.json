@@ -1,0 +1,11 @@
+{
+  "_note": "CP2 廃村内部 ダイアログ — ストーリー確定後に編集してください",
+  "events": [
+    { "type": "say",  "text": "村の中に入った…" },
+    { "type": "chat", "msg": "ガチ廃村じゃん", "user": "暗闇ウォッチャー", "utype": "viewer" },
+    { "type": "wait", "sec": 2.0 },
+    { "type": "say",  "text": "建物が全部朽ちてる…" },
+    { "type": "wait", "sec": 2.5 },
+    { "type": "say_clear" }
+  ]
+}

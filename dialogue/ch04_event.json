@@ -1,0 +1,11 @@
+{
+  "_note": "CP4 廃村内部（異変） ダイアログ — ストーリー確定後に編集してください",
+  "events": [
+    { "type": "say",  "text": "また…村の中心部に戻ってきた" },
+    { "type": "chat", "msg": "何か変わった？", "user": "深夜探偵", "utype": "viewer" },
+    { "type": "wait", "sec": 2.0 },
+    { "type": "say",  "text": "何かが…おかしい" },
+    { "type": "wait", "sec": 2.5 },
+    { "type": "say_clear" }
+  ]
+}

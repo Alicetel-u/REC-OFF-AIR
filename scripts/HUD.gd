@@ -17,8 +17,10 @@ var _chat_next  : float = 0.0
 var _chrome: CanvasLayer = null
 var danmaku_func: Callable = Callable()
 
-var _mono_panel : PanelContainer = null
-var _mono_text  : RichTextLabel  = null
+var _mono_panel  : PanelContainer = null
+var _mono_text   : RichTextLabel  = null
+var _exit_guide  : Control        = null
+var _exit_blink_t: float          = 0.0
 
 # ユーザーとコメントのデータ
 const CHAT_LINES: Array[String] = [
@@ -84,6 +86,11 @@ func _process(delta: float) -> void:
 		scare_t -= delta * 1.8
 		scare_flash.modulate.a = clamp(scare_t, 0.0, 0.65)
 
+	# ── 出口ガイド点滅 ──
+	if is_instance_valid(_exit_guide) and _exit_guide.visible:
+		_exit_blink_t += delta * 2.2
+		_exit_guide.modulate.a = 0.6 + sin(_exit_blink_t) * 0.4
+
 
 func update_battery(level: float) -> void:
 	var filled := int(level * 5)
@@ -123,6 +130,7 @@ func _on_item_collected(count: int, total: int) -> void:
 	if count >= total:
 		_add_chat("全部集まったー！！出口へ！！", "ホラー好き太郎")
 		_add_chat("EXIT探して！！！", "視聴者A")
+		_show_exit_guide()
 
 
 func _on_caught() -> void:
@@ -247,6 +255,51 @@ func hide_monologue() -> void:
 	var tw := create_tween()
 	tw.tween_property(_mono_panel, "modulate:a", 0.0, 0.35)
 	tw.tween_callback(func() -> void: _mono_panel.visible = false)
+
+
+func _show_exit_guide() -> void:
+	if is_instance_valid(_exit_guide):
+		return  # 既に表示中
+
+	_exit_guide = Control.new()
+	_exit_guide.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	_exit_guide.position = Vector2(30, 60)
+	_exit_guide.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_exit_guide)
+
+	# 背景パネル
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color     = Color(0.80, 0.0, 0.0, 0.88)
+	style.border_color = Color(1.0, 0.5, 0.0, 1.0)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(6)
+	style.set_content_margin_all(10)
+	panel.add_theme_stylebox_override("panel", style)
+	_exit_guide.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 2)
+	panel.add_child(vbox)
+
+	var top_lbl := Label.new()
+	top_lbl.text = "▼ VHS 全回収完了 ▼"
+	top_lbl.add_theme_font_size_override("font_size", 11)
+	top_lbl.add_theme_color_override("font_color", Color(1.0, 0.9, 0.5))
+	top_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(top_lbl)
+
+	var lbl := Label.new()
+	lbl.text = "  ◆ 出口へ向かえ  EXIT ◆  "
+	lbl.add_theme_font_size_override("font_size", 18)
+	lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lbl)
+
+	# フェードイン
+	_exit_guide.modulate.a = 0.0
+	var tw := create_tween()
+	tw.tween_property(_exit_guide, "modulate:a", 1.0, 0.5)
 
 
 func _add_chat(msg: String, user: String = "", user_type: String = "") -> void:

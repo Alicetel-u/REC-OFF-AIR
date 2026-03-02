@@ -12,12 +12,12 @@ var pulse_t : float = 0.0
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	GameManager.item_collected.connect(_on_item_collected)
-	# アイテムなしのチャプターは最初からアクティブ
+	# 仮: 常にアクティブ（CP3でも最初から出口を通過できる）
+	active = true
 	if GameManager.items_total == 0:
-		active = true
 		exit_light.light_energy = 3.0
 	else:
-		exit_light.light_energy = 0.3   # 最初は薄暗く
+		exit_light.light_energy = 0.5   # アイテム残りあり: 薄暗いが通過可
 
 
 func _process(delta: float) -> void:

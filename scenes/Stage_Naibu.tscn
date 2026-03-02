@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://stage_naibu"]
+
+[ext_resource type="Script" path="res://scripts/StageNaibu.gd" id="1_script"]
+
+[node name="Stage_Naibu" type="Node3D"]
+script = ExtResource("1_script")

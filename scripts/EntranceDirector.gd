@@ -23,7 +23,8 @@ func _process(delta: float) -> void:
 		player.camera.position.y = lerp(player.camera.position.y, ty, delta * 8.0)
 		player.camera.position.x = lerp(player.camera.position.x, tx, delta * 8.0)
 	else:
-		player.camera.position = player.camera.position.lerp(Vector3.ZERO, delta * 5.0)
+		if player.camera.position.length_squared() > 0.0001:
+			player.camera.position = player.camera.position.lerp(Vector3.ZERO, delta * 5.0)
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -31,15 +32,19 @@ func _process(delta: float) -> void:
 # ════════════════════════════════════════════════════════════════════
 
 func run() -> void:
+	await run_from_path(DIALOGUE_JSON)
+
+
+func run_from_path(json_path: String) -> void:
 	if not is_instance_valid(player):
 		return
 
 	_flash_orig_energy = player.flashlight.light_energy
 
 	# JSON 読み込み
-	var abs_path := ProjectSettings.globalize_path(DIALOGUE_JSON)
+	var abs_path := ProjectSettings.globalize_path(json_path)
 	if not FileAccess.file_exists(abs_path):
-		push_error("EntranceDirector: dialogue JSON not found: " + DIALOGUE_JSON)
+		push_error("EntranceDirector: dialogue JSON not found: " + json_path)
 		return
 
 	var text := FileAccess.get_file_as_string(abs_path)
@@ -87,6 +92,21 @@ func run() -> void:
 				if id in active_tweens and is_instance_valid(active_tweens[id]):
 					await active_tweens[id].finished
 					active_tweens.erase(id)
+
+			"pos_x":
+				var tw := _pos_x(float(ev.get("target", 0.0)), float(ev.get("dur", 5.0)))
+				var id : String = ev.get("id", "")
+				if not id.is_empty():
+					active_tweens[id] = tw
+
+			"pos_x_await":
+				var id : String = ev.get("id", "")
+				if id in active_tweens and is_instance_valid(active_tweens[id]):
+					await active_tweens[id].finished
+					active_tweens.erase(id)
+
+			"set_viewers":
+				_set_viewers(int(ev.get("count", 0)))
 
 			"walk_set":
 				_walking = ev.get("on", false)
@@ -142,10 +162,6 @@ func _chat(msg: String, user: String = "", utype: String = "") -> void:
 		hud.add_chat(msg, user, utype)
 
 
-func _w(seconds: float) -> void:
-	await get_tree().create_timer(seconds).timeout
-
-
 func _rot_y(target: float, dur: float) -> Tween:
 	var tw := create_tween()
 	tw.tween_property(player, "rotation:y", target, dur).set_trans(Tween.TRANS_SINE)
@@ -165,6 +181,22 @@ func _pos_z(target_z: float, dur: float) -> Tween:
 	return tw
 
 
+func _pos_x(target_x: float, dur: float) -> Tween:
+	var tw := create_tween()
+	tw.tween_property(player, "position:x", target_x, dur) \
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	return tw
+
+
+func _set_viewers(count: int) -> void:
+	var chrome := get_tree().get_first_node_in_group("youtube_chrome")
+	if not is_instance_valid(chrome):
+		return
+	chrome._view_count = count
+	if is_instance_valid(chrome._view_label):
+		chrome._view_label.text = "%s 人が視聴中" % chrome._fmt_count(count)
+
+
 # ════════════════════════════════════════════════════════════════════
 # ポラロイド風動画表示
 # ════════════════════════════════════════════════════════════════════
@@ -176,17 +208,8 @@ func _polaroid_video(video_path: String) -> void:
 	if frames_dir.ends_with(".ogv") or frames_dir.ends_with(".webm"):
 		frames_dir = frames_dir.get_base_dir() + "/bus_frames"
 
-	# フレーム画像をプリロード
-	var frames: Array[Texture2D] = []
-	var idx := 1
-	while true:
-		var path := "%s/frame_%03d.png" % [frames_dir, idx]
-		if not ResourceLoader.exists(path):
-			break
-		frames.append(load(path))
-		idx += 1
-
-	if frames.is_empty():
+	# フレームが存在するか確認（1枚目のみチェック・全枚プリロードを回避）
+	if not ResourceLoader.exists("%s/frame_001.png" % frames_dir):
 		push_warning("EntranceDirector: polaroid_video — no frames in: " + frames_dir)
 		return
 
@@ -247,7 +270,7 @@ func _polaroid_video(video_path: String) -> void:
 	tex_rect.size = Vector2(PHOTO_W, PHOTO_H)
 	tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	tex_rect.texture = frames[0]
+	tex_rect.texture = null  # ストリーミング再生で上書きするため初期値は空
 	container.add_child(tex_rect)
 
 	# ── 下部テキスト（手書き風メモ） ──
@@ -271,11 +294,16 @@ func _polaroid_video(video_path: String) -> void:
 	tw_in.tween_property(container, "modulate:a", 1.0, 0.3)
 	await tw_in.finished
 
-	# ── フレームアニメーション再生（PNG連番 → 劣化なし） ──
+	# ── フレームアニメーション再生（ストリーミング: 1枚ずつロード・即解放） ──
 	var frame_dur := 1.0 / FPS
-	for i in range(frames.size()):
-		tex_rect.texture = frames[i]
+	var stream_idx := 1
+	while true:
+		var path := "%s/frame_%03d.png" % [frames_dir, stream_idx]
+		if not ResourceLoader.exists(path):
+			break
+		tex_rect.texture = ResourceLoader.load(path, "Texture2D", ResourceLoader.CACHE_MODE_IGNORE) as Texture2D
 		await get_tree().create_timer(frame_dur).timeout
+		stream_idx += 1
 
 	# 少し余韻
 	await get_tree().create_timer(0.5).timeout

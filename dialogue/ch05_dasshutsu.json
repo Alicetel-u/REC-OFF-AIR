@@ -1,0 +1,11 @@
+{
+  "_note": "CP5 脱出 ダイアログ — ストーリー確定後に編集してください",
+  "events": [
+    { "type": "say",  "text": "出口はこの先だ…" },
+    { "type": "chat", "msg": "逃げろ！！", "user": "視聴者A", "utype": "viewer" },
+    { "type": "wait", "sec": 1.5 },
+    { "type": "say",  "text": "走れ！" },
+    { "type": "wait", "sec": 1.0 },
+    { "type": "say_clear" }
+  ]
+}

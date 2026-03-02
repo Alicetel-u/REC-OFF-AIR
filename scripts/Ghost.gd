@@ -52,6 +52,8 @@ var _bob_phase    : float = 0.0
 var _head_tilt_t  : float = 0.0
 var _lean_current : float = 0.0
 var _is_alive     : bool  = true
+var _growl_timer    : float = 0.0
+var _growl_interval : float = 5.0
 
 signal ghost_spotted_player
 signal ghost_lost_player
@@ -59,6 +61,7 @@ signal ghost_lost_player
 
 func _exit_tree() -> void:
 	_is_alive = false
+	_mesh_parts.clear()
 
 
 func _ready() -> void:
@@ -246,17 +249,30 @@ func _do_alert(delta: float) -> void:
 		ghost_state = GhostState.CHASE
 		alert_t = 0.0
 		ghost_spotted_player.emit()
+		SoundManager.play_monster_growl(-6.0)
 
 
 # ---- 追跡 ----
 func _do_chase(delta: float) -> void:
+	# 定期的な唸り声
+	_growl_timer += delta
+	if _growl_timer >= _growl_interval:
+		_growl_timer = 0.0
+		_growl_interval = randf_range(4.0, 8.0)
+		var dist := global_position.distance_to(player.global_position)
+		SoundManager.play_monster_growl(-3.0 if dist < 8.0 else -10.0)
+
 	last_known = player.global_position
 	var tgt := player.global_position
 	tgt.y = global_position.y
 
 	if global_position.distance_to(player.global_position) <= CATCH_DIST:
 		ghost_state = GhostState.CAUGHT
-		GameManager.trigger_caught()
+		GameManager.trigger_hit()
+		# ヒット後は PATROL に戻って距離を取る（無敵時間中は再接触しない）
+		await get_tree().create_timer(1.2).timeout
+		if is_instance_valid(self) and GameManager.state == GameManager.State.PLAYING:
+			ghost_state = GhostState.PATROL
 		return
 
 	var dir := (tgt - global_position).normalized()
@@ -279,6 +295,7 @@ func _sense_player() -> void:
 		ghost_state = GhostState.CHASE
 		last_known = player.global_position
 		ghost_spotted_player.emit()
+		SoundManager.play_monster_growl(-4.0)
 
 
 # ---- 視線チェック (raycast) ----

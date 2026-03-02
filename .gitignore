@@ -1,5 +1,8 @@
-# Godot executable (local only)
+# Godot executable (local only — download separately)
 Godot_v*.exe
+godot.exe
+godot451.zip
+*.zip
 
 # Godot 4 generated files
 .godot/
@@ -25,3 +28,16 @@ GhostStreamer_build.zip
 .DS_Store
 Thumbs.db
 *.pck
+
+# Log / debug output files
+game_stdout.txt
+game_stderr.txt
+game_check.txt
+game_crash_log.txt
+godot_*.txt
+debug_*.txt
+check_log.ps1
+nul
+
+# Temp audio extraction folders
+assets/audio/sfx/_tmp*/

@@ -54,7 +54,8 @@ var _superchat_t : float = 0.0
 var _superchat_next : float = 0.0
 var _superchat_area : VBoxContainer
 var _title_label : Label
-var _elapsed     : float = 0.0
+var _elapsed          : float = 0.0
+var _last_display_sec : int   = -1
 
 const SUPERCHAT_NAMES = ["ゆきんこ77","幽霊ガチ勢","ホラー好き太郎","配信民99","ゴーストハンター"]
 const SUPERCHAT_MSGS  = [
@@ -65,6 +66,7 @@ const SUPERCHAT_MSGS  = [
 
 func _ready() -> void:
 	layer = 20
+	add_to_group("youtube_chrome")
 	_view_count = randi_range(1800, 3200)
 	_like_count = randi_range(400,  900)
 	_superchat_next = randf_range(45.0, 90.0)
@@ -596,11 +598,12 @@ func _process(delta: float) -> void:
 		if is_instance_valid(_live_dot):
 			_live_dot.visible = not _live_dot.visible
 
-	# 時間表示更新
-	if is_instance_valid(_title_label):
-		var m := int(_elapsed / 60.0)
-		var s := int(fmod(_elapsed, 60.0))
-		_title_label.text = "%d:%02d " % [m, s]
+	# 時間表示更新（秒が変わった時のみ）
+	var cur_sec := int(_elapsed)
+	if cur_sec != _last_display_sec:
+		_last_display_sec = cur_sec
+		if is_instance_valid(_title_label):
+			_title_label.text = "%d:%02d " % [cur_sec / 60, cur_sec % 60]
 
 	# 視聴者数ゆらぎ
 	_view_t += delta
@@ -763,10 +766,6 @@ func _fmt_count(n: int) -> String:
 	if n >= 1000:
 		return "%.1fK" % (n / 1000.0)
 	return str(n)
-
-
-func _col_to_hex(c: Color) -> String:
-	return "#%02x%02x%02x" % [int(c.r * 255), int(c.g * 255), int(c.b * 255)]
 
 
 func _panel_rect(pos: Vector2, size: Vector2, bg: Color) -> PanelContainer:
