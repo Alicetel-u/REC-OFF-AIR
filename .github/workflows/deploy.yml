@@ -5,11 +5,21 @@ on:
     branches: [master]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   export-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +42,7 @@ jobs:
 
       - name: Write export presets
         run: |
-          cat > export_presets.cfg << 'EOF'
+          cat > export_presets.cfg << 'PRESETEOF'
           [preset.0]
 
           name="Web"
@@ -42,7 +52,7 @@ jobs:
           custom_features=""
           export_filter="all_resources"
           include_filter=""
-          exclude_filter=""
+          exclude_filter="assets/models/characters/female/Character_Female_*.fbx, assets/models/characters/female/Character_19_*.fbx, assets/models/characters/female/Character_20_*.fbx, assets/models/characters/female/Character_21_*.fbx, assets/models/characters/female/Character_22_*.fbx, assets/models/characters/female/Character_25_*.fbx, assets/models/characters/female/Character_26_*.fbx, assets/models/characters/female/Character_27_*.fbx, assets/models/characters/female/Character_28_*.fbx, assets/models/characters/female/Character_31_*.fbx, assets/models/characters/female/Character_32_*.fbx, assets/models/characters/female/Character_33_*.fbx, assets/textures/characters/Character_Female_*.png, assets/textures/characters/Character_19_*.png, assets/textures/characters/Character_20_*.png, assets/textures/characters/Character_21_*.png, assets/textures/characters/Character_22_*.png, assets/textures/characters/Character_25_*.png, assets/textures/characters/Character_26_*.png, assets/textures/characters/Character_27_*.png, assets/textures/characters/Character_28_*.png, assets/textures/characters/Character_31_*.png, assets/textures/characters/Character_32_*.png, assets/textures/characters/Character_33_*.png, assets/models/characters/killers/*, assets/textures/characters/Character_Killer*, assets/textures/characters/Character_Monster*, assets/video/bus_arrival.ogv, assets/video/bus_arrival.webm, assets/video/bus_arrival_audio.ogg"
           export_path="web/index.html"
           encrypt_pck=false
           encrypt_directory=false
@@ -61,7 +71,7 @@ jobs:
           html/focus_canvas_on_start=true
           html/experimental_virtual_keyboard=false
           progressive_web_app/enabled=false
-          EOF
+          PRESETEOF
 
       - name: Install Japanese fonts
         run: |
@@ -75,9 +85,14 @@ jobs:
           godot --headless --path . --export-release "Web" web/index.html
           touch web/.nojekyll
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./web
-          force_orphan: true
+          path: ./web
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
