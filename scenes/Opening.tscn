@@ -61,8 +61,8 @@ anchor_bottom = 1.0
 bbcode_enabled = true
 scroll_active = false
 mouse_filter = 2
-theme_override_font_sizes/normal_font_size = 18
-theme_override_font_sizes/bold_font_size = 20
+theme_override_font_sizes/normal_font_size = 22
+theme_override_font_sizes/bold_font_size = 28
 
 ; ━━ Panel 2: DM ━━
 [node name="PanelDM" type="Control" parent="."]
@@ -80,8 +80,8 @@ anchor_bottom = 1.0
 bbcode_enabled = true
 scroll_active = false
 mouse_filter = 2
-theme_override_font_sizes/normal_font_size = 18
-theme_override_font_sizes/bold_font_size = 19
+theme_override_font_sizes/normal_font_size = 22
+theme_override_font_sizes/bold_font_size = 24
 
 ; ━━ Panel 3: 主人公独白 ━━
 [node name="PanelMonologue" type="Control" parent="."]
@@ -99,9 +99,9 @@ anchor_bottom = 1.0
 bbcode_enabled = true
 scroll_active = false
 mouse_filter = 2
-theme_override_font_sizes/normal_font_size = 21
-theme_override_font_sizes/bold_font_size = 23
-theme_override_font_sizes/italics_font_size = 17
+theme_override_font_sizes/normal_font_size = 26
+theme_override_font_sizes/bold_font_size = 32
+theme_override_font_sizes/italics_font_size = 20
 
 ; ━━ Panel 4: 場所テロップ ━━
 [node name="PanelCaption" type="Control" parent="."]
@@ -115,9 +115,9 @@ mouse_filter = 2
 [node name="CaptionText" type="Label" parent="PanelCaption"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-text = "2026 / 02 / 24  23:47\n\n旧・ヤマネ精工\n第三工場跡"
-theme_override_colors/font_color = Color(0.88, 0.88, 0.82, 1)
-theme_override_font_sizes/font_size = 34
+text = "霧原村\n\n深夜 0:00"
+theme_override_colors/font_color = Color(0.90, 0.88, 0.82, 1)
+theme_override_font_sizes/font_size = 46
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3

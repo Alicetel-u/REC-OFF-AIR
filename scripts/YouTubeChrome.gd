@@ -10,8 +10,8 @@ const VH        = 720
 const TOP_H     = 48
 const CTRL_H    = 36
 const ENGAGE_H  = 72
-const CHAT_W    = 340
-const VIDEO_W   = 940   # VW - CHAT_W
+const CHAT_W    = 380
+const VIDEO_W   = 900   # VW - CHAT_W
 const VIDEO_BOT = 612   # VH - CTRL_H - ENGAGE_H
 
 # ── YouTube 配色 ────────────────────────────────────────────────
@@ -56,6 +56,8 @@ var _superchat_area : VBoxContainer
 var _title_label : Label
 var _elapsed          : float = 0.0
 var _last_display_sec : int   = -1
+var _chat_panel_ref   : Control = null  # チャットパネル本体
+var _horror_overlay   : ColorRect = null  # ホラー演出用オーバーレイ
 
 const SUPERCHAT_NAMES = ["ゆきんこ77","幽霊ガチ勢","ホラー好き太郎","配信民99","ゴーストハンター"]
 const SUPERCHAT_MSGS  = [
@@ -229,7 +231,7 @@ func _build_chat_panel() -> void:
 	)
 	_border_left(panel, C_BORDER)
 	add_child(panel)
-
+	_chat_panel_ref = panel
 	var vbox := VBoxContainer.new()
 	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	vbox.add_theme_constant_override("separation", 0)
@@ -249,11 +251,11 @@ func _build_chat_panel() -> void:
 	h_hbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_pad(h_hbox, 12)
 
-	var live_badge := _make_badge(" ● LIVE ", C_RED, 11)
+	var live_badge := _make_badge(" ● LIVE ", C_RED, 13)
 	h_hbox.add_child(live_badge)
 	_pad(h_hbox, 8)
 
-	_lbl(h_hbox, "ライブチャット", 13, C_TEXT)
+	_lbl(h_hbox, "ライブチャット", 16, C_TEXT)
 	_spacer(h_hbox)
 
 	# チャットヘッダーの右アイコン群
@@ -298,12 +300,12 @@ func _build_chat_panel() -> void:
 
 	_chat_vbox = VBoxContainer.new()
 	_chat_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_chat_vbox.add_theme_constant_override("separation", 2)
+	_chat_vbox.add_theme_constant_override("separation", 4)
 	_chat_scroll.add_child(_chat_vbox)
 
 	# ─ 視聴者数表示 ─
 	var view_wrap := PanelContainer.new()
-	view_wrap.custom_minimum_size = Vector2(0, 30)
+	view_wrap.custom_minimum_size = Vector2(0, 36)
 	var vws := StyleBoxFlat.new()
 	vws.bg_color = Color(0.06, 0.06, 0.06)
 	vws.border_color = C_BORDER
@@ -313,13 +315,13 @@ func _build_chat_panel() -> void:
 	var vhbox := _hbox(view_wrap, 6)
 	vhbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_pad(vhbox, 10)
-	_live_dot = _lbl(vhbox, "●", 9, C_RED)
-	_view_label = _lbl(vhbox, "%s 人が視聴中" % _fmt_count(_view_count), 11, C_MUTED)
+	_live_dot = _lbl(vhbox, "●", 11, C_RED)
+	_view_label = _lbl(vhbox, "%s 人が視聴中" % _fmt_count(_view_count), 14, C_MUTED)
 	_view_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	# ─ チャット入力エリア ─
 	var input_area := PanelContainer.new()
-	input_area.custom_minimum_size = Vector2(0, 58)
+	input_area.custom_minimum_size = Vector2(0, 64)
 	var ias := StyleBoxFlat.new()
 	ias.bg_color = Color(0.06, 0.06, 0.06)
 	ias.border_color = C_BORDER
@@ -350,18 +352,25 @@ func _build_chat_panel() -> void:
 
 	var field_lbl := Label.new()
 	field_lbl.text = "チャット..."
-	field_lbl.add_theme_font_size_override("font_size", 12)
+	field_lbl.add_theme_font_size_override("font_size", 14)
 	field_lbl.add_theme_color_override("font_color", Color(0.38, 0.38, 0.38))
 	field_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	field_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	field_wrap.add_child(field_lbl)
 
 	# 絵文字 & 送信ボタン
-	_lbl(ia_hbox, "😀", 16, C_MUTED)
-	var send_lbl := _lbl(ia_hbox, "➤", 18, Color(0.30, 0.30, 0.30))
+	_lbl(ia_hbox, "😀", 18, C_MUTED)
+	var send_lbl := _lbl(ia_hbox, "➤", 20, Color(0.30, 0.30, 0.30))
 	send_lbl.custom_minimum_size = Vector2(24, 0)
 	send_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_pad(ia_hbox, 6)
+
+	# ホラー演出用オーバーレイ（全UI構築後に最前面へ配置）
+	_horror_overlay = ColorRect.new()
+	_horror_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_horror_overlay.color = Color(0, 0, 0, 0)
+	_horror_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(_horror_overlay)
 
 
 func _chat_tab(parent: Node, text: String, active: bool) -> void:
@@ -376,7 +385,7 @@ func _chat_tab(parent: Node, text: String, active: bool) -> void:
 	parent.add_child(wrap)
 	var lbl := Label.new()
 	lbl.text = text
-	lbl.add_theme_font_size_override("font_size", 12)
+	lbl.add_theme_font_size_override("font_size", 14)
 	lbl.add_theme_color_override("font_color", C_TEXT if active else C_MUTED)
 	lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -637,11 +646,15 @@ func add_message(msg: String, user: String, user_type: String = "viewer") -> voi
 	if not is_instance_valid(_chat_vbox):
 		return
 
+	# ── Kユーザー判定（ホラー演出） ──
+	var is_k := user_type == "horror" or user == "K"
+
 	var user_colors: Dictionary = {
 		"owner":     Color(1.00, 0.84, 0.00),
 		"moderator": Color(0.37, 0.52, 0.95),
 		"member":    Color(0.17, 0.65, 0.25),
 		"viewer":    Color(0.78, 0.78, 0.78),
+		"horror":    Color(0.85, 0.08, 0.08),
 	}
 	var col: Color = user_colors.get(user_type, Color(0.78, 0.78, 0.78))
 
@@ -652,25 +665,28 @@ func add_message(msg: String, user: String, user_type: String = "viewer") -> voi
 	_pad(row, 8)
 
 	# ミニアバター
-	_avatar_circle(row, col.darkened(0.3), user.substr(0, 1), 18)
+	var avatar_icon := "👁" if is_k else user.substr(0, 1)
+	var avatar_bg   := Color(0.35, 0.0, 0.0) if is_k else col.darkened(0.3)
+	_avatar_circle(row, avatar_bg, avatar_icon, 24)
 	_pad(row, 6)
 
 	# ユーザー名ラベル（軽量Label、BBCode不使用）
 	var badge: String = USER_BADGES.get(user_type, "")
 	var name_lbl := Label.new()
 	name_lbl.text = badge + user
-	name_lbl.add_theme_font_size_override("font_size", 11)
+	name_lbl.add_theme_font_size_override("font_size", 14)
 	name_lbl.add_theme_color_override("font_color", col)
 	name_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(name_lbl)
 
 	_pad(row, 4)
 
-	# メッセージ本体（RichTextLabel→Label に変更してメモリ削減）
+	# メッセージ本体
+	var msg_color := Color(0.90, 0.15, 0.10) if is_k else Color(0.88, 0.88, 0.88)
 	var msg_lbl := Label.new()
 	msg_lbl.text = msg
-	msg_lbl.add_theme_font_size_override("font_size", 12)
-	msg_lbl.add_theme_color_override("font_color", Color(0.88, 0.88, 0.88))
+	msg_lbl.add_theme_font_size_override("font_size", 15)
+	msg_lbl.add_theme_color_override("font_color", msg_color)
 	msg_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	msg_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	msg_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -678,8 +694,8 @@ func add_message(msg: String, user: String, user_type: String = "viewer") -> voi
 
 	_pad(row, 8)
 
-	# 上限15件（remove_childで即座に親から切り離してからfree）
-	while _chat_vbox.get_child_count() > 15:
+	# 上限12件（remove_childで即座に親から切り離してからfree）
+	while _chat_vbox.get_child_count() > 12:
 		var old := _chat_vbox.get_child(0)
 		_chat_vbox.remove_child(old)
 		old.queue_free()
@@ -923,3 +939,59 @@ func _border_left(node: PanelContainer, color: Color) -> void:
 	s.border_color = color
 	s.border_width_left = 1
 	node.add_theme_stylebox_override("panel", s)
+
+
+# ════════════════════════════════════════════════════════════════
+# ホラー演出 API（EntranceDirector / HUD から呼ばれる）
+# ════════════════════════════════════════════════════════════════
+
+## チャットパネルを赤くフラッシュさせる
+func horror_flash(duration: float = 0.3, color: Color = Color(0.6, 0.0, 0.0, 0.4)) -> void:
+	if not is_instance_valid(_horror_overlay):
+		return
+	_horror_overlay.color = color
+	var tw := create_tween()
+	tw.tween_property(_horror_overlay, "color:a", 0.0, duration)
+
+
+## チャットパネルに暗い色味をじわっとかける（恐怖の雰囲気）
+func horror_tint(color: Color = Color(0.15, 0.0, 0.0, 0.25), fade_in: float = 1.0) -> void:
+	if not is_instance_valid(_horror_overlay):
+		return
+	var tw := create_tween()
+	tw.tween_property(_horror_overlay, "color", color, fade_in)
+
+
+## チャットパネルの色味を元に戻す
+func horror_tint_clear(fade_out: float = 0.5) -> void:
+	if not is_instance_valid(_horror_overlay):
+		return
+	var tw := create_tween()
+	tw.tween_property(_horror_overlay, "color:a", 0.0, fade_out)
+
+
+## チャット欄をグリッチ風に乱す（一瞬ずらして戻す）
+func horror_glitch(intensity: float = 8.0, count: int = 3) -> void:
+	if not is_instance_valid(_chat_panel_ref):
+		return
+	var orig_pos := _chat_panel_ref.position
+	var tw := create_tween()
+	for i in count:
+		var offset := Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity))
+		tw.tween_property(_chat_panel_ref, "position", orig_pos + offset, 0.04)
+		tw.tween_property(_chat_panel_ref, "position", orig_pos, 0.04)
+
+
+## Kのメッセージを連投する（ホラーイベント用）
+func horror_k_spam(messages: Array, interval: float = 0.15) -> void:
+	for i in messages.size():
+		if i > 0:
+			await get_tree().create_timer(interval).timeout
+		add_message(messages[i], "K", "horror")
+
+
+## 視聴者数を急変させる（急増 or ゼロ落ち演出）
+func set_viewers(count: int) -> void:
+	_view_count = count
+	if is_instance_valid(_view_label):
+		_view_label.text = "%s 人が視聴中" % _fmt_count(_view_count)

@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://assets/models/bus_stop/shaders/decayed_wood.gdshader" id="1_decayed_wood"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_decayed_wood")
+shader_parameter/wood_base_color = Color(0.1, 0.08, 0.05, 1)
+shader_parameter/wood_highlight_color = Color(0.2, 0.18, 0.15, 1)
+shader_parameter/moss_color = Color(0.1, 0.25, 0.05, 1)
+shader_parameter/decay_amount = 0.9
+shader_parameter/moss_amount = 0.7
+shader_parameter/uv_scale = null

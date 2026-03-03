@@ -102,6 +102,33 @@
 
     {"type": "say",     "text": "…冗談やめて。どこから見てるんだよ"},
     {"type": "wait",    "sec": 1.5},
+    {"type": "chat",    "msg": "Kブロックしろ！",                "user": "幽霊ガチ勢",    "utype": "viewer"},
+    {"type": "wait",    "sec": 0.3},
+    {"type": "chat",    "msg": "話しかけてみたら？",             "user": "深夜探偵",       "utype": "viewer"},
+    {"type": "wait",    "sec": 0.4},
+    {"type": "chat",    "msg": "無視しろ無視！",                 "user": "配信民99",       "utype": "viewer"},
+    {"type": "wait",    "sec": 0.5},
+    {"type": "say_clear"},
+
+    {"type": "choice",
+     "prompt": "Kがお前の部屋を見ている。夕飯のメニューまで知っている。",
+     "choices": [
+       {"text": "Kに直接話しかける",          "sub": "何者なのか問い詰める。答えが返ってくるとは限らない"},
+       {"text": "コメント欄をオフにする",      "sub": "Kを遮断する。ただし視聴者全員の声も消える"},
+       {"text": "無視してVHSを持って出る",     "sub": "目的はVHS。Kに構っている場合じゃない"}
+     ]
+    },
+
+    {"type": "say",     "text": "…何をしても同じだ。Kはどこにでもいる"},
+    {"type": "wait",    "sec": 1.5},
+    {"type": "chat",    "msg": "全部見えている",                 "user": "K",              "utype": "viewer"},
+    {"type": "wait",    "sec": 0.5},
+    {"type": "chat",    "msg": "お前の目を通して",               "user": "K",              "utype": "viewer"},
+    {"type": "wait",    "sec": 0.8},
+    {"type": "say",     "text": "…俺の目を通して。カメラじゃなくて、俺の目を…？"},
+    {"type": "wait",    "sec": 2.0},
+    {"type": "chat",    "msg": "やばいやばい！！",               "user": "ゆきんこ77",    "utype": "viewer"},
+    {"type": "wait",    "sec": 0.5},
     {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},
     {"type": "wait",    "sec": 0.3},
     {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},

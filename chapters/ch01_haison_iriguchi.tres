@@ -1,6 +1,35 @@
-[gd_resource type="Resource" script_class="ChapterData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="ChapterData" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/ChapterData.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/LightConfig.gd" id="2"]
+
+[sub_resource type="Resource" id="light_busstop"]
+script = ExtResource("2")
+position = Vector3(0, 3, 0)
+color = Color(0.7, 0.85, 0.6, 1)
+energy = 0.6
+omni_range = 8.0
+
+[sub_resource type="Resource" id="light_gate"]
+script = ExtResource("2")
+position = Vector3(25, 3, 4.3)
+color = Color(0.8, 0.3, 0.1, 1)
+energy = 0.4
+omni_range = 10.0
+
+[sub_resource type="Resource" id="light_shrine"]
+script = ExtResource("2")
+position = Vector3(12, 3, -15)
+color = Color(0.9, 0.1, 0.05, 1)
+energy = 0.3
+omni_range = 12.0
+
+[sub_resource type="Resource" id="light_road"]
+script = ExtResource("2")
+position = Vector3(12, 3.5, 4)
+color = Color(0.4, 0.5, 0.7, 1)
+energy = 0.2
+omni_range = 15.0
 
 [resource]
 script = ExtResource("1")
@@ -8,14 +37,28 @@ chapter_id = "ch01_haison_iriguchi"
 chapter_name = "廃村入口"
 location_text = "霧原村　廃村入口"
 date_text = "2026/02/24  23:31"
-stage_scene_path = "res://scenes/Stage_Iriguchi.tscn"
-player_spawn = Vector3(0, 1.0, 15)
+stage_scene_path = "res://scenes/Stage_Village.tscn"
+player_spawn = Vector3(1.5, 1.0, 3.0)
 item_positions = PackedVector3Array()
-exit_position = Vector3(0, 1.5, -18)
-ambient_light_energy = 0.0
-directional_light_energy = 0.0
-background_color = Color(0.0, 0.0, 0.0, 1)
+exit_position = Vector3(36, 1.5, -2)
+lights = [SubResource("light_busstop"), SubResource("light_gate"), SubResource("light_shrine"), SubResource("light_road")]
+ambient_light_energy = 0.05
+directional_light_energy = 0.02
+background_color = Color(0.02, 0.02, 0.05, 1)
 fog_enabled = true
-fog_density = 0.007
+fog_density = 0.05
+use_sky_background = true
+sky_top_color = Color(0, 0, 0, 1)
+sky_horizon_color = Color(0.05, 0.05, 0.05, 1)
+ambient_light_color = Color(0.1, 0.1, 0.15, 1)
+tonemap_mode = 3
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+fog_light_color = Color(0.1, 0.1, 0.15, 1)
+fog_aerial_perspective = 1.0
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.02
+vhs_overlay = false
 monologue_lines = PackedStringArray("深夜0時…バスを降りたらすごい霧だ", "ここが霧原村の入口か…", "奥の倉庫にVHSテープがあるって情報があった", "門をくぐって奥に進もう")
 next_chapter_id = "ch01_haison_souko"

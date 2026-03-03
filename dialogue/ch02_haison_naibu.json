@@ -18,7 +18,7 @@
     {"type": "chat",    "msg": "調べた？",                       "user": "深夜探偵",        "utype": "viewer"},
     {"type": "wait",    "sec": 0.5},
 
-    {"type": "say",     "text": "調べたけど、記録がほとんど残ってない。昭和初期に人が消えたって話しか"},
+    {"type": "say",     "text": "調べたけど、記録がほとんど残ってない。1990年代に突然村が無人になったらしい"},
     {"type": "wait",    "sec": 1.8},
     {"type": "chat",    "msg": "人が消えた…",                    "user": "ゆきんこ77",      "utype": "viewer"},
     {"type": "wait",    "sec": 0.4},
@@ -85,14 +85,14 @@
     {"type": "chat",    "msg": "読んで読んで！！",               "user": "ホラー好き太郎",  "utype": "viewer"},
     {"type": "wait",    "sec": 0.4},
 
-    {"type": "say",     "text": "…新聞？「霧原村　謎の失踪事件　男性住民　全員に共通する奇習」"},
+    {"type": "say",     "text": "…新聞？「霧原村　謎の失踪事件　女系制と奇習　村を出ようとした少女の末路」"},
     {"type": "wait",    "sec": 1.8},
     {"type": "chat",    "msg": "奇習！？",                       "user": "配信民99",        "utype": "viewer"},
     {"type": "wait",    "sec": 0.3},
     {"type": "chat",    "msg": "なに書いてある！？",             "user": "ゆきんこ77",      "utype": "viewer"},
     {"type": "wait",    "sec": 0.5},
 
-    {"type": "say",     "text": "…「この村では男性は3歳になると眼を摘出する儀式が行われていた。眼を他者に見せることは魂を奪われることと同義であるとされ——」"},
+    {"type": "say",     "text": "…「この村は女系制であり、外部の男性は『種』として連れてこられた。男性は3歳で眼を摘出される。外の世界を見せないため——逃げられなくするためだ」"},
     {"type": "wait",    "sec": 2.5},
     {"type": "chat",    "msg": "え",                             "user": "視聴者A",         "utype": "viewer"},
     {"type": "wait",    "sec": 0.3},
@@ -101,12 +101,12 @@
     {"type": "chat",    "msg": "眼が空洞の人形はそういうことか",  "user": "深夜探偵",        "utype": "viewer"},
     {"type": "wait",    "sec": 0.8},
 
-    {"type": "say",     "text": "…だから人形の目が。儀式の再現だったのか"},
+    {"type": "say",     "text": "…みゆき。首を…見せしめ。だから人形の目が空洞なのか。この村の男たちは目を奪われてた"},
     {"type": "wait",    "sec": 1.8},
     {"type": "chat",    "msg": "続き読んで",                     "user": "深夜探偵",        "utype": "viewer"},
     {"type": "wait",    "sec": 0.5},
 
-    {"type": "say",     "text": "…「しかし1994年を最後に儀式は途絶え、村の男性住民は一夜にして消えた。残されたのは女性と子供のみ、その後彼女たちも」…破れて読めなくなってる"},
+    {"type": "say",     "text": "…「1994年10月、少女『みゆき』が村の男と駆け落ちを図り捕縛。見せしめに首を——」…破れて読めない。「その直後、村民は一夜にして全員が」…ここも読めない"},
     {"type": "wait",    "sec": 2.5},
     {"type": "chat",    "msg": "1994年…",                       "user": "視聴者A",         "utype": "viewer"},
     {"type": "wait",    "sec": 0.3},
@@ -134,8 +134,28 @@
     {"type": "say",     "text": "奥の家に行く。一番大きい家だ"},
     {"type": "wait",    "sec": 0.9},
     {"type": "chat",    "msg": "ここが中心家族の家かな",         "user": "暗闇ウォッチャー","utype": "viewer"},
+    {"type": "wait",    "sec": 0.3},
+    {"type": "chat",    "msg": "どうやって入る？",               "user": "配信民99",        "utype": "viewer"},
+    {"type": "wait",    "sec": 0.4},
+    {"type": "chat",    "msg": "入れ",                           "user": "K",               "utype": "viewer"},
     {"type": "wait",    "sec": 0.5},
+    {"type": "say_clear"},
 
+    {"type": "choice",
+     "prompt": "村で一番大きな家。扉は開いている。",
+     "choices": [
+       {"text": "正面から堂々と入る",          "sub": "配信映えはする。だが何がいるかわからない"},
+       {"text": "窓から先に中を覗く",          "sub": "慎重に。中の様子を確認してからでも遅くない"},
+       {"text": "チャットに聞く——入るべきか",  "sub": "100人の目は1人の判断に勝る…はず"}
+     ]
+    },
+
+    {"type": "say",     "text": "…入る。ここまで来て引き返す選択肢はない"},
+    {"type": "wait",    "sec": 1.0},
+    {"type": "chat",    "msg": "入ったぞ！！",                   "user": "ホラー好き太郎",  "utype": "viewer"},
+    {"type": "wait",    "sec": 0.3},
+    {"type": "chat",    "msg": "入れ",                           "user": "K",               "utype": "viewer"},
+    {"type": "wait",    "sec": 0.5},
     {"type": "walk_set","on": true},
     {"type": "pos_x",   "target": -13.0, "dur": 7.0, "id": "walk_west"},
 

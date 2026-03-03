@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://assets/models/bus_stop/shaders/rusty_totan.gdshader" id="1_rusty_totan"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_rusty_totan")
+shader_parameter/base_color = Color(0.15, 0.2, 0.25, 1)
+shader_parameter/rust_color = Color(0.2, 0.05, 0.02, 1)
+shader_parameter/bright_rust_color = Color(0.4, 0.1, 0.02, 1)
+shader_parameter/rust_amount = 0.9
+shader_parameter/wetness = 0.8
+shader_parameter/uv_scale = null

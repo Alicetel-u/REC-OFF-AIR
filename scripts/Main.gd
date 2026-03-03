@@ -69,11 +69,12 @@ func _ready() -> void:
 	GameManager.player_won.connect(_show_win)
 	GameManager.player_hit.connect(_on_player_hit)
 
-	# ゴーストをイントロ中は停止
+	# ゴーストをイントロ中は停止＋透明化（VHS2個回収で出現）
 	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
 		ghost.ghost_spotted_player.connect(_on_ghost_spotted)
 		ghost.ghost_lost_player.connect(_on_ghost_lost)
 		ghost.process_mode = Node.PROCESS_MODE_DISABLED
+		ghost.visible = false
 
 	overlay_layer.visible = false
 
@@ -95,7 +96,7 @@ func _ready() -> void:
 
 	# 廃村入口: イントロ前（画面が黒い間）に初期状態を設定してスナップを防ぐ
 	if chapter.chapter_id == "ch01_haison_iriguchi":
-		player.rotation.y      = -1.2   # バス停方向を向く（+X方向 → rotation.y 負値）
+		player.rotation.y      = -1.4   # 道路方向（+X、村門方向）を向く
 		player.head.rotation.x = -0.06
 		player.flashlight.visible  = false
 		player.flashlight_on       = false
@@ -136,10 +137,12 @@ func _ready() -> void:
 	ScenarioManager.scenario_triggered.connect(_on_scenario_triggered)
 	ScenarioManager.trigger("game_start")
 
-	# ゴーストは1フレーム遅らせて有効化（初回フレームのGPU負荷分散）
-	await get_tree().process_frame
-	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
-		ghost.process_mode = Node.PROCESS_MODE_INHERIT
+	# ゴーストはVHS2個回収で有効化（_on_ghosts_awaken で処理）
+	GameManager.item_collected.connect(_on_item_for_ghost_awaken)
+
+	# 出口方向矢印用: プレイヤーと出口位置をHUDに渡す
+	var exit_pos : Vector3 = chapter.exit_position if chapter else Vector3(23, 1.5, 15)
+	hud.setup_exit_arrow(player, exit_pos)
 
 
 func _run_entrance_sequence() -> void:
@@ -200,22 +203,78 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _apply_environment(chapter: Resource) -> void:
 	var env := $WorldEnvironment.environment as Environment
-	# 背景を単色に固定
-	env.background_mode  = Environment.BG_COLOR
-	env.background_color = chapter.background_color
-	# アンビエントをカラー固定（Skyからの間接光を遮断）
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color  = Color(0, 0, 0, 1)
+
+	# ── 背景 ──
+	if chapter.use_sky_background:
+		env.background_mode = Environment.BG_SKY
+		var sky_mat := ProceduralSkyMaterial.new()
+		sky_mat.sky_top_color     = chapter.sky_top_color
+		sky_mat.sky_horizon_color = chapter.sky_horizon_color
+		sky_mat.ground_bottom_color = chapter.sky_top_color
+		var sky := Sky.new()
+		sky.sky_material = sky_mat
+		env.sky = sky
+		env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
+	else:
+		env.background_mode  = Environment.BG_COLOR
+		env.background_color = chapter.background_color
+		env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+
+	env.ambient_light_color  = chapter.ambient_light_color
 	env.ambient_light_energy = chapter.ambient_light_energy
-	# フォグ設定
-	# fog_light_color を背景色に合わせないと、遠方が Godot デフォルトの
-	# グレーブルー(≈0.5,0.6,0.7)にブレンドされてしまい「白っぽい空・灰色の地面」になる
+
+	# ── トーンマッピング ──
+	env.tonemap_mode = chapter.tonemap_mode
+
+	# ── SSAO / SSIL / SDFGI (Forward Plus) ──
+	env.ssao_enabled  = chapter.ssao_enabled
+	env.ssil_enabled  = chapter.ssil_enabled
+	env.sdfgi_enabled = chapter.sdfgi_enabled
+
+	# ── フォグ ──
 	env.fog_enabled = chapter.fog_enabled
 	if chapter.fog_enabled:
-		env.fog_density      = chapter.fog_density
-		env.fog_light_color  = chapter.background_color  # フォグ色を背景（漆黒）に統一
-		env.fog_light_energy = 0.0
+		env.fog_density            = chapter.fog_density
+		env.fog_light_color        = chapter.fog_light_color
+		env.fog_light_energy       = 0.0
+		env.fog_aerial_perspective = chapter.fog_aerial_perspective
+
+	# ── ボリュメトリックフォグ (Forward Plus) ──
+	env.volumetric_fog_enabled = chapter.volumetric_fog_enabled
+	if chapter.volumetric_fog_enabled:
+		env.volumetric_fog_density = chapter.volumetric_fog_density
+
 	$DirectionalLight3D.light_energy = chapter.directional_light_energy
+
+	# ── VHS オーバーレイ ──
+	if chapter.vhs_overlay:
+		_setup_vhs_overlay()
+
+
+# ──────────────────────────────────────────────
+# VHS オーバーレイ
+# ──────────────────────────────────────────────
+
+var _vhs_layer : CanvasLayer = null
+
+func _setup_vhs_overlay() -> void:
+	if _vhs_layer:
+		return
+	var shader := load("res://shaders/vhs_noise.gdshader") as Shader
+	if not shader:
+		return
+	_vhs_layer = CanvasLayer.new()
+	_vhs_layer.layer = 1   # 3Dビューの上、HUD(2)の下
+	add_child(_vhs_layer)
+	var rect := ColorRect.new()
+	rect.anchor_right  = 1.0
+	rect.anchor_bottom = 1.0
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	mat.set_shader_parameter("shake_intensity", 0.005)
+	mat.set_shader_parameter("noise_intensity", 0.08)
+	rect.material = mat
+	_vhs_layer.add_child(rect)
 
 
 # ──────────────────────────────────────────────
@@ -273,6 +332,67 @@ func _on_player_moved() -> void:
 	hud.trigger_chat_event("moved")
 
 
+var _ghosts_awakened : bool = false
+
+func _on_item_for_ghost_awaken(count: int, _total: int) -> void:
+	if _ghosts_awakened or count < 2:
+		return
+	_ghosts_awakened = true
+	# VHS2個目取得 → ゴーストが姿を現して動き出す
+	hud.show_monologue("…なんだ？　空気が変わった気がする…")
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		ghost.visible = true
+		ghost.modulate = Color(1, 1, 1, 0) if ghost.has_method("set") else Color.WHITE
+		ghost.process_mode = Node.PROCESS_MODE_INHERIT
+		# 3Dノードは modulate が無いので _ghost_body のフェードで対応
+		_fade_in_ghost(ghost)
+	await get_tree().create_timer(3.0).timeout
+	if is_instance_valid(hud):
+		hud.hide_monologue()
+
+
+func _fade_in_ghost(ghost: Node) -> void:
+	# Ghost (CharacterBody3D) の GhostBody を透明→不透明にフェードイン
+	var body : Node3D = ghost.get_node_or_null("GhostBody")
+	if not body:
+		return
+	# 全 MeshInstance3D のマテリアルを透明開始 → フェードイン
+	var meshes : Array[MeshInstance3D] = []
+	_collect_meshes(body, meshes)
+	for mi in meshes:
+		var mat := mi.material_override
+		if mat is StandardMaterial3D:
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			mat.albedo_color.a = 0.0
+	# GhostLight も暗くしておく
+	var light : OmniLight3D = ghost.get_node_or_null("GhostLight") as OmniLight3D
+	var orig_energy := light.light_energy if light else 0.8
+	if light:
+		light.light_energy = 0.0
+	# 2秒かけてフェードイン
+	var tw := create_tween()
+	tw.set_parallel(true)
+	for mi in meshes:
+		var mat := mi.material_override
+		if mat is StandardMaterial3D:
+			tw.tween_property(mat, "albedo_color:a", 1.0, 2.0)
+	if light:
+		tw.tween_property(light, "light_energy", orig_energy, 2.0)
+	await tw.finished
+	# フェード完了後にtransparencyを無効化（パフォーマンス回復）
+	for mi in meshes:
+		var mat := mi.material_override
+		if mat is StandardMaterial3D:
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
+
+
+func _collect_meshes(node: Node, out: Array[MeshInstance3D]) -> void:
+	if node is MeshInstance3D:
+		out.append(node as MeshInstance3D)
+	for child in node.get_children():
+		_collect_meshes(child, out)
+
+
 func _on_ghost_spotted() -> void:
 	hud.trigger_chat_event("ghost_spotted")
 	ScenarioManager.trigger("ghost_spotted")
@@ -320,7 +440,7 @@ func _show_win() -> void:
 
 
 func _show_true_ending() -> void:
-	## CP5 トゥルーエンディング: 配信が終われない恐怖
+	## CP5 エンディング — ending_route に応じた演出
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	player.process_mode = Node.PROCESS_MODE_DISABLED
 
@@ -333,23 +453,31 @@ func _show_true_ending() -> void:
 	win_label.visible    = false
 	await tw.finished
 
-	# エラーメッセージ演出
-	win_label.visible = true
-	win_label.text    = "【配信終了できません】"
-	win_label.add_theme_color_override("font_color", Color(1.0, 0.1, 0.1))
-	sub_label.text    = "視聴者が離してくれません"
-	await get_tree().create_timer(2.5).timeout
+	match GameManager.ending_route:
+		0:  # NORMAL END: 夢の代償
+			win_label.visible = true
+			win_label.text    = "NORMAL END"
+			win_label.add_theme_color_override("font_color", Color(0.8, 0.6, 0.2))
+			sub_label.text    = "夢の代償 — 赤い糸は、まだ首に巻きついている"
+		1:  # TRUE END: 配信停止
+			win_label.visible = true
+			win_label.text    = "TRUE END"
+			win_label.add_theme_color_override("font_color", Color(0.4, 0.7, 1.0))
+			sub_label.text    = "配信停止 — 誰にも見られない。それが、いちばん安全だった"
+		2:  # BAD END: 永遠のバズり
+			win_label.visible = true
+			win_label.text    = "BAD END"
+			win_label.add_theme_color_override("font_color", Color(1.0, 0.1, 0.1))
+			sub_label.text    = "永遠のバズり — 配信は、まだ続いている"
+		_:  # フォールバック（未選択）
+			win_label.visible = true
+			win_label.text    = "END"
+			win_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+			sub_label.text    = ""
 
-	# チャットに "見ている" を流す
-	for i in range(8):
-		hud.add_chat("見ている", "K", "moderator")
-		await get_tree().create_timer(0.3).timeout
+	await get_tree().create_timer(5.0).timeout
 
-	await get_tree().create_timer(1.0).timeout
-	hud.add_chat("次は、今これを見ている\"あなた\"の番だね", "K", "owner")
-	await get_tree().create_timer(3.0).timeout
-
-	# フェードアウト → タイトルへ（暫定: reload）
+	# フェードアウト → タイトルへ
 	tw = create_tween()
 	tw.tween_property(overlay_layer, "modulate:a", 0.0, 2.0)
 	await tw.finished

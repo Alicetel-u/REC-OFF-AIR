@@ -2,13 +2,12 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://xiyi3wth2oie"
+uid="uid://bpd6i4w30uukw"
 path.s3tc="res://.godot/imported/Furniture_Wood060_2K_Roughness.png-dd01e9487f66c15767a22813de355ed2.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
-generator_parameters={}
 
 [deps]
 

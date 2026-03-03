@@ -1,0 +1,105 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://assets/models/environment/shaders/rice_field.gdshader" id="1_ee7c4"]
+[ext_resource type="PackedScene" path="res://shaders/素材/案山子.glb" id="2_scarecrow"]
+
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g7s0s"]
+albedo_color = Color(0.01, 0.02, 0.01, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hjm7o"]
+render_priority = 0
+shader = ExtResource("1_ee7c4")
+shader_parameter/mud_color = Color(0.12, 0.08, 0.05, 1)
+shader_parameter/water_color = Color(0.08, 0.1, 0.1, 1)
+shader_parameter/plant_color = Color(0.15, 0.3, 0.1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i67p5"]
+albedo_color = Color(0.1, 0.08, 0.05, 1)
+roughness = 0.9
+
+[node name="MountainsAndFieldsRoot" type="Node3D" unique_id=1904914306]
+
+[node name="DistantMountains" type="Node3D" parent="." unique_id=1986947146]
+
+[node name="Mountain_0" type="CSGSphere3D" parent="DistantMountains" unique_id=1175081469]
+transform = Transform3D(-0.027351443, 0.011450893, 0.9996018, 0.08969728, 1.6441029, -0.0044570775, -0.9955934, 0.1478097, -0.027863119, 165.22314, -10, 21.584068)
+radius = 83.31197
+material = SubResource("StandardMaterial3D_g7s0s")
+
+[node name="Mountain_1" type="CSGSphere3D" parent="DistantMountains" unique_id=369130406]
+transform = Transform3D(0.06192518, -0.51128304, -0.9798585, -0.053926375, 2.6383636, -0.19322063, 0.9966229, 0.17452808, 0.050428532, 137.79793, -10, 121.10806)
+radius = 74.14803
+material = SubResource("StandardMaterial3D_g7s0s")
+
+[node name="Mountain_2" type="CSGSphere3D" parent="DistantMountains" unique_id=1052195694]
+transform = Transform3D(-0.54238826, 1.137896, 0.73077846, 0.30795166, 2.491196, -0.28605655, -0.7816526, 0.19188386, -0.61978585, 113.852516, -10, 145.85529)
+radius = 82.57336
+material = SubResource("StandardMaterial3D_g7s0s")
+
+[node name="Mountain_3" type="CSGSphere3D" parent="DistantMountains" unique_id=226316753]
+transform = Transform3D(-0.5677979, -0.34121147, -0.80472976, 0.1779181, 1.8289785, -0.32546657, 0.80371064, -0.64593834, -0.49646908, -29.752127, -10, 189.21088)
+radius = 87.37573
+material = SubResource("StandardMaterial3D_g7s0s")
+
+[node name="Mountain_4" type="CSGSphere3D" parent="DistantMountains" unique_id=2086395088]
+transform = Transform3D(-0.9941397, 0.057400834, 0.10613735, 0.0014952692, 2.753233, -0.17631714, -0.108092785, -0.48983496, -0.9785944, -91.72397, -10, 192.82634)
+radius = 61.322845
+material = SubResource("StandardMaterial3D_g7s0s")
+
+[node name="Mountain_5" type="CSGSphere3D" parent="DistantMountains" unique_id=1475621557]
+transform = Transform3D(-0.3682442, -0.15728617, 0.9271054, 0.21965802, 2.1687608, 0.15970388, -0.9034083, 0.5914329, -0.33907253, -143.16588, -10, 88.728424)
+radius = 47.9562
+material = SubResource("StandardMaterial3D_g7s0s")
+
+[node name="Mountain_6" type="CSGSphere3D" parent="DistantMountains" unique_id=1050575730]
+transform = Transform3D(0.5523362, -0.690862, 0.7817368, 0.3076783, 2.248786, 0.13159274, -0.77476376, 0.400528, 0.6095662, -208.6589, -10, 6.6459327)
+radius = 66.06855
+material = SubResource("StandardMaterial3D_g7s0s")
+
+[node name="Mountain_7" type="CSGSphere3D" parent="DistantMountains" unique_id=84109062]
+transform = Transform3D(-0.04233899, 0.5928607, -0.9635899, 0.30074266, 2.0728853, 0.23970063, 0.95276505, -0.6279658, -0.11848212, -188.45328, -10, -66.41858)
+radius = 82.34323
+material = SubResource("StandardMaterial3D_g7s0s")
+
+[node name="Mountain_8" type="CSGSphere3D" parent="DistantMountains" unique_id=954510432]
+transform = Transform3D(0.45016003, 0.26377305, 0.88694185, -0.06716059, 2.5368226, -0.081831135, -0.89041865, -0.05798892, 0.45457447, -78.255035, -10, -148.34071)
+radius = 40.841965
+material = SubResource("StandardMaterial3D_g7s0s")
+
+[node name="Mountain_9" type="CSGSphere3D" parent="DistantMountains" unique_id=1818985361]
+transform = Transform3D(0.089577645, -0.3828761, 0.972868, -0.21282841, 1.7053745, 0.22792722, -0.97297484, -0.40828323, 0.03971104, -5.953327, -10, -207.39752)
+radius = 51.387222
+material = SubResource("StandardMaterial3D_g7s0s")
+
+[node name="Mountain_10" type="CSGSphere3D" parent="DistantMountains" unique_id=1656341263]
+transform = Transform3D(0.7699556, -0.077695645, -0.6369999, -0.09119593, 2.0385828, -0.16787805, 0.6315471, 0.38909632, 0.75236166, 84.293274, -10, -145.08672)
+radius = 63.263218
+material = SubResource("StandardMaterial3D_g7s0s")
+
+[node name="Mountain_11" type="CSGSphere3D" parent="DistantMountains" unique_id=1970317209]
+transform = Transform3D(0.62560207, 0.044287145, -0.77987355, -0.15744004, 2.1248598, -0.10050293, 0.7640907, 0.40156466, 0.6178158, 156.4117, -10, -57.036495)
+radius = 78.82017
+material = SubResource("StandardMaterial3D_g7s0s")
+
+[node name="RiceFieldRight" type="CSGBox3D" parent="." unique_id=1194460611]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, -0.2, 108.3)
+size = Vector3(200, 0.1, 200)
+material = SubResource("ShaderMaterial_hjm7o")
+
+[node name="RiceFieldLeft" type="CSGBox3D" parent="." unique_id=1829278865]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, -0.2, -99.7)
+size = Vector3(200, 0.1, 200)
+material = SubResource("ShaderMaterial_hjm7o")
+
+[node name="DirtPath1" type="CSGBox3D" parent="." unique_id=1475488720]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, -0.15, 27)
+size = Vector3(1.5, 0.15, 46)
+material = SubResource("StandardMaterial3D_i67p5")
+
+[node name="ScarecrowGrp" type="Node3D" parent="." unique_id=29995837]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 8, -0.2, 12)
+
+[node name="ScarecrowModel" type="Node3D" parent="ScarecrowGrp" instance=ExtResource("2_scarecrow")]
+transform = Transform3D(0, 0, -3, 0, 3, 0, 3, 0, 0, 0, 1, 0)
+

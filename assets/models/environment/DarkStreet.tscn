@@ -1,0 +1,280 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://assets/models/environment/shaders/dark_asphalt.gdshader" id="1_oe4cw"]
+[ext_resource type="Material" path="res://assets/models/bus_stop/materials/decayed_wood.tres" id="2_0n5af"]
+[ext_resource type="Material" path="res://assets/models/bus_stop/materials/rusty_bench.tres" id="3_tj8nk"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7thgd"]
+render_priority = 0
+shader = ExtResource("1_oe4cw")
+shader_parameter/asphalt_color = null
+shader_parameter/crack_color = null
+shader_parameter/puddle_color = null
+shader_parameter/wetness = null
+
+[node name="StreetRoot" type="Node3D" unique_id=695537134]
+
+[node name="LongAsphaltRoad" type="CSGBox3D" parent="." unique_id=1365174672]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+material_override = SubResource("ShaderMaterial_7thgd")
+use_collision = true
+size = Vector3(6, 0.2, 200)
+material = SubResource("ShaderMaterial_7thgd")
+
+[node name="TelephonePole_0" type="Node3D" parent="." unique_id=838160504]
+transform = Transform3D(0.9954652, -0.0951263, 0, 0.09504824, 0.99464834, 0.040502988, -0.0038528994, -0.040319316, 0.9991794, -3.6, 0, -100)
+
+[node name="PoleBody" type="CSGCylinder3D" parent="TelephonePole_0" unique_id=2021725215]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+use_collision = true
+radius = 0.15
+height = 7.0
+material = ExtResource("2_0n5af")
+
+[node name="CrossBeam" type="CSGBox3D" parent="TelephonePole_0" unique_id=1596727945]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.2, 0.1)
+size = Vector3(1.2, 0.1, 0.1)
+material = ExtResource("2_0n5af")
+
+[node name="Transformer" type="CSGCylinder3D" parent="TelephonePole_0" unique_id=1333840721]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 5.5, 0.25)
+radius = 0.3
+height = 0.6
+material = ExtResource("3_tj8nk")
+
+[node name="TelephonePole_1" type="Node3D" parent="." unique_id=1247515981]
+transform = Transform3D(0.99700636, -0.07731932, 0, 0.07716827, 0.9950587, 0.06247529, -0.0048305467, -0.062288262, 0.9980465, -3.6, 0, -80)
+
+[node name="PoleBody" type="CSGCylinder3D" parent="TelephonePole_1" unique_id=1002347448]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+use_collision = true
+radius = 0.15
+height = 7.0
+material = ExtResource("2_0n5af")
+
+[node name="CrossBeam" type="CSGBox3D" parent="TelephonePole_1" unique_id=470508585]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.2, 0.1)
+size = Vector3(1.2, 0.1, 0.1)
+material = ExtResource("2_0n5af")
+
+[node name="TelephonePole_2" type="Node3D" parent="." unique_id=768213593]
+transform = Transform3D(0.99914, 0.041462995, 0, -0.04145237, 0.998884, -0.02263674, -0.000938587, 0.022617273, 0.99974376, -3.6, 0, -60)
+
+[node name="PoleBody" type="CSGCylinder3D" parent="TelephonePole_2" unique_id=1755995402]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+use_collision = true
+radius = 0.15
+height = 7.0
+material = ExtResource("2_0n5af")
+
+[node name="CrossBeam" type="CSGBox3D" parent="TelephonePole_2" unique_id=590927990]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.2, 0.1)
+size = Vector3(1.2, 0.1, 0.1)
+material = ExtResource("2_0n5af")
+
+[node name="TelephonePole_3" type="Node3D" parent="." unique_id=285326933]
+transform = Transform3D(0.9973985, -0.07208518, 0, 0.07208243, 0.99736047, 0.0087344, -0.0006296208, -0.008711678, 0.99996185, -3.6, 0, -40)
+
+[node name="PoleBody" type="CSGCylinder3D" parent="TelephonePole_3" unique_id=634990324]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+use_collision = true
+radius = 0.15
+height = 7.0
+material = ExtResource("2_0n5af")
+
+[node name="CrossBeam" type="CSGBox3D" parent="TelephonePole_3" unique_id=1673783025]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.2, 0.1)
+size = Vector3(1.2, 0.1, 0.1)
+material = ExtResource("2_0n5af")
+
+[node name="TelephonePole_4" type="Node3D" parent="." unique_id=1158187825]
+transform = Transform3D(0.99926394, 0.038360488, 0, -0.038246233, 0.9962877, 0.077123076, 0.0029584789, -0.07706631, 0.99702156, -3.6, 0, -20)
+
+[node name="PoleBody" type="CSGCylinder3D" parent="TelephonePole_4" unique_id=655582833]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+use_collision = true
+radius = 0.15
+height = 7.0
+material = ExtResource("2_0n5af")
+
+[node name="CrossBeam" type="CSGBox3D" parent="TelephonePole_4" unique_id=1611983976]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.2, 0.1)
+size = Vector3(1.2, 0.1, 0.1)
+material = ExtResource("2_0n5af")
+
+[node name="TelephonePole_5" type="Node3D" parent="." unique_id=1818283634]
+transform = Transform3D(0.9937833, -0.1113316, 0, 0.11104065, 0.99118626, 0.072247975, -0.008043482, -0.07179883, 0.9973867, -3.6, 0, 0)
+
+[node name="PoleBody" type="CSGCylinder3D" parent="TelephonePole_5" unique_id=1773685634]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+use_collision = true
+radius = 0.15
+height = 7.0
+material = ExtResource("2_0n5af")
+
+[node name="CrossBeam" type="CSGBox3D" parent="TelephonePole_5" unique_id=355016343]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.2, 0.1)
+size = Vector3(1.2, 0.1, 0.1)
+material = ExtResource("2_0n5af")
+
+[node name="TelephonePole_6" type="Node3D" parent="." unique_id=500000493]
+transform = Transform3D(0.9980201, -0.06289589, 0, 0.06289384, 0.9979876, -0.008066431, 0.0005073453, 0.00805046, 0.99996746, -3.6, 0, 20)
+
+[node name="PoleBody" type="CSGCylinder3D" parent="TelephonePole_6" unique_id=748393359]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+use_collision = true
+radius = 0.15
+height = 7.0
+material = ExtResource("2_0n5af")
+
+[node name="CrossBeam" type="CSGBox3D" parent="TelephonePole_6" unique_id=1291214273]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.2, 0.1)
+size = Vector3(1.2, 0.1, 0.1)
+material = ExtResource("2_0n5af")
+
+[node name="Transformer" type="CSGCylinder3D" parent="TelephonePole_6" unique_id=808102887]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 5.5, 0.25)
+radius = 0.3
+height = 0.6
+material = ExtResource("3_tj8nk")
+
+[node name="TelephonePole_7" type="Node3D" parent="." unique_id=1367793611]
+transform = Transform3D(0.9930323, 0.11784292, 0, -0.11762681, 0.9912111, -0.060534667, -0.007133582, 0.06011288, 0.9981661, -3.6, 0, 40)
+
+[node name="PoleBody" type="CSGCylinder3D" parent="TelephonePole_7" unique_id=1446974596]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+use_collision = true
+radius = 0.15
+height = 7.0
+material = ExtResource("2_0n5af")
+
+[node name="CrossBeam" type="CSGBox3D" parent="TelephonePole_7" unique_id=1898797008]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.2, 0.1)
+size = Vector3(1.2, 0.1, 0.1)
+material = ExtResource("2_0n5af")
+
+[node name="TelephonePole_8" type="Node3D" parent="." unique_id=484541628]
+transform = Transform3D(0.99671155, -0.081031255, 0, 0.08098889, 0.9961904, -0.032333482, 0.0026200227, 0.032227155, 0.99947715, -3.6, 0, 60)
+
+[node name="PoleBody" type="CSGCylinder3D" parent="TelephonePole_8" unique_id=896292602]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+use_collision = true
+radius = 0.15
+height = 7.0
+material = ExtResource("2_0n5af")
+
+[node name="CrossBeam" type="CSGBox3D" parent="TelephonePole_8" unique_id=1764128603]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.2, 0.1)
+size = Vector3(1.2, 0.1, 0.1)
+material = ExtResource("2_0n5af")
+
+[node name="TelephonePole_9" type="Node3D" parent="." unique_id=2051958266]
+transform = Transform3D(0.9982951, -0.058367856, 0, 0.05835841, 0.99813354, -0.017993972, 0.0010502696, 0.017963294, 0.9998381, -3.6, 0, 80)
+
+[node name="PoleBody" type="CSGCylinder3D" parent="TelephonePole_9" unique_id=979327534]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+use_collision = true
+radius = 0.15
+height = 7.0
+material = ExtResource("2_0n5af")
+
+[node name="CrossBeam" type="CSGBox3D" parent="TelephonePole_9" unique_id=2000382800]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.2, 0.1)
+size = Vector3(1.2, 0.1, 0.1)
+material = ExtResource("2_0n5af")
+
+[node name="Transformer" type="CSGCylinder3D" parent="TelephonePole_9" unique_id=1077524190]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 5.5, 0.25)
+radius = 0.3
+height = 0.6
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_0" type="CSGCylinder3D" parent="." unique_id=1748383999]
+transform = Transform3D(-0.29949197, -0.22524296, 0.92713004, -0.9520032, 0.13491872, -0.27474877, -0.06320197, -0.9649159, -0.25483906, 1.1750554, 0.02, 57.514416)
+radius = 0.020878376
+height = 0.09618807
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_1" type="CSGCylinder3D" parent="." unique_id=80581577]
+transform = Transform3D(0.22638689, 0.83973736, 0.49354845, 0.9736001, -0.21026805, -0.08882688, 0.029186219, 0.50062805, -0.8651703, 1.4707098, 0.02, 14.116777)
+radius = 0.03620628
+height = 0.09555772
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_2" type="CSGCylinder3D" parent="." unique_id=660624287]
+transform = Transform3D(0.8531802, 0.32079095, -0.41131085, 0.42388877, 0.03312833, 0.90510815, 0.30397654, -0.94657046, -0.10771526, -1.5135562, 0.02, 44.500927)
+radius = 0.045977302
+height = 0.1427445
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_3" type="CSGCylinder3D" parent="." unique_id=968133831]
+transform = Transform3D(0.65624034, -0.123605624, -0.74435896, 0.744755, 0.26455542, 0.61265844, 0.12119615, -0.95641625, 0.2656679, 1.8592933, 0.02, 88.919136)
+radius = 0.028093325
+height = 0.11527354
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_4" type="CSGCylinder3D" parent="." unique_id=939552050]
+transform = Transform3D(0.5205417, -0.8510356, -0.06909915, 0.09355827, -0.023589818, 0.9953343, -0.848695, -0.5245778, 0.06734194, 2.0146759, 0.02, -96.35205)
+radius = 0.024742043
+height = 0.14503765
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_5" type="CSGCylinder3D" parent="." unique_id=2054413996]
+transform = Transform3D(0.9156438, -0.40137744, -0.02219207, 0.033226553, 0.020550635, 0.9992365, -0.4006149, -0.9156822, 0.03215345, 1.52618, 0.02, -89.91146)
+radius = 0.03834149
+height = 0.115811326
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_6" type="CSGCylinder3D" parent="." unique_id=866162035]
+transform = Transform3D(0.9916396, -0.017270446, 0.12787704, -0.12891099, -0.08863282, 0.9876873, -0.0057236254, -0.9959146, -0.09011817, -1.8194169, 0.02, 0.8722438)
+radius = 0.030484233
+height = 0.13720754
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_7" type="CSGCylinder3D" parent="." unique_id=1830031538]
+transform = Transform3D(-0.16802174, 0.40995008, -0.8964985, 0.81641626, -0.45181692, -0.3596192, -0.55247915, -0.7923398, -0.25877485, 1.674081, 0.02, 29.385159)
+radius = 0.047944985
+height = 0.12950984
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_8" type="CSGCylinder3D" parent="." unique_id=1011932302]
+transform = Transform3D(0.47007987, 0.33876067, -0.8150252, 0.8774924, -0.07994394, 0.4728806, 0.09503705, -0.9374701, -0.33483997, 0.52362, 0.02, -9.795687)
+radius = 0.038607247
+height = 0.12370379
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_9" type="CSGCylinder3D" parent="." unique_id=454096466]
+transform = Transform3D(-0.8581405, -0.4679751, -0.21117316, -0.16996093, -0.1291833, 0.9769468, -0.4844668, 0.8742488, 0.031319946, -0.19602874, 0.02, 80.235794)
+radius = 0.021987764
+height = 0.10357524
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_10" type="CSGCylinder3D" parent="." unique_id=808238679]
+transform = Transform3D(-0.2612668, -0.3908961, 0.8825757, -0.24819869, -0.85638577, -0.45277017, 0.9328114, -0.33734795, 0.12672527, 0.02466332, 0.02, 46.62459)
+radius = 0.031854443
+height = 0.09934717
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_11" type="CSGCylinder3D" parent="." unique_id=453946285]
+transform = Transform3D(-0.052683115, 0.96084976, 0.27201527, 0.059934273, 0.27494487, -0.95959014, -0.9968111, -0.03425117, -0.07207278, -0.56767887, 0.02, 15.435694)
+radius = 0.033958685
+height = 0.12045338
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_12" type="CSGCylinder3D" parent="." unique_id=1626009628]
+transform = Transform3D(0.7620574, 0.60620195, -0.22756921, -0.4418336, 0.22990498, -0.86713713, -0.47334093, 0.761356, 0.44304118, -2.1864653, 0.02, -46.005035)
+radius = 0.03118765
+height = 0.14157903
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_13" type="CSGCylinder3D" parent="." unique_id=1522117182]
+transform = Transform3D(0.81202674, 0.37003487, -0.4513166, 0.12999769, 0.6391975, 0.7579757, 0.56895787, -0.6741667, 0.47094184, 2.0245216, 0.02, 68.46252)
+radius = 0.04179492
+height = 0.13179366
+material = ExtResource("3_tj8nk")
+
+[node name="TrashCan_14" type="CSGCylinder3D" parent="." unique_id=223615070]
+transform = Transform3D(0.47868907, 0.19002345, -0.85717434, -0.32904467, 0.9439697, 0.025509752, 0.8139941, 0.2698374, 0.51439416, 0.86638165, 0.02, 87.49572)
+radius = 0.025734048
+height = 0.12762173
+material = ExtResource("3_tj8nk")

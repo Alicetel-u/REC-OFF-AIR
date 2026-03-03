@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://assets/models/bus_stop/shaders/rusty_bench.gdshader" id="1_y2yuv"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_y2yuv")
+shader_parameter/base_paint = null
+shader_parameter/rust_color = null
+shader_parameter/bright_rust = null
+shader_parameter/rust_level = null
+shader_parameter/scale = null

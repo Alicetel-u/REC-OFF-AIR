@@ -1,0 +1,271 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://assets/models/bus_stop/materials/decayed_wood.tres" id="1_ukl32"]
+[ext_resource type="Material" path="res://assets/models/bus_stop/materials/rusty_totan.tres" id="2_nxvkv"]
+[ext_resource type="Material" path="res://assets/models/bus_stop/materials/rusty_bench.tres" id="3_nxvkv"]
+[ext_resource type="Shader" path="res://assets/models/bus_stop/shaders/bus_sign_round.gdshader" id="4_sb5cu"]
+[ext_resource type="Shader" path="res://assets/models/bus_stop/shaders/bus_timetable_handdrawn.gdshader" id="5_xj3kk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nxvkv"]
+albedo_color = Color(0.5, 0.5, 0.5, 1)
+roughness = 0.9
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_oa722"]
+render_priority = 0
+shader = ExtResource("4_sb5cu")
+shader_parameter/top_blue = null
+shader_parameter/mid_white = null
+shader_parameter/bot_blue = null
+shader_parameter/rust_color = null
+shader_parameter/rust_amount = null
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_su3ln"]
+render_priority = 0
+shader = ExtResource("5_xj3kk")
+shader_parameter/paper_color = null
+shader_parameter/ink_color = null
+shader_parameter/line_thickness = null
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sb5cu"]
+albedo_color = Color(0.15, 0.15, 0.15, 1)
+roughness = 0.95
+
+[node name="BusStopRoot" type="Node3D" unique_id=1884939203]
+
+[node name="PointLight3D" type="OmniLight3D" parent="." unique_id=40849470]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, -1.8)
+light_color = Color(0.8, 0.9, 0.7, 1)
+light_energy = 0.5
+shadow_enabled = true
+omni_range = 4.0
+
+[node name="BusStopShelter" type="CSGCombiner3D" parent="." unique_id=525248091]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+
+[node name="Pillars" type="CSGCombiner3D" parent="BusStopShelter" unique_id=332059336]
+
+[node name="BackPillar_0" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=1584297892]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.05, -0.8)
+size = Vector3(0.12, 2.1, 0.12)
+material = ExtResource("1_ukl32")
+
+[node name="BackPillar_1" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=577952113]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1.05, -0.8)
+size = Vector3(0.12, 2.1, 0.12)
+material = ExtResource("1_ukl32")
+
+[node name="BackPillar_2" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=1402148029]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.05, -0.8)
+size = Vector3(0.12, 2.1, 0.12)
+material = ExtResource("1_ukl32")
+
+[node name="BackPillar_3" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=1540863491]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.05, -0.8)
+size = Vector3(0.12, 2.1, 0.12)
+material = ExtResource("1_ukl32")
+
+[node name="FrontPillar_0" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=999568748]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.25, 0.8)
+size = Vector3(0.12, 2.5, 0.12)
+material = ExtResource("1_ukl32")
+
+[node name="FrontPillar_3" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=469160417]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.25, 0.8)
+size = Vector3(0.12, 2.5, 0.12)
+material = ExtResource("1_ukl32")
+
+[node name="BackBeam_y0_3" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=901734437]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -0.74)
+size = Vector3(3.12, 0.072, 0.072)
+material = ExtResource("1_ukl32")
+
+[node name="BackBeam_y1_05" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=15129191]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, -0.74)
+size = Vector3(3.12, 0.072, 0.072)
+material = ExtResource("1_ukl32")
+
+[node name="BackBeam_y2_0" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=1626691665]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -0.74)
+size = Vector3(3.12, 0.072, 0.072)
+material = ExtResource("1_ukl32")
+
+[node name="FrontTopBeam" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=1019866664]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.45, 0.8)
+size = Vector3(3.12, 0.096, 0.096)
+material = ExtResource("1_ukl32")
+
+[node name="SideBeam_0" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=816211006]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.05, 0)
+size = Vector3(0.096, 0.096, 1.6)
+material = ExtResource("1_ukl32")
+
+[node name="SideBeam_3" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=554211712]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.05, 0)
+size = Vector3(0.096, 0.096, 1.6)
+material = ExtResource("1_ukl32")
+
+[node name="Rafter_0" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=1585642401]
+transform = Transform3D(1, 0, 0, 0, 0.9701425, 0.24253562, 0, -0.24253562, 0.9701425, -1.5, 2.3, 0)
+size = Vector3(0.08, 0.15, 2.4492424)
+material = ExtResource("1_ukl32")
+
+[node name="Rafter_1" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=1982951549]
+transform = Transform3D(1, 0, 0, 0, 0.9701425, 0.24253562, 0, -0.24253562, 0.9701425, -0.5, 2.3, 0)
+size = Vector3(0.08, 0.15, 2.4492424)
+material = ExtResource("1_ukl32")
+
+[node name="Rafter_2" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=105663891]
+transform = Transform3D(1, 0, 0, 0, 0.9701425, 0.24253562, 0, -0.24253562, 0.9701425, 0.5, 2.3, 0)
+size = Vector3(0.08, 0.15, 2.4492424)
+material = ExtResource("1_ukl32")
+
+[node name="Rafter_3" type="CSGBox3D" parent="BusStopShelter/Pillars" unique_id=1544966786]
+transform = Transform3D(1, 0, 0, 0, 0.9701425, 0.24253562, 0, -0.24253562, 0.9701425, 1.5, 2.3, 0)
+size = Vector3(0.08, 0.15, 2.4492424)
+material = ExtResource("1_ukl32")
+
+[node name="Walls" type="CSGCombiner3D" parent="BusStopShelter" unique_id=1826734986]
+
+[node name="LeftWall" type="CSGBox3D" parent="BusStopShelter/Walls" unique_id=1097643692]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.404, 1.15, 0)
+size = Vector3(0.02, 2.1, 1.6)
+material = ExtResource("2_nxvkv")
+
+[node name="BackWall_0" type="CSGBox3D" parent="BusStopShelter/Walls" unique_id=1913138975]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.05, -0.704)
+size = Vector3(0.88, 1.9, 0.02)
+material = ExtResource("2_nxvkv")
+
+[node name="BackWall_1" type="CSGBox3D" parent="BusStopShelter/Walls" unique_id=255257801]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, -0.704)
+size = Vector3(0.88, 1.9, 0.02)
+material = ExtResource("2_nxvkv")
+
+[node name="BackWall_2" type="CSGBox3D" parent="BusStopShelter/Walls" unique_id=772521203]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.05, -0.704)
+size = Vector3(0.88, 1.9, 0.02)
+material = ExtResource("2_nxvkv")
+
+[node name="Roof" type="CSGBox3D" parent="BusStopShelter" unique_id=1203877090]
+transform = Transform3D(1, 0, 0, 0, 0.9701425, 0.24253562, 0, -0.24253562, 0.9701425, 0, 2.4, 0)
+size = Vector3(3.8, 0.02, 2.6492422)
+material = ExtResource("2_nxvkv")
+
+[node name="Bench" type="CSGCombiner3D" parent="BusStopShelter" unique_id=418726564]
+
+[node name="Seat" type="CSGBox3D" parent="BusStopShelter/Bench" unique_id=359250012]
+transform = Transform3D(0.9998477, 0.017452406, 0, -0.017452406, 0.9998477, 0, 0, 0, 1, 0, 0.39999998, -0.4)
+size = Vector3(2.4, 0.05, 0.4)
+material = ExtResource("3_nxvkv")
+
+[node name="Backrest" type="CSGBox3D" parent="BusStopShelter/Bench" unique_id=1161150922]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -0.6)
+size = Vector3(2.4, 0.3, 0.05)
+material = ExtResource("3_nxvkv")
+
+[node name="BackBar" type="CSGBox3D" parent="BusStopShelter/Bench" unique_id=1435233798]
+transform = Transform3D(1, 0, 0, 0, 0.9396926, 0.34202012, 0, -0.34202012, 0.9396926, -1, 0.65, -0.5)
+size = Vector3(0.05, 0.4, 0.05)
+material = ExtResource("3_nxvkv")
+
+[node name="@CSGBox3D@2" type="CSGBox3D" parent="BusStopShelter/Bench" unique_id=1525603420]
+transform = Transform3D(1, 0, 0, 0, 0.9396926, 0.34202012, 0, -0.34202012, 0.9396926, 0, 0.65, -0.5)
+size = Vector3(0.05, 0.4, 0.05)
+material = ExtResource("3_nxvkv")
+
+[node name="@CSGBox3D@3" type="CSGBox3D" parent="BusStopShelter/Bench" unique_id=1353064619]
+transform = Transform3D(1, 0, 0, 0, 0.9396926, 0.34202012, 0, -0.34202012, 0.9396926, 1, 0.65, -0.5)
+size = Vector3(0.05, 0.4, 0.05)
+material = ExtResource("3_nxvkv")
+
+[node name="Leg_F" type="CSGBox3D" parent="BusStopShelter/Bench" unique_id=822984934]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.225, -0.25)
+size = Vector3(0.05, 0.45, 0.05)
+material = ExtResource("3_nxvkv")
+
+[node name="Leg_B" type="CSGBox3D" parent="BusStopShelter/Bench" unique_id=462544826]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.225, -0.55)
+size = Vector3(0.05, 0.45, 0.05)
+material = ExtResource("3_nxvkv")
+
+[node name="Brace" type="CSGBox3D" parent="BusStopShelter/Bench" unique_id=540410562]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.15, -0.4)
+size = Vector3(0.04, 0.04, 0.35)
+material = ExtResource("3_nxvkv")
+
+[node name="@CSGBox3D@4" type="CSGBox3D" parent="BusStopShelter/Bench" unique_id=774155656]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.225, -0.25)
+size = Vector3(0.05, 0.45, 0.05)
+material = ExtResource("3_nxvkv")
+
+[node name="@CSGBox3D@5" type="CSGBox3D" parent="BusStopShelter/Bench" unique_id=608240907]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.225, -0.55)
+size = Vector3(0.05, 0.45, 0.05)
+material = ExtResource("3_nxvkv")
+
+[node name="@CSGBox3D@6" type="CSGBox3D" parent="BusStopShelter/Bench" unique_id=1027790843]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.15, -0.4)
+size = Vector3(0.04, 0.04, 0.35)
+material = ExtResource("3_nxvkv")
+
+[node name="CreepyObjects" type="Node3D" parent="BusStopShelter" unique_id=2077767584]
+
+[node name="EmptyCan_0" type="CSGCylinder3D" parent="BusStopShelter/CreepyObjects" unique_id=328417126]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.8, 0.035, 0.1)
+radius = 0.035
+height = 0.12
+material = ExtResource("3_nxvkv")
+
+[node name="EmptyCan_1" type="CSGCylinder3D" parent="BusStopShelter/CreepyObjects" unique_id=664711628]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.06, 0.6)
+radius = 0.035
+height = 0.12
+material = ExtResource("3_nxvkv")
+
+[node name="EmptyCan_2" type="CSGCylinder3D" parent="BusStopShelter/CreepyObjects" unique_id=1582764118]
+transform = Transform3D(-0.64278764, 0.76604444, -3.3484866e-08, 0, -4.371139e-08, -1, -0.76604444, -0.64278764, 2.809714e-08, 0.9, 0.035, 0.3)
+radius = 0.035
+height = 0.12
+material = ExtResource("3_nxvkv")
+
+[node name="BusSign" type="Node3D" parent="." unique_id=1428398563]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 1)
+
+[node name="Base" type="CSGCylinder3D" parent="BusSign" unique_id=2132920199]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+material_override = SubResource("StandardMaterial3D_nxvkv")
+radius = 0.3
+height = 0.4
+cone = true
+
+[node name="Pole" type="CSGCylinder3D" parent="BusSign" unique_id=623863763]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+material_override = ExtResource("3_nxvkv")
+radius = 0.04
+height = 2.4
+material = ExtResource("3_nxvkv")
+
+[node name="RoundSign" type="CSGCylinder3D" parent="BusSign" unique_id=1478519816]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 2.2, 0.05)
+material_override = SubResource("ShaderMaterial_oa722")
+radius = 0.35
+height = 0.04
+
+[node name="Timetable" type="CSGBox3D" parent="BusSign" unique_id=1455800363]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0.04)
+material_override = SubResource("ShaderMaterial_su3ln")
+size = Vector3(0.35, 0.55, 0.04)
+
+[node name="TMid" type="Label3D" parent="BusSign" unique_id=891016989]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.18, 0.08)
+pixel_size = 0.002
+modulate = Color(0.1, 0.15, 0.25, 1)
+text = "霧原村前"
+font_size = 70
+outline_size = 0
+
+[node name="GroundAsphalt" type="CSGBox3D" parent="." unique_id=1009303419]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -1)
+use_collision = true
+size = Vector3(5, 0.1, 4)
+material = SubResource("StandardMaterial3D_sb5cu")

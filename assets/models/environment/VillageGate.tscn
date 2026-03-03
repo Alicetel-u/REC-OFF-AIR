@@ -1,0 +1,236 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" uid="uid://cjt3an2g0xjvt" path="res://assets/models/environment/shaders/heavy_rust.gdshader" id="1_3xk1r"]
+[ext_resource type="Texture2D" uid="uid://dg31b0wyliu74" path="res://shaders/素材/新しい看板.jpg" id="1_ts4rm"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8244m"]
+render_priority = 0
+shader = ExtResource("1_3xk1r")
+shader_parameter/base_paint_color = null
+shader_parameter/rust_color1 = null
+shader_parameter/rust_color2 = null
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3xk1r"]
+albedo_color = Color(0.35, 0.03, 0.03, 1)
+metallic = 0.4
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8244m"]
+albedo_color = Color(0.1, 0.05, 0.02, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6nv67"]
+albedo_color = Color(0.1, 0.05, 0.02, 1)
+metallic = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c3rbc"]
+albedo_color = Color(0.1, 0.05, 0.02, 1)
+metallic = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xv405"]
+albedo_color = Color(0.1, 0.05, 0.02, 1)
+metallic = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a1k5q"]
+albedo_color = Color(0.1, 0.05, 0.02, 1)
+metallic = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ijgnv"]
+albedo_color = Color(0.1, 0.05, 0.02, 1)
+metallic = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lrjoi"]
+albedo_color = Color(0.1, 0.05, 0.02, 1)
+metallic = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3lp5y"]
+albedo_color = Color(0.1, 0.05, 0.02, 1)
+metallic = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d7tcq"]
+albedo_color = Color(0.1, 0.05, 0.02, 1)
+metallic = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c0edu"]
+albedo_color = Color(0.1, 0.05, 0.02, 1)
+metallic = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6wllo"]
+albedo_color = Color(0.1, 0.05, 0.02, 1)
+metallic = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wgnoq"]
+albedo_color = Color(0.1, 0.05, 0.02, 1)
+metallic = 0.2
+
+[node name="VillageGateRoot" type="Node3D" unique_id=1942488545]
+
+[node name="ArchStructure" type="CSGCombiner3D" parent="." unique_id=247134599]
+
+[node name="LeftPillar" type="CSGBox3D" parent="ArchStructure" unique_id=1718812413]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 2.5, 0)
+size = Vector3(0.45, 5, 0.45)
+material = SubResource("ShaderMaterial_8244m")
+
+[node name="RightPillar" type="CSGBox3D" parent="ArchStructure" unique_id=1284187812]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.5, 0)
+size = Vector3(0.45, 5, 0.45)
+material = SubResource("ShaderMaterial_8244m")
+
+[node name="TopBeam" type="CSGBox3D" parent="ArchStructure" unique_id=73603258]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+size = Vector3(8.2, 0.36, 0.36)
+material = SubResource("ShaderMaterial_8244m")
+
+[node name="MidBeam" type="CSGBox3D" parent="ArchStructure" unique_id=713113043]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+size = Vector3(8.2, 0.27, 0.27)
+material = SubResource("ShaderMaterial_8244m")
+
+[node name="SignBoardFront" type="CSGBox3D" parent="ArchStructure" unique_id=150607110]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.9, 0.35)
+size = Vector3(4.5, 2.08, 0.05)
+material = SubResource("StandardMaterial3D_3xk1r")
+
+[node name="SignFront" type="Sprite3D" parent="ArchStructure" unique_id=1544262195]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.9, 0.38)
+modulate = Color(0.8, 0.8, 0.8, 1)
+pixel_size = 0.0043945313
+texture = ExtResource("1_ts4rm")
+
+[node name="SignBoardBack" type="CSGBox3D" parent="ArchStructure" unique_id=442612783]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.9, -0.35)
+size = Vector3(4.5, 2.08, 0.05)
+material = SubResource("StandardMaterial3D_3xk1r")
+
+[node name="SignBack" type="Sprite3D" parent="ArchStructure" unique_id=2060863371]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 3.9, -0.38)
+modulate = Color(0.8, 0.8, 0.8, 1)
+pixel_size = 0.0043945313
+texture = ExtResource("1_ts4rm")
+
+[node name="Wire" type="CSGCylinder3D" parent="ArchStructure" unique_id=1147785202]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 2.8, 0)
+radius = 0.01
+height = 7.0
+material = SubResource("StandardMaterial3D_8244m")
+
+[node name="DropWire_0" type="CSGCylinder3D" parent="ArchStructure" unique_id=103467644]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 2.725, 0)
+radius = 0.005
+height = 0.15
+material = SubResource("StandardMaterial3D_8244m")
+
+[node name="Bulb_0" type="CSGSphere3D" parent="ArchStructure" unique_id=1602786955]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 2.65, 0)
+radius = 0.05
+material = SubResource("StandardMaterial3D_6nv67")
+
+[node name="DropWire_1" type="CSGCylinder3D" parent="ArchStructure" unique_id=829085859]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.32, 2.725, 0)
+radius = 0.005
+height = 0.15
+material = SubResource("StandardMaterial3D_8244m")
+
+[node name="Bulb_1" type="CSGSphere3D" parent="ArchStructure" unique_id=873154200]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.32, 2.65, 0)
+radius = 0.05
+material = SubResource("StandardMaterial3D_c3rbc")
+
+[node name="DropWire_2" type="CSGCylinder3D" parent="ArchStructure" unique_id=894590288]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.74, 2.725, 0)
+radius = 0.005
+height = 0.15
+material = SubResource("StandardMaterial3D_8244m")
+
+[node name="Bulb_2" type="CSGSphere3D" parent="ArchStructure" unique_id=836280593]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.74, 2.65, 0)
+radius = 0.05
+material = SubResource("StandardMaterial3D_xv405")
+
+[node name="DropWire_3" type="CSGCylinder3D" parent="ArchStructure" unique_id=1725714738]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.16, 2.725, 0)
+radius = 0.005
+height = 0.15
+material = SubResource("StandardMaterial3D_8244m")
+
+[node name="Bulb_3" type="CSGSphere3D" parent="ArchStructure" unique_id=684608024]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.16, 2.65, 0)
+radius = 0.05
+material = SubResource("StandardMaterial3D_a1k5q")
+
+[node name="DropWire_4" type="CSGCylinder3D" parent="ArchStructure" unique_id=1551977732]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.58, 2.725, 0)
+radius = 0.005
+height = 0.15
+material = SubResource("StandardMaterial3D_8244m")
+
+[node name="Bulb_4" type="CSGSphere3D" parent="ArchStructure" unique_id=163225245]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.58, 2.65, 0)
+radius = 0.05
+material = SubResource("StandardMaterial3D_ijgnv")
+
+[node name="DropWire_5" type="CSGCylinder3D" parent="ArchStructure" unique_id=80193324]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.725, 0)
+radius = 0.005
+height = 0.15
+material = SubResource("StandardMaterial3D_8244m")
+
+[node name="Bulb_5" type="CSGSphere3D" parent="ArchStructure" unique_id=793857322]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.65, 0)
+radius = 0.05
+material = SubResource("StandardMaterial3D_lrjoi")
+
+[node name="DropWire_6" type="CSGCylinder3D" parent="ArchStructure" unique_id=1859864443]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.58, 2.725, 0)
+radius = 0.005
+height = 0.15
+material = SubResource("StandardMaterial3D_8244m")
+
+[node name="Bulb_6" type="CSGSphere3D" parent="ArchStructure" unique_id=685185202]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.58, 2.65, 0)
+radius = 0.05
+material = SubResource("StandardMaterial3D_3lp5y")
+
+[node name="DropWire_7" type="CSGCylinder3D" parent="ArchStructure" unique_id=776467115]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.16, 2.725, 0)
+radius = 0.005
+height = 0.15
+material = SubResource("StandardMaterial3D_8244m")
+
+[node name="Bulb_7" type="CSGSphere3D" parent="ArchStructure" unique_id=399389367]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.16, 2.65, 0)
+radius = 0.05
+material = SubResource("StandardMaterial3D_d7tcq")
+
+[node name="DropWire_8" type="CSGCylinder3D" parent="ArchStructure" unique_id=297863266]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.74, 2.725, 0)
+radius = 0.005
+height = 0.15
+material = SubResource("StandardMaterial3D_8244m")
+
+[node name="Bulb_8" type="CSGSphere3D" parent="ArchStructure" unique_id=1450475439]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.74, 2.65, 0)
+radius = 0.05
+material = SubResource("StandardMaterial3D_c0edu")
+
+[node name="DropWire_9" type="CSGCylinder3D" parent="ArchStructure" unique_id=1579533645]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.32, 2.725, 0)
+radius = 0.005
+height = 0.15
+material = SubResource("StandardMaterial3D_8244m")
+
+[node name="Bulb_9" type="CSGSphere3D" parent="ArchStructure" unique_id=1538348394]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.32, 2.65, 0)
+radius = 0.05
+material = SubResource("StandardMaterial3D_6wllo")
+
+[node name="DropWire_10" type="CSGCylinder3D" parent="ArchStructure" unique_id=685293248]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 2.725, 0)
+radius = 0.005
+height = 0.15
+material = SubResource("StandardMaterial3D_8244m")
+
+[node name="Bulb_10" type="CSGSphere3D" parent="ArchStructure" unique_id=610880363]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 2.65, 0)
+radius = 0.05
+material = SubResource("StandardMaterial3D_wgnoq")

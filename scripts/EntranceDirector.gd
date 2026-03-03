@@ -1,9 +1,10 @@
 extends Node
 
-## 廃村入口チャプター専用: バス降車〜村の門くぐりまでの自動演出
-## セリフデータは res://dialogue/ch01_entrance.json から読み込む
+## JSON 駆動のシーケンス演出エンジン
+## セリフ・移動・チャット・選択肢分岐をサポート
 
 const DIALOGUE_JSON := "res://dialogue/ch01_entrance.json"
+const HorrorChoicePanelScript := preload("res://scripts/HorrorChoicePanel.gd")
 
 var player: CharacterBody3D = null
 var hud: Control = null
@@ -56,10 +57,19 @@ func run_from_path(json_path: String) -> void:
 	var data   : Dictionary = json.get_data()
 	var events : Array      = data.get("events", [])
 
+	# ラベル → インデックスのマップを事前構築
+	var label_map : Dictionary = {}
+	for i in range(events.size()):
+		var ev_check : Dictionary = events[i]
+		if ev_check.get("type", "") == "label":
+			label_map[ev_check.get("name", "")] = i
+
 	# 並行 Tween を id で管理（pos_z の非同期歩行用）
 	var active_tweens : Dictionary = {}
 
-	for ev: Dictionary in events:
+	var idx := 0
+	while idx < events.size():
+		var ev : Dictionary = events[idx]
 		var t : String = ev.get("type", "")
 		match t:
 
@@ -83,27 +93,31 @@ func run_from_path(json_path: String) -> void:
 
 			"pos_z":
 				var tw := _pos_z(float(ev.get("target", 0.0)), float(ev.get("dur", 5.0)))
-				var id : String = ev.get("id", "")
-				if not id.is_empty():
-					active_tweens[id] = tw
+				var tw_id : String = ev.get("id", "")
+				if not tw_id.is_empty():
+					active_tweens[tw_id] = tw
 
 			"pos_z_await":
-				var id : String = ev.get("id", "")
-				if id in active_tweens and is_instance_valid(active_tweens[id]):
-					await active_tweens[id].finished
-					active_tweens.erase(id)
+				var tw_id : String = ev.get("id", "")
+				if tw_id in active_tweens:
+					var tw_ref = active_tweens[tw_id]
+					if tw_ref and tw_ref.is_valid():
+						await tw_ref.finished
+					active_tweens.erase(tw_id)
 
 			"pos_x":
 				var tw := _pos_x(float(ev.get("target", 0.0)), float(ev.get("dur", 5.0)))
-				var id : String = ev.get("id", "")
-				if not id.is_empty():
-					active_tweens[id] = tw
+				var tw_id : String = ev.get("id", "")
+				if not tw_id.is_empty():
+					active_tweens[tw_id] = tw
 
 			"pos_x_await":
-				var id : String = ev.get("id", "")
-				if id in active_tweens and is_instance_valid(active_tweens[id]):
-					await active_tweens[id].finished
-					active_tweens.erase(id)
+				var tw_id : String = ev.get("id", "")
+				if tw_id in active_tweens:
+					var tw_ref = active_tweens[tw_id]
+					if tw_ref and tw_ref.is_valid():
+						await tw_ref.finished
+					active_tweens.erase(tw_id)
 
 			"set_viewers":
 				_set_viewers(int(ev.get("count", 0)))
@@ -117,12 +131,101 @@ func run_from_path(json_path: String) -> void:
 			"polaroid_video":
 				await _polaroid_video(ev.get("path", ""))
 
+			# ── 分岐システム ──
+
+			"label":
+				pass  # ラベルは通過するだけ（事前にマップ構築済み）
+
+			"goto":
+				var target_label : String = ev.get("label", "")
+				if target_label in label_map:
+					idx = label_map[target_label]
+					continue  # idx++ をスキップ
+
+			"goto_route":
+				# ending_route に応じて異なるラベルにジャンプ
+				var routes : Dictionary = ev.get("routes", {})
+				var route_key := str(GameManager.ending_route)
+				if route_key in routes:
+					var target_label : String = routes[route_key]
+					if target_label in label_map:
+						idx = label_map[target_label]
+						continue
+
+			"use_ofuda":
+				# お札を1枚消費
+				GameManager.ofuda_count = max(0, GameManager.ofuda_count - 1)
+
+			"set_route":
+				# ending_route を設定
+				GameManager.ending_route = int(ev.get("route", -1))
+
+			"choice":
+				# ホラー選択肢パネルを表示し、結果に応じて分岐
+				var choice_result := await _show_horror_choice(ev)
+				# 結果に応じたラベルにジャンプ
+				var targets : Array = ev.get("targets", [])
+				if choice_result < targets.size():
+					var target_label : String = targets[choice_result]
+					if target_label in label_map:
+						idx = label_map[target_label]
+						continue
+
+			# ── ホラー演出イベント ──
+
+			"horror_flash":
+				_horror_flash(float(ev.get("dur", 0.3)))
+
+			"horror_glitch":
+				_horror_glitch(float(ev.get("intensity", 8.0)), int(ev.get("count", 3)))
+
+			"horror_tint":
+				_horror_tint()
+
+			"horror_tint_clear":
+				_horror_tint_clear()
+
+			"scare_flash":
+				var sf_str : String = ev.get("color", "white")
+				var sf_col := Color.WHITE if sf_str == "white" else Color(0.9, 0.0, 0.0)
+				if is_instance_valid(hud):
+					hud._do_scare_flash(sf_col)
+
+			"superchat":
+				_story_superchat(ev.get("name", ""), ev.get("msg", ""), int(ev.get("amount", 500)))
+
+			"flashlight_flicker":
+				await _flashlight_flicker()
+
+			"flashlight_off":
+				_flashlight_off()
+
 			_:
 				pass  # 未知タイプは無視
+
+		idx += 1
 
 	_walking = false
 	if is_instance_valid(hud):
 		hud.hide_monologue()
+
+
+# ════════════════════════════════════════════════════════════════════
+# ホラー選択肢パネル
+# ════════════════════════════════════════════════════════════════════
+
+func _show_horror_choice(ev: Dictionary) -> int:
+	var panel : Node = HorrorChoicePanelScript.new()
+	get_tree().root.add_child(panel)
+
+	var prompt : String = ev.get("prompt", "")
+	var choices : Array = ev.get("choices", [])
+
+	panel.show_choice(prompt, choices)
+
+	var result : int = await panel.choice_selected
+	panel.queue_free()
+	return result
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -318,3 +421,60 @@ func _polaroid_video(video_path: String) -> void:
 
 	# クリーンアップ
 	canvas.queue_free()
+
+
+# ════════════════════════════════════════════════════════════════════
+# ホラー演出ヘルパー
+# ════════════════════════════════════════════════════════════════════
+
+func _get_chrome() -> Node:
+	return get_tree().get_first_node_in_group("youtube_chrome")
+
+
+func _horror_flash(dur: float = 0.3) -> void:
+	var chrome := _get_chrome()
+	if chrome and chrome.has_method("horror_flash"):
+		chrome.horror_flash(dur)
+
+
+func _horror_glitch(intensity: float = 8.0, count: int = 3) -> void:
+	var chrome := _get_chrome()
+	if chrome and chrome.has_method("horror_glitch"):
+		chrome.horror_glitch(intensity, count)
+
+
+func _horror_tint() -> void:
+	var chrome := _get_chrome()
+	if chrome and chrome.has_method("horror_tint"):
+		chrome.horror_tint()
+
+
+func _horror_tint_clear() -> void:
+	var chrome := _get_chrome()
+	if chrome and chrome.has_method("horror_tint_clear"):
+		chrome.horror_tint_clear()
+
+
+func _story_superchat(sc_name: String, sc_msg: String, amount: int) -> void:
+	var chrome := _get_chrome()
+	if chrome and chrome.has_method("spawn_story_superchat"):
+		chrome.spawn_story_superchat(sc_name, sc_msg, amount)
+
+
+func _flashlight_flicker() -> void:
+	if not is_instance_valid(player) or not player.flashlight:
+		return
+	var orig : float = player.flashlight.light_energy
+	var tw := create_tween()
+	for i in 4:
+		tw.tween_property(player.flashlight, "light_energy", 0.0, 0.05)
+		tw.tween_property(player.flashlight, "light_energy", orig * 0.3, 0.03)
+		tw.tween_property(player.flashlight, "light_energy", 0.0, 0.08)
+		tw.tween_property(player.flashlight, "light_energy", orig, 0.06)
+	await tw.finished
+
+
+func _flashlight_off() -> void:
+	if is_instance_valid(player):
+		player.flashlight.visible = false
+		player.flashlight_on = false

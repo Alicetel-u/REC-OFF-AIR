@@ -36,6 +36,21 @@ extends Resource
 @export var fog_enabled: bool = false
 @export var fog_density: float = 0.01
 
+## Forward Plus 演出（ホラー環境）
+@export var use_sky_background: bool = false
+@export var sky_top_color: Color = Color(0, 0, 0, 1)
+@export var sky_horizon_color: Color = Color(0.05, 0.05, 0.05, 1)
+@export var ambient_light_color: Color = Color(0, 0, 0, 1)
+@export var tonemap_mode: int = 0
+@export var ssao_enabled: bool = false
+@export var ssil_enabled: bool = false
+@export var sdfgi_enabled: bool = false
+@export var fog_light_color: Color = Color(0.5, 0.6, 0.7, 1)
+@export var fog_aerial_perspective: float = 0.0
+@export var volumetric_fog_enabled: bool = false
+@export var volumetric_fog_density: float = 0.0
+@export var vhs_overlay: bool = false
+
 ## 配信者のモノローグ
 @export var monologue_lines: PackedStringArray = []
 
