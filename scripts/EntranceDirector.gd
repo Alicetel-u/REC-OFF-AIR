@@ -12,6 +12,8 @@ var hud: Control = null
 var _walking           := false
 var _bob_t             := 0.0
 var _flash_orig_energy : float = 1.0
+var _fade_layer        : CanvasLayer = null
+var _fade_rect         : ColorRect = null
 
 
 func _process(delta: float) -> void:
@@ -199,6 +201,12 @@ func run_from_path(json_path: String) -> void:
 
 			"flashlight_off":
 				_flashlight_off()
+
+			"fade_black":
+				await _fade_black(float(ev.get("dur", 0.8)))
+
+			"fade_clear":
+				await _fade_clear(float(ev.get("dur", 0.8)))
 
 			_:
 				pass  # 未知タイプは無視
@@ -478,3 +486,36 @@ func _flashlight_off() -> void:
 	if is_instance_valid(player):
 		player.flashlight.visible = false
 		player.flashlight_on = false
+
+
+# ════════════════════════════════════════════════════════════════════
+# 画面フェード（暗転 / 明転）
+# ════════════════════════════════════════════════════════════════════
+
+func _ensure_fade_layer() -> void:
+	if is_instance_valid(_fade_layer):
+		return
+	_fade_layer = CanvasLayer.new()
+	_fade_layer.layer = 19  # YouTubeChrome(20) の直下、ポラロイド(18) より上
+	get_tree().root.add_child(_fade_layer)
+	_fade_rect = ColorRect.new()
+	_fade_rect.anchor_right  = 1.0
+	_fade_rect.anchor_bottom = 1.0
+	_fade_rect.color = Color(0, 0, 0, 0)
+	_fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fade_layer.add_child(_fade_rect)
+
+
+func _fade_black(dur: float = 0.8) -> void:
+	_ensure_fade_layer()
+	_fade_rect.color = Color(0, 0, 0, 0)
+	var tw := create_tween()
+	tw.tween_property(_fade_rect, "color:a", 1.0, dur)
+	await tw.finished
+
+
+func _fade_clear(dur: float = 0.8) -> void:
+	_ensure_fade_layer()
+	var tw := create_tween()
+	tw.tween_property(_fade_rect, "color:a", 0.0, dur)
+	await tw.finished
