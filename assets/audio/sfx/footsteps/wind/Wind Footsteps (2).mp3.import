@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dxp0dhy6bbgge"
+path="res://.godot/imported/Wind Footsteps (2).mp3-a6ac78116b900de8d802d5f97c691d26.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/sfx/footsteps/wind/Wind Footsteps (2).mp3"
+dest_files=["res://.godot/imported/Wind Footsteps (2).mp3-a6ac78116b900de8d802d5f97c691d26.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

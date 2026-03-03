@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cju2s6so4yxsn"
+path="res://.godot/imported/Wooden Foosteps (4).mp3-83c6cc2832247a25b82ff052f67e9f31.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/sfx/footsteps/wooden/Wooden Foosteps (4).mp3"
+dest_files=["res://.godot/imported/Wooden Foosteps (4).mp3-83c6cc2832247a25b82ff052f67e9f31.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

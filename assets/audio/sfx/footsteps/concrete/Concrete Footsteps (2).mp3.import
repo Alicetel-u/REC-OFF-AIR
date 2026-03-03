@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dmybvb37xkpji"
+path="res://.godot/imported/Concrete Footsteps (2).mp3-744103e6aafe7103ad16871b0e3166fb.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/sfx/footsteps/concrete/Concrete Footsteps (2).mp3"
+dest_files=["res://.godot/imported/Concrete Footsteps (2).mp3-744103e6aafe7103ad16871b0e3166fb.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

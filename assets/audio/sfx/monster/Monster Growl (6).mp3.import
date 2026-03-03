@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b1qp08swc788w"
+path="res://.godot/imported/Monster Growl (6).mp3-d92d5aa0b724584ce78d51d828ec8109.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/sfx/monster/Monster Growl (6).mp3"
+dest_files=["res://.godot/imported/Monster Growl (6).mp3-d92d5aa0b724584ce78d51d828ec8109.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

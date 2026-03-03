@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://duq3fbigi6lk3"
+path="res://.godot/imported/Ambient Wind (4).mp3-ce6307fd7ad9b539dd5c565d791d3929.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/sfx/ambient_wind/Ambient Wind (4).mp3"
+dest_files=["res://.godot/imported/Ambient Wind (4).mp3-ce6307fd7ad9b539dd5c565d791d3929.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

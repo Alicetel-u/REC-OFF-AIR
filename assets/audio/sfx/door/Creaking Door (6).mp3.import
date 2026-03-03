@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://123kxynr6b6g"
+path="res://.godot/imported/Creaking Door (6).mp3-940b2849fa5b281cc3c4f12d279f6e69.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/sfx/door/Creaking Door (6).mp3"
+dest_files=["res://.godot/imported/Creaking Door (6).mp3-940b2849fa5b281cc3c4f12d279f6e69.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

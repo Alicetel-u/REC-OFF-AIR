@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cutgduhwj2l2b"
+path="res://.godot/imported/Leaves Footsteps (4).mp3-1ace67b1e2b1b769d3ac3c068987bffe.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/sfx/footsteps/leaves/Leaves Footsteps (4).mp3"
+dest_files=["res://.godot/imported/Leaves Footsteps (4).mp3-1ace67b1e2b1b769d3ac3c068987bffe.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
