@@ -11,6 +11,8 @@
 [ext_resource type="PackedScene" path="res://shaders/素材/立ち入り禁止.glb" id="14_3p2gp"]
 [ext_resource type="PackedScene" path="res://shaders/素材/鳥居.glb" id="14_cvmbd"]
 [ext_resource type="PackedScene" path="res://shaders/素材/dead_tree.glb" id="15_cvmbd"]
+[ext_resource type="Script" path="res://scripts/PublicToilet.gd" id="20_toilet"]
+[ext_resource type="PackedScene" path="res://shaders/素材/案山子.glb" id="16_ksmzk"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cvmbd"]
 render_priority = 0
@@ -856,3 +858,10 @@ transform = Transform3D(9.396926, 0, 3.4202013, 0, 12, 0, -3.4202013, 0, 9.39692
 
 [node name="GateDeadTree_Right" type="Node3D" parent="." instance=ExtResource("15_cvmbd")]
 transform = Transform3D(7.7134514, 0, -9.1925335, 0, 15, 0, 9.1925335, 0, 7.7134514, 45, 6.5, -2)
+
+[node name="Scarecrow" type="Node3D" parent="." instance=ExtResource("16_ksmzk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 7)
+
+[node name="PublicToilet" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 14)
+script = ExtResource("20_toilet")

@@ -76,6 +76,7 @@ func _ready() -> void:
 	_build_chat_panel()
 	_build_video_controls()
 	_build_engagement_bar()
+	call_deferred("_initial_scroll_chat")
 
 
 # ════════════════════════════════════════════════════════════════
@@ -302,6 +303,32 @@ func _build_chat_panel() -> void:
 	_chat_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_chat_vbox.add_theme_constant_override("separation", 4)
 	_chat_scroll.add_child(_chat_vbox)
+
+	# 配信開始前のチャット履歴（エリアを埋めるため）
+	var pre_msgs := [
+		["霊感あるの？", "スピリチュアル系"],
+		["夜中に見てる人〜", "深夜勢"],
+		["お守り持ってきた？", "心配な人"],
+		["廃村系好きすぎる", "廃墟マニア"],
+		["配信安定してる！", "回線気にする人"],
+		["BGMこわっ", "音感鋭い人"],
+		["コメント読んでー！", "かまってちゃん"],
+		["しゅっち最強！", "推し活"],
+		["無事に帰ってね", "お母さん"],
+		["録画してるｗ", "後から見る人"],
+		["霧原村…マジ？", "夜更かし部"],
+		["待ってた！", "ゆう☆"],
+		["よろよろ〜", "にゃんこ99"],
+		["心霊スポット好きすぎｗ", "深夜のテンション"],
+		["ここの話聞いたことある", "地元民"],
+		["ちゃんと帰れよ", "心配性な人"],
+		["カメラ大丈夫？", "機材マン"],
+		["一人で行くの？！", "ガクブル太郎"],
+		["ゆきんこ77さんいる？", "新規さん"],
+		["来たー！！", "ホラー好き太郎"],
+	]
+	for pm in pre_msgs:
+		_add_pre_chat(pm[0], pm[1])
 
 	# ─ 視聴者数表示 ─
 	var view_wrap := PanelContainer.new()
@@ -642,6 +669,30 @@ func _process(delta: float) -> void:
 # チャット API（HUD.gd から呼ばれる）
 # ════════════════════════════════════════════════════════════════
 
+## 配信開始前の履歴チャット（薄めに表示、スクロールなし）
+func _add_pre_chat(msg: String, user: String) -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	row.modulate = Color(1, 1, 1, 0.35)
+	_chat_vbox.add_child(row)
+	_pad(row, 8)
+	_avatar_circle(row, Color(0.25, 0.25, 0.28).darkened(0.3), user.substr(0, 1), 24)
+	_pad(row, 6)
+	var name_lbl := Label.new()
+	name_lbl.text = user
+	name_lbl.add_theme_font_size_override("font_size", 13)
+	name_lbl.add_theme_color_override("font_color", Color(0.55, 0.55, 0.55))
+	row.add_child(name_lbl)
+	var msg_lbl := Label.new()
+	msg_lbl.text = "  " + msg
+	msg_lbl.add_theme_font_size_override("font_size", 13)
+	msg_lbl.add_theme_color_override("font_color", Color(0.50, 0.50, 0.50))
+	msg_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	msg_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	row.add_child(msg_lbl)
+	_pad(row, 8)
+
+
 func add_message(msg: String, user: String, user_type: String = "viewer") -> void:
 	if not is_instance_valid(_chat_vbox):
 		return
@@ -694,8 +745,8 @@ func add_message(msg: String, user: String, user_type: String = "viewer") -> voi
 
 	_pad(row, 8)
 
-	# 上限12件（remove_childで即座に親から切り離してからfree）
-	while _chat_vbox.get_child_count() > 12:
+	# 上限20件（古いものから順に削除）
+	while _chat_vbox.get_child_count() > 20:
 		var old := _chat_vbox.get_child(0)
 		_chat_vbox.remove_child(old)
 		old.queue_free()
@@ -709,6 +760,7 @@ func add_message(msg: String, user: String, user_type: String = "viewer") -> voi
 func spawn_story_superchat(sc_name: String, sc_msg: String, amount: int) -> void:
 	if not is_instance_valid(_superchat_area):
 		return
+	SoundManager.play_superchat_chime()
 	var tier_col := _superchat_tier_color(amount)
 	var card := _build_superchat_card(sc_name, sc_msg, amount, tier_col)
 	_superchat_area.add_child(card)
@@ -718,6 +770,7 @@ func spawn_story_superchat(sc_name: String, sc_msg: String, amount: int) -> void
 func _spawn_superchat() -> void:
 	if not is_instance_valid(_superchat_area):
 		return
+	SoundManager.play_superchat_chime()
 	var amount : int    = [200, 500, 1000, 2000, 5000][randi() % 5]
 	var name_  : String = SUPERCHAT_NAMES[randi() % SUPERCHAT_NAMES.size()]
 	var msg_   : String = SUPERCHAT_MSGS[randi()  % SUPERCHAT_MSGS.size()]
@@ -995,3 +1048,9 @@ func set_viewers(count: int) -> void:
 	_view_count = count
 	if is_instance_valid(_view_label):
 		_view_label.text = "%s 人が視聴中" % _fmt_count(_view_count)
+
+
+## 初期チャット表示を最下部にスクロール（_ready から call_deferred で呼ぶ）
+func _initial_scroll_chat() -> void:
+	if is_instance_valid(_chat_scroll):
+		_chat_scroll.scroll_vertical = int(_chat_scroll.get_v_scroll_bar().max_value)

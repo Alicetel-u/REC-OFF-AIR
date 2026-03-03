@@ -195,50 +195,148 @@ func add_chat(msg: String, user: String = "", user_type: String = "") -> void:
 # ════════════════════════════════════════════════════════════════
 
 func _build_monologue_window() -> void:
-	# YouTubeChrome レイアウト: 映像エリアは y=48〜612（layer20の不透明UIで隠れる領域は y>612）
-	# HUD(layer2)はlayer20の下に描画されるため、パネル全体を y=612より上に収める
-	# ウィンドウ高さ≈65px → top=540, bottom=605 → 映像エリア内に収まる
+	# 映像エリア内(y=48〜612)。上端y=480 → 2行でも y=600 付近に収まる
 	_mono_panel = PanelContainer.new()
 	_mono_panel.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	_mono_panel.position = Vector2(20, -180)
+	_mono_panel.position = Vector2(20, -240)
 	_mono_panel.custom_minimum_size = Vector2(860, 0)
 	_mono_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_mono_panel.modulate.a = 0.0
 	_mono_panel.visible = false
 
-	# 漆黒＋血赤ボーダーのホラーパネル
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.03, 0.0, 0.0, 0.90)
-	style.border_color = Color(0.60, 0.0, 0.0, 0.95)
-	style.border_width_left = 3
-	style.set_corner_radius_all(3)
-	style.set_content_margin_all(10)
-	_mono_panel.add_theme_stylebox_override("panel", style)
+	# ── 外枠：クリムゾン 2px ボーダー ──
+	var outer := StyleBoxFlat.new()
+	outer.bg_color     = Color(0.0, 0.0, 0.0, 0.0)   # 透明（内側パネルで塗る）
+	outer.border_color = Color(0.58, 0.04, 0.04, 1.0)
+	outer.set_border_width_all(2)
+	outer.set_corner_radius_all(8)
+	outer.set_content_margin_all(0)
+	_mono_panel.add_theme_stylebox_override("panel", outer)
 	add_child(_mono_panel)
 
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 3)
+	vbox.add_theme_constant_override("separation", 0)
 	_mono_panel.add_child(vbox)
 
-	# 名前ラベル（血赤＋赤い影）
+	# ── ヘッダー（クリムゾン背景 ＋ 左アクセントバー）──
+	var header := PanelContainer.new()
+	var hs := StyleBoxFlat.new()
+	hs.bg_color             = Color(0.24, 0.03, 0.03, 1.0)
+	hs.content_margin_left  = 0
+	hs.content_margin_right = 12
+	hs.content_margin_top   = 6
+	hs.content_margin_bottom = 6
+	header.add_theme_stylebox_override("panel", hs)
+	vbox.add_child(header)
+
+	var h_hbox := HBoxContainer.new()
+	h_hbox.add_theme_constant_override("separation", 0)
+	header.add_child(h_hbox)
+
+	# 左アクセントバー（鮮血赤・4px）
+	var accent := ColorRect.new()
+	accent.custom_minimum_size = Vector2(4, 0)
+	accent.color = Color(0.90, 0.06, 0.06, 1.0)
+	accent.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	h_hbox.add_child(accent)
+
+	var pad_l := Control.new()
+	pad_l.custom_minimum_size = Vector2(12, 0)
+	h_hbox.add_child(pad_l)
+
+	# アバター円（暗い血赤）
+	var av_wrap := PanelContainer.new()
+	av_wrap.custom_minimum_size = Vector2(30, 30)
+	var avs := StyleBoxFlat.new()
+	avs.bg_color = Color(0.42, 0.03, 0.03, 1.0)
+	avs.set_corner_radius_all(15)
+	av_wrap.add_theme_stylebox_override("panel", avs)
+	h_hbox.add_child(av_wrap)
+	var av_lbl := Label.new()
+	av_lbl.text = "し"
+	av_lbl.add_theme_font_size_override("font_size", 14)
+	av_lbl.add_theme_color_override("font_color", Color(1.0, 0.80, 0.75))
+	av_lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	av_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	av_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+	av_wrap.add_child(av_lbl)
+
+	var pad_av := Control.new()
+	pad_av.custom_minimum_size = Vector2(10, 0)
+	h_hbox.add_child(pad_av)
+
+	# 名前ラベル
 	var name_lbl := Label.new()
-	name_lbl.text = "▶  しゅっち"
-	name_lbl.add_theme_font_size_override("font_size", 11)
-	name_lbl.add_theme_color_override("font_color", Color(0.85, 0.06, 0.06))
-	name_lbl.add_theme_color_override("font_shadow_color", Color(0.5, 0.0, 0.0, 1.0))
+	name_lbl.text = "しゅっち"
+	name_lbl.add_theme_font_size_override("font_size", 14)
+	name_lbl.add_theme_color_override("font_color",        Color(1.0,  0.88, 0.80))
+	name_lbl.add_theme_color_override("font_shadow_color", Color(0.5,  0.0,  0.0, 0.9))
 	name_lbl.add_theme_constant_override("shadow_offset_x", 1)
 	name_lbl.add_theme_constant_override("shadow_offset_y", 1)
-	vbox.add_child(name_lbl)
+	name_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	h_hbox.add_child(name_lbl)
+
+	var pad_name := Control.new()
+	pad_name.custom_minimum_size = Vector2(10, 0)
+	h_hbox.add_child(pad_name)
+
+	# ● LIVE バッジ
+	var live_wrap := PanelContainer.new()
+	var lws := StyleBoxFlat.new()
+	lws.bg_color = Color(0.88, 0.06, 0.06, 1.0)
+	lws.set_corner_radius_all(4)
+	lws.content_margin_left   = 6
+	lws.content_margin_right  = 6
+	lws.content_margin_top    = 1
+	lws.content_margin_bottom = 2
+	live_wrap.add_theme_stylebox_override("panel", lws)
+	live_wrap.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	h_hbox.add_child(live_wrap)
+	var live_lbl := Label.new()
+	live_lbl.text = "● LIVE"
+	live_lbl.add_theme_font_size_override("font_size", 9)
+	live_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
+	live_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	live_wrap.add_child(live_lbl)
+
+	# スペーサー ＋ 右デコレーション
+	var sp := Control.new()
+	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	h_hbox.add_child(sp)
+
+	var deco_lbl := Label.new()
+	deco_lbl.text = "◈  ◈  ◈"
+	deco_lbl.add_theme_font_size_override("font_size", 10)
+	deco_lbl.add_theme_color_override("font_color", Color(0.65, 0.12, 0.10, 0.80))
+	deco_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	h_hbox.add_child(deco_lbl)
+
+	# ── ヘッダー下ライン（鮮血赤 1px）──
+	var sep := ColorRect.new()
+	sep.custom_minimum_size = Vector2(0, 1)
+	sep.color = Color(0.72, 0.06, 0.06, 0.95)
+	vbox.add_child(sep)
+
+	# ── 本文エリア（漆黒＋赤みがかり）──
+	var body := PanelContainer.new()
+	var bs := StyleBoxFlat.new()
+	bs.bg_color             = Color(0.04, 0.01, 0.01, 0.96)
+	bs.content_margin_left  = 16
+	bs.content_margin_right = 16
+	bs.content_margin_top   = 11
+	bs.content_margin_bottom = 12
+	body.add_theme_stylebox_override("panel", bs)
+	vbox.add_child(body)
 
 	# セリフ本文（RichTextLabel で BBCode shake エフェクト対応）
 	_mono_text = RichTextLabel.new()
 	_mono_text.bbcode_enabled = true
-	_mono_text.fit_content = true
-	_mono_text.scroll_active = false
+	_mono_text.fit_content    = true
+	_mono_text.scroll_active  = false
 	_mono_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_mono_text.add_theme_font_size_override("normal_font_size", 22)
-	_mono_text.add_theme_color_override("default_color", Color(0.82, 0.76, 0.68))
-	vbox.add_child(_mono_text)
+	_mono_text.add_theme_font_size_override("normal_font_size", 21)
+	_mono_text.add_theme_color_override("default_color", Color(0.93, 0.88, 0.82))
+	body.add_child(_mono_text)
 
 
 func show_monologue(text: String) -> void:

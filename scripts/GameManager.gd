@@ -9,6 +9,9 @@ var items_found: int   = 0
 var items_total: int   = 5
 var hit_count  : int   = 0
 
+## デバッグ: シナリオ中自由移動フラグ（F9 でトグル）
+var debug_free_move: bool = false
+
 var _hit_invincible : bool = false
 const HIT_MAX       : int  = 3
 

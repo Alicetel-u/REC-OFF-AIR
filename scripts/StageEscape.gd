@@ -1,3 +1,4 @@
+@tool
 extends Node3D
 
 ## CP5 脱出路 — 霧に閉ざされた林道
@@ -5,6 +6,7 @@ extends Node3D
 ## プレイヤーは JSON 自動走行で北上してバスに到達
 
 func _ready() -> void:
+	for c in get_children(): c.queue_free()
 	_build_ground()
 	_build_road()
 	_build_forest()
@@ -12,6 +14,13 @@ func _ready() -> void:
 	_build_lights()
 	_build_bus_stop()
 	_build_bus()
+	if Engine.is_editor_hint():
+		_set_editor_owner(self)
+
+func _set_editor_owner(node: Node) -> void:
+	for child in node.get_children():
+		child.owner = get_tree().edited_scene_root
+		_set_editor_owner(child)
 
 
 # ════════════════════════════════════════════════════════════════

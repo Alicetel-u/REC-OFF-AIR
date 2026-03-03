@@ -7,7 +7,7 @@ const _DANK_VIDEO_W   = 940
 const _DANK_TOP_H     = 48
 const _DANK_VIDEO_BOT = 612
 const _DANK_ROWS      = 7
-const _DANK_ROW_H     = 34
+const _DANK_ROW_H     = 44
 
 # 演出終了後に自動で次チャプターへ進むチャプターID一覧（CP3のみ手動）
 const AUTO_PROGRESS_CHAPTERS : Array[String] = [
@@ -96,13 +96,12 @@ func _ready() -> void:
 
 	# 廃村入口: イントロ前（画面が黒い間）に初期状態を設定してスナップを防ぐ
 	if chapter.chapter_id == "ch01_haison_iriguchi":
-		player.rotation.y      = -1.4   # 道路方向（+X、村門方向）を向く
+		player.rotation.y      = 0.29   # バス停方向（-Z）を向く
 		player.head.rotation.x = -0.06
 		player.flashlight.visible  = false
 		player.flashlight_on       = false
 
-	if _DEBUG_CHAPTER_SKIP:
-		_setup_debug_ui()
+	_setup_debug_ui()
 
 	SoundManager.start_ambient(GameManager.chapter_index)
 
@@ -173,12 +172,20 @@ func _run_chapter_opening(chapter_id: String) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if not _DEBUG_CHAPTER_SKIP:
-		return
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
+	var kc := (event as InputEventKey).keycode
+
+	# F9: シナリオ中自由移動トグル（常時有効）
+	if kc == KEY_F9:
+		_toggle_debug_free_move()
+		get_viewport().set_input_as_handled()
+		return
+
+	if not _DEBUG_CHAPTER_SKIP:
+		return
 	var idx := -1
-	match (event as InputEventKey).keycode:
+	match kc:
 		KEY_F1: idx = 0
 		KEY_F2: idx = 1
 		KEY_F3: idx = 2
@@ -188,6 +195,16 @@ func _input(event: InputEvent) -> void:
 		return
 	get_viewport().set_input_as_handled()
 	_debug_skip_to_chapter(idx)
+
+
+func _toggle_debug_free_move() -> void:
+	GameManager.debug_free_move = not GameManager.debug_free_move
+	if GameManager.debug_free_move:
+		player.process_mode = Node.PROCESS_MODE_INHERIT
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	else:
+		player.process_mode = Node.PROCESS_MODE_DISABLED
+	_refresh_debug_label()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -554,10 +571,12 @@ func _spawn_danmaku(msg: String, utype: String) -> void:
 
 	var lbl := Label.new()
 	lbl.text = msg
-	lbl.add_theme_font_size_override("font_size", 19)
-	lbl.add_theme_constant_override("shadow_offset_x", 1)
-	lbl.add_theme_constant_override("shadow_offset_y", 1)
-	lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.88))
+	lbl.add_theme_font_size_override("font_size", 26)
+	lbl.add_theme_constant_override("shadow_offset_x", 2)
+	lbl.add_theme_constant_override("shadow_offset_y", 2)
+	lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 1.0))
+	lbl.add_theme_constant_override("outline_size", 3)
+	lbl.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.95))
 
 	var col := Color(1.0, 1.0, 1.0, 0.86)
 	match utype:
@@ -604,8 +623,10 @@ func _refresh_debug_label() -> void:
 		return
 	var ch  := GameManager.current_chapter
 	var idx : int    = GameManager.chapter_index + 1
-	var name: String = ch.chapter_name if ch else "?"
-	_debug_label.text = "【DEBUG】CP%d: %s　|　F1=CP1  F2=CP2  F3=CP3  F4=CP4  F5=CP5" % [idx, name]
+	var cname: String = ch.chapter_name if ch else "?"
+	var free_str := " | [F9] 自由移動: ON ✓" if GameManager.debug_free_move else " | [F9] 自由移動"
+	var skip_str := "  F1=CP1  F2=CP2  F3=CP3  F4=CP4  F5=CP5" if _DEBUG_CHAPTER_SKIP else ""
+	_debug_label.text = "【DEBUG】CP%d: %s%s%s" % [idx, cname, free_str, skip_str]
 
 
 func _debug_skip_to_chapter(idx: int) -> void:

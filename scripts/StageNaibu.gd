@@ -1,3 +1,4 @@
+@tool
 extends Node3D
 
 ## 廃村内部マップ（野外・広め）
@@ -6,6 +7,7 @@ extends Node3D
 ## プレイヤースポーン: Vector3(0, 1.0, 25) / 出口: Vector3(0, 1.5, -38)
 
 func _ready() -> void:
+	for c in get_children(): c.queue_free()
 	_build_ground()
 	_build_path()
 	_build_perimeter()
@@ -14,6 +16,13 @@ func _ready() -> void:
 	_build_trees()
 	_build_pond()
 	_build_story_props()
+	if Engine.is_editor_hint():
+		_set_editor_owner(self)
+
+func _set_editor_owner(node: Node) -> void:
+	for child in node.get_children():
+		child.owner = get_tree().edited_scene_root
+		_set_editor_owner(child)
 
 
 # ════════════════════════════════════════════════════════════════

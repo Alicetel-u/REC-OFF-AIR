@@ -15,6 +15,17 @@ var _flash_orig_energy : float = 1.0
 var _fade_layer        : CanvasLayer = null
 var _fade_rect         : ColorRect = null
 
+# クリックスキップ制御
+var _skip_to_next_say  := false
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton \
+			and event.pressed \
+			and event.button_index == MOUSE_BUTTON_LEFT:
+		_skip_to_next_say = true
+		SoundManager.stop_voice()
+
 
 func _process(delta: float) -> void:
 	if not is_instance_valid(player):
@@ -76,56 +87,88 @@ func run_from_path(json_path: String) -> void:
 		match t:
 
 			"say":
+				# 新しいセリフが来たらスキップフラグをリセット
+				_skip_to_next_say = false
 				_say(ev.get("text", ""))
+				var _vname : String = ev.get("voice", "")
+				if not _vname.is_empty():
+					SoundManager.play_voice(
+						ProjectSettings.globalize_path(
+							"res://assets/audio/voice/ch01/" + _vname + ".wav"))
+				# ボイス再生はノンブロッキング → wait イベント側で吸収
 
 			"say_clear":
 				_say_clear()
+				SoundManager.stop_voice()
 
 			"chat":
-				_chat(ev.get("msg", ""), ev.get("user", ""), ev.get("utype", ""))
+				# スキップ中はチャット追加をスキップ
+				if not _skip_to_next_say:
+					_chat(ev.get("msg", ""), ev.get("user", ""), ev.get("utype", ""))
+
+			"sleep":
+				## スキップ・ボイス待機を無視する固定待機（横見演出など）
+				await get_tree().create_timer(float(ev.get("sec", 1.0))).timeout
 
 			"wait":
-				await get_tree().create_timer(float(ev.get("sec", 0.5))).timeout
+				if not _skip_to_next_say:
+					var _sec := float(ev.get("sec", 0.5))
+					# ボイス再生中なら先にボイスを待ち、残り時間のみ追加待機
+					if SoundManager.is_voice_playing():
+						var _t0 := Time.get_ticks_msec()
+						await SoundManager.await_voice()
+						if not _skip_to_next_say:
+							_sec = max(_sec - (Time.get_ticks_msec() - _t0) / 1000.0, 0.0)
+							await _skippable_wait(_sec)
+					else:
+						await _skippable_wait(_sec)
 
 			"rot_y":
-				_rot_y(float(ev.get("target", 0.0)), float(ev.get("dur", 1.0)))
+				if not GameManager.debug_free_move:
+					_rot_y(float(ev.get("target", 0.0)), float(ev.get("dur", 1.0)))
 
 			"head_x":
-				_head_x(float(ev.get("target", 0.0)), float(ev.get("dur", 1.0)))
+				if not GameManager.debug_free_move:
+					_head_x(float(ev.get("target", 0.0)), float(ev.get("dur", 1.0)))
 
 			"pos_z":
-				var tw := _pos_z(float(ev.get("target", 0.0)), float(ev.get("dur", 5.0)))
-				var tw_id : String = ev.get("id", "")
-				if not tw_id.is_empty():
-					active_tweens[tw_id] = tw
+				if not GameManager.debug_free_move:
+					var tw := _pos_z(float(ev.get("target", 0.0)), float(ev.get("dur", 5.0)))
+					var tw_id : String = ev.get("id", "")
+					if not tw_id.is_empty():
+						active_tweens[tw_id] = tw
 
 			"pos_z_await":
-				var tw_id : String = ev.get("id", "")
-				if tw_id in active_tweens:
-					var tw_ref = active_tweens[tw_id]
-					if tw_ref and tw_ref.is_valid():
-						await tw_ref.finished
-					active_tweens.erase(tw_id)
+				if not GameManager.debug_free_move:
+					var tw_id : String = ev.get("id", "")
+					if tw_id in active_tweens:
+						var tw_ref = active_tweens[tw_id]
+						if tw_ref and tw_ref.is_valid():
+							await tw_ref.finished
+						active_tweens.erase(tw_id)
 
 			"pos_x":
-				var tw := _pos_x(float(ev.get("target", 0.0)), float(ev.get("dur", 5.0)))
-				var tw_id : String = ev.get("id", "")
-				if not tw_id.is_empty():
-					active_tweens[tw_id] = tw
+				if not GameManager.debug_free_move:
+					var tw := _pos_x(float(ev.get("target", 0.0)), float(ev.get("dur", 5.0)))
+					var tw_id : String = ev.get("id", "")
+					if not tw_id.is_empty():
+						active_tweens[tw_id] = tw
 
 			"pos_x_await":
-				var tw_id : String = ev.get("id", "")
-				if tw_id in active_tweens:
-					var tw_ref = active_tweens[tw_id]
-					if tw_ref and tw_ref.is_valid():
-						await tw_ref.finished
-					active_tweens.erase(tw_id)
+				if not GameManager.debug_free_move:
+					var tw_id : String = ev.get("id", "")
+					if tw_id in active_tweens:
+						var tw_ref = active_tweens[tw_id]
+						if tw_ref and tw_ref.is_valid():
+							await tw_ref.finished
+						active_tweens.erase(tw_id)
 
 			"set_viewers":
 				_set_viewers(int(ev.get("count", 0)))
 
 			"walk_set":
-				_walking = ev.get("on", false)
+				if not GameManager.debug_free_move:
+					_walking = ev.get("on", false)
 
 			"flashlight_on":
 				await _flashlight_on()
@@ -199,6 +242,14 @@ func run_from_path(json_path: String) -> void:
 			"flashlight_flicker":
 				await _flashlight_flicker()
 
+			"sfx":
+				var sound : String = ev.get("sound", "")
+				var vol   : float  = float(ev.get("vol", -6.0))
+				match sound:
+					"ambient_wind":  SoundManager.start_ambient(0)
+					"door_creak":    SoundManager.play_door_creak()
+					"monster_growl": SoundManager.play_monster_growl(vol)
+
 			"flashlight_off":
 				_flashlight_off()
 
@@ -257,6 +308,15 @@ func _flashlight_on() -> void:
 # ════════════════════════════════════════════════════════════════════
 # プライベートヘルパー
 # ════════════════════════════════════════════════════════════════════
+
+## クリックでキャンセル可能な待機
+func _skippable_wait(sec: float) -> void:
+	if sec <= 0.0 or _skip_to_next_say:
+		return
+	var t_end := Time.get_ticks_msec() + int(sec * 1000)
+	while Time.get_ticks_msec() < t_end and not _skip_to_next_say:
+		await get_tree().process_frame
+
 
 func _say(text: String) -> void:
 	if is_instance_valid(hud):
