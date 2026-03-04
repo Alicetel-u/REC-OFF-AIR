@@ -73,10 +73,26 @@ func _scan_dir(path: String) -> Array:
 
 
 # ════════════════════════════════════════════════════════════════
-# MP3 ロード（バイト読み込み方式 — import 不要）
+# 統一オーディオローダー
+# エクスポートビルドでは ResourceLoader 経由（import済み .sample/.mp3str を読む）
+# 開発環境では FileAccess 生バイト読み込みにフォールバック
 # ════════════════════════════════════════════════════════════════
 
-func _load_mp3(path: String) -> AudioStreamMP3:
+func _load_audio(path: String) -> AudioStream:
+	# 1) ResourceLoader（エクスポートビルドではこちらが必須）
+	if ResourceLoader.exists(path):
+		var s = load(path)
+		if s is AudioStream:
+			return s
+	# 2) フォールバック: 生バイト読み込み（開発環境 / import未対応ファイル用）
+	if path.to_lower().ends_with(".mp3"):
+		return _load_mp3_raw(path)
+	if path.to_lower().ends_with(".wav"):
+		return _load_wav_raw(path)
+	return null
+
+
+func _load_mp3_raw(path: String) -> AudioStreamMP3:
 	var f := FileAccess.open(path, FileAccess.READ)
 	if not f:
 		return null
@@ -97,10 +113,10 @@ func start_ambient(chapter_index: int) -> void:
 		return
 	var vol : float  = AMBIENT_VOLS[clamp(chapter_index, 0, AMBIENT_VOLS.size() - 1)]
 	var path : String = _ambient_files[randi() % _ambient_files.size()]
-	var s := _load_mp3(path)
+	var s := _load_audio(path)
 	if not s:
 		return
-	s.loop = true
+	s.set("loop", true)
 	_ambient.stream    = s
 	_ambient.volume_db = vol
 	_ambient.play()
@@ -114,7 +130,7 @@ func play_footstep(chapter_index: int, is_dash: bool) -> void:
 	var list : Array  = _step_cats.get(cat, [])
 	if list.is_empty():
 		return
-	var s := _load_mp3(list[randi() % list.size()])
+	var s := _load_audio(list[randi() % list.size()])
 	if not s:
 		return
 	_step.stream      = s
@@ -127,7 +143,7 @@ func play_footstep(chapter_index: int, is_dash: bool) -> void:
 func play_monster_growl(vol_db: float = -5.0) -> void:
 	if _monster.playing or _monster_files.is_empty():
 		return
-	var s := _load_mp3(_monster_files[_monster_idx % _monster_files.size()])
+	var s := _load_audio(_monster_files[_monster_idx % _monster_files.size()])
 	_monster_idx = (_monster_idx + 1) % _monster_files.size()
 	if not s:
 		return
@@ -140,7 +156,7 @@ func play_monster_growl(vol_db: float = -5.0) -> void:
 func play_door_creak() -> void:
 	if _door_files.is_empty():
 		return
-	var s := _load_mp3(_door_files[randi() % _door_files.size()])
+	var s := _load_audio(_door_files[randi() % _door_files.size()])
 	if not s:
 		return
 	_door.stream    = s
@@ -150,13 +166,7 @@ func play_door_creak() -> void:
 
 ## ボイス（WAV）を再生 — 直前のボイスは停止してから再生
 func play_voice(path: String, vol_db: float = 0.0) -> void:
-	# Godotのリソースシステム経由で読み込み（エクスポートビルドでも動作）
-	var s: AudioStream = null
-	if ResourceLoader.exists(path):
-		s = load(path) as AudioStream
-	if not s:
-		# フォールバック: 生バイト読み込み（import未対応ファイル用）
-		s = _load_wav(path)
+	var s := _load_audio(path)
 	if not s:
 		push_warning("SoundManager: voice not found: " + path)
 		return
@@ -184,10 +194,10 @@ func await_voice() -> void:
 
 
 # ════════════════════════════════════════════════════════════════
-# WAV ローダー（バイト読み込み方式 — import 不要）
+# WAV ローダー（バイト読み込み方式 — 開発環境フォールバック用）
 # ════════════════════════════════════════════════════════════════
 
-func _load_wav(path: String) -> AudioStreamWAV:
+func _load_wav_raw(path: String) -> AudioStreamWAV:
 	var f := FileAccess.open(path, FileAccess.READ)
 	if not f:
 		push_warning("SoundManager: WAV not found: " + path)
