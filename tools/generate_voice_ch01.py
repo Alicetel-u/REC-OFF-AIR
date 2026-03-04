@@ -1,10 +1,13 @@
 """
-CP1 ボイス生成スクリプト
-VOICEVOX API を使って ch01_entrance.json の全 say イベントの音声を生成する
-末尾の無音を自動トリミングする
+CP1 ボイス生成スクリプト（差分生成対応）
+VOICEVOX API を使って ch01_entrance.json の say イベントの音声を生成する
+- voice_hash で変更検出 → 変更分だけ再生成
+- reading フィールド対応（読み指定があればそちらを使用）
+- 末尾の無音を自動トリミング
 """
 
 import json
+import hashlib
 import requests
 import sys
 import os
@@ -20,6 +23,7 @@ VOICEVOX_URL = "http://127.0.0.1:50021"
 SPEAKER_ID = 20
 DIALOGUE_PATH = os.path.join(os.path.dirname(__file__), "..", "dialogue", "ch01_entrance.json")
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "audio", "voice", "ch01")
+HASH_PATH = os.path.join(os.path.dirname(__file__), "..", "assets", "audio", "voice", "ch01", ".voice_hashes.json")
 
 # 音声パラメータ（テンション高め・流暢・早口）
 SPEED_SCALE = 1.25         # 速度アップ
@@ -38,6 +42,12 @@ PRONUNCIATION_FIXES = {
     "廃村": "はいそん",
     "お札": "おふだ",
 }
+
+
+def compute_voice_hash(text: str, reading: str = "") -> str:
+    """音声生成に使うテキストのハッシュ（reading優先）"""
+    source = reading if reading else text
+    return hashlib.md5(source.encode("utf-8")).hexdigest()[:12]
 
 
 def fix_pronunciation(text: str) -> str:
@@ -135,7 +145,23 @@ def generate_voice(text: str, speaker_id: int, output_path: str) -> bool:
         return False, 0.0
 
 
+def load_hashes() -> dict:
+    """サイドカーファイルからハッシュを読み込む"""
+    if os.path.exists(HASH_PATH):
+        with open(HASH_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+
+def save_hashes(hashes: dict) -> None:
+    """サイドカーファイルにハッシュを保存（対話JSONには触らない）"""
+    with open(HASH_PATH, "w", encoding="utf-8") as f:
+        json.dump(hashes, f, ensure_ascii=False, indent=2)
+
+
 def main():
+    force = "--force" in sys.argv
+
     with open(DIALOGUE_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -146,7 +172,11 @@ def main():
         if ev.get("type") == "say" and "voice" in ev:
             voice_events.append(ev)
 
-    print(f"=== CP1 ボイス全再生成 (Speaker ID: {SPEAKER_ID}) ===")
+    # ハッシュはサイドカーファイルで管理（対話JSONを書き換えない）
+    hashes = load_hashes()
+
+    mode_label = "全再生成 (--force)" if force else "差分生成"
+    print(f"=== CP1 ボイス{mode_label} (Speaker ID: {SPEAKER_ID}) ===")
     print(f"対象: {len(voice_events)} 件")
     print(f"speed={SPEED_SCALE} intonation={INTONATION_SCALE} pitch={PITCH_SCALE}")
     print(f"末尾トリミング: threshold={SILENCE_THRESHOLD} margin={TAIL_MARGIN_MS}ms")
@@ -155,25 +185,49 @@ def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     success = 0
+    skipped = 0
     fail = 0
+    hashes_updated = False
 
     for i, ev in enumerate(voice_events):
         voice_id = ev["voice"]
-        text = ev["text"]
+        text = ev.get("text", "")
+        reading = ev.get("reading", "")
+        voice_text = reading if reading else text
         output_path = os.path.join(OUTPUT_DIR, f"{voice_id}.wav")
 
-        print(f"[{i+1}/{len(voice_events)}] {voice_id}")
+        # 差分検出（サイドカーファイルのハッシュと比較）
+        new_hash = compute_voice_hash(text, reading)
+        old_hash = hashes.get(voice_id, "")
 
-        ok, duration = generate_voice(text, SPEAKER_ID, output_path)
+        if not force and new_hash == old_hash and os.path.exists(output_path):
+            print(f"[{i+1}/{len(voice_events)}] {voice_id} -- スキップ（変更なし）")
+            skipped += 1
+            continue
+
+        reason = "force" if force else ("新規" if not old_hash else "変更あり")
+        print(f"[{i+1}/{len(voice_events)}] {voice_id} ({reason})")
+        if reading:
+            print(f"  読み: {reading}")
+
+        ok, duration = generate_voice(voice_text, SPEAKER_ID, output_path)
         if ok:
             size_kb = os.path.getsize(output_path) / 1024
             print(f"  -> OK ({size_kb:.1f} KB, {duration:.2f}s)")
+            hashes[voice_id] = new_hash
+            hashes_updated = True
             success += 1
         else:
             fail += 1
 
+    # ハッシュをサイドカーファイルに保存（対話JSONは一切変更しない）
+    if hashes_updated:
+        save_hashes(hashes)
+        print()
+        print(f"ハッシュ更新: {HASH_PATH}")
+
     print()
-    print(f"=== 完了: 成功 {success} / 失敗 {fail} / 合計 {len(voice_events)} ===")
+    print(f"=== 完了: 生成 {success} / スキップ {skipped} / 失敗 {fail} / 合計 {len(voice_events)} ===")
 
     if fail > 0:
         sys.exit(1)
