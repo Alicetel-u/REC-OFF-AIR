@@ -121,7 +121,7 @@ func run_from_path(json_path: String) -> void:
 					# ボイス再生中なら先にボイスを待ち、残り時間のみ追加待機
 					if SoundManager.is_voice_playing():
 						var _t0 := Time.get_ticks_msec()
-						await SoundManager.await_voice()
+						await SoundManager.await_voice(_sec + 5.0)
 						if not _skip_to_next_say:
 							_sec = max(_sec - (Time.get_ticks_msec() - _t0) / 1000.0, 0.0)
 							await _skippable_wait(_sec)
@@ -149,7 +149,7 @@ func run_from_path(json_path: String) -> void:
 					if tw_id in active_tweens:
 						var tw_ref = active_tweens[tw_id]
 						if tw_ref and tw_ref.is_valid():
-							await tw_ref.finished
+							await _await_tween_safe(tw_ref, 60.0)
 						active_tweens.erase(tw_id)
 
 			"pos_x":
@@ -165,7 +165,7 @@ func run_from_path(json_path: String) -> void:
 					if tw_id in active_tweens:
 						var tw_ref = active_tweens[tw_id]
 						if tw_ref and tw_ref.is_valid():
-							await tw_ref.finished
+							await _await_tween_safe(tw_ref, 60.0)
 						active_tweens.erase(tw_id)
 
 			"set_viewers":
@@ -313,6 +313,18 @@ func _flashlight_on() -> void:
 # ════════════════════════════════════════════════════════════════════
 # プライベートヘルパー
 # ════════════════════════════════════════════════════════════════════
+
+## Tweenの完了をタイムアウト付きで待機（Web環境でのフリーズ防止）
+func _await_tween_safe(tw: Tween, max_sec: float) -> void:
+	var elapsed := 0.0
+	while tw and tw.is_valid() and tw.is_running():
+		await get_tree().process_frame
+		elapsed += get_process_delta_time()
+		if elapsed >= max_sec:
+			push_warning("EntranceDirector: tween await timed out after %.0fs" % max_sec)
+			tw.kill()
+			break
+
 
 ## クリックでキャンセル可能な待機
 func _skippable_wait(sec: float) -> void:

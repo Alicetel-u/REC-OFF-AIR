@@ -213,9 +213,16 @@ func is_voice_playing() -> bool:
 
 ## ボイス再生が終わるまで待機（再生中でなければ即リターン）
 ## finished シグナルに頼らずポーリングで待機（stop()時にシグナルが来ないバグ回避）
-func await_voice() -> void:
+## max_sec: タイムアウト秒数（Webビルドで音声APIが停止した場合の安全策）
+func await_voice(max_sec: float = 15.0) -> void:
+	var elapsed := 0.0
 	while _voice.playing:
 		await get_tree().process_frame
+		elapsed += get_process_delta_time()
+		if elapsed >= max_sec:
+			push_warning("SoundManager: await_voice timed out after %.1fs" % max_sec)
+			_voice.stop()
+			break
 
 
 # ════════════════════════════════════════════════════════════════
