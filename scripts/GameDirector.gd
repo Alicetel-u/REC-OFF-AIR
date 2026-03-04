@@ -869,10 +869,9 @@ func _update_tachie(path: String) -> void:
 
 
 func _load_texture_safe(path: String) -> Texture2D:
-	# Image.load_from_file を優先: import キャッシュ不要で新規追加ファイルも即反映
-	var abs_path := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(abs_path):
-		var img := Image.load_from_file(abs_path)
+	# res:// パスのまま読み込み（エクスポートビルドでも動作する）
+	if FileAccess.file_exists(path):
+		var img := Image.load_from_file(path)
 		if img:
 			return ImageTexture.create_from_image(img)
 	# フォールバック: import 済みリソース

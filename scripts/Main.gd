@@ -158,8 +158,7 @@ func _run_entrance_sequence() -> void:
 func _run_chapter_opening(chapter_id: String) -> void:
 	## CP2〜CP5: チャプター開始演出（dialogue/{chapter_id}.json を実行）
 	var path := "res://dialogue/%s.json" % chapter_id
-	var abs_path := ProjectSettings.globalize_path(path)
-	if not FileAccess.file_exists(abs_path):
+	if not FileAccess.file_exists(path):
 		return  # JSONが無ければスキップ（CP5後は不要）
 	var director: Node = EntranceDirectorScript.new()
 	director.set("player", player)

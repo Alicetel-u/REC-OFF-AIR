@@ -55,13 +55,12 @@ func run_from_path(json_path: String) -> void:
 
 	_flash_orig_energy = player.flashlight.light_energy
 
-	# JSON 読み込み
-	var abs_path := ProjectSettings.globalize_path(json_path)
-	if not FileAccess.file_exists(abs_path):
+	# JSON 読み込み（res:// パスのまま — エクスポートビルドでも動作する）
+	if not FileAccess.file_exists(json_path):
 		push_error("EntranceDirector: dialogue JSON not found: " + json_path)
 		return
 
-	var text := FileAccess.get_file_as_string(abs_path)
+	var text := FileAccess.get_file_as_string(json_path)
 	var json  := JSON.new()
 	if json.parse(text) != OK:
 		push_error("EntranceDirector: JSON parse error — " + json.get_error_message())
@@ -93,8 +92,7 @@ func run_from_path(json_path: String) -> void:
 				var _vname : String = ev.get("voice", "")
 				if not _vname.is_empty():
 					SoundManager.play_voice(
-						ProjectSettings.globalize_path(
-							"res://assets/audio/voice/ch01/" + _vname + ".wav"))
+						"res://assets/audio/voice/ch01/" + _vname + ".wav")
 				# ボイス再生はノンブロッキング → wait イベント側で吸収
 
 			"say_clear":
