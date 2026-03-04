@@ -4,6 +4,7 @@ VOICEVOX API を使って ch01_entrance.json の say イベントの音声を生
 - voice_hash で変更検出 → 変更分だけ再生成
 - reading フィールド対応（読み指定があればそちらを使用）
 - 末尾の無音を自動トリミング
+- 生成後に fix_voice_wait.py を自動実行して wait 時間を最適化
 """
 
 import json
@@ -14,6 +15,7 @@ import os
 import io
 import wave
 import struct
+import subprocess
 
 # Windows コンソールの文字化け対策
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -242,6 +244,24 @@ def main():
             print("  Godotエディタでプロジェクトを一度開いて .import を生成し、git commit してください")
             for m in missing_imports:
                 print(f"    - {m}")
+
+    # ── 生成があった場合、wait 時間を自動調整 ──
+    if success > 0:
+        print()
+        print("=== wait 時間を自動調整中 ===")
+        fix_script = os.path.join(os.path.dirname(__file__), "fix_voice_wait.py")
+        if os.path.exists(fix_script):
+            result = subprocess.run(
+                [sys.executable, fix_script, "--apply", "--backup"],
+                capture_output=True, text=True, encoding="utf-8", errors="replace"
+            )
+            print(result.stdout)
+            if result.returncode != 0:
+                print(f"WARNING: fix_voice_wait.py が異常終了 (code {result.returncode})")
+                if result.stderr:
+                    print(result.stderr)
+        else:
+            print(f"WARNING: {fix_script} が見つかりません")
 
     if fail > 0:
         sys.exit(1)
