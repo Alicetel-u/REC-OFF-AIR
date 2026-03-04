@@ -150,8 +150,15 @@ func play_door_creak() -> void:
 
 ## ボイス（WAV）を再生 — 直前のボイスは停止してから再生
 func play_voice(path: String, vol_db: float = 0.0) -> void:
-	var s := _load_wav(path)
+	# Godotのリソースシステム経由で読み込み（エクスポートビルドでも動作）
+	var s: AudioStream = null
+	if ResourceLoader.exists(path):
+		s = load(path) as AudioStream
 	if not s:
+		# フォールバック: 生バイト読み込み（import未対応ファイル用）
+		s = _load_wav(path)
+	if not s:
+		push_warning("SoundManager: voice not found: " + path)
 		return
 	_voice.stop()
 	_voice.stream    = s
