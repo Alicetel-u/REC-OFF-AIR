@@ -12,9 +12,8 @@
 import os
 import sys
 import io
-import wave
-import struct
 import argparse
+from wav_utils import read_wav_samples, find_last_sound_frame, trim_trailing_silence as wav_trim
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
@@ -26,70 +25,23 @@ DEFAULT_MARGIN_MS = 80    # トリミング後に残す余白（ミリ秒）
 
 def analyze_wav(wav_path: str, threshold: int) -> dict:
     """WAVファイルの末尾無音を解析"""
-    with wave.open(wav_path, "rb") as wf:
-        n_channels = wf.getnchannels()
-        sampwidth = wf.getsampwidth()
-        framerate = wf.getframerate()
-        n_frames = wf.getnframes()
-        raw = wf.readframes(n_frames)
+    info = read_wav_samples(wav_path)
+    if "error" in info:
+        return info
 
-    if sampwidth != 2:
-        return {"error": "16bit以外は未対応", "duration": n_frames / framerate}
-
-    fmt = f"<{n_frames * n_channels}h"
-    samples = list(struct.unpack(fmt, raw))
-
-    if n_channels == 1:
-        mono = [abs(s) for s in samples]
-    else:
-        mono = [max(abs(samples[i]), abs(samples[i + 1]))
-                for i in range(0, len(samples), n_channels)]
-
-    # 末尾から探索
-    last_sound = len(mono) - 1
-    while last_sound > 0 and mono[last_sound] < threshold:
-        last_sound -= 1
-
-    total_sec = n_frames / framerate
+    last_sound = find_last_sound_frame(info["mono"], threshold)
+    framerate = info["framerate"]
     sound_end_sec = (last_sound + 1) / framerate
-    silence_sec = total_sec - sound_end_sec
-
-    return {
-        "n_channels": n_channels,
-        "sampwidth": sampwidth,
-        "framerate": framerate,
-        "n_frames": n_frames,
-        "total_sec": total_sec,
-        "sound_end_sec": sound_end_sec,
-        "silence_sec": silence_sec,
-        "last_sound_frame": last_sound,
-        "samples": samples,
-        "mono": mono,
-    }
+    info["sound_end_sec"] = sound_end_sec
+    info["silence_sec"] = info["total_sec"] - sound_end_sec
+    info["last_sound_frame"] = last_sound
+    return info
 
 
 def trim_wav(wav_path: str, info: dict, margin_ms: int) -> float:
     """WAVファイルの末尾無音をトリミングして書き戻す。新しい秒数を返す"""
-    framerate = info["framerate"]
-    n_channels = info["n_channels"]
-    sampwidth = info["sampwidth"]
-    samples = info["samples"]
-    last_sound = info["last_sound_frame"]
-
-    margin_frames = int(framerate * margin_ms / 1000)
-    cut_frame = min(last_sound + margin_frames, len(info["mono"]))
-
-    cut_sample = cut_frame * n_channels
-    trimmed = samples[:cut_sample]
-    trimmed_raw = struct.pack(f"<{len(trimmed)}h", *trimmed)
-
-    with wave.open(wav_path, "wb") as wf:
-        wf.setnchannels(n_channels)
-        wf.setsampwidth(sampwidth)
-        wf.setframerate(framerate)
-        wf.writeframes(trimmed_raw)
-
-    return cut_frame / framerate
+    threshold = 300  # analyze_wavで既にlast_sound_frame算出済みなので、ここでは直接trimを使う
+    return wav_trim(wav_path, threshold=threshold, margin_ms=margin_ms)
 
 
 def main():

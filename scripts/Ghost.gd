@@ -15,6 +15,14 @@ const PROX_DETECT  : float = 4.5
 const CATCH_DIST   : float = 1.5
 const ALERT_TIME   : float = 7.0
 
+# 状態別ビジュアルパラメータ
+const STATE_VISUALS := {
+	GhostState.PATROL: {"bob_speed": 2.0, "bob_amp": 0.06, "target_lean":  8.0, "sway_amp": 2.0, "rage": 0.0},
+	GhostState.ALERT:  {"bob_speed": 2.8, "bob_amp": 0.08, "target_lean": 14.0, "sway_amp": 2.5, "rage": 0.4},
+	GhostState.CHASE:  {"bob_speed": 4.5, "bob_amp": 0.10, "target_lean": 26.0, "sway_amp": 3.5, "rage": 1.0},
+	GhostState.CAUGHT: {"bob_speed": 0.5, "bob_amp": 0.02, "target_lean": -4.0, "sway_amp": 0.5, "rage": 1.0},
+}
+
 # 人型キャラクターモデルのパス（FBX）
 const GHOST_MODELS : Array[String] = [
 	"res://assets/models/characters/female/Character_17_Female_Police.fbx",
@@ -330,14 +338,7 @@ func _update_visuals(delta: float) -> void:
 		return
 
 	# ── rage 補間 ──
-	var target_rage := 0.0
-	match ghost_state:
-		GhostState.CHASE:
-			target_rage = 1.0
-		GhostState.ALERT:
-			target_rage = 0.4
-		GhostState.CAUGHT:
-			target_rage = 1.0
+	var target_rage : float = STATE_VISUALS.get(ghost_state, STATE_VISUALS[GhostState.PATROL])["rage"]
 	_rage_current = lerp(_rage_current, target_rage, delta * 3.0)
 
 	# ── シェーダーパラメータ更新 ──
@@ -349,19 +350,11 @@ func _update_visuals(delta: float) -> void:
 			(mat as ShaderMaterial).set_shader_parameter("rage", _rage_current)
 
 	# ── 状態別パラメータ ──
-	var bob_speed   := 1.5
-	var bob_amp     := 0.06
-	var target_lean := 0.0
-	var sway_amp    := 1.5
-	match ghost_state:
-		GhostState.PATROL:
-			bob_speed   = 2.0;  bob_amp = 0.06;  target_lean =  8.0;  sway_amp = 2.0
-		GhostState.ALERT:
-			bob_speed   = 2.8;  bob_amp = 0.08;  target_lean = 14.0;  sway_amp = 2.5
-		GhostState.CHASE:
-			bob_speed   = 4.5;  bob_amp = 0.10;  target_lean = 26.0;  sway_amp = 3.5
-		GhostState.CAUGHT:
-			bob_speed   = 0.5;  bob_amp = 0.02;  target_lean = -4.0;  sway_amp = 0.5
+	var p : Dictionary = STATE_VISUALS.get(ghost_state, STATE_VISUALS[GhostState.PATROL])
+	var bob_speed   : float = p["bob_speed"]
+	var bob_amp     : float = p["bob_amp"]
+	var target_lean : float = p["target_lean"]
+	var sway_amp    : float = p["sway_amp"]
 
 	# ── ボブ・前傾き・スウェイ ──
 	_bob_phase    += delta * bob_speed

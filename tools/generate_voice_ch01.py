@@ -13,9 +13,8 @@ import requests
 import sys
 import os
 import io
-import wave
-import struct
 import subprocess
+from wav_utils import trim_trailing_silence as _trim_wav
 
 # Windows コンソールの文字化け対策
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -66,50 +65,7 @@ def fix_pronunciation(text: str) -> str:
 
 def trim_trailing_silence(wav_path: str) -> float:
     """WAVファイルの末尾の無音を除去し、トリミング後の秒数を返す"""
-    with wave.open(wav_path, "rb") as wf:
-        n_channels = wf.getnchannels()
-        sampwidth = wf.getsampwidth()
-        framerate = wf.getframerate()
-        n_frames = wf.getnframes()
-        raw = wf.readframes(n_frames)
-
-    # サンプルデータに変換
-    if sampwidth == 2:
-        fmt = f"<{n_frames * n_channels}h"
-        samples = list(struct.unpack(fmt, raw))
-    else:
-        return n_frames / framerate  # 16bit以外は未対応、そのまま返す
-
-    # モノラル化（最大振幅で判定）
-    if n_channels == 1:
-        mono = [abs(s) for s in samples]
-    else:
-        mono = [max(abs(samples[i]), abs(samples[i+1])) for i in range(0, len(samples), n_channels)]
-
-    # 末尾から探索して最後に音があるフレームを見つける
-    last_sound = len(mono) - 1
-    while last_sound > 0 and mono[last_sound] < SILENCE_THRESHOLD:
-        last_sound -= 1
-
-    # マージン分を追加
-    margin_frames = int(framerate * TAIL_MARGIN_MS / 1000)
-    cut_frame = min(last_sound + margin_frames, len(mono))
-
-    if cut_frame >= len(mono) - 1:
-        return n_frames / framerate  # トリミング不要
-
-    # トリミングしたデータを書き戻す
-    cut_sample = cut_frame * n_channels
-    trimmed = samples[:cut_sample]
-    trimmed_raw = struct.pack(f"<{len(trimmed)}h", *trimmed)
-
-    with wave.open(wav_path, "wb") as wf:
-        wf.setnchannels(n_channels)
-        wf.setsampwidth(sampwidth)
-        wf.setframerate(framerate)
-        wf.writeframes(trimmed_raw)
-
-    return cut_frame / framerate
+    return _trim_wav(wav_path, threshold=SILENCE_THRESHOLD, margin_ms=TAIL_MARGIN_MS)
 
 
 def generate_voice(text: str, speaker_id: int, output_path: str) -> bool:

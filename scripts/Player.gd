@@ -14,6 +14,8 @@ const BATTERY_CHARGE := 0.018   # 懐中電灯OFF時の回復 /sec
 const SWAY_SPEED     := 1.8    # 揺れの速度
 const SWAY_AMOUNT    := 0.004  # 静止時の揺れ幅 (rad)
 const SWAY_MOVE_MULT := 2.5    # 移動時の揺れ倍率
+const HEAD_PITCH_MIN := -1.2   # 見下ろし限界 (rad)
+const HEAD_PITCH_MAX := 1.2    # 見上げ限界 (rad)
 
 @onready var head       : Node3D      = $Head
 @onready var camera     : Camera3D    = $Head/Camera3D
@@ -25,8 +27,9 @@ var _prev_moving : bool  = false
 var battery      : float = 1.0   # 0.0 〜 1.0
 var _sway_t      : float = 0.0   # 手ブレ用タイマー
 
-# ── デバッグ自動歩行 ──
-var _auto_walk    : bool  = false  # デバッグ時は true に
+# ── デバッグ ──
+const _DEBUG_LOGGING : bool = false  # デバッグログ出力（リリース時はfalse）
+var _auto_walk    : bool  = false    # デバッグ時は true に
 var _auto_timer   : float = 0.0
 var _auto_dir     : Vector3 = Vector3.FORWARD
 var _auto_turn_t  : float = 3.0
@@ -57,7 +60,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		rotate_y(-event.relative.x * MOUSE_SENS)
 		head.rotate_x(-event.relative.y * MOUSE_SENS)
-		head.rotation.x = clamp(head.rotation.x, -1.2, 1.2)
+		head.rotation.x = clamp(head.rotation.x, HEAD_PITCH_MIN, HEAD_PITCH_MAX)
 
 	if event.is_action_pressed("toggle_flashlight"):
 		_toggle_flashlight()
@@ -94,9 +97,9 @@ func _physics_process(delta: float) -> void:
 			_auto_turn_t = randf_range(2.0, 5.0)
 			rotate_y(randf_range(-PI * 0.5, PI * 0.5))
 		dir = -transform.basis.z
-		# FPS・メモリログ（5秒ごと）
+		# FPS・メモリログ（5秒ごと・_DEBUG_LOGGING=true時のみ）
 		_log_timer += delta
-		if _log_timer >= 5.0:
+		if _DEBUG_LOGGING and _log_timer >= 5.0:
 			_log_timer = 0.0
 			var fps := Engine.get_frames_per_second()
 			var mem := OS.get_static_memory_usage() / 1048576.0

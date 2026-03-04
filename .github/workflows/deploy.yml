@@ -71,7 +71,17 @@ jobs:
         with:
           lfs: true
 
+      - name: Cache Godot and export templates
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: |
+            /usr/local/bin/godot
+            ~/.local/share/godot/export_templates/4.6.1.stable
+          key: godot-4.6.1-${{ runner.os }}
+
       - name: Install Godot 4.6.1
+        if: steps.cache-godot.outputs.cache-hit != 'true'
         run: |
           wget -q https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_linux.x86_64.zip
           unzip -q Godot_v4.6.1-stable_linux.x86_64.zip
@@ -79,6 +89,7 @@ jobs:
           sudo mv Godot_v4.6.1-stable_linux.x86_64 /usr/local/bin/godot
 
       - name: Install Web export templates
+        if: steps.cache-godot.outputs.cache-hit != 'true'
         run: |
           mkdir -p ~/.local/share/godot/export_templates/4.6.1.stable
           wget -q https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_export_templates.tpz

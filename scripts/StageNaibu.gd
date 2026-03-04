@@ -31,37 +31,11 @@ func _set_editor_owner(node: Node) -> void:
 
 ## コリジョンあり（壁・床・障害物）
 func _box(pos: Vector3, size: Vector3, col: Color) -> void:
-	var mi   := MeshInstance3D.new()
-	var mesh := BoxMesh.new()
-	mesh.size = size
-	mi.mesh   = mesh
-	mi.position = pos
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = col
-	mesh.material = mat
-	add_child(mi)
-
-	var sb    := StaticBody3D.new()
-	sb.position = pos
-	var cs    := CollisionShape3D.new()
-	var shape := BoxShape3D.new()
-	shape.size = size
-	cs.shape   = shape
-	sb.add_child(cs)
-	add_child(sb)
-
+	StageHelper.box(self, pos, size, col)
 
 ## コリジョンなし（草・瓦礫・葉などの装飾）
 func _deco(pos: Vector3, size: Vector3, col: Color) -> void:
-	var mi   := MeshInstance3D.new()
-	var mesh := BoxMesh.new()
-	mesh.size = size
-	mi.mesh   = mesh
-	mi.position = pos
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = col
-	mesh.material = mat
-	add_child(mi)
+	StageHelper.deco(self, pos, size, col)
 
 
 # ════════════════════════════════════════════════════════════════

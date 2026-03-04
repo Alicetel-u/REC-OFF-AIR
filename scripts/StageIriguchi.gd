@@ -24,42 +24,12 @@ func _set_editor_owner(node: Node) -> void:
 		_set_editor_owner(child)
 
 
-# ── ヘルパー: コリジョンなし（装飾専用）────────────────────────
+# ── ヘルパー（StageHelper に委譲） ────────────────────────
 func _deco(pos: Vector3, size: Vector3, col: Color) -> void:
-	var mi   := MeshInstance3D.new()
-	var mesh := BoxMesh.new()
-	mesh.size = size
-	mi.mesh   = mesh
-	mi.position = pos
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = col
-	mesh.material = mat
-	add_child(mi)
+	StageHelper.deco(self, pos, size, col)
 
-
-# ── ヘルパー: MeshInstance3D + StaticBody3D を生成 ───────────────
 func _box(pos: Vector3, size: Vector3, col: Color) -> void:
-	# 表示メッシュ
-	var mi   := MeshInstance3D.new()
-	var mesh := BoxMesh.new()
-	mesh.size = size
-	mi.mesh   = mesh
-	mi.position = pos
-
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = col
-	mesh.material = mat
-	add_child(mi)
-
-	# コリジョン（StaticBody3D）
-	var sb    := StaticBody3D.new()
-	sb.position = pos
-	var cs    := CollisionShape3D.new()
-	var shape := BoxShape3D.new()
-	shape.size = size
-	cs.shape   = shape
-	sb.add_child(cs)
-	add_child(sb)
+	StageHelper.box(self, pos, size, col)
 
 
 # ── 地面 ─────────────────────────────────────────────────────────

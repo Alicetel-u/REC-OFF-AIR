@@ -31,6 +31,7 @@ import shutil
 import argparse
 import re
 from datetime import datetime
+from wav_utils import get_wav_duration as _wav_duration
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
@@ -49,10 +50,7 @@ PAD_QUESTION = 0.5   # 問いかけ（視聴者チャットとの間を取る）
 def get_wav_duration(voice_id: str) -> float:
     """WAVファイルの再生秒数を取得。見つからなければ -1"""
     path = os.path.join(VOICE_DIR, f"{voice_id}.wav")
-    if not os.path.exists(path):
-        return -1.0
-    with wave.open(path, "rb") as wf:
-        return wf.getnframes() / wf.getframerate()
+    return _wav_duration(path)
 
 
 def classify_padding(text: str, pad_base: float) -> tuple:

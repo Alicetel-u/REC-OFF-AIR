@@ -1,221 +1,800 @@
 {
-  "chapter": "ch05_haison_dasshutsu",
-  "_note": "CP5 脱出路 — 3エンド分岐: NORMAL(鈴封印→赤い糸), TRUE(配信停止→静かな帰還), BAD(撮影続行→永遠のバズり)",
-  "events": [
-    {"type": "say",     "text": "走れ。出口はこの先だ。バス停まで行けばいい"},
-    {"type": "wait",    "sec": 1.5},
-    {"type": "chat",    "msg": "逃げろ！！！",                   "user": "ゆきんこ77",    "utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "走って！！",                     "user": "ホラー好き太郎", "utype": "viewer"},
-    {"type": "wait",    "sec": 0.4},
-
-    {"type": "say",     "text": "…手の中にVHSテープ5本と、黒くなったお札。全部持って帰る"},
-    {"type": "wait",    "sec": 1.5},
-    {"type": "chat",    "msg": "テープ大丈夫？",                 "user": "配信民99",       "utype": "viewer"},
-    {"type": "wait",    "sec": 0.4},
-    {"type": "chat",    "msg": "捨てた方がいいって",             "user": "幽霊ガチ勢",    "utype": "viewer"},
-    {"type": "wait",    "sec": 0.4},
-    {"type": "say_clear"},
-
-    {"type": "choice",
-     "prompt": "走りながら考える。VHSテープ5本、黒いお札、割れたスマホ。この村の全てを持っている。",
-     "choices": [
-       {"text": "全部持って帰る——世界に公開する", "sub": "みゆきの真実を伝える。それが彼女が本当に望んだことだ"},
-       {"text": "VHSだけ持って、残りは捨てる",   "sub": "証拠映像だけでいい。呪われたものは置いていく"},
-       {"text": "全部この村に置いていく",        "sub": "真実は闇に葬る。知らなければ呪われない"}
-     ]
-    },
-
-    {"type": "say",     "text": "…どっちにしろ、まず生きて帰らなきゃ話にならない"},
-    {"type": "wait",    "sec": 1.0},
-    {"type": "chat",    "msg": "そうだ！まず逃げろ！",           "user": "配信民99",       "utype": "viewer"},
-    {"type": "wait",    "sec": 0.5},
-
-    {"type": "goto_route", "routes": {
-      "0": "normal_start",
-      "1": "true_start",
-      "2": "bad_start"
-    }},
-
-    {"type": "label",   "name": "normal_start"},
-    {"type": "chat",    "msg": "逃げろ！！",                     "user": "ゆきんこ77",    "utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "行けるよ！！",                   "user": "ホラー好き太郎", "utype": "viewer"},
-    {"type": "wait",    "sec": 0.4},
-    {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},
-    {"type": "wait",    "sec": 0.5},
-
-    {"type": "walk_set","on": true},
-    {"type": "pos_z",   "target": -58.0, "dur": 32.0, "id": "escape_n"},
-
-    {"type": "wait",    "sec": 5.0},
-    {"type": "say",     "text": "…みゆきを鎮めたはずなのに。Kの声がまだ聞こえる"},
-    {"type": "wait",    "sec": 1.5},
-    {"type": "chat",    "msg": "K止まってないよ！",              "user": "ゆきんこ77",    "utype": "viewer"},
-    {"type": "wait",    "sec": 0.5},
-    {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},
-    {"type": "wait",    "sec": 0.5},
-
-    {"type": "say_clear"},
-    {"type": "say",     "text": "…エンジンの音だ。バスだ。霧の向こうにバスが見える！"},
-    {"type": "wait",    "sec": 1.5},
-    {"type": "chat",    "msg": "バス！！！",                     "user": "ゆきんこ77",    "utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "間に合え！！",                   "user": "配信民99",       "utype": "viewer"},
-    {"type": "wait",    "sec": 0.6},
-
-    {"type": "pos_z_await", "id": "escape_n"},
-    {"type": "walk_set","on": false},
-
-    {"type": "say_clear"},
-    {"type": "say",     "text": "乗り込んだ。扉が閉まる。走り出した。…逃げ切れた、のか"},
-    {"type": "wait",    "sec": 2.0},
-    {"type": "chat",    "msg": "よかった！！！",                 "user": "配信民99",       "utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "無事だった！！",                 "user": "ゆきんこ77",    "utype": "viewer"},
-    {"type": "wait",    "sec": 0.5},
-
-    {"type": "say",     "text": "配信を終了する。…ありがとうみんな。生きて帰れた"},
-    {"type": "wait",    "sec": 2.0},
-    {"type": "chat",    "msg": "おつかれ！！",                   "user": "ホラー好き太郎", "utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "神配信だった",                   "user": "配信民99",       "utype": "viewer"},
-    {"type": "wait",    "sec": 0.5},
-
-    {"type": "say",     "text": "…数日後。配信のアーカイブを見返した。再生数は500万回を超えていた"},
-    {"type": "wait",    "sec": 2.5},
-    {"type": "say",     "text": "…でも、おかしい。動画の中の俺の首の周りに…赤い糸が巻きついてる"},
-    {"type": "wait",    "sec": 2.5},
-    {"type": "say",     "text": "鏡を見た。首に、赤い糸。…昨日より短くなってる"},
-    {"type": "wait",    "sec": 2.0},
-    {"type": "say",     "text": "…みゆきを鎮めた。でも、視線は止められなかった。500万の視線が、今も俺を——"},
-    {"type": "wait",    "sec": 2.5},
-    {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},
-    {"type": "wait",    "sec": 2.0},
-    {"type": "say_clear"},
-    {"type": "goto",    "label": "end"},
-
-
-    {"type": "label",   "name": "true_start"},
-    {"type": "say",     "text": "…静かだ。虫の声と、自分の足音しか聞こえない"},
-    {"type": "wait",    "sec": 1.5},
-
-    {"type": "walk_set","on": true},
-    {"type": "pos_z",   "target": -58.0, "dur": 36.0, "id": "escape_t"},
-
-    {"type": "wait",    "sec": 4.0},
-    {"type": "say",     "text": "配信は止まった。視聴者はもういない。誰も俺を見ていない"},
-    {"type": "wait",    "sec": 2.0},
-    {"type": "say_clear"},
-    {"type": "say",     "text": "…霧が晴れてきた。星が見える"},
-    {"type": "wait",    "sec": 2.0},
-
-    {"type": "say_clear"},
-    {"type": "say",     "text": "バス停に着いた。バスはない。…でも、もういい"},
-    {"type": "wait",    "sec": 2.0},
-    {"type": "say",     "text": "歩いて帰ろう。誰にも見られずに"},
-    {"type": "wait",    "sec": 2.0},
-
-    {"type": "pos_z_await", "id": "escape_t"},
-    {"type": "walk_set","on": false},
-
-    {"type": "say_clear"},
-    {"type": "say",     "text": "…朝が来た。普通の朝日だ"},
-    {"type": "wait",    "sec": 2.0},
-    {"type": "say",     "text": "帰ってからチャンネルを消した。VHSテープも全部燃やした"},
-    {"type": "wait",    "sec": 2.5},
-    {"type": "say",     "text": "視聴者は0人になった。収入もゼロ。また貧乏な生活に戻った"},
-    {"type": "wait",    "sec": 2.5},
-    {"type": "say",     "text": "…でも、首に赤い糸はなかった。鏡に映るのは、ただの俺だった"},
-    {"type": "wait",    "sec": 2.5},
-    {"type": "say",     "text": "誰にも見られない。誰にも知られない。…それが、いちばん安全だった"},
-    {"type": "wait",    "sec": 3.0},
-    {"type": "say_clear"},
-    {"type": "goto",    "label": "end"},
-
-
-    {"type": "label",   "name": "bad_start"},
-    {"type": "chat",    "msg": "配信続けて！！",                 "user": "暗闇ウォッチャー","utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "投げ銭 ¥50,000",                "user": "配信民99",       "utype": "member"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "神コンテンツ！！",               "user": "視聴者A",        "utype": "viewer"},
-    {"type": "wait",    "sec": 0.4},
-
-    {"type": "walk_set","on": true},
-    {"type": "pos_z",   "target": -30.0, "dur": 16.0, "id": "escape_b"},
-
-    {"type": "wait",    "sec": 3.0},
-    {"type": "say",     "text": "最高の映像が撮れてる。止まるな。止められない"},
-    {"type": "wait",    "sec": 1.5},
-    {"type": "set_viewers", "count": 2000000},
-    {"type": "chat",    "msg": "200万人突破！！！",              "user": "ホラー好き太郎", "utype": "viewer"},
-    {"type": "wait",    "sec": 0.4},
-    {"type": "chat",    "msg": "しゅっちやめて！逃げて！",       "user": "ゆきんこ77",    "utype": "viewer"},
-    {"type": "wait",    "sec": 0.5},
-
-    {"type": "say",     "text": "…足が重い。体が沈む。でもカメラは止めない"},
-    {"type": "wait",    "sec": 1.5},
-    {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},
-    {"type": "wait",    "sec": 0.2},
-    {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},
-    {"type": "wait",    "sec": 0.2},
-    {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},
-    {"type": "wait",    "sec": 0.2},
-    {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},
-    {"type": "wait",    "sec": 0.2},
-    {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},
-    {"type": "wait",    "sec": 0.5},
-
-    {"type": "pos_z_await", "id": "escape_b"},
-    {"type": "walk_set","on": false},
-
-    {"type": "say_clear"},
-    {"type": "say",     "text": "…動けない。足が地面に沈んでいく"},
-    {"type": "wait",    "sec": 1.5},
-    {"type": "chat",    "msg": "逃げて！！",                     "user": "ゆきんこ77",    "utype": "viewer"},
-    {"type": "wait",    "sec": 0.4},
-    {"type": "say",     "text": "…後ろから、女たちの声が聞こえる。詠唱だ"},
-    {"type": "wait",    "sec": 1.5},
-    {"type": "set_viewers", "count": 5000000},
-    {"type": "chat",    "msg": "500万人！！",                    "user": "ホラー好き太郎", "utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "草ｗｗｗ",                       "user": "暗闇ウォッチャー","utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "いいね👍",                       "user": "視聴者A",        "utype": "viewer"},
-    {"type": "wait",    "sec": 0.5},
-
-    {"type": "say",     "text": "最高の映像だ！！これが欲しかったんだ！！"},
-    {"type": "wait",    "sec": 1.5},
-    {"type": "say",     "text": "…あ"},
-    {"type": "wait",    "sec": 1.5},
-
-    {"type": "set_viewers", "count": 10000000},
-    {"type": "chat",    "msg": "え",                             "user": "ゆきんこ77",    "utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "画面が",                         "user": "配信民99",       "utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "首が",                           "user": "深夜探偵",       "utype": "viewer"},
-    {"type": "wait",    "sec": 0.5},
-    {"type": "chat",    "msg": "草ｗｗｗｗｗ",                   "user": "暗闇ウォッチャー","utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "いいね👍👍👍",                   "user": "視聴者A",        "utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "いいね👍👍👍👍👍",               "user": "配信民99",       "utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "草ｗｗｗｗ",                     "user": "ホラー好き太郎", "utype": "viewer"},
-    {"type": "wait",    "sec": 0.3},
-    {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},
-    {"type": "wait",    "sec": 0.2},
-    {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},
-    {"type": "wait",    "sec": 0.2},
-    {"type": "chat",    "msg": "見ている",                       "user": "K",              "utype": "viewer"},
-    {"type": "wait",    "sec": 0.5},
-    {"type": "chat",    "msg": "次は、今これを見ている\"あなた\"の番だね", "user": "K",    "utype": "owner"},
-    {"type": "wait",    "sec": 3.0},
-    {"type": "say_clear"},
-
-
-    {"type": "label",   "name": "end"}
-  ]
+	"chapter": "ch05_haison_dasshutsu",
+	"_note": "CP5 脱出路 — 3エンド分岐: NORMAL(鈴封印→赤い糸), TRUE(配信停止→静かな帰還), BAD(撮影続行→永遠のバズり)",
+	"events": [
+		{
+			"type": "say",
+			"text": "走れ。出口はこの先だ。バス停まで行けばいい"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "chat",
+			"msg": "逃げろ！！！",
+			"user": "ゆきんこ77",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "走って！！",
+			"user": "ホラー好き太郎",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "say",
+			"text": "…手の中にVHSテープ5本と、黒くなったお札。全部持って帰る"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "chat",
+			"msg": "テープ大丈夫？",
+			"user": "配信民99",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "捨てた方がいいって",
+			"user": "幽霊ガチ勢",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "choice",
+			"prompt": "走りながら考える。VHSテープ5本、黒いお札、割れたスマホ。この村の全てを持っている。",
+			"choices": [
+				{
+					"text": "全部持って帰る——世界に公開する",
+					"sub": "みゆきの真実を伝える。それが彼女が本当に望んだことだ"
+				},
+				{
+					"text": "VHSだけ持って、残りは捨てる",
+					"sub": "証拠映像だけでいい。呪われたものは置いていく"
+				},
+				{
+					"text": "全部この村に置いていく",
+					"sub": "真実は闇に葬る。知らなければ呪われない"
+				}
+			]
+		},
+		{
+			"type": "say",
+			"text": "…どっちにしろ、まず生きて帰らなきゃ話にならない"
+		},
+		{
+			"type": "wait",
+			"sec": 1.0
+		},
+		{
+			"type": "chat",
+			"msg": "そうだ！まず逃げろ！",
+			"user": "配信民99",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "goto_route",
+			"routes": {
+				"0": "normal_start",
+				"1": "true_start",
+				"2": "bad_start"
+			}
+		},
+		{
+			"type": "label",
+			"name": "normal_start"
+		},
+		{
+			"type": "chat",
+			"msg": "逃げろ！！",
+			"user": "ゆきんこ77",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "行けるよ！！",
+			"user": "ホラー好き太郎",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "見ている",
+			"user": "K",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "walk_set",
+			"on": true
+		},
+		{
+			"type": "pos_z",
+			"target": -58.0,
+			"dur": 32.0,
+			"id": "escape_n"
+		},
+		{
+			"type": "wait",
+			"sec": 5.0
+		},
+		{
+			"type": "say",
+			"text": "…みゆきを鎮めたはずなのに。Kの声がまだ聞こえる"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "chat",
+			"msg": "K止まってないよ！",
+			"user": "ゆきんこ77",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "chat",
+			"msg": "見ている",
+			"user": "K",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "say",
+			"text": "…エンジンの音だ。バスだ。霧の向こうにバスが見える！"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "chat",
+			"msg": "バス！！！",
+			"user": "ゆきんこ77",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "間に合え！！",
+			"user": "配信民99",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.6
+		},
+		{
+			"type": "pos_z_await",
+			"id": "escape_n"
+		},
+		{
+			"type": "walk_set",
+			"on": false
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "say",
+			"text": "乗り込んだ。扉が閉まる。走り出した。…逃げ切れた、のか"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "chat",
+			"msg": "よかった！！！",
+			"user": "配信民99",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "無事だった！！",
+			"user": "ゆきんこ77",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "配信を終了する。…ありがとうみんな。生きて帰れた"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "chat",
+			"msg": "おつかれ！！",
+			"user": "ホラー好き太郎",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "神配信だった",
+			"user": "配信民99",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "…数日後。配信のアーカイブを見返した。再生数は500万回を超えていた"
+		},
+		{
+			"type": "wait",
+			"sec": 2.5
+		},
+		{
+			"type": "say",
+			"text": "…でも、おかしい。動画の中の俺の首の周りに…赤い糸が巻きついてる"
+		},
+		{
+			"type": "wait",
+			"sec": 2.5
+		},
+		{
+			"type": "say",
+			"text": "鏡を見た。首に、赤い糸。…昨日より短くなってる"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "say",
+			"text": "…みゆきを鎮めた。でも、視線は止められなかった。500万の視線が、今も俺を——"
+		},
+		{
+			"type": "wait",
+			"sec": 2.5
+		},
+		{
+			"type": "chat",
+			"msg": "見ている",
+			"user": "K",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "goto",
+			"label": "end"
+		},
+		{
+			"type": "label",
+			"name": "true_start"
+		},
+		{
+			"type": "say",
+			"text": "…静かだ。虫の声と、自分の足音しか聞こえない"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "walk_set",
+			"on": true
+		},
+		{
+			"type": "pos_z",
+			"target": -58.0,
+			"dur": 36.0,
+			"id": "escape_t"
+		},
+		{
+			"type": "wait",
+			"sec": 4.0
+		},
+		{
+			"type": "say",
+			"text": "配信は止まった。視聴者はもういない。誰も俺を見ていない"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "say",
+			"text": "…霧が晴れてきた。星が見える"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "say",
+			"text": "バス停に着いた。バスはない。…でも、もういい"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "say",
+			"text": "歩いて帰ろう。誰にも見られずに"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "pos_z_await",
+			"id": "escape_t"
+		},
+		{
+			"type": "walk_set",
+			"on": false
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "say",
+			"text": "…朝が来た。普通の朝日だ"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "say",
+			"text": "帰ってからチャンネルを消した。VHSテープも全部燃やした"
+		},
+		{
+			"type": "wait",
+			"sec": 2.5
+		},
+		{
+			"type": "say",
+			"text": "視聴者は0人になった。収入もゼロ。また貧乏な生活に戻った"
+		},
+		{
+			"type": "wait",
+			"sec": 2.5
+		},
+		{
+			"type": "say",
+			"text": "…でも、首に赤い糸はなかった。鏡に映るのは、ただの俺だった"
+		},
+		{
+			"type": "wait",
+			"sec": 2.5
+		},
+		{
+			"type": "say",
+			"text": "誰にも見られない。誰にも知られない。…それが、いちばん安全だった"
+		},
+		{
+			"type": "wait",
+			"sec": 3.0
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "goto",
+			"label": "end"
+		},
+		{
+			"type": "label",
+			"name": "bad_start"
+		},
+		{
+			"type": "chat",
+			"msg": "配信続けて！！",
+			"user": "暗闇ウォッチャー",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "投げ銭 ¥50,000",
+			"user": "配信民99",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "神コンテンツ！！",
+			"user": "視聴者A",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "walk_set",
+			"on": true
+		},
+		{
+			"type": "pos_z",
+			"target": -30.0,
+			"dur": 16.0,
+			"id": "escape_b"
+		},
+		{
+			"type": "wait",
+			"sec": 3.0
+		},
+		{
+			"type": "say",
+			"text": "最高の映像が撮れてる。止まるな。止められない"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "set_viewers",
+			"count": 2000000
+		},
+		{
+			"type": "chat",
+			"msg": "200万人突破！！！",
+			"user": "ホラー好き太郎",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "しゅっちやめて！逃げて！",
+			"user": "ゆきんこ77",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "…足が重い。体が沈む。でもカメラは止めない"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "chat",
+			"msg": "見ている",
+			"user": "K",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "見ている",
+			"user": "K",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "見ている",
+			"user": "K",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "見ている",
+			"user": "K",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "見ている",
+			"user": "K",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "pos_z_await",
+			"id": "escape_b"
+		},
+		{
+			"type": "walk_set",
+			"on": false
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "say",
+			"text": "…動けない。足が地面に沈んでいく"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "chat",
+			"msg": "逃げて！！",
+			"user": "ゆきんこ77",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "say",
+			"text": "…後ろから、女たちの声が聞こえる。詠唱だ"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "set_viewers",
+			"count": 5000000
+		},
+		{
+			"type": "chat",
+			"msg": "500万人！！",
+			"user": "ホラー好き太郎",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "草ｗｗｗ",
+			"user": "暗闇ウォッチャー",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "いいね👍",
+			"user": "視聴者A",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "最高の映像だ！！これが欲しかったんだ！！"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say",
+			"text": "…あ"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "set_viewers",
+			"count": 10000000
+		},
+		{
+			"type": "chat",
+			"msg": "え",
+			"user": "ゆきんこ77",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "画面が",
+			"user": "配信民99",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "首が",
+			"user": "深夜探偵",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "chat",
+			"msg": "草ｗｗｗｗｗ",
+			"user": "暗闇ウォッチャー",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "いいね👍👍👍",
+			"user": "視聴者A",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "いいね👍👍👍👍👍",
+			"user": "配信民99",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "草ｗｗｗｗ",
+			"user": "ホラー好き太郎",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "見ている",
+			"user": "K",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "見ている",
+			"user": "K",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "見ている",
+			"user": "K",
+			"utype": "viewer"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "chat",
+			"msg": "次は、今これを見ている\"あなた\"の番だね",
+			"user": "K",
+			"utype": "owner"
+		},
+		{
+			"type": "wait",
+			"sec": 3.0
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "label",
+			"name": "end"
+		}
+	]
 }
