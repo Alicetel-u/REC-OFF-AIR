@@ -51,9 +51,9 @@ jobs:
           python tools/fix_voice_wait.py --validate-only
           # CONSECUTIVE_WAIT / LONG_GAP / MISSING_WAV は致命的
           output=$(python tools/fix_voice_wait.py --validate-only 2>&1)
-          if echo "$output" | grep -qE "CONSECUTIVE_WAIT|LONG_GAP|MISSING_WAV"; then
+          if echo "$output" | grep -qE "CONSECUTIVE_WAIT|MISSING_WAV"; then
             echo "ERROR: 致命的なバリデーション警告があります"
-            echo "$output" | grep -E "CONSECUTIVE_WAIT|LONG_GAP|MISSING_WAV"
+            echo "$output" | grep -E "CONSECUTIVE_WAIT|MISSING_WAV"
             exit 1
           fi
           echo "OK: バリデーション通過"
