@@ -8,7 +8,7 @@ extends Node
 ##   SoundManager.play_door_creak()
 
 # チャプター別の足音カテゴリ（chapter_index → フォルダ名）
-const STEP_CATS : Array = ["leaves", "wooden", "wooden", "wooden", "gravel"]
+const STEP_CATS : Array = ["concrete", "wooden", "wooden", "wooden", "gravel"]
 
 # チャプター別のアンビエント音量 dB
 const AMBIENT_VOLS : Array = [-8.0, -14.0, -12.0, -12.0, -6.0]
@@ -155,7 +155,7 @@ func play_footstep(chapter_index: int, is_dash: bool) -> void:
 	var list : Array  = _step_cats.get(cat, [])
 	if list.is_empty():
 		return
-	var s := _load_audio(list[randi() % list.size()])
+	var s := _load_audio(list[0])
 	if not s:
 		return
 	_step.stream      = s

@@ -33,8 +33,13 @@ INTONATION_SCALE = 1.5     # 抑揚強め（テンション高い感じ）
 PITCH_SCALE = 0.02         # ほんの少しピッチ上げ
 
 # 末尾無音トリミング設定
-SILENCE_THRESHOLD = 300     # この振幅以下を無音とみなす
-TAIL_MARGIN_MS = 80         # トリミング後に残す余白（ミリ秒）
+SILENCE_THRESHOLD = 2000    # この振幅以下を無音とみなす（微小音もカット）
+TAIL_MARGIN_MS = 40         # トリミング後に残す余白（ミリ秒）
+
+# VOICEVOXポーズ制御
+MAX_PAUSE_LENGTH = 0.15     # 句読点ポーズの最大長（秒）
+PRE_PHONEME_LENGTH = 0.05   # 文頭ポーズ（秒）
+POST_PHONEME_LENGTH = 0.05  # 文末ポーズ（秒）
 
 # 発音修正テーブル
 PRONUNCIATION_FIXES = {
@@ -125,6 +130,14 @@ def generate_voice(text: str, speaker_id: int, output_path: str) -> bool:
         query_data["speedScale"] = SPEED_SCALE
         query_data["intonationScale"] = INTONATION_SCALE
         query_data["pitchScale"] = PITCH_SCALE
+        query_data["prePhonemeLength"] = PRE_PHONEME_LENGTH
+        query_data["postPhonemeLength"] = POST_PHONEME_LENGTH
+
+        # 句読点ポーズを短縮（長すぎる無音を防止）
+        for phrase in query_data.get("accent_phrases", []):
+            if phrase.get("pause_mora") is not None:
+                vl = phrase["pause_mora"].get("vowel_length", 0)
+                phrase["pause_mora"]["vowel_length"] = min(vl, MAX_PAUSE_LENGTH)
 
         # 音声合成
         synth_res = requests.post(

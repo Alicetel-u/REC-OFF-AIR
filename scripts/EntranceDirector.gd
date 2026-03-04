@@ -10,6 +10,7 @@ var player: CharacterBody3D = null
 var hud: Control = null
 
 var _walking           := false
+var _moving            := false   # 実際に前進するか（walk_setで制御）
 var _bob_t             := 0.0
 var _flash_orig_energy : float = 1.0
 var _fade_layer        : CanvasLayer = null
@@ -31,11 +32,15 @@ func _process(delta: float) -> void:
 	if not is_instance_valid(player):
 		return
 	if _walking:
-		_bob_t += delta * 4.8
-		var ty := sin(_bob_t) * 0.05
-		var tx := sin(_bob_t * 0.5) * 0.025
-		player.camera.position.y = lerp(player.camera.position.y, ty, delta * 8.0)
-		player.camera.position.x = lerp(player.camera.position.x, tx, delta * 8.0)
+		var prev_bob := _bob_t
+		_bob_t += delta * Player.BOB_FREQ
+		var ty := abs(sin(_bob_t)) * Player.BOB_AMP
+		var tx := sin(_bob_t * 2.0) * Player.BOB_AMP * 0.4
+		player.camera.position.y = lerp(player.camera.position.y, ty, delta * 12.0)
+		player.camera.position.x = lerp(player.camera.position.x, tx, delta * 12.0)
+		# 足音 — bob_t が π の倍数を通過（着地タイミング）で再生
+		if int(_bob_t / PI) != int(prev_bob / PI) and prev_bob > 0.0:
+			SoundManager.play_footstep(GameManager.chapter_index, false)
 	else:
 		if player.camera.position.length_squared() > 0.0001:
 			player.camera.position = player.camera.position.lerp(Vector3.ZERO, delta * 5.0)
@@ -111,6 +116,8 @@ func run_from_path(json_path: String) -> void:
 			"wait":
 				if not _skip_to_next_say:
 					var _sec := float(ev.get("sec", 0.5))
+					# play() 直後は playing フラグが立つまで1フレーム掛かる
+					await get_tree().process_frame
 					# ボイス再生中なら先にボイスを待ち、残り時間のみ追加待機
 					if SoundManager.is_voice_playing():
 						var _t0 := Time.get_ticks_msec()

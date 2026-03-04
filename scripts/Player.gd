@@ -24,7 +24,6 @@ var flashlight_on: bool  = true
 var _prev_moving : bool  = false
 var battery      : float = 1.0   # 0.0 〜 1.0
 var _sway_t      : float = 0.0   # 手ブレ用タイマー
-var _step_timer  : float = 0.0   # 足音インターバル計測
 
 # ── デバッグ自動歩行 ──
 var _auto_walk    : bool  = false  # デバッグ時は true に
@@ -137,16 +136,15 @@ func _physics_process(delta: float) -> void:
 		player_moved.emit()
 	_prev_moving = now_moving
 
-	# 足音
+	# 足音 — ボブの着地タイミング（bob_t が π の倍数を通過）で再生
+	var dashing := Input.is_action_pressed("dash") if now_moving else false
 	if now_moving and is_on_floor():
-		var dashing := Input.is_action_pressed("dash")
-		_step_timer += delta
-		var interval := 0.26 if dashing else 0.42
-		if _step_timer >= interval:
-			_step_timer = 0.0
+		var rate := 1.8 if dashing else 1.0
+		var prev_bob := bob_t
+		var next_bob := bob_t + delta * BOB_FREQ * rate
+		# prev と next の間で floor(t/π) が変わったら着地
+		if int(next_bob / PI) != int(prev_bob / PI) and prev_bob > 0.0:
 			SoundManager.play_footstep(GameManager.chapter_index, dashing)
-	else:
-		_step_timer = 0.0
 
 	_do_camera_bob(delta, now_moving)
 	_do_flashlight_sway(delta, now_moving)
