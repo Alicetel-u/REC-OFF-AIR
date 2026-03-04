@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [master]
+  pull_request:
+    branches: [master]
   workflow_dispatch:
 
 permissions:
@@ -15,7 +17,50 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate voice assets
+        run: |
+          echo "=== WAV/import 整合性チェック ==="
+          errors=0
+          for wav in assets/audio/voice/ch01/*.wav; do
+            [ -f "$wav" ] || continue
+            import="${wav}.import"
+            if [ ! -f "$import" ]; then
+              echo "ERROR: ${import} が存在しません"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ $errors -gt 0 ]; then
+            echo "ERROR: ${errors}件の.importファイルが不足しています"
+            exit 1
+          fi
+          echo "OK: 全WAVに.importファイルあり"
+
+      - name: Validate dialogue JSON
+        run: |
+          python tools/fix_voice_wait.py --validate-only
+          # CONSECUTIVE_WAIT / LONG_GAP / MISSING_WAV は致命的
+          output=$(python tools/fix_voice_wait.py --validate-only 2>&1)
+          if echo "$output" | grep -qE "CONSECUTIVE_WAIT|LONG_GAP|MISSING_WAV"; then
+            echo "ERROR: 致命的なバリデーション警告があります"
+            echo "$output" | grep -E "CONSECUTIVE_WAIT|LONG_GAP|MISSING_WAV"
+            exit 1
+          fi
+          echo "OK: バリデーション通過"
+
   export-and-deploy:
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

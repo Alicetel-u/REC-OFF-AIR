@@ -25,6 +25,8 @@ import os
 import sys
 import io
 import wave
+import struct
+import math
 import shutil
 import argparse
 import re
@@ -75,6 +77,49 @@ def classify_padding(text: str, pad_base: float) -> tuple:
     return pad_base, "通常"
 
 
+def check_wav_internal_silence(voice_id: str, threshold_rms: float = 50.0,
+                               min_gap_sec: float = 0.3) -> list:
+    """WAV内部の無音区間を検出。長い句読点ポーズなどを発見する"""
+    issues = []
+    path = os.path.join(VOICE_DIR, f"{voice_id}.wav")
+    if not os.path.exists(path):
+        return issues
+    with wave.open(path, "rb") as wf:
+        n_frames = wf.getnframes()
+        framerate = wf.getframerate()
+        raw = wf.readframes(n_frames)
+        if wf.getsampwidth() != 2:
+            return issues
+    samples = struct.unpack(f"<{n_frames}h", raw)
+    chunk = int(framerate * 0.1)  # 100ms単位
+    total_dur = n_frames / framerate
+
+    # 冒頭と末尾は除外（最初0.1sと最後0.2s）
+    start_chunk = 1
+    end_chunk = max(1, n_frames // chunk - 2)
+
+    silent_run = 0
+    for ci in range(start_chunk, end_chunk):
+        seg = samples[ci * chunk:(ci + 1) * chunk]
+        rms = math.sqrt(sum(s * s for s in seg) / len(seg)) if seg else 0
+        if rms < threshold_rms:
+            silent_run += 1
+        else:
+            if silent_run * 0.1 >= min_gap_sec:
+                gap_start = (ci - silent_run) * 0.1
+                issues.append(
+                    f"INTERNAL_SILENCE: {voice_id}.wav {gap_start:.1f}s付近に"
+                    f"{silent_run * 0.1:.1f}秒の無音区間（VOICEVOXポーズ過長の疑い）")
+            silent_run = 0
+    # 末尾ループ終了時の残り
+    if silent_run * 0.1 >= min_gap_sec:
+        gap_start = (end_chunk - silent_run) * 0.1
+        issues.append(
+            f"INTERNAL_SILENCE: {voice_id}.wav {gap_start:.1f}s付近に"
+            f"{silent_run * 0.1:.1f}秒の無音区間（VOICEVOXポーズ過長の疑い）")
+    return issues
+
+
 def validate_json(events: list, voice_dir: str) -> list:
     """JSONの整合性を検証し、問題をリストで返す"""
     issues = []
@@ -104,6 +149,52 @@ def validate_json(events: list, voice_dir: str) -> list:
                 issues.append(f"LONG_WAIT: index {i} の wait sec={sec}s が異常に長い")
             if isinstance(sec, (int, float)) and sec < 0:
                 issues.append(f"NEGATIVE_WAIT: index {i} の wait sec={sec}s が負の値")
+
+    # ── 連続waitチェック（セリフ脱落の兆候） ──
+    consecutive = 0
+    for i, ev in enumerate(events):
+        if ev.get("type") == "wait":
+            consecutive += 1
+            if consecutive >= 2:
+                total_sec = sum(
+                    float(events[j].get("sec", 0))
+                    for j in range(i - consecutive + 1, i + 1)
+                )
+                if total_sec > 3.0:
+                    issues.append(
+                        f"CONSECUTIVE_WAIT: index {i-consecutive+1}〜{i} に"
+                        f"waitが{consecutive}連続（合計{total_sec:.1f}s）"
+                        f"— セリフ脱落の可能性")
+        else:
+            consecutive = 0
+
+    # ── say間の無音ギャップチェック ──
+    last_say_idx = None
+    for i, ev in enumerate(events):
+        if ev.get("type") == "say" and "voice" in ev:
+            if last_say_idx is not None:
+                # say間のvoice無しwait合計を計算
+                gap_wait = 0.0
+                for j in range(last_say_idx + 1, i):
+                    if events[j].get("type") == "wait":
+                        gap_wait += float(events[j].get("sec", 0))
+                # voice同期waitを除外（最初のwaitはvoice用）
+                first_wait_sec = 0.0
+                for j in range(last_say_idx + 1, i):
+                    if events[j].get("type") == "wait":
+                        first_wait_sec = float(events[j].get("sec", 0))
+                        break
+                non_voice_wait = gap_wait - first_wait_sec
+                if non_voice_wait > 5.0:
+                    issues.append(
+                        f"LONG_GAP: {events[last_say_idx].get('voice','')}→"
+                        f"{ev.get('voice','')} 間にセリフ無しのwait合計"
+                        f"{non_voice_wait:.1f}秒（5秒超）")
+            last_say_idx = i
+
+    # ── WAV内部無音チェック ──
+    for vid in voice_ids_in_json:
+        issues.extend(check_wav_internal_silence(vid))
 
     return issues
 

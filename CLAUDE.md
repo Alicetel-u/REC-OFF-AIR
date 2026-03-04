@@ -23,6 +23,28 @@
 
 - VOICEVOX Speaker ID: 20
 - パラメータ: speedScale=1.25, intonationScale=1.5, pitchScale=0.02
-- 末尾無音トリミング: threshold=300, margin=80ms
+- 末尾無音トリミング: threshold=2000, margin=40ms
+- ポーズ短縮: pause_mora.vowel_length max=0.15s, prePhonemeLength=0.05, postPhonemeLength=0.05
+- セリフ編集後は必ず `python tools/fix_voice_wait.py --validate-only` でバリデーション実行
 - 発音修正: TIKTOK→ティックトック / 廃村→はいそん / お札→おふだ
 - 出力先: `assets/audio/voice/ch01/v001.wav` 〜
+
+## 自動チェック（pre-commitフック + CI）
+
+漏れ防止のため**2段階の自動チェック**を導入済み。
+
+### pre-commitフック（ローカル）
+- **新しいPCでclone後、最初に実行**: `bash tools/setup-hooks.sh`
+- WAV変更時に`.import`がステージされていなければコミット拒否
+- dialogue JSON変更時にバリデーション自動実行（CONSECUTIVE_WAIT/LONG_GAP/MISSING_WAVでブロック）
+- ボイスツール変更時にCLAUDE.md未更新を警告
+
+### CI（GitHub Actions — 最終防壁）
+- PRおよびmaster pushでバリデーション自動実行
+- 全WAVに`.import`ファイルがあるか確認
+- `fix_voice_wait.py --validate-only` の致命的警告でデプロイ停止
+
+### 手動チェックリスト（フックで防げない項目）
+1. **WAV変更時**: `godot.exe --headless --import` で再import → `.import` ファイルに差分があればコミットに含める
+2. **設定値変更時**: コードの設定値を変えたら、このCLAUDE.mdの該当セクションも**同じコミット内で**更新する
+3. **1コミットで完結**: 関連する変更は全て同じコミットに含める（コード＋ドキュメント＋アセット＋.importファイル）

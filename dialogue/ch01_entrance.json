@@ -1,2233 +1,2620 @@
 {
-  "chapter": "ch01_haison_iriguchi",
-  "_note": "CP1 公衆トイレの首無し少女 — 村門前でfade_black暗転→トイレ演出、商店街ゲートまで道路歩行",
-  "events": [
-    {
-      "type": "_comment",
-      "_": "════════════════════════════════════════════"
-    },
-    {
-      "type": "_comment",
-      "_": "【シーン1：終点への片道切符】"
-    },
-    {
-      "type": "_comment",
-      "_": "════════════════════════════════════════════"
-    },
-    {
-      "type": "polaroid_video",
-      "path": "res://assets/video/bus_arrival.ogv"
-    },
-    {
-      "type": "sfx",
-      "sound": "ambient_wind"
-    },
-    {
-      "type": "flashlight_on"
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "set_viewers",
-      "count": 12
-    },
-    {
-      "type": "say",
-      "text": "さむっ！待って待って、マジでなんも見えん。……よし、配信スタートっと。",
-      "voice": "v001"
-    },
-    {
-      "type": "wait",
-      "sec": 4.94
-    },
-    {
-      "type": "say",
-      "text": "みんないるー？ちわちわちわ！しゅっちでーす！制服のまま来ちゃったよー！",
-      "voice": "v002"
-    },
-    {
-      "type": "wait",
-      "sec": 5.38
-    },
-    {
-      "type": "chat",
-      "msg": "始まったー！",
-      "user": "視聴者A"
-    },
-    {
-      "type": "wait",
-      "sec": 0.4
-    },
-    {
-      "type": "chat",
-      "msg": "きたきた！よろ〜",
-      "user": "ゆきんこ77",
-      "utype": "moderator"
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "say",
-      "text": "今日はね、TIKTOKで今めっちゃバズってる心霊スポット……『霧原村』の終点まで来ちゃいました！",
-      "voice": "v003"
-    },
-    {
-      "type": "wait",
-      "sec": 6.16
-    },
-    {
-      "type": "say",
-      "text": "見てこれ、エモくない？完全に廃村！",
-      "voice": "v004"
-    },
-    {
-      "type": "wait",
-      "sec": 3.23
-    },
-    {
-      "type": "rot_y",
-      "target": -0.5,
-      "dur": 1.5
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "rot_y",
-      "target": -2.3,
-      "dur": 2
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "say",
-      "text": "ここさぁ、昔『数々の不可解な死を遂げた村人』がいたらしいんだけどさぁ。今日はこのしゅっちが！その呪い？みたいなのを生配信で暴いちゃおうと思いまーす！",
-      "voice": "v005"
-    },
-    {
-      "type": "wait",
-      "sec": 10.97
-    },
-    {
-      "type": "chat",
-      "msg": "キタコレｗｗｗ",
-      "user": "ホラー好き太郎",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "JKが深夜に何やってんのｗｗ",
-      "user": "深夜組"
-    },
-    {
-      "type": "wait",
-      "sec": 0.4
-    },
-    {
-      "type": "chat",
-      "msg": "霧すげー、ガチじゃん",
-      "user": "幽霊ガチ勢",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "どうせまたヤラセだろ。帰りなよ",
-      "user": "名無しさん"
-    },
-    {
-      "type": "wait",
-      "sec": 0.4
-    },
-    {
-      "type": "chat",
-      "msg": "そこ、マジで帰れなくなるからやめとけ",
-      "user": "恐怖体験済み"
-    },
-    {
-      "type": "wait",
-      "sec": 2
-    },
-    {
-      "type": "rot_y",
-      "target": -1.4,
-      "dur": 1.5
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "say",
-      "text": "ヤラセじゃないし！ほら、証拠にここのテープ！ガチの規制線！",
-      "voice": "v006"
-    },
-    {
-      "type": "wait",
-      "sec": 4.52
-    },
-    {
-      "type": "say",
-      "text": "……みんな、今日マジでチャンネル登録とスパチャよろしくね。うち、今月ガチで金欠だからさー。パパ活とか無理だし、これで一発当てるしかないの！",
-      "voice": "v007"
-    },
-    {
-      "type": "wait",
-      "sec": 9.36
-    },
-    {
-      "type": "chat",
-      "msg": "金欠JKｗｗｗ",
-      "user": "配信民99",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 0.4
-    },
-    {
-      "type": "chat",
-      "msg": "がんばれ！",
-      "user": "ゆきんこ77",
-      "utype": "moderator"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "say",
-      "text": "あ、心配しないでね。うちのばあちゃんに泣きついて『お寺のやばいお札』を３枚もパク……借りてきたから！",
-      "voice": "v008"
-    },
-    {
-      "type": "wait",
-      "sec": 7.35
-    },
-    {
-      "type": "chat",
-      "msg": "パクったんかいｗ",
-      "user": "視聴者A"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "お札あるなら大丈夫でしょ",
-      "user": "ガクブル太郎"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "say_clear"
-    },
-    {
-      "type": "_comment",
-      "_": "════════════════════════════════════════════"
-    },
-    {
-      "type": "_comment",
-      "_": "【シーン2：事件の解説とあぜ道】バス停→村門へ歩きながら"
-    },
-    {
-      "type": "_comment",
-      "_": "════════════════════════════════════════════"
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "walk_set",
-      "on": true
-    },
-    {
-      "type": "rot_y",
-      "target": -1.57,
-      "dur": 1
-    },
-    {
-      "type": "pos_x",
-      "target": 25,
-      "dur": 50,
-      "id": "walk_to_arch"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "chat",
-      "msg": "うわ出た、首切りのトイレじゃん",
-      "user": "ホラー好き太郎",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 0.4
-    },
-    {
-      "type": "chat",
-      "msg": "みゆきちゃんの事件ね。同じくらいの歳じゃん",
-      "user": "恐怖体験済み"
-    },
-    {
-      "type": "wait",
-      "sec": 0.4
-    },
-    {
-      "type": "chat",
-      "msg": "あそこマジでヤバいって",
-      "user": "ガクブル太郎"
-    },
-    {
-      "type": "wait",
-      "sec": 2
-    },
-    {
-      "type": "say",
-      "text": "じゃあリクエスト一番多かった場所行くね。……この先にある『公衆トイレ』！",
-      "voice": "v009"
-    },
-    {
-      "type": "wait",
-      "sec": 4.69
-    },
-    {
-      "type": "say",
-      "text": "知らない人のために解説しまーす。",
-      "voice": "v010"
-    },
-    {
-      "type": "wait",
-      "sec": 2.27
-    },
-    {
-      "type": "_comment",
-      "_": "── 右手の案山子を横見（立ち止まり＋セリフ） ──"
-    },
-    {
-      "type": "walk_set",
-      "on": false
-    },
-    {
-      "type": "rot_y",
-      "target": -2.8,
-      "dur": 1.2
-    },
-    {
-      "type": "sleep",
-      "sec": 1.3
-    },
-    {
-      "type": "say",
-      "text": "事件の第一目撃者は、朝の６時に公衆トイレに入ったおばさん。",
-      "voice": "v011"
-    },
-    {
-      "type": "sleep",
-      "sec": 4.5
-    },
-    {
-      "type": "rot_y",
-      "target": -1.57,
-      "dur": 1.0
-    },
-    {
-      "type": "sfx",
-      "sound": "monster_growl",
-      "vol": -22
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 8,
-      "count": 3
-    },
-    {
-      "type": "horror_flash",
-      "dur": 0.2
-    },
-    {
-      "type": "sleep",
-      "sec": 0.8
-    },
-    {
-      "type": "walk_set",
-      "on": true
-    },
-    {
-      "type": "_comment",
-      "_": "── 左手の神社（鳥居）方向を横見（立ち止まり＋セリフ） ──"
-    },
-    {
-      "type": "walk_set",
-      "on": false
-    },
-    {
-      "type": "rot_y",
-      "target": -0.8,
-      "dur": 1.2
-    },
-    {
-      "type": "sleep",
-      "sec": 1.3
-    },
-    {
-      "type": "say",
-      "text": "その一番奥から『２つ目』の個室に入ったら……",
-      "voice": "v012"
-    },
-    {
-      "type": "sleep",
-      "sec": 3.5
-    },
-    {
-      "type": "rot_y",
-      "target": -1.57,
-      "dur": 0.8
-    },
-    {
-      "type": "sleep",
-      "sec": 0.9
-    },
-    {
-      "type": "walk_set",
-      "on": true
-    },
-    {
-      "type": "say",
-      "text": "当時１７歳の、うちと同い年くらいの『みゆきちゃん』って子の首が、すっぱり切断されてたんだって。",
-      "voice": "v013"
-    },
-    {
-      "type": "wait",
-      "sec": 6.72
-    },
-    {
-      "type": "chat",
-      "msg": "こっっわ",
-      "user": "視聴者A"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "マジか……",
-      "user": "深夜組"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "say",
-      "text": "……ヤバいのはここから。現場には凶器もないし、傷口から見て『一振り』で切られてたらしいの。",
-      "voice": "v014"
-    },
-    {
-      "type": "wait",
-      "sec": 6.66
-    },
-    {
-      "type": "chat",
-      "msg": "男がいなかった？じゃあ誰が切ったんだよ",
-      "user": "名無しさん"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "_comment",
-      "_": "── 案山子エリアを通過 ──"
-    },
-    {
-      "type": "chat",
-      "msg": "ねえ、今……案山子の首、動かなかった？",
-      "user": "幽霊ガチ勢",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 0.4
-    },
-    {
-      "type": "chat",
-      "msg": "マジで動いたって！",
-      "user": "ガクブル太郎"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "wait",
-      "sec": 5.2
-    },
-    {
-      "type": "wait",
-      "sec": 5
-    },
-    {
-      "type": "say",
-      "text": "で、今からうちがその『奥から２番目』の個室を……開けちゃいまーす！",
-      "voice": "v018"
-    },
-    {
-      "type": "wait",
-      "sec": 4.98
-    },
-    {
-      "type": "chat",
-      "msg": "やめとけって！",
-      "user": "恐怖体験済み"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "行けー！！",
-      "user": "ホラー好き太郎",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "say_clear"
-    },
-    {
-      "type": "_comment",
-      "_": "── アーチ前に到着・一時停止 ──"
-    },
-    {
-      "type": "pos_x_await",
-      "id": "walk_to_arch"
-    },
-    {
-      "type": "walk_set",
-      "on": false
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "rot_y",
-      "target": -2.3,
-      "dur": 1.5
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "say",
-      "text": "……ここが村の入口……『霧原村』。",
-      "voice": "v019"
-    },
-    {
-      "type": "wait",
-      "sec": 2.69
-    },
-    {
-      "type": "rot_y",
-      "target": -1.57,
-      "dur": 1
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "say",
-      "text": "……右の方に何か見える。あれがトイレだ。",
-      "voice": "v020"
-    },
-    {
-      "type": "wait",
-      "sec": 2.7
-    },
-    {
-      "type": "say_clear"
-    },
-    {
-      "type": "_comment",
-      "_": "── アーチ通過・トイレへ向かう ──"
-    },
-    {
-      "type": "walk_set",
-      "on": true
-    },
-    {
-      "type": "pos_x",
-      "target": 30,
-      "dur": 7,
-      "id": "walk_past_arch"
-    },
-    {
-      "type": "wait",
-      "sec": 2
-    },
-    {
-      "type": "say",
-      "text": "……行くか。",
-      "voice": "v021"
-    },
-    {
-      "type": "wait",
-      "sec": 0.89
-    },
-    {
-      "type": "pos_x_await",
-      "id": "walk_past_arch"
-    },
-    {
-      "type": "rot_y",
-      "target": 3.14,
-      "dur": 1.5
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "say",
-      "text": "……近づいてみよう。",
-      "voice": "v022"
-    },
-    {
-      "type": "wait",
-      "sec": 1.29
-    },
-    {
-      "type": "pos_z",
-      "target": 6,
-      "dur": 8,
-      "id": "walk_to_toilet_z"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "say",
-      "text": "……近づくと余計に嫌な感じがする。",
-      "voice": "v023"
-    },
-    {
-      "type": "wait",
-      "sec": 2.23
-    },
-    {
-      "type": "pos_z_await",
-      "id": "walk_to_toilet_z"
-    },
-    {
-      "type": "walk_set",
-      "on": false
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "say_clear"
-    },
-    {
-      "type": "_comment",
-      "_": "════════════════════════════════════════════"
-    },
-    {
-      "type": "_comment",
-      "_": "【シーン3：公衆トイレの首無し少女】画面暗転→トイレ演出"
-    },
-    {
-      "type": "_comment",
-      "_": "════════════════════════════════════════════"
-    },
-    {
-      "type": "_comment",
-      "_": "── トイレ前に到着・入場 ──"
-    },
-    {
-      "type": "set_viewers",
-      "count": 38
-    },
-    {
-      "type": "flashlight_flicker"
-    },
-    {
-      "type": "sfx",
-      "sound": "door_creak"
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 2,
-      "count": 1
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "say",
-      "text": "……着いた。ここだ。",
-      "voice": "v024"
-    },
-    {
-      "type": "wait",
-      "sec": 1.64
-    },
-    {
-      "type": "walk_set",
-      "on": true
-    },
-    {
-      "type": "pos_z",
-      "target": 15,
-      "dur": 8,
-      "id": "walk_inside"
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "say",
-      "text": "うわっ……カビ臭ぇ……最悪。制服汚れたら最悪なんですけど",
-      "voice": "v025"
-    },
-    {
-      "type": "wait",
-      "sec": 4.84
-    },
-    {
-      "type": "chat",
-      "msg": "JKの感想がそれかよｗ",
-      "user": "配信民99",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "chat",
-      "msg": "うわ汚そう",
-      "user": "ゆきんこ77",
-      "utype": "moderator"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "怖い…",
-      "user": "視聴者A"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "pos_z_await",
-      "id": "walk_inside"
-    },
-    {
-      "type": "walk_set",
-      "on": false
-    },
-    {
-      "type": "rot_y",
-      "target": -1.57,
-      "dur": 1
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "say",
-      "text": "……えーと、奥から１、２……これか。奥から２つ目。",
-      "voice": "v026"
-    },
-    {
-      "type": "wait",
-      "sec": 4.44
-    },
-    {
-      "type": "say",
-      "text": "みんなどうする？開けるよ？……せーのっ！",
-      "voice": "v027"
-    },
-    {
-      "type": "wait",
-      "sec": 3.39
-    },
-    {
-      "type": "sfx",
-      "sound": "door_creak"
-    },
-    {
-      "type": "_comment",
-      "_": "── ドアを開ける → 何もない（偽りの安心） ──"
-    },
-    {
-      "type": "say",
-      "text": "……なんだよ、何もないじゃん。",
-      "voice": "v028"
-    },
-    {
-      "type": "wait",
-      "sec": 2.02
-    },
-    {
-      "type": "say",
-      "text": "おいおい、ビビらせやがって。やっぱりヤラセっていうか、ただの汚いトイレじゃん。萎えー",
-      "voice": "v029"
-    },
-    {
-      "type": "wait",
-      "sec": 6.52
-    },
-    {
-      "type": "chat",
-      "msg": "よかったー",
-      "user": "視聴者A"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "ほらね、何もないって",
-      "user": "名無しさん"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "_comment",
-      "_": "── 異変：水滴の音、温度が下がる ──"
-    },
-    {
-      "type": "say",
-      "text": "……ん？なんか急に……寒くない？",
-      "voice": "v030"
-    },
-    {
-      "type": "wait",
-      "sec": 3.25
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 3,
-      "count": 1
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "say",
-      "text": "え、息……白い？……さっきまでこんなに寒かった？",
-      "voice": "v031"
-    },
-    {
-      "type": "wait",
-      "sec": 4.78
-    },
-    {
-      "type": "chat",
-      "msg": "なんか画面おかしくない？",
-      "user": "深夜組"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "ノイズ入ってるんだけど",
-      "user": "ガクブル太郎"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "_comment",
-      "_": "── 恐怖チャット flood（「うしろ」の嵐） ──"
-    },
-    {
-      "type": "sfx",
-      "sound": "monster_growl",
-      "vol": -18
-    },
-    {
-      "type": "horror_tint"
-    },
-    {
-      "type": "chat",
-      "msg": "うしろ",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.15
-    },
-    {
-      "type": "chat",
-      "msg": "くる",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.15
-    },
-    {
-      "type": "chat",
-      "msg": "うしろ",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.12
-    },
-    {
-      "type": "chat",
-      "msg": "逃げて",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.12
-    },
-    {
-      "type": "chat",
-      "msg": "うしろ",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.1
-    },
-    {
-      "type": "chat",
-      "msg": "くる",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.1
-    },
-    {
-      "type": "chat",
-      "msg": "うしろ",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.1
-    },
-    {
-      "type": "chat",
-      "msg": "うしろ",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.1
-    },
-    {
-      "type": "chat",
-      "msg": "うしろ",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "say",
-      "text": "え？……うしろ？",
-      "voice": "v032"
-    },
-    {
-      "type": "wait",
-      "sec": 2.15
-    },
-    {
-      "type": "_comment",
-      "_": "── 振り向こうとした瞬間、ドアが閉まる ──"
-    },
-    {
-      "type": "sfx",
-      "sound": "door_creak"
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 6,
-      "count": 2
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "scare_flash",
-      "color": "white"
-    },
-    {
-      "type": "horror_tint"
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "set_viewers",
-      "count": 502
-    },
-    {
-      "type": "say",
-      "text": "ッ！？——ドアが——！",
-      "voice": "v033"
-    },
-    {
-      "type": "wait",
-      "sec": 1.37
-    },
-    {
-      "type": "chat",
-      "msg": "上を見るな",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.2
-    },
-    {
-      "type": "chat",
-      "msg": "上を見るな",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.15
-    },
-    {
-      "type": "chat",
-      "msg": "来るぞ",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.15
-    },
-    {
-      "type": "chat",
-      "msg": "みゆきさんが来る",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.15
-    },
-    {
-      "type": "chat",
-      "msg": "上を見るな",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "say",
-      "text": "きゃあっ！？な、なに！？ドアが開かない！！ちょ、開けてよ！！",
-      "voice": "v034"
-    },
-    {
-      "type": "wait",
-      "sec": 4.87
-    },
-    {
-      "type": "_comment",
-      "_": "── 天井から水滴……ではなく、赤い液体が ──"
-    },
-    {
-      "type": "say",
-      "text": "……なに、これ……天井から何か……落ちてきて……",
-      "voice": "v035"
-    },
-    {
-      "type": "wait",
-      "sec": 3.92
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 5,
-      "count": 2
-    },
-    {
-      "type": "say",
-      "text": "赤い……血？……嘘でしょ……",
-      "voice": "v036"
-    },
-    {
-      "type": "wait",
-      "sec": 2.96
-    },
-    {
-      "type": "chat",
-      "msg": "天井見るな！！！",
-      "user": "幽霊ガチ勢",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "やばいやばいやばい",
-      "user": "ガクブル太郎"
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "_comment",
-      "_": "── 強制的に天井を見上げる → みゆき遭遇 ──"
-    },
-    {
-      "type": "say",
-      "text": "……は……？天井……？",
-      "voice": "v037"
-    },
-    {
-      "type": "wait",
-      "sec": 1.79
-    },
-    {
-      "type": "head_x",
-      "target": 0.5,
-      "dur": 2.5
-    },
-    {
-      "type": "wait",
-      "sec": 2.5
-    },
-    {
-      "type": "sfx",
-      "sound": "monster_growl",
-      "vol": -1
-    },
-    {
-      "type": "scare_flash",
-      "color": "white"
-    },
-    {
-      "type": "horror_flash",
-      "dur": 0.5
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 12,
-      "count": 5
-    },
-    {
-      "type": "wait",
-      "sec": 0.8
-    },
-    {
-      "type": "say",
-      "text": "ヒッ——！！ウソでしょ！？イヤァァァァ！！開けて！！開いてよ！！",
-      "voice": "v038"
-    },
-    {
-      "type": "wait",
-      "sec": 4.5
-    },
-    {
-      "type": "chat",
-      "msg": "ぎゃああああ！！",
-      "user": "ゆきんこ77",
-      "utype": "moderator"
-    },
-    {
-      "type": "wait",
-      "sec": 0.2
-    },
-    {
-      "type": "chat",
-      "msg": "なにあれなにあれなにあれ！！",
-      "user": "ガクブル太郎"
-    },
-    {
-      "type": "wait",
-      "sec": 0.2
-    },
-    {
-      "type": "chat",
-      "msg": "首がない！！！！",
-      "user": "ホラー好き太郎",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "chat",
-      "msg": "見えてる",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "ずっと待ってた",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "_comment",
-      "_": "── みゆきが降りてくる ──"
-    },
-    {
-      "type": "say",
-      "text": "降りてくる——降りて——",
-      "voice": "v039"
-    },
-    {
-      "type": "wait",
-      "sec": 1.62
-    },
-    {
-      "type": "scare_flash",
-      "color": "red"
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 15,
-      "count": 6
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "chat",
-      "msg": "画面真っ暗！！",
-      "user": "視聴者A"
-    },
-    {
-      "type": "wait",
-      "sec": 0.2
-    },
-    {
-      "type": "chat",
-      "msg": "逃げてーーー！！！",
-      "user": "幽霊ガチ勢",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 0.2
-    },
-    {
-      "type": "chat",
-      "msg": "ドア開けろ！！！",
-      "user": "ガクブル太郎"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "逃げられない",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "head_x",
-      "target": 0,
-      "dur": 0.5
-    },
-    {
-      "type": "say",
-      "text": "ドアが——開かない！！",
-      "voice": "v040"
-    },
-    {
-      "type": "wait",
-      "sec": 1.53
-    },
-    {
-      "type": "sfx",
-      "sound": "door_creak"
-    },
-    {
-      "type": "horror_flash",
-      "dur": 0.4
-    },
-    {
-      "type": "say",
-      "text": "くそ！開かないっ！！",
-      "voice": "v041"
-    },
-    {
-      "type": "wait",
-      "sec": 1.56
-    },
-    {
-      "type": "say",
-      "text": "足首を掴まれてる——冷たい——",
-      "voice": "v042"
-    },
-    {
-      "type": "wait",
-      "sec": 2.16
-    },
-    {
-      "type": "chat",
-      "msg": "やばいやばいやばい",
-      "user": "名無しさん"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "お札！！お札使え！！",
-      "user": "ゆきんこ77",
-      "utype": "moderator"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "さっきのお札！！",
-      "user": "幽霊ガチ勢",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "_comment",
-      "_": "── お札使用・脱出 ──"
-    },
-    {
-      "type": "sfx",
-      "sound": "monster_growl",
-      "vol": 3
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 4,
-      "count": 2
-    },
-    {
-      "type": "say",
-      "text": "……お札。さっきの——",
-      "voice": "v043"
-    },
-    {
-      "type": "wait",
-      "sec": 2.05
-    },
-    {
-      "type": "say",
-      "text": "ポケットのお札。これしかない",
-      "voice": "v044"
-    },
-    {
-      "type": "wait",
-      "sec": 2.23
-    },
-    {
-      "type": "chat",
-      "msg": "貼れ！！ドアに貼れ！！",
-      "user": "ホラー好き太郎",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "早く！！！",
-      "user": "視聴者A"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "say",
-      "text": "ドアに——貼る！！",
-      "voice": "v045"
-    },
-    {
-      "type": "wait",
-      "sec": 1.35
-    },
-    {
-      "type": "use_ofuda"
-    },
-    {
-      "type": "wait",
-      "sec": 0.8
-    },
-    {
-      "type": "scare_flash",
-      "color": "red"
-    },
-    {
-      "type": "horror_flash",
-      "dur": 0.6
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 20,
-      "count": 8
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "scare_flash",
-      "color": "white"
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "say",
-      "text": "——叫んだ。あいつが——叫んでる——",
-      "voice": "v046"
-    },
-    {
-      "type": "wait",
-      "sec": 3.0
-    },
-    {
-      "type": "_comment",
-      "_": "── 暗転で場面転換：トイレ→道路（門付近）へ ──"
-    },
-    {
-      "type": "fade_black",
-      "dur": 0.5
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "pos_x",
-      "target": 25,
-      "dur": 0.01
-    },
-    {
-      "type": "pos_z",
-      "target": 4,
-      "dur": 0.01
-    },
-    {
-      "type": "rot_y",
-      "target": -1.57,
-      "dur": 0.01
-    },
-    {
-      "type": "horror_tint_clear"
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "fade_clear",
-      "dur": 1.5
-    },
-    {
-      "type": "flashlight_on"
-    },
-    {
-      "type": "sfx",
-      "sound": "ambient_wind"
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "say",
-      "text": "……消えた。もういない……",
-      "voice": "v047"
-    },
-    {
-      "type": "wait",
-      "sec": 2
-    },
-    {
-      "type": "chat",
-      "msg": "生きてる！！？",
-      "user": "視聴者A"
-    },
-    {
-      "type": "wait",
-      "sec": 0.2
-    },
-    {
-      "type": "chat",
-      "msg": "走れ！！！",
-      "user": "ホラー好き太郎",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 0.2
-    },
-    {
-      "type": "chat",
-      "msg": "出ろおおお！！",
-      "user": "ゆきんこ77",
-      "utype": "moderator"
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "say",
-      "text": "……外だ。戻ってきた……門の前……",
-      "voice": "v048"
-    },
-    {
-      "type": "wait",
-      "sec": 2.78
-    },
-    {
-      "type": "say_clear"
-    },
-    {
-      "type": "_comment",
-      "_": "════════════════════════════════════════════"
-    },
-    {
-      "type": "_comment",
-      "_": "【シーン4：バズりの麻薬】村門→道路沿いに商店街ゲートへ"
-    },
-    {
-      "type": "_comment",
-      "_": "════════════════════════════════════════════"
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "head_x",
-      "target": -0.3,
-      "dur": 0.8
-    },
-    {
-      "type": "set_viewers",
-      "count": 3410
-    },
-    {
-      "type": "say",
-      "text": "ゲホッ……！ハァッ……ハァッ……！",
-      "voice": "v049"
-    },
-    {
-      "type": "wait",
-      "sec": 2.13
-    },
-    {
-      "type": "say",
-      "text": "な、なんだあれ！？ガチじゃん！！生首……いや、首が無かった……！！",
-      "voice": "v050"
-    },
-    {
-      "type": "wait",
-      "sec": 5.19
-    },
-    {
-      "type": "_comment",
-      "_": "── 怒涛のスパチャ ──"
-    },
-    {
-      "type": "superchat",
-      "name": "ホラー好き太郎",
-      "msg": "まじでやばい！もっと見せて！",
-      "amount": 10000
-    },
-    {
-      "type": "wait",
-      "sec": 0.6
-    },
-    {
-      "type": "superchat",
-      "name": "幽霊ガチ勢",
-      "msg": "JKが泣いてんの最高すぎ、逃げんな！",
-      "amount": 50000
-    },
-    {
-      "type": "wait",
-      "sec": 0.6
-    },
-    {
-      "type": "superchat",
-      "name": "配信民99",
-      "msg": "神回確定じゃんｗｗｗ",
-      "amount": 5000
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "chat",
-      "msg": "次だ！次行け！！",
-      "user": "ガクブル太郎"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "やめろ、死ぬぞ",
-      "user": "名無しさん"
-    },
-    {
-      "type": "wait",
-      "sec": 2
-    },
-    {
-      "type": "_comment",
-      "_": "── しゅっちの変化 ——恐怖→金銭欲 ──"
-    },
-    {
-      "type": "head_x",
-      "target": 0,
-      "dur": 0.5
-    },
-    {
-      "type": "say",
-      "text": "……すげえ。同接3000人超え……スパチャも……5万！？",
-      "voice": "v051"
-    },
-    {
-      "type": "wait",
-      "sec": 4.42
-    },
-    {
-      "type": "say",
-      "text": "嘘でしょ……時給換算やば……",
-      "voice": "v052"
-    },
-    {
-      "type": "wait",
-      "sec": 2.61
-    },
-    {
-      "type": "chat",
-      "msg": "まだ行くの！？",
-      "user": "ゆきんこ77",
-      "utype": "moderator"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "帰れ帰れマジで帰れ",
-      "user": "恐怖体験済み"
-    },
-    {
-      "type": "wait",
-      "sec": 2
-    },
-    {
-      "type": "_comment",
-      "_": "── 決断の選択肢 ──"
-    },
-    {
-      "type": "say_clear"
-    },
-    {
-      "type": "choice",
-      "prompt": "同接3410人……スパチャ6万超え……\nみんなが見てる。このまま奥へ進む？",
-      "choices": [
-        {
-          "text": "当然進む。ここまで来たら止まれない"
-        },
-        {
-          "text": "お祓いしてから行く。お札まだ２枚ある"
-        },
-        {
-          "text": "一旦帰る！準備が足りなさすぎる！"
-        }
-      ],
-      "targets": [
-        "choice_push_through",
-        "choice_ofuda_first",
-        "choice_retreat_fake"
-      ]
-    },
-    {
-      "type": "_comment",
-      "_": "── 選択肢A：強行突破 ──"
-    },
-    {
-      "type": "label",
-      "name": "choice_push_through"
-    },
-    {
-      "type": "chat",
-      "msg": "かっっこよ！！",
-      "user": "ゆきんこ77",
-      "utype": "moderator"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "ガチプロやん",
-      "user": "深夜組"
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "say",
-      "text": "……逃げるわけ、ないじゃん……！！",
-      "voice": "v053"
-    },
-    {
-      "type": "wait",
-      "sec": 1.66
-    },
-    {
-      "type": "goto",
-      "label": "after_decision"
-    },
-    {
-      "type": "_comment",
-      "_": "── 選択肢B：お祓い ──"
-    },
-    {
-      "type": "label",
-      "name": "choice_ofuda_first"
-    },
-    {
-      "type": "use_ofuda"
-    },
-    {
-      "type": "chat",
-      "msg": "お札賢い！！",
-      "user": "ホラー好き太郎",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "準備いいじゃんｗ",
-      "user": "配信民99",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "say",
-      "text": "……念のためお祓いしてから。行くよ",
-      "voice": "v054"
-    },
-    {
-      "type": "wait",
-      "sec": 2.44
-    },
-    {
-      "type": "goto",
-      "label": "after_decision"
-    },
-    {
-      "type": "_comment",
-      "_": "── 選択肢C：一旦撤退（即翻意） ──"
-    },
-    {
-      "type": "label",
-      "name": "choice_retreat_fake"
-    },
-    {
-      "type": "chat",
-      "msg": "えっ！？帰るの！？！？",
-      "user": "ゆきんこ77",
-      "utype": "moderator"
-    },
-    {
-      "type": "wait",
-      "sec": 0.2
-    },
-    {
-      "type": "chat",
-      "msg": "チキン認定ｗｗｗ",
-      "user": "名無しさん"
-    },
-    {
-      "type": "wait",
-      "sec": 0.2
-    },
-    {
-      "type": "chat",
-      "msg": "スパチャ返金してｗ",
-      "user": "深夜組"
-    },
-    {
-      "type": "wait",
-      "sec": 0.8
-    },
-    {
-      "type": "say",
-      "text": "待って待って冗談！冗談だから！！",
-      "voice": "v055"
-    },
-    {
-      "type": "wait",
-      "sec": 2.46
-    },
-    {
-      "type": "say",
-      "text": "スパチャ6万もらって帰れるわけないじゃん！！",
-      "voice": "v056"
-    },
-    {
-      "type": "wait",
-      "sec": 2.34
-    },
-    {
-      "type": "_comment",
-      "_": "── 合流：決意 → 村門を通過 ──"
-    },
-    {
-      "type": "label",
-      "name": "after_decision"
-    },
-    {
-      "type": "say",
-      "text": "絶対、最後まで撮りきってやる……！！",
-      "voice": "v057"
-    },
-    {
-      "type": "wait",
-      "sec": 2.45
-    },
-    {
-      "type": "chat",
-      "msg": "覚悟決まったな",
-      "user": "ホラー好き太郎",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "ヤバい目してるの草",
-      "user": "深夜組"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "_comment",
-      "_": "── 村門を通過して道路を奥へ ──"
-    },
-    {
-      "type": "say_clear"
-    },
-    {
-      "type": "rot_y",
-      "target": -1.57,
-      "dur": 1
-    },
-    {
-      "type": "walk_set",
-      "on": true
-    },
-    {
-      "type": "pos_x",
-      "target": 30,
-      "dur": 10,
-      "id": "walk_road2"
-    },
-    {
-      "type": "wait",
-      "sec": 2
-    },
-    {
-      "type": "say",
-      "text": "村の奥に——進むしかない",
-      "voice": "v058"
-    },
-    {
-      "type": "wait",
-      "sec": 2.16
-    },
-    {
-      "type": "chat",
-      "msg": "奥においで",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 2
-    },
-    {
-      "type": "say_clear"
-    },
-    {
-      "type": "wait",
-      "sec": 3
-    },
-    {
-      "type": "say",
-      "text": "あのトイレで30年前に少女が消えた。同じ場所に、あんなものが——",
-      "voice": "v059"
-    },
-    {
-      "type": "wait",
-      "sec": 4.79
-    },
-    {
-      "type": "say_clear"
-    },
-    {
-      "type": "_comment",
-      "_": "── 道路の途中、歩行待ち ──"
-    },
-    {
-      "type": "pos_x_await",
-      "id": "walk_road2"
-    },
-    {
-      "type": "_comment",
-      "_": "── 道路の曲がり角、商店街方向（左=-Z）へ向きを変える ──"
-    },
-    {
-      "type": "say",
-      "text": "……この先、道が分かれてる。左は……",
-      "voice": "v060"
-    },
-    {
-      "type": "wait",
-      "sec": 3.31
-    },
-    {
-      "type": "rot_y",
-      "target": -0.785,
-      "dur": 2
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "say",
-      "text": "なんか門が見える……商店街？",
-      "voice": "v061"
-    },
-    {
-      "type": "wait",
-      "sec": 2.58
-    },
-    {
-      "type": "chat",
-      "msg": "あれ旧商店街の入口だよ",
-      "user": "恐怖体験済み"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "入ったら出られないって噂の場所",
-      "user": "ガクブル太郎"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "_comment",
-      "_": "── 商店街ゲートへ歩いて向かう ──"
-    },
-    {
-      "type": "pos_x",
-      "target": 37,
-      "dur": 8,
-      "id": "walk_to_shop"
-    },
-    {
-      "type": "pos_z",
-      "target": -3.5,
-      "dur": 8,
-      "id": "walk_to_shop_z"
-    },
-    {
-      "type": "wait",
-      "sec": 2
-    },
-    {
-      "type": "say",
-      "text": "あの門の向こうに何があるんだろ……",
-      "voice": "v062"
-    },
-    {
-      "type": "wait",
-      "sec": 2.34
-    },
-    {
-      "type": "chat",
-      "msg": "行くなって！マジで！",
-      "user": "ゆきんこ77",
-      "utype": "moderator"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "ここで引き返す勇気",
-      "user": "名無しさん"
-    },
-    {
-      "type": "wait",
-      "sec": 2
-    },
-    {
-      "type": "_comment",
-      "_": "── 商店街ゲート到着 ──"
-    },
-    {
-      "type": "pos_x_await",
-      "id": "walk_to_shop"
-    },
-    {
-      "type": "pos_z",
-      "target": -7,
-      "dur": 25,
-      "id": "gate_creep"
-    },
-    {
-      "type": "walk_set",
-      "on": false
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "_comment",
-      "_": "── 門をじっくり見上げる ──"
-    },
-    {
-      "type": "head_x",
-      "target": 0.25,
-      "dur": 1.5
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "say",
-      "text": "……でっか。錆びた鉄の門……看板が読める。『霧原商店街』……",
-      "voice": "v063"
-    },
-    {
-      "type": "wait",
-      "sec": 5.06
-    },
-    {
-      "type": "say",
-      "text": "こんな山奥に商店街があったんだ……",
-      "voice": "v064"
-    },
-    {
-      "type": "wait",
-      "sec": 2.69
-    },
-    {
-      "type": "rot_y",
-      "target": -0.3,
-      "dur": 1.5
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "rot_y",
-      "target": -1.3,
-      "dur": 2
-    },
-    {
-      "type": "wait",
-      "sec": 1
-    },
-    {
-      "type": "say",
-      "text": "門の向こう、真っ暗だ……建物がいくつか見えるけど、全部廃墟……",
-      "voice": "v065"
-    },
-    {
-      "type": "wait",
-      "sec": 5.2
-    },
-    {
-      "type": "rot_y",
-      "target": -0.785,
-      "dur": 1
-    },
-    {
-      "type": "head_x",
-      "target": 0,
-      "dur": 0.8
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "chat",
-      "msg": "その奥にVHSテープがあるらしいよ",
-      "user": "恐怖体験済み"
-    },
-    {
-      "type": "wait",
-      "sec": 0.4
-    },
-    {
-      "type": "chat",
-      "msg": "霧原の怪異を記録したテープ",
-      "user": "ホラー好き太郎",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "say",
-      "text": "……よし。行こう。みんな、見届けてよ。うちは——ここで引き返さない",
-      "voice": "v066"
-    },
-    {
-      "type": "wait",
-      "sec": 5.65
-    },
-    {
-      "type": "chat",
-      "msg": "無茶すんなよ……",
-      "user": "ゆきんこ77",
-      "utype": "moderator"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "生きて帰れよ",
-      "user": "深夜組"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "say_clear"
-    }
-  ]
+	"chapter": "ch01_haison_iriguchi",
+	"_note": "CP1 公衆トイレの首無し少女 — 村門前でfade_black暗転→トイレ演出、商店街ゲートまで道路歩行",
+	"events": [
+		{
+			"type": "_comment",
+			"_": "════════════════════════════════════════════"
+		},
+		{
+			"type": "_comment",
+			"_": "【シーン1：終点への片道切符】"
+		},
+		{
+			"type": "_comment",
+			"_": "════════════════════════════════════════════"
+		},
+		{
+			"type": "polaroid_video",
+			"path": "res://assets/video/bus_arrival.ogv"
+		},
+		{
+			"type": "sfx",
+			"sound": "ambient_wind"
+		},
+		{
+			"type": "flashlight_on"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "set_viewers",
+			"count": 12
+		},
+		{
+			"type": "say",
+			"text": "さむっ！待って待って、マジでなんも見えん。……よし、配信スタートっと。",
+			"voice": "v001"
+		},
+		{
+			"type": "wait",
+			"sec": 4.94
+		},
+		{
+			"type": "say",
+			"text": "みんないるー？[wave amp=30 freq=4][color=#ffdd44]ちわちわちわ！しゅっちでーす！[/color][/wave]制服のまま来ちゃったよー！",
+			"voice": "v002"
+		},
+		{
+			"type": "wait",
+			"sec": 5.38
+		},
+		{
+			"type": "chat",
+			"msg": "始まったー！",
+			"user": "視聴者A"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "きたきた！よろ〜",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "今日はね、TIKTOKで今めっちゃバズってる心霊スポット……『霧原村』の終点まで来ちゃいました！",
+			"voice": "v003"
+		},
+		{
+			"type": "wait",
+			"sec": 6.16
+		},
+		{
+			"type": "say",
+			"text": "見てこれ、エモくない？完全に廃村！",
+			"voice": "v004"
+		},
+		{
+			"type": "wait",
+			"sec": 3.23
+		},
+		{
+			"type": "rot_y",
+			"target": -0.5,
+			"dur": 1.5
+		},
+		{
+			"type": "wait",
+			"sec": 1
+		},
+		{
+			"type": "rot_y",
+			"target": -2.3,
+			"dur": 2
+		},
+		{
+			"type": "wait",
+			"sec": 1
+		},
+		{
+			"type": "say",
+			"text": "ここさぁ、昔『数々の不可解な死を遂げた村人』がいたらしいんだけどさぁ。今日はこのしゅっちが！その呪い？みたいなのを生配信で暴いちゃおうと思いまーす！",
+			"voice": "v005"
+		},
+		{
+			"type": "wait",
+			"sec": 9.36
+		},
+		{
+			"type": "chat",
+			"msg": "キタコレｗｗｗ",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "JKが深夜に何やってんのｗｗ",
+			"user": "深夜組"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "霧すげー、ガチじゃん",
+			"user": "幽霊ガチ勢",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "どうせまたヤラセだろ。帰りなよ",
+			"user": "名無しさん"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "そこ、マジで帰れなくなるからやめとけ",
+			"user": "恐怖体験済み"
+		},
+		{
+			"type": "wait",
+			"sec": 2
+		},
+		{
+			"type": "rot_y",
+			"target": -1.4,
+			"dur": 1.5
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "ヤラセじゃないし！ほら、証拠にここのテープ！ガチの規制線！",
+			"voice": "v006"
+		},
+		{
+			"type": "wait",
+			"sec": 4.52
+		},
+		{
+			"type": "say",
+			"text": "……みんな、今日マジでチャンネル登録とスパチャよろしくね。うち、今月ガチで金欠だからさー。パパ活とか無理だし、これで一発当てるしかないの！",
+			"voice": "v007"
+		},
+		{
+			"type": "wait",
+			"sec": 9.36
+		},
+		{
+			"type": "chat",
+			"msg": "金欠JKｗｗｗ",
+			"user": "配信民99",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "がんばれ！",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say",
+			"text": "あ、心配しないでね。うちのばあちゃんに泣きついて『お寺のやばいお札』を３枚もパク……借りてきたから！",
+			"voice": "v008"
+		},
+		{
+			"type": "wait",
+			"sec": 7.35
+		},
+		{
+			"type": "chat",
+			"msg": "パクったんかいｗ",
+			"user": "視聴者A"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "お札あるなら大丈夫でしょ",
+			"user": "ガクブル太郎"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "_comment",
+			"_": "════════════════════════════════════════════"
+		},
+		{
+			"type": "_comment",
+			"_": "【シーン2：事件の解説とあぜ道】バス停→村門へ歩きながら"
+		},
+		{
+			"type": "_comment",
+			"_": "════════════════════════════════════════════"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "walk_set",
+			"on": true
+		},
+		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 1
+		},
+		{
+			"type": "pos_x",
+			"target": 25,
+			"dur": 50,
+			"id": "walk_to_arch"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "chat",
+			"msg": "うわ出た、首切りのトイレじゃん",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "みゆきちゃんの事件ね。同じくらいの歳じゃん",
+			"user": "恐怖体験済み"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "あそこマジでヤバいって",
+			"user": "ガクブル太郎"
+		},
+		{
+			"type": "wait",
+			"sec": 2
+		},
+		{
+			"type": "say",
+			"text": "じゃあリクエスト一番多かった場所行くね。……この先にある『公衆トイレ』！",
+			"voice": "v009"
+		},
+		{
+			"type": "wait",
+			"sec": 4.69
+		},
+		{
+			"type": "say",
+			"text": "知らない人のために解説しまーす。",
+			"voice": "v010"
+		},
+		{
+			"type": "wait",
+			"sec": 2.27
+		},
+		{
+			"type": "_comment",
+			"_": "── 右手の案山子を横見（足踏み継続＋セリフ） ──"
+		},
+		{
+			"type": "rot_y",
+			"target": -2.8,
+			"dur": 1.2
+		},
+		{
+			"type": "sleep",
+			"sec": 1.3
+		},
+		{
+			"type": "say",
+			"text": "事件の第一目撃者は、朝の６時に公衆トイレに入ったおばさん。",
+			"voice": "v011"
+		},
+		{
+			"type": "sleep",
+			"sec": 4.5
+		},
+		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 1.0
+		},
+		{
+			"type": "sfx",
+			"sound": "monster_growl",
+			"vol": -22
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 8,
+			"count": 3
+		},
+		{
+			"type": "horror_flash",
+			"dur": 0.2
+		},
+		{
+			"type": "sleep",
+			"sec": 0.8
+		},
+		{
+			"type": "_comment",
+			"_": "── 左手の神社（鳥居）方向を横見（足踏み継続＋セリフ） ──"
+		},
+		{
+			"type": "rot_y",
+			"target": -0.8,
+			"dur": 1.2
+		},
+		{
+			"type": "sleep",
+			"sec": 1.3
+		},
+		{
+			"type": "say",
+			"text": "その一番奥から『２つ目』の個室に入ったら……",
+			"voice": "v012"
+		},
+		{
+			"type": "sleep",
+			"sec": 3.5
+		},
+		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 0.8
+		},
+		{
+			"type": "sleep",
+			"sec": 0.9
+		},
+		{
+			"type": "walk_set",
+			"on": true
+		},
+		{
+			"type": "say",
+			"text": "当時１７歳の、うちと同い年くらいの『みゆきちゃん』って子の首が、すっぱり切断されてたんだって。",
+			"voice": "v013"
+		},
+		{
+			"type": "wait",
+			"sec": 6.72
+		},
+		{
+			"type": "chat",
+			"msg": "こっっわ",
+			"user": "視聴者A"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "マジか……",
+			"user": "深夜組"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say",
+			"text": "……ヤバいのはここから。現場には凶器もないし、傷口から見て『一振り』で切られてたらしいの。",
+			"voice": "v014"
+		},
+		{
+			"type": "wait",
+			"sec": 5.60
+		},
+		{
+			"type": "chat",
+			"msg": "男がいなかった？じゃあ誰が切ったんだよ",
+			"user": "名無しさん"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "_comment",
+			"_": "── 案山子エリアを通過 ──"
+		},
+		{
+			"type": "chat",
+			"msg": "ねえ、今……案山子の首、動かなかった？",
+			"user": "幽霊ガチ勢",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "マジで動いたって！",
+			"user": "ガクブル太郎"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say",
+			"text": "で、今からうちがその『奥から２番目』の個室を……開けちゃいまーす！",
+			"voice": "v018"
+		},
+		{
+			"type": "wait",
+			"sec": 4.98
+		},
+		{
+			"type": "chat",
+			"msg": "やめとけって！",
+			"user": "恐怖体験済み"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "行けー！！",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 1
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "_comment",
+			"_": "── アーチ前に到着・一時停止 ──"
+		},
+		{
+			"type": "pos_x_await",
+			"id": "walk_to_arch"
+		},
+		{
+			"type": "walk_set",
+			"on": false
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "rot_y",
+			"target": -2.3,
+			"dur": 1.5
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say",
+			"text": "……ここが村の入口……『霧原村』。",
+			"voice": "v019"
+		},
+		{
+			"type": "wait",
+			"sec": 2.69
+		},
+		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 1
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "……右の方に何か見える。あれがトイレだ。",
+			"voice": "v020"
+		},
+		{
+			"type": "wait",
+			"sec": 2.7
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "_comment",
+			"_": "── アーチ通過・トイレへ向かう ──"
+		},
+		{
+			"type": "walk_set",
+			"on": true
+		},
+		{
+			"type": "pos_x",
+			"target": 30,
+			"dur": 7,
+			"id": "walk_past_arch"
+		},
+		{
+			"type": "wait",
+			"sec": 2
+		},
+		{
+			"type": "say",
+			"text": "……行くか。",
+			"voice": "v021"
+		},
+		{
+			"type": "wait",
+			"sec": 0.89
+		},
+		{
+			"type": "pos_x_await",
+			"id": "walk_past_arch"
+		},
+		{
+			"type": "rot_y",
+			"target": 3.14,
+			"dur": 1.5
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "……近づいてみよう。",
+			"voice": "v022"
+		},
+		{
+			"type": "wait",
+			"sec": 1.29
+		},
+		{
+			"type": "pos_z",
+			"target": 6,
+			"dur": 8,
+			"id": "walk_to_toilet_z"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say",
+			"text": "……近づくと余計に嫌な感じがする。",
+			"voice": "v023"
+		},
+		{
+			"type": "wait",
+			"sec": 2.23
+		},
+		{
+			"type": "pos_z_await",
+			"id": "walk_to_toilet_z"
+		},
+		{
+			"type": "walk_set",
+			"on": false
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "_comment",
+			"_": "════════════════════════════════════════════"
+		},
+		{
+			"type": "_comment",
+			"_": "【シーン3：公衆トイレの首無し少女】画面暗転→トイレ演出"
+		},
+		{
+			"type": "_comment",
+			"_": "════════════════════════════════════════════"
+		},
+		{
+			"type": "_comment",
+			"_": "── フェーズ1: トイレ前に到着・入場 ──"
+		},
+		{
+			"type": "set_viewers",
+			"count": 38
+		},
+		{
+			"type": "flashlight_flicker"
+		},
+		{
+			"type": "sfx",
+			"sound": "door_creak"
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 2,
+			"count": 1
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "say",
+			"text": "……着いた。ここだ。",
+			"voice": "v024"
+		},
+		{
+			"type": "wait",
+			"sec": 1.64
+		},
+		{
+			"type": "rot_y",
+			"target": -0.8,
+			"dur": 1.0
+		},
+		{
+			"type": "wait",
+			"sec": 0.8
+		},
+		{
+			"type": "rot_y",
+			"target": -2.1,
+			"dur": 1.2
+		},
+		{
+			"type": "wait",
+			"sec": 0.8
+		},
+		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 0.8
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "walk_set",
+			"on": true
+		},
+		{
+			"type": "pos_z",
+			"target": 15,
+			"dur": 8,
+			"id": "walk_inside"
+		},
+		{
+			"type": "wait",
+			"sec": 1.0
+		},
+		{
+			"type": "say",
+			"text": "うわっ……カビ臭ぇ……最悪。制服汚れたら最悪なんですけど",
+			"voice": "v025"
+		},
+		{
+			"type": "wait",
+			"sec": 4.84
+		},
+		{
+			"type": "chat",
+			"msg": "JKの感想がそれかよｗ",
+			"user": "配信民99",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 1.0
+		},
+		{
+			"type": "chat",
+			"msg": "うわ汚そう",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "怖い…",
+			"user": "視聴者A"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "pos_z_await",
+			"id": "walk_inside"
+		},
+		{
+			"type": "walk_set",
+			"on": false
+		},
+		{
+			"type": "rot_y",
+			"target": -0.5,
+			"dur": 0.7
+		},
+		{
+			"type": "wait",
+			"sec": 0.6
+		},
+		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 0.7
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "say",
+			"text": "……えーと、奥から１、２……これか。奥から２つ目。",
+			"voice": "v026"
+		},
+		{
+			"type": "wait",
+			"sec": 4.44
+		},
+		{
+			"type": "flashlight_flicker"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "みんなどうする？開けるよ？……せーのっ！",
+			"voice": "v027"
+		},
+		{
+			"type": "wait",
+			"sec": 3.39
+		},
+		{
+			"type": "sfx",
+			"sound": "door_creak"
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 1,
+			"count": 1
+		},
+		{
+			"type": "_comment",
+			"_": "── フェーズ2: 何もない（偽りの安心） ──"
+		},
+		{
+			"type": "say",
+			"text": "……なんだよ、何もないじゃん。",
+			"voice": "v028"
+		},
+		{
+			"type": "wait",
+			"sec": 2.02
+		},
+		{
+			"type": "say",
+			"text": "おいおい、ビビらせやがって。やっぱりヤラセっていうか、ただの汚いトイレじゃん。萎えー",
+			"voice": "v029"
+		},
+		{
+			"type": "wait",
+			"sec": 6.52
+		},
+		{
+			"type": "chat",
+			"msg": "よかったー",
+			"user": "視聴者A"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "ほらね、何もないって",
+			"user": "名無しさん"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "まあそんなもんよなｗ",
+			"user": "配信民99",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "準備してくれてありがとｗ",
+			"user": "深夜組"
+		},
+		{
+			"type": "wait",
+			"sec": 1.8
+		},
+		{
+			"type": "_comment",
+			"_": "── フェーズ3: 異変の始まり ──"
+		},
+		{
+			"type": "say",
+			"text": "……ん？なんか急に……寒くない？",
+			"voice": "v030"
+		},
+		{
+			"type": "wait",
+			"sec": 3.25
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 2,
+			"count": 1
+		},
+		{
+			"type": "flashlight_flicker"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "え、息……白い？……さっきまでこんなに寒かった？",
+			"voice": "v031"
+		},
+		{
+			"type": "wait",
+			"sec": 4.78
+		},
+		{
+			"type": "chat",
+			"msg": "なんか画面おかしくない？",
+			"user": "深夜組"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "ノイズ入ってるんだけど",
+			"user": "ガクブル太郎"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "懐中電灯点滅してない？",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 1.2
+		},
+		{
+			"type": "_comment",
+			"_": "── フェーズ4: 「うしろ」flood ──"
+		},
+		{
+			"type": "sfx",
+			"sound": "monster_growl",
+			"vol": -22
+		},
+		{
+			"type": "horror_tint"
+		},
+		{
+			"type": "flashlight_flicker"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "うしろ",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.15
+		},
+		{
+			"type": "chat",
+			"msg": "くる",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.15
+		},
+		{
+			"type": "chat",
+			"msg": "うしろ",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.12
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 2,
+			"count": 1
+		},
+		{
+			"type": "chat",
+			"msg": "逃げて",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.12
+		},
+		{
+			"type": "chat",
+			"msg": "うしろ",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.1
+		},
+		{
+			"type": "chat",
+			"msg": "くる",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.1
+		},
+		{
+			"type": "chat",
+			"msg": "うしろ",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.1
+		},
+		{
+			"type": "chat",
+			"msg": "うしろ",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.1
+		},
+		{
+			"type": "chat",
+			"msg": "うしろ",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "え？……うしろ？",
+			"voice": "v032"
+		},
+		{
+			"type": "wait",
+			"sec": 2.15
+		},
+		{
+			"type": "_comment",
+			"_": "── フェーズ5: ドアが閉まる + シェイク ──"
+		},
+		{
+			"type": "sfx",
+			"sound": "door_creak"
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 8,
+			"count": 2
+		},
+		{
+			"type": "head_x",
+			"target": 0.12,
+			"dur": 0.06
+		},
+		{
+			"type": "sleep",
+			"sec": 0.07
+		},
+		{
+			"type": "head_x",
+			"target": -0.08,
+			"dur": 0.06
+		},
+		{
+			"type": "sleep",
+			"sec": 0.07
+		},
+		{
+			"type": "head_x",
+			"target": 0.06,
+			"dur": 0.07
+		},
+		{
+			"type": "sleep",
+			"sec": 0.07
+		},
+		{
+			"type": "head_x",
+			"target": -0.04,
+			"dur": 0.07
+		},
+		{
+			"type": "sleep",
+			"sec": 0.08
+		},
+		{
+			"type": "head_x",
+			"target": 0.02,
+			"dur": 0.1
+		},
+		{
+			"type": "sleep",
+			"sec": 0.1
+		},
+		{
+			"type": "scare_flash",
+			"color": "white"
+		},
+		{
+			"type": "horror_tint"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "set_viewers",
+			"count": 502
+		},
+		{
+			"type": "say",
+			"text": "ッ！？——ドアが——！",
+			"voice": "v033"
+		},
+		{
+			"type": "wait",
+			"sec": 1.37
+		},
+		{
+			"type": "chat",
+			"msg": "上を見るな",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "上を見るな",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.15
+		},
+		{
+			"type": "chat",
+			"msg": "来るぞ",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.15
+		},
+		{
+			"type": "chat",
+			"msg": "みゆきさんが来る",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.15
+		},
+		{
+			"type": "chat",
+			"msg": "上を見るな",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 1.0
+		},
+		{
+			"type": "say",
+			"text": "きゃあっ！？な、なに！？ドアが開かない！！ちょ、開けてよ！！",
+			"voice": "v034"
+		},
+		{
+			"type": "wait",
+			"sec": 4.87
+		},
+		{
+			"type": "_comment",
+			"_": "── フェーズ6: 天井から赤い液体 ──"
+		},
+		{
+			"type": "flashlight_flicker"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "head_x",
+			"target": 0.05,
+			"dur": 0.18
+		},
+		{
+			"type": "sleep",
+			"sec": 0.18
+		},
+		{
+			"type": "head_x",
+			"target": -0.03,
+			"dur": 0.18
+		},
+		{
+			"type": "sleep",
+			"sec": 0.18
+		},
+		{
+			"type": "head_x",
+			"target": 0.0,
+			"dur": 0.2
+		},
+		{
+			"type": "sleep",
+			"sec": 0.2
+		},
+		{
+			"type": "say",
+			"text": "……なに、これ……天井から何か……落ちてきて……",
+			"voice": "v035"
+		},
+		{
+			"type": "wait",
+			"sec": 3.92
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 5,
+			"count": 2
+		},
+		{
+			"type": "flashlight_flicker"
+		},
+		{
+			"type": "say",
+			"text": "赤い……血？……嘘でしょ……",
+			"voice": "v036"
+		},
+		{
+			"type": "wait",
+			"sec": 2.96
+		},
+		{
+			"type": "chat",
+			"msg": "天井見るな！！！",
+			"user": "幽霊ガチ勢",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "やばいやばいやばい",
+			"user": "ガクブル太郎"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "逃げてっ！！",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.7
+		},
+		{
+			"type": "_comment",
+			"_": "── フェーズ7: 段階的に天井を見上げる ──"
+		},
+		{
+			"type": "say",
+			"text": "……は……？天井……？",
+			"voice": "v037"
+		},
+		{
+			"type": "wait",
+			"sec": 1.79
+		},
+		{
+			"type": "head_x",
+			"target": 0.2,
+			"dur": 1.3
+		},
+		{
+			"type": "wait",
+			"sec": 1.3
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 3,
+			"count": 1
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "head_x",
+			"target": 0.42,
+			"dur": 1.4
+		},
+		{
+			"type": "wait",
+			"sec": 1.4
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 4,
+			"count": 1
+		},
+		{
+			"type": "flashlight_flicker"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "head_x",
+			"target": 0.65,
+			"dur": 1.5
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "horror_tint"
+		},
+		{
+			"type": "wait",
+			"sec": 0.9
+		},
+		{
+			"type": "_comment",
+			"_": "── フェーズ8: みゆき遭遇・最強演出 ──"
+		},
+		{
+			"type": "sfx",
+			"sound": "monster_growl",
+			"vol": 2
+		},
+		{
+			"type": "scare_flash",
+			"color": "white"
+		},
+		{
+			"type": "horror_flash",
+			"dur": 0.5
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 15,
+			"count": 6
+		},
+		{
+			"type": "head_x",
+			"target": 0.75,
+			"dur": 0.05
+		},
+		{
+			"type": "sleep",
+			"sec": 0.06
+		},
+		{
+			"type": "head_x",
+			"target": 0.5,
+			"dur": 0.06
+		},
+		{
+			"type": "sleep",
+			"sec": 0.07
+		},
+		{
+			"type": "head_x",
+			"target": 0.68,
+			"dur": 0.07
+		},
+		{
+			"type": "sleep",
+			"sec": 0.08
+		},
+		{
+			"type": "head_x",
+			"target": 0.55,
+			"dur": 0.08
+		},
+		{
+			"type": "sleep",
+			"sec": 0.09
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "ヒッ——！！ウソでしょ！？イヤァァァァ！！開けて！！開いてよ！！",
+			"voice": "v038"
+		},
+		{
+			"type": "wait",
+			"sec": 4.5
+		},
+		{
+			"type": "chat",
+			"msg": "ぎゃああああ！！",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "なにあれなにあれなにあれ！！",
+			"user": "ガクブル太郎"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "首がない！！！！",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "chat",
+			"msg": "見えてる",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "ずっと待ってた",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "_comment",
+			"_": "── フェーズ9: みゆきが降りてくる ──"
+		},
+		{
+			"type": "sfx",
+			"sound": "monster_growl",
+			"vol": -8
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 8,
+			"count": 3
+		},
+		{
+			"type": "say",
+			"text": "降りてくる——降りて——",
+			"voice": "v039"
+		},
+		{
+			"type": "wait",
+			"sec": 1.62
+		},
+		{
+			"type": "scare_flash",
+			"color": "red"
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 12,
+			"count": 5
+		},
+		{
+			"type": "head_x",
+			"target": 0.25,
+			"dur": 0.06
+		},
+		{
+			"type": "sleep",
+			"sec": 0.07
+		},
+		{
+			"type": "head_x",
+			"target": -0.1,
+			"dur": 0.06
+		},
+		{
+			"type": "sleep",
+			"sec": 0.07
+		},
+		{
+			"type": "head_x",
+			"target": 0.15,
+			"dur": 0.07
+		},
+		{
+			"type": "sleep",
+			"sec": 0.08
+		},
+		{
+			"type": "head_x",
+			"target": 0.0,
+			"dur": 0.12
+		},
+		{
+			"type": "sleep",
+			"sec": 0.12
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "画面真っ暗！！",
+			"user": "視聴者A"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "逃げてーーー！！！",
+			"user": "幽霊ガチ勢",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "ドア開けろ！！！",
+			"user": "ガクブル太郎"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "逃げられない",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "head_x",
+			"target": 0.0,
+			"dur": 0.5
+		},
+		{
+			"type": "say",
+			"text": "ドアが——開かない！！",
+			"voice": "v040"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "sfx",
+			"sound": "door_creak"
+		},
+		{
+			"type": "horror_flash",
+			"dur": 0.4
+		},
+		{
+			"type": "head_x",
+			"target": 0.08,
+			"dur": 0.08
+		},
+		{
+			"type": "sleep",
+			"sec": 0.09
+		},
+		{
+			"type": "head_x",
+			"target": -0.06,
+			"dur": 0.08
+		},
+		{
+			"type": "sleep",
+			"sec": 0.09
+		},
+		{
+			"type": "head_x",
+			"target": 0.05,
+			"dur": 0.09
+		},
+		{
+			"type": "sleep",
+			"sec": 0.1
+		},
+		{
+			"type": "head_x",
+			"target": 0.0,
+			"dur": 0.12
+		},
+		{
+			"type": "sleep",
+			"sec": 0.12
+		},
+		{
+			"type": "say",
+			"text": "くそ！開かないっ！！",
+			"voice": "v041"
+		},
+		{
+			"type": "wait",
+			"sec": 2.1
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 6,
+			"count": 2
+		},
+		{
+			"type": "say",
+			"text": "足首を掴まれてる——冷たい——",
+			"voice": "v042"
+		},
+		{
+			"type": "wait",
+			"sec": 2.8
+		},
+		{
+			"type": "chat",
+			"msg": "やばいやばいやばい",
+			"user": "名無しさん"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "お札！！お札使え！！",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "さっきのお札！！",
+			"user": "幽霊ガチ勢",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "_comment",
+			"_": "── フェーズ10: お札使用・脱出 ──"
+		},
+		{
+			"type": "sfx",
+			"sound": "monster_growl",
+			"vol": 3
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 4,
+			"count": 2
+		},
+		{
+			"type": "say",
+			"text": "……お札。さっきの——",
+			"voice": "v043"
+		},
+		{
+			"type": "wait",
+			"sec": 2.1
+		},
+		{
+			"type": "say",
+			"text": "ポケットのお札。これしかない",
+			"voice": "v044"
+		},
+		{
+			"type": "wait",
+			"sec": 2.7
+		},
+		{
+			"type": "chat",
+			"msg": "貼れ！！ドアに貼れ！！",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "早く！！！",
+			"user": "視聴者A"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say",
+			"text": "ドアに——貼る！！",
+			"voice": "v045"
+		},
+		{
+			"type": "wait",
+			"sec": 1.8
+		},
+		{
+			"type": "use_ofuda"
+		},
+		{
+			"type": "wait",
+			"sec": 0.8
+		},
+		{
+			"type": "scare_flash",
+			"color": "red"
+		},
+		{
+			"type": "horror_flash",
+			"dur": 0.6
+		},
+		{
+			"type": "horror_glitch",
+			"intensity": 20,
+			"count": 8
+		},
+		{
+			"type": "head_x",
+			"target": 0.25,
+			"dur": 0.05
+		},
+		{
+			"type": "sleep",
+			"sec": 0.06
+		},
+		{
+			"type": "head_x",
+			"target": -0.18,
+			"dur": 0.06
+		},
+		{
+			"type": "sleep",
+			"sec": 0.07
+		},
+		{
+			"type": "head_x",
+			"target": 0.14,
+			"dur": 0.07
+		},
+		{
+			"type": "sleep",
+			"sec": 0.08
+		},
+		{
+			"type": "head_x",
+			"target": -0.09,
+			"dur": 0.08
+		},
+		{
+			"type": "sleep",
+			"sec": 0.09
+		},
+		{
+			"type": "head_x",
+			"target": 0.05,
+			"dur": 0.1
+		},
+		{
+			"type": "sleep",
+			"sec": 0.1
+		},
+		{
+			"type": "head_x",
+			"target": 0.0,
+			"dur": 0.15
+		},
+		{
+			"type": "sleep",
+			"sec": 0.15
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "scare_flash",
+			"color": "white"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "——叫んだ。あいつが——叫んでる——",
+			"voice": "v046"
+		},
+		{
+			"type": "wait",
+			"sec": 3.2
+		},
+		{
+			"type": "_comment",
+			"_": "── 暗転で場面転換：トイレ→道路（門付近）へ ──"
+		},
+		{
+			"type": "fade_black",
+			"dur": 0.5
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "pos_x",
+			"target": 25,
+			"dur": 0.01
+		},
+		{
+			"type": "pos_z",
+			"target": 4,
+			"dur": 0.01
+		},
+		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 0.01
+		},
+		{
+			"type": "horror_tint_clear"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "fade_clear",
+			"dur": 1.5
+		},
+		{
+			"type": "flashlight_on"
+		},
+		{
+			"type": "sfx",
+			"sound": "ambient_wind"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "……消えた。もういない……",
+			"voice": "v047"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "chat",
+			"msg": "生きてる！！？",
+			"user": "視聴者A"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "走れ！！！",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "出ろおおお！！",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 1.0
+		},
+		{
+			"type": "say",
+			"text": "……外だ。戻ってきた……門の前……",
+			"voice": "v048"
+		},
+		{
+			"type": "wait",
+			"sec": 3.0
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "_comment",
+			"_": "════════════════════════════════════════════"
+		},
+		{
+			"type": "_comment",
+			"_": "【シーン4：バズりの麻薬】村門→道路沿いに商店街ゲートへ"
+		},
+		{
+			"type": "_comment",
+			"_": "════════════════════════════════════════════"
+		},
+		{
+			"type": "wait",
+			"sec": 1
+		},
+		{
+			"type": "head_x",
+			"target": -0.3,
+			"dur": 0.8
+		},
+		{
+			"type": "set_viewers",
+			"count": 3410
+		},
+		{
+			"type": "say",
+			"text": "ゲホッ……！ハァッ……ハァッ……！",
+			"voice": "v049"
+		},
+		{
+			"type": "wait",
+			"sec": 2.13
+		},
+		{
+			"type": "say",
+			"text": "な、なんだあれ！？ガチじゃん！！生首……いや、首が無かった……！！",
+			"voice": "v050"
+		},
+		{
+			"type": "wait",
+			"sec": 5.19
+		},
+		{
+			"type": "_comment",
+			"_": "── 怒涛のスパチャ ──"
+		},
+		{
+			"type": "superchat",
+			"name": "ホラー好き太郎",
+			"msg": "まじでやばい！もっと見せて！",
+			"amount": 10000
+		},
+		{
+			"type": "wait",
+			"sec": 0.6
+		},
+		{
+			"type": "superchat",
+			"name": "幽霊ガチ勢",
+			"msg": "JKが泣いてんの最高すぎ、逃げんな！",
+			"amount": 50000
+		},
+		{
+			"type": "wait",
+			"sec": 0.6
+		},
+		{
+			"type": "superchat",
+			"name": "配信民99",
+			"msg": "神回確定じゃんｗｗｗ",
+			"amount": 5000
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "chat",
+			"msg": "次だ！次行け！！",
+			"user": "ガクブル太郎"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "やめろ、死ぬぞ",
+			"user": "名無しさん"
+		},
+		{
+			"type": "wait",
+			"sec": 2
+		},
+		{
+			"type": "_comment",
+			"_": "── しゅっちの変化 ——恐怖→金銭欲 ──"
+		},
+		{
+			"type": "head_x",
+			"target": 0,
+			"dur": 0.5
+		},
+		{
+			"type": "say",
+			"text": "……すげえ。同接3000人超え……スパチャも……5万！？",
+			"voice": "v051"
+		},
+		{
+			"type": "wait",
+			"sec": 4.42
+		},
+		{
+			"type": "say",
+			"text": "嘘でしょ……時給換算やば……",
+			"voice": "v052"
+		},
+		{
+			"type": "wait",
+			"sec": 2.61
+		},
+		{
+			"type": "chat",
+			"msg": "まだ行くの！？",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "帰れ帰れマジで帰れ",
+			"user": "恐怖体験済み"
+		},
+		{
+			"type": "wait",
+			"sec": 2
+		},
+		{
+			"type": "_comment",
+			"_": "── 決断の選択肢 ──"
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "choice",
+			"prompt": "同接3410人……スパチャ6万超え……\nみんなが見てる。このまま奥へ進む？",
+			"choices": [
+				{
+					"text": "当然進む。ここまで来たら止まれない"
+				},
+				{
+					"text": "お祓いしてから行く。お札まだ２枚ある"
+				},
+				{
+					"text": "一旦帰る！準備が足りなさすぎる！"
+				}
+			],
+			"targets": [
+				"choice_push_through",
+				"choice_ofuda_first",
+				"choice_retreat_fake"
+			]
+		},
+		{
+			"type": "_comment",
+			"_": "── 選択肢A：強行突破 ──"
+		},
+		{
+			"type": "label",
+			"name": "choice_push_through"
+		},
+		{
+			"type": "chat",
+			"msg": "かっっこよ！！",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "ガチプロやん",
+			"user": "深夜組"
+		},
+		{
+			"type": "wait",
+			"sec": 1
+		},
+		{
+			"type": "say",
+			"text": "……逃げるわけ、ないじゃん……！！",
+			"voice": "v053"
+		},
+		{
+			"type": "wait",
+			"sec": 1.66
+		},
+		{
+			"type": "goto",
+			"label": "after_decision"
+		},
+		{
+			"type": "_comment",
+			"_": "── 選択肢B：お祓い ──"
+		},
+		{
+			"type": "label",
+			"name": "choice_ofuda_first"
+		},
+		{
+			"type": "use_ofuda"
+		},
+		{
+			"type": "chat",
+			"msg": "お札賢い！！",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "準備いいじゃんｗ",
+			"user": "配信民99",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 1
+		},
+		{
+			"type": "say",
+			"text": "……念のためお祓いしてから。行くよ",
+			"voice": "v054"
+		},
+		{
+			"type": "wait",
+			"sec": 2.44
+		},
+		{
+			"type": "goto",
+			"label": "after_decision"
+		},
+		{
+			"type": "_comment",
+			"_": "── 選択肢C：一旦撤退（即翻意） ──"
+		},
+		{
+			"type": "label",
+			"name": "choice_retreat_fake"
+		},
+		{
+			"type": "chat",
+			"msg": "えっ！？帰るの！？！？",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "チキン認定ｗｗｗ",
+			"user": "名無しさん"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "スパチャ返金してｗ",
+			"user": "深夜組"
+		},
+		{
+			"type": "wait",
+			"sec": 0.8
+		},
+		{
+			"type": "say",
+			"text": "待って待って冗談！冗談だから！！",
+			"voice": "v055"
+		},
+		{
+			"type": "wait",
+			"sec": 2.46
+		},
+		{
+			"type": "say",
+			"text": "スパチャ6万もらって帰れるわけないじゃん！！",
+			"voice": "v056"
+		},
+		{
+			"type": "wait",
+			"sec": 2.34
+		},
+		{
+			"type": "_comment",
+			"_": "── 合流：決意 → 村門を通過 ──"
+		},
+		{
+			"type": "label",
+			"name": "after_decision"
+		},
+		{
+			"type": "say",
+			"text": "絶対、最後まで撮りきってやる……！！",
+			"voice": "v057"
+		},
+		{
+			"type": "wait",
+			"sec": 2.45
+		},
+		{
+			"type": "chat",
+			"msg": "覚悟決まったな",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "ヤバい目してるの草",
+			"user": "深夜組"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "_comment",
+			"_": "── 村門を通過して道路を奥へ ──"
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 1
+		},
+		{
+			"type": "walk_set",
+			"on": true
+		},
+		{
+			"type": "pos_x",
+			"target": 30,
+			"dur": 10,
+			"id": "walk_road2"
+		},
+		{
+			"type": "wait",
+			"sec": 2
+		},
+		{
+			"type": "say",
+			"text": "村の奥に——進むしかない",
+			"voice": "v058"
+		},
+		{
+			"type": "wait",
+			"sec": 2.16
+		},
+		{
+			"type": "chat",
+			"msg": "奥においで",
+			"user": "K",
+			"utype": "horror"
+		},
+		{
+			"type": "wait",
+			"sec": 2
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "wait",
+			"sec": 3
+		},
+		{
+			"type": "say",
+			"text": "あのトイレで30年前に少女が消えた。同じ場所に、あんなものが——",
+			"voice": "v059"
+		},
+		{
+			"type": "wait",
+			"sec": 4.79
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "_comment",
+			"_": "── 道路の途中、歩行待ち ──"
+		},
+		{
+			"type": "pos_x_await",
+			"id": "walk_road2"
+		},
+		{
+			"type": "_comment",
+			"_": "── 道路の曲がり角、商店街方向（左=-Z）へ向きを変える ──"
+		},
+		{
+			"type": "say",
+			"text": "……この先、道が分かれてる。左は……",
+			"voice": "v060"
+		},
+		{
+			"type": "wait",
+			"sec": 3.31
+		},
+		{
+			"type": "rot_y",
+			"target": -0.785,
+			"dur": 2
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say",
+			"text": "なんか門が見える……商店街？",
+			"voice": "v061"
+		},
+		{
+			"type": "wait",
+			"sec": 2.58
+		},
+		{
+			"type": "chat",
+			"msg": "あれ旧商店街の入口だよ",
+			"user": "恐怖体験済み"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "入ったら出られないって噂の場所",
+			"user": "ガクブル太郎"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "_comment",
+			"_": "── 商店街ゲートへ歩いて向かう ──"
+		},
+		{
+			"type": "pos_x",
+			"target": 37,
+			"dur": 8,
+			"id": "walk_to_shop"
+		},
+		{
+			"type": "pos_z",
+			"target": -3.5,
+			"dur": 8,
+			"id": "walk_to_shop_z"
+		},
+		{
+			"type": "wait",
+			"sec": 2
+		},
+		{
+			"type": "say",
+			"text": "あの門の向こうに何があるんだろ……",
+			"voice": "v062"
+		},
+		{
+			"type": "wait",
+			"sec": 2.34
+		},
+		{
+			"type": "chat",
+			"msg": "行くなって！マジで！",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "ここで引き返す勇気",
+			"user": "名無しさん"
+		},
+		{
+			"type": "wait",
+			"sec": 2
+		},
+		{
+			"type": "_comment",
+			"_": "── 商店街ゲート到着 ──"
+		},
+		{
+			"type": "pos_x_await",
+			"id": "walk_to_shop"
+		},
+		{
+			"type": "pos_z",
+			"target": -7,
+			"dur": 25,
+			"id": "gate_creep"
+		},
+		{
+			"type": "walk_set",
+			"on": false
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "_comment",
+			"_": "── 門をじっくり見上げる ──"
+		},
+		{
+			"type": "head_x",
+			"target": 0.25,
+			"dur": 1.5
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say",
+			"text": "……でっか。錆びた鉄の門……看板が読める。『霧原商店街』……",
+			"voice": "v063"
+		},
+		{
+			"type": "wait",
+			"sec": 5.06
+		},
+		{
+			"type": "say",
+			"text": "こんな山奥に商店街があったんだ……",
+			"voice": "v064"
+		},
+		{
+			"type": "wait",
+			"sec": 2.69
+		},
+		{
+			"type": "rot_y",
+			"target": -0.3,
+			"dur": 1.5
+		},
+		{
+			"type": "wait",
+			"sec": 1
+		},
+		{
+			"type": "rot_y",
+			"target": -1.3,
+			"dur": 2
+		},
+		{
+			"type": "wait",
+			"sec": 1
+		},
+		{
+			"type": "say",
+			"text": "門の向こう、真っ暗だ……建物がいくつか見えるけど、全部廃墟……",
+			"voice": "v065"
+		},
+		{
+			"type": "wait",
+			"sec": 5.2
+		},
+		{
+			"type": "rot_y",
+			"target": -0.785,
+			"dur": 1
+		},
+		{
+			"type": "head_x",
+			"target": 0,
+			"dur": 0.8
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "chat",
+			"msg": "その奥にVHSテープがあるらしいよ",
+			"user": "恐怖体験済み"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "霧原の怪異を記録したテープ",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say",
+			"text": "……よし。行こう。みんな、見届けてよ。うちは——ここで引き返さない",
+			"voice": "v066"
+		},
+		{
+			"type": "wait",
+			"sec": 5.65
+		},
+		{
+			"type": "chat",
+			"msg": "無茶すんなよ……",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "生きて帰れよ",
+			"user": "深夜組"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say_clear"
+		}
+	]
 }
