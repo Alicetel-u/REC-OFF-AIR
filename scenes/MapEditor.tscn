@@ -1,0 +1,69 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/MapEditorCamera.gd" id="1_camera"]
+
+[sub_resource type="Environment" id="Environment_001"]
+background_mode = 1
+background_color = Color(0.08, 0.08, 0.1, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.7, 0.75, 0.85, 1)
+ambient_light_energy = 0.6
+fog_enabled = false
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_001"]
+sky_top_color = Color(0.1, 0.12, 0.2, 1)
+sky_horizon_color = Color(0.4, 0.45, 0.5, 1)
+ground_bottom_color = Color(0.08, 0.08, 0.1, 1)
+ground_horizon_color = Color(0.3, 0.32, 0.35, 1)
+
+[sub_resource type="Sky" id="Sky_001"]
+sky_material = SubResource("ProceduralSkyMaterial_001")
+
+[sub_resource type="Environment" id="Environment_002"]
+background_mode = 2
+sky = SubResource("Sky_001")
+ambient_light_source = 3
+ambient_light_energy = 0.5
+tonemap_mode = 2
+glow_enabled = false
+fog_enabled = false
+
+[node name="MapEditor" type="Node3D"]
+script = ExtResource("1_camera")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_002")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 20, 0)
+light_energy = 1.4
+shadow_enabled = true
+
+[node name="GridMap" type="GridMap" parent="."]
+cell_size = Vector3(4, 4, 4)
+cell_center_x = false
+cell_center_z = false
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="HelpLabel" type="Label" parent="CanvasLayer"]
+offset_right = 400.0
+offset_bottom = 140.0
+text = "【MapEditor 操作ガイド】
+WASD / 矢印キー  : カメラ移動
+マウスホイール    : ズーム
+中クリックドラッグ: パン
+F キー           : 原点リセット
+
+【GridMap 配置】
+1. シーンツリーで GridMap を選択
+2. 下部パレットからメッシュを選択
+3. ビューポートをクリックして配置
+4. Shift+クリックで消去
+
+※ まず tools/create_meshlib.gd を実行して
+   MeshLibrary を生成してください"
+add_theme_font_size_override("font_size", 13)
+add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 0.85))
+modulate = Color(1, 1, 1, 0.8)
