@@ -26,10 +26,10 @@ omni_range = 12.0
 
 [sub_resource type="Resource" id="light_road"]
 script = ExtResource("2")
-position = Vector3(12, 3.5, 4)
+position = Vector3(12, 4.0, 4)
 color = Color(0.4, 0.5, 0.7, 1)
-energy = 0.2
-omni_range = 15.0
+energy = 0.5
+omni_range = 28.0
 
 [resource]
 script = ExtResource("1")
@@ -42,8 +42,8 @@ player_spawn = Vector3(1.5, 1.0, 3.0)
 item_positions = PackedVector3Array()
 exit_position = Vector3(36, 1.5, -2)
 lights = [SubResource("light_busstop"), SubResource("light_gate"), SubResource("light_shrine"), SubResource("light_road")]
-ambient_light_energy = 0.05
-directional_light_energy = 0.02
+ambient_light_energy = 0.12
+directional_light_energy = 0.06
 background_color = Color(0.02, 0.02, 0.05, 1)
 fog_enabled = true
 fog_density = 0.05
