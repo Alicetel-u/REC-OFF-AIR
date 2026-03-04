@@ -79,15 +79,6 @@ jobs:
           mkdir -p assets/fonts
           find /usr/share/fonts -name "NotoSansCJK-Regular.ttc" | head -1 | xargs -I{} cp {} assets/fonts/NotoSansCJK-Regular.ttc
 
-      - name: Import resources
-        run: |
-          godot --headless --path . --import
-          echo "=== Import completed ==="
-          echo "Imported voice files:"
-          ls -la .godot/imported/v0*.sample 2>/dev/null | head -5 || echo "  (no voice .sample files found)"
-          echo "Imported MP3 files:"
-          ls .godot/imported/*.mp3str 2>/dev/null | wc -l | xargs -I{} echo "  {} mp3str files"
-
       - name: Web export
         run: |
           mkdir -p web

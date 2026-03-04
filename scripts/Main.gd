@@ -219,7 +219,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _apply_environment(chapter: Resource) -> void:
 	var env := $WorldEnvironment.environment as Environment
-	var is_web := OS.has_feature("web")
 
 	# ── 背景 ──
 	if chapter.use_sky_background:
@@ -244,19 +243,9 @@ func _apply_environment(chapter: Resource) -> void:
 	env.tonemap_mode = chapter.tonemap_mode
 
 	# ── SSAO / SSIL / SDFGI (Forward Plus) ──
-	# Web (WebGL) では Forward Plus 専用機能が動作しないため無効化し、
-	# アンビエントライトを補強して見た目を近づける
-	if is_web:
-		env.ssao_enabled  = false
-		env.ssil_enabled  = false
-		env.sdfgi_enabled = false
-		# SSIL/SDFGI（間接照明・GI）が無い分、アンビエントで補正
-		if chapter.ssil_enabled or chapter.sdfgi_enabled:
-			env.ambient_light_energy = chapter.ambient_light_energy + 0.08
-	else:
-		env.ssao_enabled  = chapter.ssao_enabled
-		env.ssil_enabled  = chapter.ssil_enabled
-		env.sdfgi_enabled = chapter.sdfgi_enabled
+	env.ssao_enabled  = chapter.ssao_enabled
+	env.ssil_enabled  = chapter.ssil_enabled
+	env.sdfgi_enabled = chapter.sdfgi_enabled
 
 	# ── フォグ ──
 	env.fog_enabled = chapter.fog_enabled
@@ -267,20 +256,9 @@ func _apply_environment(chapter: Resource) -> void:
 		env.fog_aerial_perspective = chapter.fog_aerial_perspective
 
 	# ── ボリュメトリックフォグ (Forward Plus) ──
-	if is_web:
-		env.volumetric_fog_enabled = false
-		# ボリュメトリックフォグの代わりに通常フォグを補強
-		if chapter.volumetric_fog_enabled:
-			env.fog_enabled = true
-			if not chapter.fog_enabled:
-				env.fog_density = chapter.volumetric_fog_density * 2.0
-				env.fog_light_color = chapter.fog_light_color if chapter.fog_enabled \
-					else Color(0.1, 0.1, 0.15)
-				env.fog_light_energy = 0.02
-	else:
-		env.volumetric_fog_enabled = chapter.volumetric_fog_enabled
-		if chapter.volumetric_fog_enabled:
-			env.volumetric_fog_density = chapter.volumetric_fog_density
+	env.volumetric_fog_enabled = chapter.volumetric_fog_enabled
+	if chapter.volumetric_fog_enabled:
+		env.volumetric_fog_density = chapter.volumetric_fog_density
 
 	$DirectionalLight3D.light_energy = chapter.directional_light_energy
 
