@@ -229,6 +229,20 @@ def main():
     print()
     print(f"=== 完了: 生成 {success} / スキップ {skipped} / 失敗 {fail} / 合計 {len(voice_events)} ===")
 
+    # .import ファイル存在チェック（CIデプロイに必要）
+    if success > 0:
+        missing_imports = []
+        for ev in voice_events:
+            import_path = os.path.join(OUTPUT_DIR, f"{ev['voice']}.wav.import")
+            if not os.path.exists(import_path):
+                missing_imports.append(f"{ev['voice']}.wav.import")
+        if missing_imports:
+            print()
+            print("⚠ WARNING: 以下の .import ファイルがありません（本番デプロイに必要）")
+            print("  Godotエディタでプロジェクトを一度開いて .import を生成し、git commit してください")
+            for m in missing_imports:
+                print(f"    - {m}")
+
     if fail > 0:
         sys.exit(1)
 
