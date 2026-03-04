@@ -482,16 +482,23 @@ func _polaroid_video(video_path: String) -> void:
 	tw_in.tween_property(container, "modulate:a", 1.0, 0.3)
 	await tw_in.finished
 
-	# ── フレームアニメーション再生（ストリーミング: 1枚ずつロード・即解放） ──
-	var frame_dur := 1.0 / FPS
-	var stream_idx := 1
+	# ── フレームをプリロード（再生中のディスクI/Oを排除してカクツキ防止） ──
+	var frames : Array[Texture2D] = []
+	var preload_idx := 1
 	while true:
-		var path := "%s/frame_%03d.png" % [frames_dir, stream_idx]
+		var path := "%s/frame_%03d.png" % [frames_dir, preload_idx]
 		if not ResourceLoader.exists(path):
 			break
-		tex_rect.texture = ResourceLoader.load(path, "Texture2D", ResourceLoader.CACHE_MODE_IGNORE) as Texture2D
+		var tex := ResourceLoader.load(path, "Texture2D") as Texture2D
+		if tex:
+			frames.append(tex)
+		preload_idx += 1
+
+	# ── フレームアニメーション再生（メモリ上のテクスチャを切り替えるだけ） ──
+	var frame_dur := 1.0 / FPS
+	for frame_tex in frames:
+		tex_rect.texture = frame_tex
 		await get_tree().create_timer(frame_dur).timeout
-		stream_idx += 1
 
 	# 少し余韻
 	await get_tree().create_timer(0.5).timeout
