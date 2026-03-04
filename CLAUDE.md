@@ -23,6 +23,8 @@
 
 - VOICEVOX Speaker ID: 20
 - パラメータ: speedScale=1.25, intonationScale=1.5, pitchScale=0.02
-- 末尾無音トリミング: threshold=300, margin=80ms
+- 末尾無音トリミング: threshold=2000, margin=40ms
+- ポーズ短縮: pause_mora.vowel_length max=0.15s, prePhonemeLength=0.05, postPhonemeLength=0.05
+- セリフ編集後は必ず `python tools/fix_voice_wait.py --validate-only` でバリデーション実行
 - 発音修正: TIKTOK→ティックトック / 廃村→はいそん / お札→おふだ
 - 出力先: `assets/audio/voice/ch01/v001.wav` 〜
