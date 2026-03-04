@@ -45,8 +45,26 @@ func _make_player(vol_db: float) -> AudioStreamPlayer:
 
 
 # ════════════════════════════════════════════════════════════════
-# ファイルスキャン
+# ファイルスキャン（DirAccess + ResourceLoader フォールバック）
+# エクスポートビルドでは DirAccess が空を返す場合があるため
+# ResourceLoader.exists() で既知パターンを探索する
 # ════════════════════════════════════════════════════════════════
+
+# ディレクトリ → ファイル名プレフィックス（全 SFX は "Name (N).mp3" 形式）
+const SFX_PREFIXES := {
+	"res://assets/audio/sfx/ambient_wind":      "Ambient Wind",
+	"res://assets/audio/sfx/monster":           "Monster Growl",
+	"res://assets/audio/sfx/door":              "Creaking Door",
+	"res://assets/audio/sfx/footsteps/leaves":  "Leaves Footsteps",
+	"res://assets/audio/sfx/footsteps/concrete":"Concrete Footsteps",
+	"res://assets/audio/sfx/footsteps/carpet":  "Carpet Footstep",
+	"res://assets/audio/sfx/footsteps/metal":   "Metal Footsteps",
+	"res://assets/audio/sfx/footsteps/wind":    "Wind Footsteps",
+	"res://assets/audio/sfx/footsteps/gravel":  "Gravel Footsteps",
+	"res://assets/audio/sfx/footsteps/mud":     "Mud Footsteps",
+	"res://assets/audio/sfx/footsteps/stairs":  "Stair Footsteps",
+	"res://assets/audio/sfx/footsteps/wooden":  "Wooden Foosteps",
+}
 
 func _scan_all() -> void:
 	_ambient_files = _scan_dir("res://assets/audio/sfx/ambient_wind")
@@ -59,16 +77,23 @@ func _scan_all() -> void:
 
 func _scan_dir(path: String) -> Array:
 	var list : Array = []
+	# 1) DirAccess でスキャン（開発環境で動作）
 	var d := DirAccess.open(path)
-	if not d:
-		return list
-	d.list_dir_begin()
-	var fname := d.get_next()
-	while fname != "":
-		if not d.current_is_dir() and fname.to_lower().ends_with(".mp3"):
-			list.append(path + "/" + fname)
-		fname = d.get_next()
-	d.list_dir_end()
+	if d:
+		d.list_dir_begin()
+		var fname := d.get_next()
+		while fname != "":
+			if not d.current_is_dir() and fname.to_lower().ends_with(".mp3"):
+				list.append(path + "/" + fname)
+			fname = d.get_next()
+		d.list_dir_end()
+	# 2) エクスポートビルド用フォールバック: ResourceLoader で既知パターン探索
+	if list.is_empty() and SFX_PREFIXES.has(path):
+		var prefix : String = SFX_PREFIXES[path]
+		for i in range(1, 30):
+			var p := "%s/%s (%d).mp3" % [path, prefix, i]
+			if ResourceLoader.exists(p):
+				list.append(p)
 	return list
 
 
