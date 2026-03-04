@@ -1,0 +1,60 @@
+#!/bin/bash
+# pre-commit hook: コミット前にアセット・ボイスの整合性を自動チェック
+# インストール: tools/setup-hooks.sh を実行
+
+set -e
+
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+errors=0
+
+# ── 1. WAV変更時に.importファイルがステージされているか ──
+staged_wavs=$(git diff --cached --name-only --diff-filter=ACM | grep '\.wav$' || true)
+if [ -n "$staged_wavs" ]; then
+    for wav in $staged_wavs; do
+        import_file="${wav}.import"
+        if [ -f "$import_file" ]; then
+            # .importファイルが存在するがステージされていない場合
+            if ! git diff --cached --name-only | grep -qF "$import_file"; then
+                echo -e "${RED}ERROR: $wav が変更されていますが ${import_file} がステージされていません${NC}"
+                echo "  → godot.exe --headless --import を実行してから git add ${import_file}"
+                errors=$((errors + 1))
+            fi
+        else
+            echo -e "${YELLOW}WARN: ${import_file} が存在しません（Godotエディタで再importが必要）${NC}"
+            errors=$((errors + 1))
+        fi
+    done
+fi
+
+# ── 2. dialogue JSONが変更されている場合、バリデーション実行 ──
+staged_json=$(git diff --cached --name-only --diff-filter=ACM | grep 'dialogue/.*\.json$' || true)
+if [ -n "$staged_json" ]; then
+    if command -v python &> /dev/null && [ -f "tools/fix_voice_wait.py" ]; then
+        echo "=== ボイスバリデーション実行中 ==="
+        output=$(python tools/fix_voice_wait.py --validate-only 2>&1)
+        echo "$output"
+
+        # CONSECUTIVE_WAIT または LONG_GAP があればエラー（致命的な問題）
+        if echo "$output" | grep -qE "CONSECUTIVE_WAIT|LONG_GAP|MISSING_WAV"; then
+            echo -e "${RED}ERROR: 致命的なバリデーション警告があります。修正してからコミットしてください${NC}"
+            errors=$((errors + 1))
+        fi
+    fi
+fi
+
+# ── 3. CLAUDE.mdの設定値とコードの整合性チェック ──
+staged_tools=$(git diff --cached --name-only | grep -E 'tools/(generate_voice|fix_voice|trim_voice)' || true)
+if [ -n "$staged_tools" ]; then
+    if ! git diff --cached --name-only | grep -qF "CLAUDE.md"; then
+        echo -e "${YELLOW}WARN: ボイスツールが変更されていますが CLAUDE.md がステージされていません${NC}"
+        echo "  → 設定値を変更した場合は CLAUDE.md も更新してください"
+    fi
+fi
+
+if [ $errors -gt 0 ]; then
+    echo ""
+    echo -e "${RED}コミットを中止しました（${errors}件のエラー）${NC}"
+    exit 1
+fi

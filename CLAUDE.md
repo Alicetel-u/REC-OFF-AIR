@@ -29,12 +29,22 @@
 - 発音修正: TIKTOK→ティックトック / 廃村→はいそん / お札→おふだ
 - 出力先: `assets/audio/voice/ch01/v001.wav` 〜
 
-## コミット・デプロイ前チェックリスト（重要・必ず守る）
+## 自動チェック（pre-commitフック + CI）
 
-コミットやプッシュを実行する前に、以下を**全て**確認すること。漏れがあると他PCでビルドが壊れる。
+漏れ防止のため**2段階の自動チェック**を導入済み。
 
-1. **WAV変更時**: `godot.exe --headless --import` で再import → `.godot/imported/` に新しい `.sample` が生成されたことを確認 → `.import` ファイルに差分があればコミットに含める
+### pre-commitフック（ローカル）
+- **新しいPCでclone後、最初に実行**: `bash tools/setup-hooks.sh`
+- WAV変更時に`.import`がステージされていなければコミット拒否
+- dialogue JSON変更時にバリデーション自動実行（CONSECUTIVE_WAIT/LONG_GAP/MISSING_WAVでブロック）
+- ボイスツール変更時にCLAUDE.md未更新を警告
+
+### CI（GitHub Actions — 最終防壁）
+- PRおよびmaster pushでバリデーション自動実行
+- 全WAVに`.import`ファイルがあるか確認
+- `fix_voice_wait.py --validate-only` の致命的警告でデプロイ停止
+
+### 手動チェックリスト（フックで防げない項目）
+1. **WAV変更時**: `godot.exe --headless --import` で再import → `.import` ファイルに差分があればコミットに含める
 2. **設定値変更時**: コードの設定値を変えたら、このCLAUDE.mdの該当セクションも**同じコミット内で**更新する
-3. **バリデーション**: `python tools/fix_voice_wait.py --validate-only` を実行し、致命的な警告がないことを確認
-4. **1コミットで完結**: 関連する変更は全て同じコミットに含める（コード＋ドキュメント＋アセット＋.importファイル）。後から「忘れてた」で追加コミットしない
-5. **git status最終確認**: 未追跡・未ステージのファイルに漏れがないか確認してからコミット
+3. **1コミットで完結**: 関連する変更は全て同じコミットに含める（コード＋ドキュメント＋アセット＋.importファイル）
