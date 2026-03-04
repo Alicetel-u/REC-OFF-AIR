@@ -389,19 +389,19 @@ func _set_viewers(count: int) -> void:
 # ポラロイド風動画表示
 # ════════════════════════════════════════════════════════════════════
 
-func _polaroid_video(video_path: String) -> void:
-	# video_path はフレームディレクトリ (例: "res://assets/video/bus_frames")
-	# または旧OGVパス → フレームディレクトリに自動変換
-	var frames_dir := video_path
-	if frames_dir.ends_with(".ogv") or frames_dir.ends_with(".webm"):
-		frames_dir = frames_dir.get_base_dir() + "/bus_frames"
-
-	# フレームが存在するか確認（1枚目のみチェック・全枚プリロードを回避）
-	if not ResourceLoader.exists("%s/frame_001.png" % frames_dir):
-		push_warning("EntranceDirector: polaroid_video — no frames in: " + frames_dir)
+func _polaroid_video(_video_path: String) -> void:
+	# SpriteSheet方式: 1枚のPNGに全フレームを格納（10列×5行、380×214/フレーム）
+	const SHEET_PATH := "res://assets/video/bus_spritesheet.png"
+	if not ResourceLoader.exists(SHEET_PATH):
+		push_warning("EntranceDirector: polaroid_video — spritesheet not found")
 		return
 
-	const FPS := 25.0
+	const FPS        := 25.0
+	const TOTAL_FRAMES := 46
+	const SHEET_COLS := 10
+	const CELL_W    := 380    # SpriteSheet上の1フレーム幅
+	const CELL_H    := 214    # SpriteSheet上の1フレーム高さ
+
 	# YouTubeChrome 映像エリア座標系: (0,48)〜(940,612) = 940×564
 	const VIDEO_AREA_X := 0
 	const VIDEO_AREA_Y := 48
@@ -415,6 +415,12 @@ func _polaroid_video(video_path: String) -> void:
 	const BORDER_BOT  := 44   # 下の白枠（ポラロイド特有の広い下余白）
 	const FRAME_W := PHOTO_W + BORDER_SIDE * 2   # 408
 	const FRAME_H := PHOTO_H + BORDER_SIDE + BORDER_BOT  # 312
+
+	# SpriteSheetを1回だけロード
+	var sheet_tex := ResourceLoader.load(SHEET_PATH, "Texture2D") as Texture2D
+	if not sheet_tex:
+		push_warning("EntranceDirector: polaroid_video — failed to load spritesheet")
+		return
 
 	# 中央位置
 	var cx := VIDEO_AREA_X + (VIDEO_AREA_W - FRAME_W) / 2
@@ -447,19 +453,23 @@ func _polaroid_video(video_path: String) -> void:
 	frame.position = Vector2(-FRAME_W / 2, -FRAME_H / 2)
 	frame.size = Vector2(FRAME_W, FRAME_H)
 	var frame_style := StyleBoxFlat.new()
-	frame_style.bg_color = Color(0.96, 0.94, 0.92, 1.0)  # やや温かみのある白
+	frame_style.bg_color = Color(0.96, 0.94, 0.92, 1.0)
 	frame_style.set_corner_radius_all(2)
 	frame.add_theme_stylebox_override("panel", frame_style)
 	container.add_child(frame)
 
-	# ── フレーム表示用 TextureRect ──
+	# ── フレーム表示用 TextureRect（AtlasTexture で領域切り替え） ──
 	var tex_rect := TextureRect.new()
 	tex_rect.position = Vector2(-FRAME_W / 2 + BORDER_SIDE, -FRAME_H / 2 + BORDER_SIDE)
 	tex_rect.size = Vector2(PHOTO_W, PHOTO_H)
 	tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	tex_rect.texture = null  # ストリーミング再生で上書きするため初期値は空
 	container.add_child(tex_rect)
+
+	# AtlasTexture を1つ作り、region を切り替えて再生
+	var atlas := AtlasTexture.new()
+	atlas.atlas = sheet_tex
+	tex_rect.texture = atlas
 
 	# ── 下部テキスト（手書き風メモ） ──
 	var memo := Label.new()
@@ -482,18 +492,13 @@ func _polaroid_video(video_path: String) -> void:
 	tw_in.tween_property(container, "modulate:a", 1.0, 0.3)
 	await tw_in.finished
 
-	# ── フレームアニメーション再生（1枚ずつロード＋毎フレームyield でブラウザをブロックしない） ──
+	# ── SpriteSheetアニメーション再生（AtlasTexture.region を切り替えるだけ） ──
 	var frame_dur := 1.0 / FPS
-	var stream_idx := 1
-	while true:
-		var path := "%s/frame_%03d.png" % [frames_dir, stream_idx]
-		if not ResourceLoader.exists(path):
-			break
-		var tex := ResourceLoader.load(path, "Texture2D") as Texture2D
-		if tex:
-			tex_rect.texture = tex
+	for i in TOTAL_FRAMES:
+		var col := i % SHEET_COLS
+		var row := i / SHEET_COLS
+		atlas.region = Rect2(col * CELL_W, row * CELL_H, CELL_W, CELL_H)
 		await get_tree().create_timer(frame_dur).timeout
-		stream_idx += 1
 
 	# 少し余韻
 	await get_tree().create_timer(0.5).timeout
