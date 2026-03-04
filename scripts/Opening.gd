@@ -26,6 +26,7 @@ var _title_ready   : bool  = false
 var _skipped       : bool  = false
 var _video_player  : VideoStreamPlayer = null
 var _video_started : bool  = false
+var _video_wait    : float = 0.0    # 動画開始待ちタイマー（フリーズ防止）
 var _skip_btn      : Button = null
 
 # ── タイトル画面アニメーション用 ──
@@ -56,6 +57,12 @@ func _process(delta: float) -> void:
 		elif _video_started and not _video_player.is_playing():
 			_phase = Phase.PROLOGUE
 			_on_video_finished()
+		elif not _video_started:
+			# 動画が開始しない場合のタイムアウト（Web環境でデコード失敗時のフリーズ防止）
+			_video_wait += delta
+			if _video_wait >= 3.0:
+				push_warning("Opening: video failed to start — skipping")
+				_skip_video()
 		return
 	# ── タイトル画面アニメーション ──
 	if _phase == Phase.TITLE:
@@ -229,6 +236,7 @@ func _play_video() -> void:
 	add_child(_video_player)
 	_video_player.play()
 	_video_started = false
+	_video_wait    = 0.0
 	_create_skip_button()
 
 
