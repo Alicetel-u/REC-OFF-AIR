@@ -42,5 +42,5 @@ nul
 # Temp audio extraction folders
 assets/audio/sfx/_tmp*/
 
-# Voice recordings (ボイス音声ファイル・公開リポジトリに含めない)
-assets/audio/voice/
+# Voice recordings (large files excluded — ch01 is tracked)
+# assets/audio/voice/
