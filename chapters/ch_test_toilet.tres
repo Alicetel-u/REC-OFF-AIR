@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ChapterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ChapterData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+chapter_id = "ch_test_toilet"
+chapter_name = "公衆トイレ（テスト）"
+location_text = "霧原村　公衆トイレ"
+date_text = "2026/02/25  00:30"
+stage_scene_path = "res://assets/models/public_toilet/PublicToilet.tscn"
+player_spawn = Vector3(0, 1, 5.5)
+item_positions = PackedVector3Array()
+exit_position = Vector3(0, 1, 6)
+ambient_light_energy = 0.01
+directional_light_energy = 0.0
+background_color = Color(0.05, 0.05, 0.08, 1)
+fog_enabled = false
+fog_density = 0.0
+monologue_lines = PackedStringArray()
+next_chapter_id = ""

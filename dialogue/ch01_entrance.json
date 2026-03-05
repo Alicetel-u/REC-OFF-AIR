@@ -675,7 +675,7 @@
 		},
 		{
 			"type": "rot_y",
-			"target": -1.57,
+			"target": 0,
 			"dur": 0.01
 		},
 		{
@@ -764,7 +764,7 @@
 		},
 		{
 			"type": "pos_z",
-			"target": 15,
+			"target": -1,
 			"dur": 8,
 			"id": "walk_inside"
 		},

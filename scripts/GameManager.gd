@@ -32,6 +32,8 @@ var chapter_order: Array[String] = [
 	"res://chapters/ch01_haison_souko.tres",       # CP3: 廃倉庫
 	"res://chapters/ch04_haison_naibu_event.tres", # CP4: 廃村内部（イベント）
 	"res://chapters/ch05_haison_dasshutsu.tres",   # CP5: 脱出 → エンディング
+	"res://chapters/ch_test_yashiki.tres",         # CP6: 廃屋敷（テスト）
+	"res://chapters/ch_test_toilet.tres",          # CP7: 公衆トイレ（テスト）
 ]
 
 signal item_collected(count: int, total: int)

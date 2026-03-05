@@ -8,10 +8,10 @@ extends Node
 ##   SoundManager.play_door_creak()
 
 # チャプター別の足音カテゴリ（chapter_index → フォルダ名）
-const STEP_CATS : Array = ["concrete", "wooden", "wooden", "wooden", "gravel"]
+const STEP_CATS : Array = ["concrete", "wooden", "wooden", "wooden", "gravel", "wooden", "concrete"]
 
 # チャプター別のアンビエント音量 dB
-const AMBIENT_VOLS : Array = [-8.0, -14.0, -12.0, -12.0, -6.0]
+const AMBIENT_VOLS : Array = [-8.0, -14.0, -12.0, -12.0, -6.0, -12.0, -14.0]
 
 var _ambient : AudioStreamPlayer = null
 var _step    : AudioStreamPlayer = null
@@ -225,10 +225,16 @@ func play_bgm(path: String, vol_db: float = -10.0) -> void:
 func stop_bgm(fade_sec: float = 1.0) -> void:
 	if not _bgm.playing:
 		return
+	if fade_sec <= 0.0:
+		_bgm.stop()
+		return
 	var tw := create_tween()
+	var target_vol := _bgm.volume_db
 	tw.tween_property(_bgm, "volume_db", -60.0, fade_sec)
-	await tw.finished
-	_bgm.stop()
+	tw.tween_callback(func() -> void:
+		_bgm.stop()
+		_bgm.volume_db = target_vol
+	)
 
 
 ## ボイス再生中かどうかを返す

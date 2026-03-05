@@ -86,6 +86,8 @@ func run_from_path(json_path: String) -> void:
 
 	var idx := 0
 	while idx < events.size():
+		if not is_inside_tree():
+			return
 		var ev : Dictionary = events[idx]
 		var t : String = ev.get("type", "")
 		match t:
@@ -111,12 +113,15 @@ func run_from_path(json_path: String) -> void:
 
 			"sleep":
 				## スキップ・ボイス待機を無視する固定待機（横見演出など）
-				await get_tree().create_timer(float(ev.get("sec", 1.0))).timeout
+				if is_inside_tree():
+					await get_tree().create_timer(float(ev.get("sec", 1.0))).timeout
 
 			"wait":
 				if not _skip_to_next_say:
 					var _sec := float(ev.get("sec", 0.5))
 					# play() 直後は playing フラグが立つまで1フレーム掛かる
+					if not is_inside_tree():
+						continue
 					await get_tree().process_frame
 					# ボイス再生中なら先にボイスを待ち、残り時間のみ追加待機
 					if SoundManager.is_voice_playing():
@@ -321,6 +326,8 @@ func _flashlight_on() -> void:
 func _await_tween_safe(tw: Tween, max_sec: float) -> void:
 	var elapsed := 0.0
 	while tw and tw.is_valid() and tw.is_running():
+		if not is_inside_tree():
+			return
 		await get_tree().process_frame
 		elapsed += get_process_delta_time()
 		if elapsed >= max_sec:
@@ -335,6 +342,8 @@ func _skippable_wait(sec: float) -> void:
 		return
 	var t_end := Time.get_ticks_msec() + int(sec * 1000)
 	while Time.get_ticks_msec() < t_end and not _skip_to_next_say:
+		if not is_inside_tree():
+			return
 		await get_tree().process_frame
 
 
@@ -380,6 +389,8 @@ func _pos_x(target_x: float, dur: float) -> Tween:
 
 
 func _set_viewers(count: int) -> void:
+	if not is_inside_tree():
+		return
 	var chrome := get_tree().get_first_node_in_group("youtube_chrome")
 	if not is_instance_valid(chrome):
 		return
