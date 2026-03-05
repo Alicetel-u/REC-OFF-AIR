@@ -370,7 +370,7 @@ async function loadFileList(){
     if(sel.options.length)await loadFile(sel.options[0].value);else{setStatus('JSONなし');$('#loadingView').innerHTML='<div class="empty-state">JSONがありません</div>';}
   }catch(e){setStatus('接続エラー');$('#loadingView').innerHTML='<div class="empty-state">接続失敗<br><br><button class="btn btn-save" onclick="document.getElementById(\'fileInput\').click()">開く</button></div>';}
 }
-async function loadFile(f){fname=f;setStatus('読み込み中...');try{const r=await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BR}/${DIR}/${f}`);if(!r.ok)throw new Error(r.status);applyData(await r.json(),f)}catch(e){setStatus('エラー: '+e.message)}}
+async function loadFile(f){fname=f;setStatus('読み込み中...');try{const r=await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BR}/${DIR}/${f}`);if(!r.ok)throw new Error(r.status);applyData(await r.json(),f);return true}catch(e){setStatus('エラー: '+e.message);return false}}
 function applyData(d,f){
   data=d;dirty=false;undoStack=[];redoStack=[];fname=f;$('#chapterName').textContent=data.chapter||'';
   const lv=$('#loadingView');if(lv)lv.remove();
@@ -1069,9 +1069,12 @@ function bindAll(){
       pe.classList.toggle('visible',tab==='prologue');
       if(tab==='prologue'){
         if(!isPrologueData()){
-          try{await loadFile('opening.json');$('#fileSel').value='opening.json'}catch(e){}
+          const ok=await loadFile('opening.json');
+          if(ok)$('#fileSel').value='opening.json';
+          else renderPrologue();
+        }else{
+          renderPrologue();
         }
-        renderPrologue();
       }
     });
   });
@@ -1101,7 +1104,7 @@ function isPrologueData(){return data&&data.chapter==='opening'}
 
 function renderPrologue(){
   const pe=$('#prologueEditor');pe.innerHTML='';
-  if(!data||!isPrologueData()){pe.innerHTML='<div style="color:var(--tx2);padding:40px;text-align:center">opening.json を選択してください</div>';return}
+  if(!data||!isPrologueData()){pe.innerHTML='<div style="color:var(--tx2);padding:40px;text-align:center">opening.json を読み込めません<br><br><button class="btn btn-save" onclick="document.getElementById(\'fileInput\').click()">ローカルファイルを開く</button></div>';return}
   PRO_SECTIONS.forEach(sec=>{
     const div=document.createElement('div');div.className='pro-section';
     const secData=data[sec.key]||{};
