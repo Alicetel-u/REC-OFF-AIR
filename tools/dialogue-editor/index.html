@@ -6,42 +6,46 @@
 <title>REC:OFF:AIR セリフエディタ</title>
 <style>
 :root {
-  --bg0: #0a0e17; --bg1: #111827; --bg2: #1e293b; --bg3: #334155;
-  --tx0: #f1f5f9; --tx1: #94a3b8; --tx2: #64748b;
-  --accent: #ef4444; --accent-g: linear-gradient(135deg, #ef4444, #f97316);
-  --radius: 10px;
-  --font: 'Segoe UI', 'Meiryo', 'Noto Sans JP', system-ui, sans-serif;
-  --c-say: #f97316; --c-chat: #3b82f6; --c-wait: #64748b; --c-move: #22c55e;
-  --c-effect: #a855f7; --c-audio: #06b6d4; --c-media: #ec4899;
-  --c-yt: #ef4444; --c-branch: #eab308; --c-game: #10b981; --c-comment: #475569;
+  --bg0: #060e1e; --bg1: #0c1a35; --bg2: #122247; --bg3: #1e3a6e;
+  --tx0: #eef0f5; --tx1: #a8b4cc; --tx2: #6b7a99;
+  --accent: #d4a837; --accent-g: linear-gradient(135deg, #d4a837, #f0d060);
+  --radius: 8px;
+  --font: 'Meiryo', 'Noto Sans JP', 'Segoe UI', system-ui, sans-serif;
+  --c-say: #e8a430; --c-chat: #4a8fd4; --c-wait: #6b7a99; --c-move: #3dae6e;
+  --c-effect: #9b6bd4; --c-audio: #3db8b8; --c-media: #d46ba8;
+  --c-yt: #c43c3c; --c-branch: #c4a832; --c-game: #3dad7e; --c-comment: #4a5a78;
   --tl-w: 64px;
+  --ff-border-outer: #1a2a50; --ff-border-inner: rgba(140,170,220,.35);
+  --ff-panel-bg: linear-gradient(180deg, #0e1f42 0%, #0a1630 50%, #0e1f42 100%);
+  --ff-glow: rgba(100,140,220,.15);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
 html { font-size: 16px }
 body { font-family: var(--font); background: var(--bg0); color: var(--tx0); height: 100vh; display: flex; flex-direction: column; overflow: hidden }
 button { cursor: pointer; font-family: var(--font) }
 input, select, textarea { font-family: var(--font); font-size: inherit }
-::-webkit-scrollbar { width: 6px }
-::-webkit-scrollbar-track { background: transparent }
-::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px }
-::selection { background: var(--accent); color: #fff }
+::-webkit-scrollbar { width: 8px }
+::-webkit-scrollbar-track { background: rgba(10,22,48,.5) }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #1e3a6e, #2a4a80); border: 1px solid rgba(140,170,220,.15); border-radius: 4px }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #2a4a80, #3a5a90) }
+::selection { background: rgba(212,168,55,.4); color: #fff }
 
 /* ── ヘッダー ── */
-.header { background: var(--bg1); padding: 0 20px; display: flex; align-items: center; height: 54px; border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0; gap: 12px }
+.header { background: var(--ff-panel-bg); padding: 0 20px; display: flex; align-items: center; height: 54px; border-bottom: 2px solid var(--ff-border-outer); box-shadow: inset 0 -1px 0 var(--ff-border-inner); flex-shrink: 0; gap: 12px }
 .logo { font-size: 1.25rem; font-weight: 800; background: var(--accent-g); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -.5px; white-space: nowrap }
-.header select { background: var(--bg2); color: var(--tx0); border: 1px solid var(--bg3); border-radius: 6px; padding: 6px 12px; font-size: 1rem }
+.header select { background: rgba(0,0,0,.3); color: var(--tx0); border: 1px solid var(--ff-border-inner); border-radius: 4px; padding: 6px 12px; font-size: 1rem }
 .header select:focus { outline: none; border-color: var(--accent) }
 .chapter-name { color: var(--tx2); font-size: .95rem }
 .spacer { flex: 1 }
-.badge { background: rgba(249,115,22,.15); color: var(--c-say); padding: 4px 14px; border-radius: 16px; font-size: .9rem; font-weight: 700; white-space: nowrap }
-.btn { padding: 8px 16px; border: 1px solid var(--bg3); border-radius: 6px; background: var(--bg2); color: var(--tx1); font-size: .95rem; transition: all .12s; white-space: nowrap }
-.btn:hover { background: var(--bg3); color: var(--tx0) }
-.btn-save { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700 }
+.badge { background: rgba(232,164,48,.15); color: var(--c-say); padding: 4px 14px; border-radius: 16px; font-size: .9rem; font-weight: 700; white-space: nowrap }
+.btn { padding: 8px 16px; border: 1px solid #2a4a80; border-radius: 4px; background: linear-gradient(180deg, #1e3a6e 0%, #122247 100%); color: var(--tx1); font-size: .95rem; transition: all .12s; white-space: nowrap; box-shadow: inset 0 1px 0 rgba(140,170,220,.2), inset 0 -1px 0 rgba(0,0,0,.3) }
+.btn:hover { background: linear-gradient(180deg, #2a4a80 0%, #1e3a6e 100%); color: #f0d060; box-shadow: inset 0 1px 0 rgba(140,170,220,.3), 0 0 8px rgba(212,168,55,.2) }
+.btn-save { background: linear-gradient(180deg, #c4952a 0%, #a07820 100%); border-color: #d4a837; color: #fff; font-weight: 700; box-shadow: inset 0 1px 0 rgba(255,255,255,.2) }
 .btn-save:hover { filter: brightness(1.15) }
 .filter-group { display: flex; gap: 4px }
 .btn-ft { padding: 3px 12px; font-size: .85rem; border-radius: 999px; border: 1px solid var(--bg3); background: transparent; color: var(--tx2); cursor: pointer; transition: all .15s }
-.btn-ft:hover { background: var(--bg3); color: var(--tx0) }
-.btn-ft.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700 }
+.btn-ft:hover { background: var(--bg3); color: #f0d060 }
+.btn-ft.active { background: linear-gradient(180deg, #d4a837, #a07820); border-color: #d4a837; color: #fff; font-weight: 700 }
 
 /* ── タイムラインコンテナ ── */
 .tl-scroll { flex: 1; overflow-y: auto; padding: 12px 16px 100px; display: flex; justify-content: center }
@@ -59,8 +63,8 @@ input, select, textarea { font-family: var(--font); font-size: inherit }
 
 /* 中: 縦線＋ドット */
 .tl-line { width: 28px; flex-shrink: 0; position: relative; display: flex; align-items: flex-start; justify-content: center; padding-top: 12px }
-.tl-line::before { content:''; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: var(--bg3); transform: translateX(-50%) }
-.tl-dot { width: 12px; height: 12px; border-radius: 50%; z-index: 1; flex-shrink: 0; border: 2px solid var(--bg0) }
+.tl-line::before { content:''; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: linear-gradient(180deg, transparent, var(--ff-border-inner), transparent); transform: translateX(-50%) }
+.tl-dot { width: 10px; height: 10px; border-radius: 2px; z-index: 1; flex-shrink: 0; border: 1.5px solid rgba(140,170,220,.3); transform: rotate(45deg) }
 
 /* 右: ボックス */
 .tl-content { flex: 1; padding: 3px 0 3px 32px; min-width: 0 }
@@ -69,7 +73,7 @@ input, select, textarea { font-family: var(--font); font-size: inherit }
 .tl-section { display: flex; align-items: center; margin: 14px 0 6px }
 .tl-section .tl-time { padding-top: 0; align-items: center }
 .tl-section .tl-line { align-items: center; padding-top: 0 }
-.tl-section-bar { flex: 1; padding: 6px 16px; background: var(--bg2); border: 1px solid rgba(255,255,255,.06); border-radius: 6px; margin-left: 10px; text-align: center }
+.tl-section-bar { flex: 1; padding: 6px 16px; background: rgba(14,31,66,.8); border: 1px solid var(--ff-border-inner); border-radius: 6px; margin-left: 10px; text-align: center }
 .tl-section-input { background: transparent; border: none; color: var(--tx1); font-weight: 700; font-size: 1.05rem; text-align: center; width: 100%; outline: none; letter-spacing: .3px }
 .tl-section-input::placeholder { color: var(--tx2) }
 
@@ -79,11 +83,13 @@ input, select, textarea { font-family: var(--font); font-size: inherit }
 .ev-add-top { top: -11px }
 .ev-add-bottom { bottom: -11px; top: auto }
 .ev-box:hover .ev-add-btn, .tl-section:hover .ev-add-btn { opacity: 1 }
-.ev-add-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(239,68,68,.12) }
+.ev-add-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(212,168,55,.08) }
 
 /* ══════════ ボックス共通 ══════════ */
-.ev-box { border-radius: 10px; padding: 10px 14px; position: relative; border-left: 5px solid; transition: box-shadow .12s; animation: fadeIn .15s ease }
-.ev-box:hover { box-shadow: 0 2px 12px rgba(0,0,0,.25) }
+.ev-box { border-radius: var(--radius); padding: 10px 14px; position: relative; border-left: 4px solid; transition: box-shadow .12s; animation: fadeIn .15s ease; box-shadow: inset 0 0 0 1px var(--ff-border-inner), 0 2px 8px rgba(0,0,0,.3) }
+.ev-box-inner { display: flex; gap: 0 }
+.ev-box-main { flex: 1; min-width: 0 }
+.ev-box:hover { box-shadow: inset 0 0 0 1px rgba(140,170,220,.5), 0 2px 12px rgba(0,0,0,.4), 0 0 12px var(--ff-glow) }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-3px) } to { opacity: 1; transform: translateY(0) } }
 
 .ev-head { display: flex; align-items: center; gap: 6px; min-height: 28px }
@@ -93,118 +99,118 @@ input, select, textarea { font-family: var(--font); font-size: inherit }
 .ev-grip:hover { color: rgba(255,255,255,.4) }
 .ev-del { width: 26px; height: 26px; border: none; border-radius: 6px; background: transparent; color: rgba(255,255,255,.15); font-size: 1rem; display: flex; align-items: center; justify-content: center; opacity: 0; transition: all .1s; cursor: pointer; flex-shrink: 0 }
 .ev-box:hover .ev-del { opacity: 1 }
-.ev-del:hover { background: rgba(239,68,68,.2); color: var(--accent) }
+.ev-del:hover { background: rgba(196,60,60,.2); color: var(--c-yt) }
 
 /* フィールド */
 .ev-fields { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: center }
 .ev-field { display: flex; align-items: center; gap: 5px }
 .ev-field-label { font-size: .8rem; color: rgba(255,255,255,.35); flex-shrink: 0; text-transform: uppercase; letter-spacing: .3px }
-.ev-input { background: rgba(0,0,0,.2); border: 1px solid rgba(255,255,255,.06); color: var(--tx0); border-radius: 5px; padding: 4px 8px; font-size: .95rem; font-family: 'Consolas','SF Mono',monospace; transition: border-color .1s }
-.ev-input:focus { outline: none; border-color: rgba(255,255,255,.25) }
+.ev-input { background: rgba(0,0,0,.3); border: 1px solid rgba(140,170,220,.15); color: var(--tx0); border-radius: 3px; padding: 4px 8px; font-size: .95rem; font-family: 'Consolas','SF Mono',monospace; transition: border-color .1s }
+.ev-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 6px rgba(212,168,55,.2) }
 select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,.4)'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px }
 .ev-input-num { width: 72px; text-align: center }
 .ev-input-short { width: 100px }
 .ev-input-mid { width: 160px }
 .ev-input-wide { width: 100%; font-family: var(--font) }
-.ev-textarea { width: 100%; background: rgba(0,0,0,.18); border: 1px solid rgba(255,255,255,.05); color: var(--tx0); border-radius: 6px; padding: 10px 12px; font-size: 1rem; line-height: 1.7; resize: none; overflow: hidden; min-height: 40px; margin-top: 6px }
-.ev-textarea:focus { outline: none; border-color: rgba(255,255,255,.18) }
+.ev-textarea { width: 100%; background: rgba(0,0,0,.25); border: 1px solid rgba(140,170,220,.1); color: var(--tx0); border-radius: 4px; padding: 10px 12px; font-size: 1rem; line-height: 1.7; resize: none; overflow: hidden; min-height: 40px; margin-top: 6px }
+.ev-textarea:focus { outline: none; border-color: rgba(212,168,55,.4) }
 .ev-textarea::placeholder { color: rgba(255,255,255,.15) }
 
 /* 読み */
 .reading-toggle { background: none; border: none; color: var(--c-effect); font-size: .85rem; padding: 4px 0; cursor: pointer; margin-top: 4px }
 .reading-toggle:hover { text-decoration: underline }
-.field-reading { width: 100%; background: rgba(168,85,247,.04); border: 1px solid rgba(168,85,247,.1); color: var(--tx0); border-radius: 5px; padding: 8px 10px; font-size: .95rem; line-height: 1.6; resize: none; overflow: hidden; min-height: 34px; margin-top: 4px }
+.field-reading { width: 100%; background: rgba(155,107,212,.04); border: 1px solid rgba(155,107,212,.1); color: var(--tx0); border-radius: 5px; padding: 8px 10px; font-size: .95rem; line-height: 1.6; resize: none; overflow: hidden; min-height: 34px; margin-top: 4px }
 .field-reading:focus { outline: none; border-color: var(--c-effect) }
 
-/* ── カテゴリ色 ── */
-.ev-say      { background: rgba(249,115,22,.06); border-color: var(--c-say) }
-.ev-say .ev-type-badge { background: rgba(249,115,22,.2); color: var(--c-say) }
-.ev-say_clear { background: rgba(100,116,139,.05); border-color: var(--c-wait) }
-.ev-say_clear .ev-type-badge { background: rgba(100,116,139,.2); color: var(--c-wait) }
+/* ── カテゴリ色（ジュエルトーン） ── */
+.ev-say      { background: linear-gradient(180deg, rgba(232,164,48,.08) 0%, rgba(10,22,48,.95) 100%); border-color: var(--c-say) }
+.ev-say .ev-type-badge { background: rgba(232,164,48,.15); color: var(--c-say) }
+.ev-say_clear { background: linear-gradient(180deg, rgba(107,122,153,.06) 0%, rgba(10,22,48,.95) 100%); border-color: var(--c-wait) }
+.ev-say_clear .ev-type-badge { background: rgba(107,122,153,.2); color: var(--c-wait) }
 
-.ev-chat     { background: rgba(59,130,246,.05); border-color: var(--c-chat) }
-.ev-chat .ev-type-badge { background: rgba(59,130,246,.2); color: var(--c-chat) }
-.ev-superchat { background: rgba(234,179,8,.05); border-color: var(--c-branch) }
-.ev-superchat .ev-type-badge { background: rgba(234,179,8,.2); color: var(--c-branch) }
+.ev-chat     { background: linear-gradient(180deg, rgba(74,143,212,.06) 0%, rgba(10,22,48,.95) 100%); border-color: var(--c-chat) }
+.ev-chat .ev-type-badge { background: rgba(74,143,212,.2); color: var(--c-chat) }
+.ev-superchat { background: linear-gradient(180deg, rgba(196,168,50,.06) 0%, rgba(10,22,48,.95) 100%); border-color: var(--c-branch) }
+.ev-superchat .ev-type-badge { background: rgba(196,168,50,.2); color: var(--c-branch) }
 
-.ev-wait     { background: rgba(100,116,139,.03); border-color: var(--c-wait) }
-.ev-wait .ev-type-badge { background: rgba(100,116,139,.2); color: var(--c-wait) }
-.ev-sleep    { background: rgba(239,68,68,.04); border-color: var(--accent) }
-.ev-sleep .ev-type-badge { background: rgba(239,68,68,.2); color: var(--accent) }
+.ev-wait     { background: linear-gradient(180deg, rgba(107,122,153,.04) 0%, rgba(10,22,48,.95) 100%); border-color: var(--c-wait) }
+.ev-wait .ev-type-badge { background: rgba(107,122,153,.2); color: var(--c-wait) }
+.ev-sleep    { background: linear-gradient(180deg, rgba(196,60,60,.06) 0%, rgba(10,22,48,.95) 100%); border-color: var(--accent) }
+.ev-sleep .ev-type-badge { background: rgba(212,168,55,.2); color: var(--accent) }
 
-.ev-move     { background: rgba(34,197,94,.04); border-color: var(--c-move) }
-.ev-move .ev-type-badge { background: rgba(34,197,94,.2); color: var(--c-move) }
+.ev-move     { background: linear-gradient(180deg, rgba(61,174,110,.05) 0%, rgba(10,22,48,.95) 100%); border-color: var(--c-move) }
+.ev-move .ev-type-badge { background: rgba(61,174,110,.2); color: var(--c-move) }
 
-.ev-effect   { background: rgba(168,85,247,.04); border-color: var(--c-effect) }
-.ev-effect .ev-type-badge { background: rgba(168,85,247,.2); color: var(--c-effect) }
+.ev-effect   { background: linear-gradient(180deg, rgba(155,107,212,.05) 0%, rgba(10,22,48,.95) 100%); border-color: var(--c-effect) }
+.ev-effect .ev-type-badge { background: rgba(155,107,212,.2); color: var(--c-effect) }
 
-.ev-audio    { background: rgba(6,182,212,.04); border-color: var(--c-audio) }
-.ev-audio .ev-type-badge { background: rgba(6,182,212,.2); color: var(--c-audio) }
+.ev-audio    { background: linear-gradient(180deg, rgba(61,184,184,.05) 0%, rgba(10,22,48,.95) 100%); border-color: var(--c-audio) }
+.ev-audio .ev-type-badge { background: rgba(61,184,184,.2); color: var(--c-audio) }
 
-.ev-media    { background: rgba(236,72,153,.04); border-color: var(--c-media) }
-.ev-media .ev-type-badge { background: rgba(236,72,153,.2); color: var(--c-media) }
+.ev-media    { background: linear-gradient(180deg, rgba(212,107,168,.05) 0%, rgba(10,22,48,.95) 100%); border-color: var(--c-media) }
+.ev-media .ev-type-badge { background: rgba(212,107,168,.2); color: var(--c-media) }
 
-.ev-yt       { background: rgba(239,68,68,.04); border-color: var(--c-yt) }
-.ev-yt .ev-type-badge { background: rgba(239,68,68,.2); color: var(--c-yt) }
+.ev-yt       { background: linear-gradient(180deg, rgba(196,60,60,.05) 0%, rgba(10,22,48,.95) 100%); border-color: var(--c-yt) }
+.ev-yt .ev-type-badge { background: rgba(196,60,60,.2); color: var(--c-yt) }
 
-.ev-branch   { background: rgba(234,179,8,.04); border-color: var(--c-branch) }
-.ev-branch .ev-type-badge { background: rgba(234,179,8,.2); color: var(--c-branch) }
+.ev-branch   { background: linear-gradient(180deg, rgba(196,168,50,.05) 0%, rgba(10,22,48,.95) 100%); border-color: var(--c-branch) }
+.ev-branch .ev-type-badge { background: rgba(196,168,50,.2); color: var(--c-branch) }
 
-.ev-game     { background: rgba(16,185,129,.04); border-color: var(--c-game) }
-.ev-game .ev-type-badge { background: rgba(16,185,129,.2); color: var(--c-game) }
+.ev-game     { background: linear-gradient(180deg, rgba(61,173,126,.05) 0%, rgba(10,22,48,.95) 100%); border-color: var(--c-game) }
+.ev-game .ev-type-badge { background: rgba(61,173,126,.2); color: var(--c-game) }
 
 /* choice */
 .choice-list { margin-top: 8px; display: flex; flex-direction: column; gap: 4px }
-.choice-item { background: rgba(234,179,8,.05); border: 1px solid rgba(234,179,8,.1); border-radius: 5px; padding: 6px 10px; font-size: .9rem }
+.choice-item { background: rgba(196,168,50,.05); border: 1px solid rgba(196,168,50,.1); border-radius: 5px; padding: 6px 10px; font-size: .9rem }
 .choice-item-target { color: var(--c-branch); font-family: monospace; font-size: .82rem; margin-top: 2px }
 .route-list { margin-top: 8px; display: flex; flex-direction: column; gap: 3px }
 .route-item { font-size: .9rem; color: var(--c-branch); font-family: monospace }
 
 /* utype */
 .utype-badge { font-size: .75rem; padding: 2px 7px; border-radius: 8px; font-weight: 700 }
-.utype-moderator { background: rgba(34,197,94,.15); color: var(--c-move) }
-.utype-member { background: rgba(59,130,246,.15); color: var(--c-chat) }
-.utype-owner { background: rgba(239,68,68,.15); color: var(--accent) }
+.utype-moderator { background: rgba(61,174,110,.15); color: var(--c-move) }
+.utype-member { background: rgba(74,143,212,.15); color: var(--c-chat) }
+.utype-owner { background: rgba(196,60,60,.15); color: var(--c-yt) }
 
 /* ── 追加メニュー ── */
-.add-menu { display: none; position: fixed; z-index: 200; background: var(--bg1); border: 1px solid var(--bg3); border-radius: var(--radius); padding: 6px 0; min-width: 200px; box-shadow: 0 8px 32px rgba(0,0,0,.6); max-height: 420px; overflow-y: auto }
+.add-menu { display: none; position: fixed; z-index: 200; background: var(--ff-panel-bg); border: 2px solid var(--ff-border-outer); border-radius: var(--radius); padding: 6px 0; min-width: 200px; box-shadow: inset 0 0 0 1px var(--ff-border-inner), 0 8px 32px rgba(0,0,0,.7); max-height: 420px; overflow-y: auto }
 .add-menu.show { display: block }
 .add-menu-cat { font-size: .78rem; color: var(--tx2); padding: 8px 14px 3px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px }
-.add-menu-item { padding: 6px 14px; font-size: .95rem; color: var(--tx1); cursor: pointer; transition: background .1s }
-.add-menu-item:hover { background: var(--bg2); color: var(--tx0) }
+.add-menu-item { padding: 6px 14px; font-size: .95rem; color: var(--tx1); cursor: pointer; transition: all .1s }
+.add-menu-item:hover { background: rgba(212,168,55,.1); color: #f0d060 }
 
 /* ── FAB ── */
-.fab { position: fixed; bottom: 44px; right: 24px; background: var(--accent-g); color: #fff; border: none; border-radius: 28px; padding: 12px 26px; font-size: 1rem; font-weight: 700; box-shadow: 0 4px 24px rgba(239,68,68,.35); cursor: pointer; z-index: 50; transition: transform .15s }
+.fab { position: fixed; bottom: 44px; right: 24px; background: linear-gradient(135deg, #d4a837, #a07820); color: #fff; border: none; border-radius: 28px; padding: 12px 26px; font-size: 1rem; font-weight: 700; box-shadow: 0 4px 24px rgba(212,168,55,.3); cursor: pointer; z-index: 50; transition: transform .15s }
 .fab:hover { transform: translateY(-2px) }
 
 /* ── トースト ── */
-.toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg2); color: var(--tx0); padding: 10px 24px; border-radius: var(--radius); font-size: 1rem; opacity: 0; transition: all .3s; pointer-events: none; z-index: 999; border: 1px solid rgba(255,255,255,.1) }
+.toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ff-panel-bg); color: var(--tx0); padding: 10px 24px; border-radius: var(--radius); font-size: 1rem; opacity: 0; transition: all .3s; pointer-events: none; z-index: 999; border: 2px solid var(--ff-border-outer); box-shadow: inset 0 0 0 1px var(--ff-border-inner), 0 4px 16px rgba(0,0,0,.5) }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0) }
 
 /* ── フッター ── */
-.footer { background: var(--bg1); border-top: 1px solid rgba(255,255,255,.06); padding: 4px 20px; display: flex; align-items: center; gap: 12px; font-size: .85rem; color: var(--tx2); flex-shrink: 0; height: 32px }
-.footer .dirty { color: #eab308; font-weight: 600 }
+.footer { background: var(--ff-panel-bg); border-top: 2px solid var(--ff-border-outer); box-shadow: inset 0 1px 0 var(--ff-border-inner); padding: 4px 20px; display: flex; align-items: center; gap: 12px; font-size: .85rem; color: var(--tx2); flex-shrink: 0; height: 32px }
+.footer .dirty { color: #f0d060; font-weight: 600 }
 
 /* ── 選択状態 ── */
-.ev-box.selected, .tl-section.selected { outline: 2px solid #60a5fa; outline-offset: 1px; box-shadow: 0 0 12px rgba(96,165,250,.25) }
+.ev-box.selected, .tl-section.selected { outline: 2px solid #d4a837; outline-offset: 1px; box-shadow: 0 0 16px rgba(212,168,55,.3) }
 .ev-box.selected .ev-del { opacity: 1 }
 
 /* ── 選択ツールバー ── */
 .sel-toolbar {
   display: none; position: fixed; bottom: 44px; left: 50%; transform: translateX(-50%);
-  background: var(--bg1); border: 1px solid rgba(96,165,250,.3); border-radius: 12px;
-  padding: 6px 10px; gap: 6px; z-index: 60; box-shadow: 0 6px 24px rgba(0,0,0,.5);
+  background: var(--ff-panel-bg); border: 2px solid var(--ff-border-outer); border-radius: 12px;
+  padding: 6px 10px; gap: 6px; z-index: 60; box-shadow: inset 0 0 0 1px var(--ff-border-inner), 0 6px 24px rgba(0,0,0,.6);
   align-items: center;
 }
 .sel-toolbar.show { display: flex }
-.sel-toolbar .sel-count { font-size: .85rem; color: #60a5fa; font-weight: 700; padding: 0 8px; white-space: nowrap }
+.sel-toolbar .sel-count { font-size: .85rem; color: #d4a837; font-weight: 700; padding: 0 8px; white-space: nowrap }
 .sel-toolbar .btn { font-size: .85rem; padding: 5px 12px }
 
 /* ── 詳細パネル ── */
 .detail-panel {
   display: none; position: fixed; top: 54px; right: 0; bottom: 32px; width: 340px;
-  background: var(--bg1); border-left: 1px solid rgba(255,255,255,.08);
-  overflow-y: auto; z-index: 80; padding: 16px; box-shadow: -4px 0 24px rgba(0,0,0,.3);
+  background: var(--ff-panel-bg); border-left: 2px solid var(--ff-border-outer);
+  overflow-y: auto; z-index: 80; padding: 16px; box-shadow: inset 1px 0 0 var(--ff-border-inner), -4px 0 24px rgba(0,0,0,.4);
 }
 .detail-panel.show { display: block }
 .detail-panel h3 { font-size: 1rem; color: var(--tx0); margin-bottom: 12px; display: flex; align-items: center; gap: 8px }
@@ -216,7 +222,7 @@ select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; b
   width: 100%; background: rgba(0,0,0,.2); border: 1px solid rgba(255,255,255,.08);
   color: var(--tx0); border-radius: 5px; padding: 6px 10px; font-size: .95rem;
 }
-.detail-field input:focus, .detail-field textarea:focus { outline: none; border-color: rgba(96,165,250,.4) }
+.detail-field input:focus, .detail-field textarea:focus { outline: none; border-color: rgba(212,168,55,.4) }
 .detail-field textarea { resize: vertical; min-height: 60px; line-height: 1.6; font-family: var(--font) }
 .detail-json { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.06) }
 .detail-json pre { font-size: .8rem; color: var(--tx2); white-space: pre-wrap; background: rgba(0,0,0,.15); padding: 8px; border-radius: 5px; max-height: 200px; overflow-y: auto }
@@ -226,29 +232,36 @@ select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; b
 .spinner { width: 32px; height: 32px; border: 3px solid var(--bg3); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite }
 @keyframes spin { to { transform: rotate(360deg) } }
 
-/* ── 画像添付 ── */
-.ev-img-area { margin-top: 8px; position: relative }
-.ev-img-drop { border: 2px dashed rgba(255,255,255,.08); border-radius: 8px; padding: 8px; text-align: center; color: var(--tx2); font-size: .82rem; cursor: pointer; transition: all .15s; display: none }
-.ev-box:hover .ev-img-drop.empty { display: block }
-.ev-img-drop.dragover { display: block !important; border-color: var(--accent); background: rgba(239,68,68,.06); color: var(--tx0) }
-.ev-img-attach-btn { background: none; border: none; color: var(--tx2); font-size: .9rem; cursor: pointer; padding: 4px 8px; transition: color .12s }
-.ev-img-attach-btn:hover { color: var(--tx0) }
-
-.ev-thumb-row { display: flex; gap: 8px; align-items: center; margin-bottom: 4px }
-.ev-thumb { max-height: 80px; max-width: 120px; border-radius: 5px; object-fit: cover; cursor: pointer; transition: opacity .12s; border: 1px solid rgba(255,255,255,.08); flex-shrink: 0 }
-.ev-thumb:hover { opacity: .85 }
-.ev-img-del { background: none; border: none; color: rgba(255,255,255,.2); font-size: .8rem; cursor: pointer; padding: 2px 6px }
-.ev-img-del:hover { color: var(--accent) }
-.ev-img-span-label { font-size: .8rem; color: var(--tx2) }
+/* ── 画像添付（ブロック左側） ── */
+.ev-img-side { width: 40px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 2px; margin-right: 8px; gap: 4px }
+.ev-img-add-btn { width: 30px; height: 30px; border: 2px dashed rgba(255,255,255,.1); border-radius: 6px; background: transparent; color: rgba(255,255,255,.2); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s }
+.ev-img-add-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(212,168,55,.08) }
+.ev-img-add-btn.dragover { border-color: var(--accent); color: var(--accent); background: rgba(212,168,55,.08) }
+.ev-thumb-side { width: 36px; height: 36px; border-radius: 5px; object-fit: cover; cursor: pointer; transition: opacity .12s; border: 1px solid rgba(255,255,255,.1); flex-shrink: 0 }
+.ev-thumb-side:hover { opacity: .8 }
+.ev-img-side-info { font-size: .65rem; color: var(--tx2); text-align: center; line-height: 1.2 }
+.ev-img-side-del { background: none; border: none; color: rgba(255,255,255,.15); font-size: .7rem; cursor: pointer; padding: 0; transition: color .12s }
+.ev-img-side-del:hover { color: var(--accent) }
 
 /* 縦バー（ブロック左側にオーバーレイ） */
 .tl-scroll { position: relative }
-.img-vbar { position: absolute; width: 8px; background: linear-gradient(180deg, #f472b6, #ec4899, #db2777); border-radius: 4px; z-index: 10; pointer-events: auto; cursor: pointer; box-shadow: 0 0 10px rgba(236,72,153,.5), 0 0 3px rgba(236,72,153,.8); transition: box-shadow .15s }
-.img-vbar:hover { box-shadow: 0 0 16px rgba(236,72,153,.7), 0 0 4px rgba(236,72,153,1) }
-.img-vbar-handle { position: absolute; left: -5px; width: 18px; height: 10px; background: #f472b6; border: 2px solid #fff; border-radius: 5px; cursor: ns-resize; z-index: 12; pointer-events: auto; opacity: 0; transition: opacity .15s, transform .1s; box-shadow: 0 1px 4px rgba(0,0,0,.5) }
+.img-vbar { position: absolute; width: 6px; border-radius: 3px; z-index: 10; pointer-events: auto; cursor: pointer; transition: box-shadow .15s, opacity .15s }
+.img-vbar.filtered { cursor: not-allowed; opacity: .45 }
+.img-vbar.filtered:hover { box-shadow: none !important }
+.img-vbar.vbar-a { background: linear-gradient(180deg, #d98ec4, #d46ba8, #b84d8c); box-shadow: 0 0 8px rgba(212,107,168,.5) }
+.img-vbar.vbar-a:hover { box-shadow: 0 0 14px rgba(212,107,168,.7) }
+.img-vbar.vbar-b { background: linear-gradient(180deg, #a88ce0, #9b6bd4, #7b4fb8); box-shadow: 0 0 8px rgba(155,107,212,.5) }
+.img-vbar.vbar-b:hover { box-shadow: 0 0 14px rgba(155,107,212,.7) }
+.img-vbar-handle { position: absolute; left: -6px; width: 18px; height: 10px; border: 2px solid #fff; border-radius: 5px; cursor: ns-resize; z-index: 12; pointer-events: auto; opacity: 0; transition: opacity .15s, transform .1s; box-shadow: 0 1px 4px rgba(0,0,0,.5) }
+.img-vbar.vbar-a .img-vbar-handle { background: #d98ec4 }
+.img-vbar.vbar-b .img-vbar-handle { background: #a88ce0 }
 .img-vbar:hover .img-vbar-handle, .img-vbar-handle.active { opacity: 1 }
-.img-vbar-handle:hover { background: #f9a8d4; transform: scaleY(1.2) }
-.img-vbar-handle.active { opacity: 1; background: #fbcfe8; transform: scaleY(1.3) }
+.img-vbar-handle:hover { transform: scaleY(1.2) }
+.img-vbar.vbar-a .img-vbar-handle:hover { background: #e4b0d4 }
+.img-vbar.vbar-b .img-vbar-handle:hover { background: #bda8e8 }
+.img-vbar-handle.active { opacity: 1; transform: scaleY(1.3) }
+.img-vbar.vbar-a .img-vbar-handle.active { background: #ecc8de }
+.img-vbar.vbar-b .img-vbar-handle.active { background: #d0c0f0 }
 .img-vbar-handle.top { top: -5px }
 .img-vbar-handle.bottom { bottom: -5px }
 
@@ -257,12 +270,13 @@ select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; b
 .img-overlay img { max-width: 90vw; max-height: 90vh; border-radius: 8px }
 /* ── タブ切替 ── */
 .tab-group { display: flex; gap: 2px; margin: 0 12px }
-.btn-tab { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06); color: var(--tx2); padding: 4px 14px; border-radius: 5px 5px 0 0; cursor: pointer; font-size: .85rem; transition: all .15s }
-.btn-tab.active { background: var(--bg2); color: var(--tx0); border-bottom-color: var(--bg2) }
+.btn-tab { background: rgba(10,22,48,.6); border: 1px solid var(--ff-border-inner); color: var(--tx2); padding: 4px 14px; border-radius: 5px 5px 0 0; cursor: pointer; font-size: .85rem; transition: all .15s }
+.btn-tab:hover { color: #f0d060 }
+.btn-tab.active { background: var(--bg2); color: #f0d060; border-bottom-color: var(--bg2) }
 /* ── プロローグエディタ ── */
 .prologue-editor { display: none; padding: 24px 32px; overflow-y: auto; height: calc(100vh - 90px) }
 .prologue-editor.visible { display: block }
-.pro-section { background: var(--bg2); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; padding: 16px; margin-bottom: 16px }
+.pro-section { background: var(--ff-panel-bg); border: 2px solid var(--ff-border-outer); box-shadow: inset 0 0 0 1px var(--ff-border-inner); border-radius: 8px; padding: 16px; margin-bottom: 16px }
 .pro-section-title { font-weight: 700; font-size: 1.05rem; color: var(--tx0); margin-bottom: 10px; display: flex; align-items: center; gap: 8px }
 .pro-section-title .pro-badge { background: rgba(255,255,255,.08); padding: 2px 8px; border-radius: 4px; font-size: .78rem; color: var(--tx2); font-weight: 400 }
 .pro-params { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px }
@@ -342,19 +356,19 @@ let clipboard=[]; // コピーしたイベントのディープコピー
 let _lastClickIdx=-1; // Shift選択用
 
 const CATS=[
-  {id:'say',label:'セリフ',color:'#f97316',cls:'say',types:['say','say_clear']},
-  {id:'chat',label:'チャット',color:'#3b82f6',cls:'chat',types:['chat','superchat']},
-  {id:'wait',label:'待機',color:'#64748b',cls:'wait',types:['wait','sleep']},
-  {id:'move',label:'移動',color:'#22c55e',cls:'move',types:['pos_z','pos_x','pos_z_await','pos_x_await','rot_y','head_x','walk_set']},
-  {id:'effect',label:'画面効果',color:'#a855f7',cls:'effect',types:['fade_black','fade_clear','horror_flash','horror_glitch','horror_tint','horror_tint_clear','scare_flash']},
-  {id:'audio',label:'音声',color:'#06b6d4',cls:'audio',types:['sfx','flashlight_on','flashlight_off','flashlight_flicker']},
-  {id:'media',label:'メディア',color:'#ec4899',cls:'media',types:['polaroid_video']},
-  {id:'youtube',label:'YouTube',color:'#ef4444',cls:'yt',types:['set_viewers']},
-  {id:'branch',label:'分岐',color:'#eab308',cls:'branch',types:['choice','label','goto','goto_route','set_route']},
-  {id:'game',label:'ゲーム',color:'#10b981',cls:'game',types:['stage_swap','use_ofuda']},
-  {id:'comment',label:'コメント',color:'#475569',cls:'comment',types:['_comment']},
+  {id:'say',label:'セリフ',color:'#e8a430',cls:'say',types:['say','say_clear']},
+  {id:'chat',label:'チャット',color:'#4a8fd4',cls:'chat',types:['chat','superchat']},
+  {id:'wait',label:'待機',color:'#6b7a99',cls:'wait',types:['wait','sleep']},
+  {id:'move',label:'移動',color:'#3dae6e',cls:'move',types:['pos_z','pos_x','pos_z_await','pos_x_await','rot_y','head_x','walk_set']},
+  {id:'effect',label:'画面効果',color:'#9b6bd4',cls:'effect',types:['fade_black','fade_clear','horror_flash','horror_glitch','horror_tint','horror_tint_clear','scare_flash']},
+  {id:'audio',label:'音声',color:'#3db8b8',cls:'audio',types:['sfx','flashlight_on','flashlight_off','flashlight_flicker']},
+  {id:'media',label:'メディア',color:'#d46ba8',cls:'media',types:['polaroid_video']},
+  {id:'youtube',label:'YouTube',color:'#c43c3c',cls:'yt',types:['set_viewers']},
+  {id:'branch',label:'分岐',color:'#c4a832',cls:'branch',types:['choice','label','goto','goto_route','set_route']},
+  {id:'game',label:'ゲーム',color:'#3dad7e',cls:'game',types:['stage_swap','use_ofuda']},
+  {id:'comment',label:'コメント',color:'#4a5a78',cls:'comment',types:['_comment']},
 ];
-function catFor(t){for(const c of CATS)if(c.types.includes(t))return c;return{id:'other',label:'?',color:'#64748b',cls:'wait',types:[]};}
+function catFor(t){for(const c of CATS)if(c.types.includes(t))return c;return{id:'other',label:'?',color:'#6b7a99',cls:'wait',types:[]};}
 function boxCls(t){if(t==='superchat')return'ev-superchat';if(t==='sleep')return'ev-sleep';if(t==='say_clear')return'ev-say_clear';return'ev-'+catFor(t).cls;}
 const ICONS={say:'💬',say_clear:'🔇',chat:'👤',superchat:'💰',wait:'⏱',sleep:'⏸',pos_z:'↕',pos_x:'↔',pos_z_await:'⏳',pos_x_await:'⏳',rot_y:'↻',head_x:'⤡',walk_set:'🚶',fade_black:'◼',fade_clear:'◻',horror_flash:'⚡',horror_glitch:'⚡',horror_tint:'🎨',horror_tint_clear:'🎨',scare_flash:'💥',sfx:'🔊',flashlight_on:'🔦',flashlight_off:'🔦',flashlight_flicker:'🔦',polaroid_video:'🎬',set_viewers:'📺',choice:'🔀',label:'🏷',goto:'➡',goto_route:'🔀',set_route:'🎯',stage_swap:'🗺',use_ofuda:'🏮',_comment:'§'};
 const JA={say:'セリフ',say_clear:'セリフ消去',chat:'チャット',superchat:'スパチャ',wait:'待機',sleep:'強制待機',pos_z:'Z移動',pos_x:'X移動',pos_z_await:'Z待機',pos_x_await:'X待機',rot_y:'Y回転',head_x:'頭部上下',walk_set:'歩行切替',fade_black:'暗転',fade_clear:'明転',horror_flash:'フラッシュ',horror_glitch:'グリッチ',horror_tint:'色調変更',horror_tint_clear:'色調解除',scare_flash:'恐怖フラッシュ',sfx:'効果音',flashlight_on:'懐中電灯ON',flashlight_off:'懐中電灯OFF',flashlight_flicker:'フリッカー',polaroid_video:'動画再生',set_viewers:'視聴者数',choice:'選択肢',label:'ラベル',goto:'ジャンプ',goto_route:'ルート分岐',set_route:'ルート設定',stage_swap:'ステージ変更',use_ofuda:'お札使用',_comment:'コメント'};
@@ -490,7 +504,7 @@ function mkBox(ev,idx,sayN,totalSay,cumTime){
   if(ev.type==='say'){
     const num=el('span','',`#${sayN}/${totalSay}`);num.style.cssText='font-size:.85rem;color:rgba(255,255,255,.3);margin-left:3px';
     const vb=el('span','ev-type-badge',ev.voice||'未設定');vb.id='vb_'+idx;
-    vb.style.cssText=ev.voice?'background:rgba(249,115,22,.2);color:#f97316':'background:rgba(255,255,255,.05);color:rgba(255,255,255,.25)';
+    vb.style.cssText=ev.voice?'background:rgba(232,164,48,.2);color:#e8a430':'background:rgba(255,255,255,.05);color:rgba(255,255,255,.25)';
     head.append(num,sp,vb,del);
   } else if(ev.type==='chat'&&ev.utype&&ev.utype!=='viewer'){
     const ub=el('span','utype-badge utype-'+ev.utype,ev.utype.toUpperCase());head.append(ub,sp,del);
@@ -499,9 +513,14 @@ function mkBox(ev,idx,sayN,totalSay,cumTime){
     head.append(sp,t,del);
   } else { head.append(sp,del); }
 
-  box.appendChild(head);
-  buildFields(box,ev,idx);
-  buildImgArea(box,ev,idx);
+  // 左側: 画像エリア → 右側: メインコンテンツ（innerでflex横並び）
+  const inner=document.createElement('div');inner.className='ev-box-inner';
+  const main=document.createElement('div');main.className='ev-box-main';
+  main.appendChild(head);
+  buildFields(main,ev,idx);
+  buildImgArea(inner,box,ev,idx);
+  inner.appendChild(main);
+  box.appendChild(inner);
 
   // クリック選択
   box.addEventListener('click',e=>{
@@ -589,7 +608,7 @@ function bSay(box,ev,idx){
   const ve=document.createElement('div');ve.style.cssText='margin-top:3px;display:flex;align-items:center;gap:4px';
   ve.append(el('span','ev-field-label','VOICE'));
   const vi=document.createElement('input');vi.className='ev-input ev-input-short';vi.value=ev.voice||'';vi.placeholder='v001';
-  vi.addEventListener('input',()=>{pushUndo();data.events[idx].voice=vi.value;markDirty();const vb=document.getElementById('vb_'+idx);if(vb){vb.textContent=vi.value||'未設定';vb.style.cssText=vi.value?'background:rgba(249,115,22,.2);color:#f97316':'background:rgba(255,255,255,.05);color:rgba(255,255,255,.25)'}});
+  vi.addEventListener('input',()=>{pushUndo();data.events[idx].voice=vi.value;markDirty();const vb=document.getElementById('vb_'+idx);if(vb){vb.textContent=vi.value||'未設定';vb.style.cssText=vi.value?'background:rgba(232,164,48,.2);color:#e8a430':'background:rgba(255,255,255,.05);color:rgba(255,255,255,.25)'}});
   ve.appendChild(vi);box.appendChild(ve);
 }
 function bRow(box,fields){const r=document.createElement('div');r.className='ev-fields';fields.forEach(([l,inp])=>{const f=document.createElement('div');f.className='ev-field';f.append(el('span','ev-field-label',l),inp);r.appendChild(f)});box.appendChild(r)}
@@ -597,58 +616,92 @@ function bToggle(box,ev,idx,key){const r=document.createElement('div');r.classNa
 function bChoice(box,ev){const list=document.createElement('div');list.className='choice-list';(ev.choices||[]).forEach((c,ci)=>{const item=document.createElement('div');item.className='choice-item';item.innerHTML=`<div style="font-weight:500">${ci+1}. ${c.text||''}</div>${c.sub?`<div style="font-size:.82rem;color:rgba(255,255,255,.35)">${c.sub}</div>`:''}${ev.targets&&ev.targets[ci]?`<div class="choice-item-target">→ ${ev.targets[ci]}</div>`:''}`;list.appendChild(item)});box.appendChild(list)}
 function bGotoRoute(box,ev){if(!ev.routes)return;const list=document.createElement('div');list.className='route-list';Object.entries(ev.routes).forEach(([k,v])=>{const item=document.createElement('div');item.className='route-item';item.textContent=`ルート ${k} → ${v}`;list.appendChild(item)});box.appendChild(list)}
 
-// ── 画像添付（ブロック内UI） ──
-function buildImgArea(box,ev,idx){
-  const area=document.createElement('div');area.className='ev-img-area';
+// あるブロックidxが既存の画像バー範囲内か判定（excludeのアンカーは除く）
+function isInsideImgBar(idx,exclude){
+  if(!data||!data.events)return false;
+  const ex=exclude==null?idx:exclude;
+  for(let i=0;i<data.events.length;i++){
+    if(i===ex)continue;
+    const e=data.events[i];
+    if(!e._img||!e._img.data)continue;
+    const up=e._img.spanUp||0, down=e._img.spanDown||0;
+    if(idx>=i-up && idx<=i+down) return true;
+  }
+  return false;
+}
+
+// バーidxが dir方向に伸ばせる最大span（他バーに重ならない）
+function maxBarSpan(idx,dir){
+  let max=0;
+  const events=data.events;
+  for(let s=1;s<events.length;s++){
+    const target=dir==='down'?idx+s:idx-s;
+    if(target<0||target>=events.length)break;
+    if(isInsideImgBar(target,idx))break;
+    // targetが別のアンカー自体の場合も重なり
+    const te=events[target];
+    if(te._img&&te._img.data)break;
+    max=s;
+  }
+  return max;
+}
+
+// ── 画像添付（ブロック左側UI） ──
+function buildImgArea(inner,box,ev,idx){
+  const side=document.createElement('div');side.className='ev-img-side';
 
   if(ev._img&&ev._img.data){
-    // サムネイル行＋範囲表示＋削除
-    const row=document.createElement('div');row.className='ev-thumb-row';
-    const img=document.createElement('img');img.className='ev-thumb';img.src=ev._img.data;
+    // サムネイル＋情報＋削除
+    const img=document.createElement('img');img.className='ev-thumb-side';img.src=ev._img.data;
     img.addEventListener('click',e=>{e.stopPropagation();showImgOverlay(ev._img.data)});
     const up=ev._img.spanUp||0, down=ev._img.spanDown||0;
     const total=up+1+down;
-    const lbl=el('span','ev-img-span-label',`📎 ${total} ブロック`);
+    const lbl=el('span','ev-img-side-info',`${total}blk`);
     lbl.dataset.imgIdx=idx;
-    const del=document.createElement('button');del.className='ev-img-del';del.textContent='🗑 削除';
+    const del=document.createElement('button');del.className='ev-img-side-del';del.textContent='✕';
     del.addEventListener('click',e=>{e.stopPropagation();pushUndoImmediate();delete data.events[idx]._img;markDirty();render()});
-    row.append(img,lbl,del);
-    area.appendChild(row);
+    side.append(img,lbl,del);
+  } else if(isInsideImgBar(idx)){
+    // 動画バー範囲内 → 画像追加不可
+    const mark=document.createElement('div');mark.className='ev-img-add-btn';mark.style.cssText='border-color:rgba(212,107,168,.2);color:rgba(212,107,168,.3);cursor:default;font-size:.7rem';mark.textContent='▮';
+    mark.title='画像バー範囲内のため追加不可';
+    side.appendChild(mark);
   } else {
-    // ドロップゾーン＋追加ボタン
-    const drop=document.createElement('div');drop.className='ev-img-drop empty';
-    const btn=document.createElement('button');btn.className='ev-img-attach-btn';btn.textContent='📎 画像を追加';
+    // 追加ボタン
+    const btn=document.createElement('button');btn.className='ev-img-add-btn';btn.textContent='📎';
+    btn.title='画像を追加';
     btn.addEventListener('click',e=>{e.stopPropagation();pickImage(idx)});
-    drop.appendChild(btn);
-    area.appendChild(drop);
+    side.appendChild(btn);
   }
 
   // ドラッグ&ドロップ（ボックス全体で画像受付）
   box.addEventListener('dragover',e=>{
     if(!e.dataTransfer.types.includes('Files'))return;
     e.preventDefault();e.dataTransfer.dropEffect='copy';
-    const d=box.querySelector('.ev-img-drop');
-    if(d)d.classList.add('dragover');
-    else box.style.outline='2px dashed #ec4899';
+    const b=box.querySelector('.ev-img-add-btn');
+    if(b)b.classList.add('dragover');
+    else box.style.outline='2px dashed #d46ba8';
   });
   box.addEventListener('dragleave',e=>{
     if(box.contains(e.relatedTarget))return;
-    const d=box.querySelector('.ev-img-drop');if(d)d.classList.remove('dragover');
+    const b=box.querySelector('.ev-img-add-btn');if(b)b.classList.remove('dragover');
     box.style.outline='';
   });
   box.addEventListener('drop',e=>{
     const file=[...e.dataTransfer.files].find(f=>f.type.startsWith('image/'));
-    if(!file)return; // 画像でなければ並べ替え処理に任せる
+    if(!file)return;
     e.preventDefault();e.stopPropagation();
-    const d=box.querySelector('.ev-img-drop');if(d)d.classList.remove('dragover');
+    const b=box.querySelector('.ev-img-add-btn');if(b)b.classList.remove('dragover');
     box.style.outline='';
     attachImage(idx,file);
   });
 
-  box.appendChild(area);
+  // innerの先頭に挿入（左側に表示）
+  inner.insertBefore(side,inner.firstChild);
 }
 
 function attachImage(idx,file){
+  if(isInsideImgBar(idx)){toast('画像バー範囲内のため追加できません');return;}
   const reader=new FileReader();
   reader.onload=e=>{
     pushUndoImmediate();
@@ -687,6 +740,7 @@ function renderImgBars(){
   });
   const vis=Object.keys(rowMap).map(Number).sort((a,b)=>a-b);
 
+  let barColorIdx=0;
   data.events.forEach((ev,idx)=>{
     if(!ev._img||!ev._img.data)return;
     const anchorRow=rowMap[idx];
@@ -704,31 +758,40 @@ function renderImgBars(){
 
     const topRect=topRow.getBoundingClientRect();
     const botRect=botRow.getBoundingClientRect();
-    const barTop=topRect.top-scrollRect.top+scrollTop;
-    const barBot=botRect.bottom-scrollRect.top+scrollTop;
+    const gap=3;
+    const barTop=topRect.top-scrollRect.top+scrollTop+gap;
+    const barBot=botRect.bottom-scrollRect.top+scrollTop-gap;
 
     // 縦バーのX位置 = ブロックのすぐ左
     const evBox=anchorRow.querySelector('.ev-box');
     const boxRect=evBox?evBox.getBoundingClientRect():topRect;
     const barLeft=boxRect.left-scrollRect.left-12;
 
-    // 縦バー
-    const bar=document.createElement('div');bar.className='img-vbar';
+    // 縦バー（交互に色を変える）
+    const colorCls=barColorIdx%2===0?'vbar-a':'vbar-b';
+    barColorIdx++;
+    const bar=document.createElement('div');bar.className='img-vbar '+colorCls;
     bar.style.left=barLeft+'px';
     bar.style.top=barTop+'px';
     bar.style.height=Math.max(14,barBot-barTop)+'px';
 
+    // フィルター中はハンドル無効
+    const filtered=filterMode!=='all';
+    if(filtered){bar.classList.add('filtered');bar.title='フィルター中はスパン編集不可（「全部」に切り替えてください）';}
+
     // 上ハンドル
     const hTop=document.createElement('div');hTop.className='img-vbar-handle top';
+    if(filtered)hTop.style.cssText='display:none';
     bar.appendChild(hTop);
     // 下ハンドル
     const hBot=document.createElement('div');hBot.className='img-vbar-handle bottom';
+    if(filtered)hBot.style.cssText='display:none';
     bar.appendChild(hBot);
 
     // ドラッグ: 上ハンドル
-    initVBarDrag(hTop,ev,idx,anchorVis,vis,rowMap,scroll,scrollRect,'up');
+    if(!filtered)initVBarDrag(hTop,ev,idx,anchorVis,vis,rowMap,scroll,scrollRect,'up');
     // ドラッグ: 下ハンドル
-    initVBarDrag(hBot,ev,idx,anchorVis,vis,rowMap,scroll,scrollRect,'down');
+    if(!filtered)initVBarDrag(hBot,ev,idx,anchorVis,vis,rowMap,scroll,scrollRect,'down');
 
     scroll.appendChild(bar);
   });
@@ -738,6 +801,7 @@ function initVBarDrag(handle,ev,idx,anchorVis,vis,rowMap,scroll,scrollRect,dir){
   handle.addEventListener('mousedown',me=>{
     me.preventDefault();me.stopPropagation();
     handle.classList.add('active');
+    const limit=maxBarSpan(idx,dir);
     function onMove(e){
       const mouseY=e.clientY-scrollRect.top+scroll.scrollTop;
       let newSpan=0;
@@ -748,7 +812,7 @@ function initVBarDrag(handle,ev,idx,anchorVis,vis,rowMap,scroll,scrollRect,dir){
           const rMid=rr.top+rr.height/2-scrollRect.top+scroll.scrollTop;
           if(mouseY>=rMid) newSpan=vi-anchorVis;
         }
-        newSpan=Math.max(0,newSpan);
+        newSpan=Math.min(Math.max(0,newSpan),limit);
         if(newSpan!==ev._img.spanDown){ev._img.spanDown=newSpan;markDirty();updateImgLabel(idx,ev);renderImgBars();}
       } else {
         for(let vi=anchorVis;vi>=0;vi--){
@@ -757,7 +821,7 @@ function initVBarDrag(handle,ev,idx,anchorVis,vis,rowMap,scroll,scrollRect,dir){
           const rMid=rr.top+rr.height/2-scrollRect.top+scroll.scrollTop;
           if(mouseY<=rMid) newSpan=anchorVis-vi;
         }
-        newSpan=Math.max(0,newSpan);
+        newSpan=Math.min(Math.max(0,newSpan),limit);
         if(newSpan!==ev._img.spanUp){ev._img.spanUp=newSpan;markDirty();updateImgLabel(idx,ev);renderImgBars();}
       }
     }
@@ -843,7 +907,7 @@ function setupDrag(row,idx){
 
 // ══════════ 保存 ══════════
 let _fileHandle=null;
-function exportJSON(){return JSON.stringify(data,null,'\t')}
+function exportJSON(){const clean={...data,events:data.events.map(e=>{const ev={...e};delete ev._img;return ev})};return JSON.stringify(clean,null,'\t')}
 async function downloadJSON(){
   // File System Access API（Chrome/Edge）
   if(window.showSaveFilePicker){
