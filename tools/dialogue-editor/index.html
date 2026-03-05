@@ -9,183 +9,252 @@
   --bg0: #0a0e17; --bg1: #111827; --bg2: #1e293b; --bg3: #334155;
   --tx0: #f1f5f9; --tx1: #94a3b8; --tx2: #64748b;
   --accent: #ef4444; --accent-g: linear-gradient(135deg, #ef4444, #f97316);
-  --org: #f97316; --pur: #a855f7; --grn: #22c55e;
-  --radius: 12px;
+  --radius: 10px;
   --font: 'Segoe UI', 'Meiryo', 'Noto Sans JP', system-ui, sans-serif;
+  --c-say: #f97316; --c-chat: #3b82f6; --c-wait: #64748b; --c-move: #22c55e;
+  --c-effect: #a855f7; --c-audio: #06b6d4; --c-media: #ec4899;
+  --c-yt: #ef4444; --c-branch: #eab308; --c-game: #10b981; --c-comment: #475569;
+  --tl-w: 64px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
-html { font-size: 14px }
+html { font-size: 16px }
 body { font-family: var(--font); background: var(--bg0); color: var(--tx0); height: 100vh; display: flex; flex-direction: column; overflow: hidden }
 button { cursor: pointer; font-family: var(--font) }
 input, select, textarea { font-family: var(--font); font-size: inherit }
-::-webkit-scrollbar { width: 8px }
+::-webkit-scrollbar { width: 6px }
 ::-webkit-scrollbar-track { background: transparent }
-::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 4px }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px }
 ::selection { background: var(--accent); color: #fff }
 
 /* ── ヘッダー ── */
-.header {
-  background: var(--bg1); padding: 0 20px; display: flex; align-items: center;
-  height: 52px; border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0; gap: 12px;
-}
-.logo {
-  font-size: 1.2rem; font-weight: 800;
-  background: var(--accent-g); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  letter-spacing: -.5px; white-space: nowrap;
-}
-.header select {
-  background: var(--bg2); color: var(--tx0); border: 1px solid var(--bg3);
-  border-radius: 8px; padding: 6px 12px; font-size: .9rem;
-}
+.header { background: var(--bg1); padding: 0 20px; display: flex; align-items: center; height: 54px; border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0; gap: 12px }
+.logo { font-size: 1.25rem; font-weight: 800; background: var(--accent-g); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -.5px; white-space: nowrap }
+.header select { background: var(--bg2); color: var(--tx0); border: 1px solid var(--bg3); border-radius: 6px; padding: 6px 12px; font-size: 1rem }
 .header select:focus { outline: none; border-color: var(--accent) }
-.chapter-name { color: var(--tx2); font-size: .85rem }
+.chapter-name { color: var(--tx2); font-size: .95rem }
 .spacer { flex: 1 }
-.badge {
-  background: rgba(249,115,22,.15); color: var(--org); padding: 4px 14px;
-  border-radius: 20px; font-size: .85rem; font-weight: 700; white-space: nowrap;
-}
-.btn {
-  padding: 8px 18px; border: 1px solid var(--bg3); border-radius: 8px;
-  background: var(--bg2); color: var(--tx1); font-size: .9rem; transition: all .12s;
-  white-space: nowrap;
-}
+.badge { background: rgba(249,115,22,.15); color: var(--c-say); padding: 4px 14px; border-radius: 16px; font-size: .9rem; font-weight: 700; white-space: nowrap }
+.btn { padding: 8px 16px; border: 1px solid var(--bg3); border-radius: 6px; background: var(--bg2); color: var(--tx1); font-size: .95rem; transition: all .12s; white-space: nowrap }
 .btn:hover { background: var(--bg3); color: var(--tx0) }
 .btn-save { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700 }
 .btn-save:hover { filter: brightness(1.15) }
+.filter-group { display: flex; gap: 4px }
+.btn-ft { padding: 3px 12px; font-size: .85rem; border-radius: 999px; border: 1px solid var(--bg3); background: transparent; color: var(--tx2); cursor: pointer; transition: all .15s }
+.btn-ft:hover { background: var(--bg3); color: var(--tx0) }
+.btn-ft.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700 }
 
-/* ── カードリスト ── */
-.card-list {
-  flex: 1; overflow-y: auto; padding: 16px 16px 120px;
-  display: flex; flex-direction: column; align-items: center;
-}
-.card-list-inner { width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 8px }
+/* ── タイムラインコンテナ ── */
+.tl-scroll { flex: 1; overflow-y: auto; padding: 12px 16px 100px; display: flex; justify-content: center }
+.tl-wrap { width: 100%; max-width: 820px }
 
-/* ── カード ── */
-.card {
-  background: var(--bg1); border: 1px solid rgba(255,255,255,.06);
-  border-radius: var(--radius); padding: 16px; transition: border-color .15s, box-shadow .15s;
-  animation: fadeIn .2s ease;
-}
-.card:hover { border-color: rgba(255,255,255,.1); box-shadow: 0 2px 16px rgba(0,0,0,.3) }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-6px) } to { opacity: 1; transform: translateY(0) } }
+/* ── タイムライン行 ── */
+.tl-row { display: flex; align-items: stretch; position: relative }
+.tl-row.dragging { opacity: .2 }
+.tl-row.drop-above::before { content:''; position: absolute; top: -2px; left: 0; right: 0; height: 3px; background: var(--accent); border-radius: 2px; z-index: 10 }
+.tl-row.drop-below::after { content:''; position: absolute; bottom: -2px; left: 0; right: 0; height: 3px; background: var(--accent); border-radius: 2px; z-index: 10 }
 
-.card-head {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
-}
-.grip {
-  cursor: grab; color: var(--bg3); user-select: none; font-size: 1.2rem;
-  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-  border-radius: 6px; transition: all .12s; flex-shrink: 0;
-}
-.grip:hover { color: var(--tx1); background: var(--bg2) }
-.card-num { color: var(--tx2); font-size: .8rem; font-weight: 500 }
-.voice-badge {
-  background: rgba(249,115,22,.12); color: var(--org); padding: 3px 10px;
-  border-radius: 16px; font-size: .75rem; font-weight: 700; font-family: monospace;
-}
-.voice-badge.empty { background: rgba(255,255,255,.05); color: var(--tx2) }
-.btn-del {
-  width: 32px; height: 32px; border: none; border-radius: 8px;
-  background: transparent; color: var(--tx2); font-size: 1.1rem;
-  display: flex; align-items: center; justify-content: center; transition: all .12s;
-  flex-shrink: 0; opacity: 0;
-}
-.card:hover .btn-del { opacity: 1 }
-.btn-del:hover { background: rgba(239,68,68,.15); color: var(--accent) }
+/* 左: 時間 */
+.tl-time { width: var(--tl-w); flex-shrink: 0; display: flex; align-items: flex-start; justify-content: flex-end; padding-right: 10px; padding-top: 10px; font-size: .85rem; font-family: 'Consolas','SF Mono',monospace; color: rgba(255,255,255,.2); user-select: none }
+.tl-time.has-time { color: var(--tx1); font-weight: 600 }
 
-/* ── テキストエリア ── */
-.field-text {
-  width: 100%; background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.08);
-  color: var(--tx0); border-radius: 8px; padding: 12px 14px;
-  font-size: 1rem; line-height: 1.7; resize: none; overflow: hidden;
-  min-height: 48px; transition: border-color .15s;
-}
-.field-text:focus { outline: none; border-color: var(--accent) }
-.field-text::placeholder { color: var(--tx2) }
+/* 中: 縦線＋ドット */
+.tl-line { width: 28px; flex-shrink: 0; position: relative; display: flex; align-items: flex-start; justify-content: center; padding-top: 12px }
+.tl-line::before { content:''; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: var(--bg3); transform: translateX(-50%) }
+.tl-dot { width: 12px; height: 12px; border-radius: 50%; z-index: 1; flex-shrink: 0; border: 2px solid var(--bg0) }
 
-/* ── 読みセクション ── */
-.reading-section { margin-top: 8px }
-.reading-toggle {
-  background: none; border: none; color: var(--pur); font-size: .82rem;
-  padding: 4px 0; cursor: pointer; display: flex; align-items: center; gap: 4px;
-}
+/* 右: ボックス */
+.tl-content { flex: 1; padding: 3px 0 3px 32px; min-width: 0 }
+
+/* ── セクション見出し（_comment） ── */
+.tl-section { display: flex; align-items: center; margin: 14px 0 6px }
+.tl-section .tl-time { padding-top: 0; align-items: center }
+.tl-section .tl-line { align-items: center; padding-top: 0 }
+.tl-section-bar { flex: 1; padding: 6px 16px; background: var(--bg2); border: 1px solid rgba(255,255,255,.06); border-radius: 6px; margin-left: 10px; text-align: center }
+.tl-section-input { background: transparent; border: none; color: var(--tx1); font-weight: 700; font-size: 1.05rem; text-align: center; width: 100%; outline: none; letter-spacing: .3px }
+.tl-section-input::placeholder { color: var(--tx2) }
+
+/* ── 挿入ゾーン ── */
+.ev-add-zone { position: relative; height: 0; width: 100%; z-index: 5 }
+.ev-add-btn { position: absolute; left: 50%; transform: translateX(-50%); width: 22px; height: 22px; border: 1.5px dashed rgba(255,255,255,.1); border-radius: 50%; background: var(--bg0); color: var(--tx2); font-size: .85rem; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .15s; cursor: pointer; z-index: 6; line-height: 1 }
+.ev-add-top { top: -11px }
+.ev-add-bottom { bottom: -11px; top: auto }
+.ev-box:hover .ev-add-btn, .tl-section:hover .ev-add-btn { opacity: 1 }
+.ev-add-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(239,68,68,.12) }
+
+/* ══════════ ボックス共通 ══════════ */
+.ev-box { border-radius: 10px; padding: 10px 14px; position: relative; border-left: 5px solid; transition: box-shadow .12s; animation: fadeIn .15s ease }
+.ev-box:hover { box-shadow: 0 2px 12px rgba(0,0,0,.25) }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-3px) } to { opacity: 1; transform: translateY(0) } }
+
+.ev-head { display: flex; align-items: center; gap: 6px; min-height: 28px }
+.ev-icon { font-size: 1.05rem; flex-shrink: 0 }
+.ev-type-badge { font-size: .8rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; font-family: monospace; letter-spacing: .3px; flex-shrink: 0 }
+.ev-grip { cursor: grab; color: rgba(255,255,255,.15); user-select: none; font-size: 1rem; width: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0 }
+.ev-grip:hover { color: rgba(255,255,255,.4) }
+.ev-del { width: 26px; height: 26px; border: none; border-radius: 6px; background: transparent; color: rgba(255,255,255,.15); font-size: 1rem; display: flex; align-items: center; justify-content: center; opacity: 0; transition: all .1s; cursor: pointer; flex-shrink: 0 }
+.ev-box:hover .ev-del { opacity: 1 }
+.ev-del:hover { background: rgba(239,68,68,.2); color: var(--accent) }
+
+/* フィールド */
+.ev-fields { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: center }
+.ev-field { display: flex; align-items: center; gap: 5px }
+.ev-field-label { font-size: .8rem; color: rgba(255,255,255,.35); flex-shrink: 0; text-transform: uppercase; letter-spacing: .3px }
+.ev-input { background: rgba(0,0,0,.2); border: 1px solid rgba(255,255,255,.06); color: var(--tx0); border-radius: 5px; padding: 4px 8px; font-size: .95rem; font-family: 'Consolas','SF Mono',monospace; transition: border-color .1s }
+.ev-input:focus { outline: none; border-color: rgba(255,255,255,.25) }
+select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,.4)'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px }
+.ev-input-num { width: 72px; text-align: center }
+.ev-input-short { width: 100px }
+.ev-input-mid { width: 160px }
+.ev-input-wide { width: 100%; font-family: var(--font) }
+.ev-textarea { width: 100%; background: rgba(0,0,0,.18); border: 1px solid rgba(255,255,255,.05); color: var(--tx0); border-radius: 6px; padding: 10px 12px; font-size: 1rem; line-height: 1.7; resize: none; overflow: hidden; min-height: 40px; margin-top: 6px }
+.ev-textarea:focus { outline: none; border-color: rgba(255,255,255,.18) }
+.ev-textarea::placeholder { color: rgba(255,255,255,.15) }
+
+/* 読み */
+.reading-toggle { background: none; border: none; color: var(--c-effect); font-size: .85rem; padding: 4px 0; cursor: pointer; margin-top: 4px }
 .reading-toggle:hover { text-decoration: underline }
-.reading-body { margin-top: 6px }
-.field-reading {
-  width: 100%; background: rgba(168,85,247,.05); border: 1px solid rgba(168,85,247,.15);
-  color: var(--tx0); border-radius: 8px; padding: 10px 14px;
-  font-size: .95rem; line-height: 1.6; resize: none; overflow: hidden; min-height: 40px;
-}
-.field-reading:focus { outline: none; border-color: var(--pur) }
-.field-reading::placeholder { color: rgba(168,85,247,.4) }
+.field-reading { width: 100%; background: rgba(168,85,247,.04); border: 1px solid rgba(168,85,247,.1); color: var(--tx0); border-radius: 5px; padding: 8px 10px; font-size: .95rem; line-height: 1.6; resize: none; overflow: hidden; min-height: 34px; margin-top: 4px }
+.field-reading:focus { outline: none; border-color: var(--c-effect) }
 
-/* ── Voice ID 編集 ── */
-.voice-edit {
-  margin-top: 8px; display: flex; align-items: center; gap: 8px;
-}
-.voice-label { color: var(--tx2); font-size: .8rem; flex-shrink: 0 }
-.field-voice {
-  background: rgba(0,0,0,.2); border: 1px solid rgba(255,255,255,.06);
-  color: var(--org); border-radius: 6px; padding: 4px 10px;
-  font-size: .85rem; font-family: monospace; width: 80px;
-}
-.field-voice:focus { outline: none; border-color: var(--org) }
+/* ── カテゴリ色 ── */
+.ev-say      { background: rgba(249,115,22,.06); border-color: var(--c-say) }
+.ev-say .ev-type-badge { background: rgba(249,115,22,.2); color: var(--c-say) }
+.ev-say_clear { background: rgba(100,116,139,.05); border-color: var(--c-wait) }
+.ev-say_clear .ev-type-badge { background: rgba(100,116,139,.2); color: var(--c-wait) }
 
-/* ── カード間の追加ボタン ── */
-.insert-gap {
-  display: flex; justify-content: center; padding: 2px 0; min-height: 8px;
-}
-.insert-btn {
-  width: 32px; height: 32px; border: 2px dashed var(--bg3); border-radius: 50%;
-  background: transparent; color: var(--tx2); font-size: 1.2rem; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; transition: all .15s; cursor: pointer;
-}
-.insert-gap:hover .insert-btn { opacity: 1 }
-.insert-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(239,68,68,.08) }
+.ev-chat     { background: rgba(59,130,246,.05); border-color: var(--c-chat) }
+.ev-chat .ev-type-badge { background: rgba(59,130,246,.2); color: var(--c-chat) }
+.ev-superchat { background: rgba(234,179,8,.05); border-color: var(--c-branch) }
+.ev-superchat .ev-type-badge { background: rgba(234,179,8,.2); color: var(--c-branch) }
+
+.ev-wait     { background: rgba(100,116,139,.03); border-color: var(--c-wait) }
+.ev-wait .ev-type-badge { background: rgba(100,116,139,.2); color: var(--c-wait) }
+.ev-sleep    { background: rgba(239,68,68,.04); border-color: var(--accent) }
+.ev-sleep .ev-type-badge { background: rgba(239,68,68,.2); color: var(--accent) }
+
+.ev-move     { background: rgba(34,197,94,.04); border-color: var(--c-move) }
+.ev-move .ev-type-badge { background: rgba(34,197,94,.2); color: var(--c-move) }
+
+.ev-effect   { background: rgba(168,85,247,.04); border-color: var(--c-effect) }
+.ev-effect .ev-type-badge { background: rgba(168,85,247,.2); color: var(--c-effect) }
+
+.ev-audio    { background: rgba(6,182,212,.04); border-color: var(--c-audio) }
+.ev-audio .ev-type-badge { background: rgba(6,182,212,.2); color: var(--c-audio) }
+
+.ev-media    { background: rgba(236,72,153,.04); border-color: var(--c-media) }
+.ev-media .ev-type-badge { background: rgba(236,72,153,.2); color: var(--c-media) }
+
+.ev-yt       { background: rgba(239,68,68,.04); border-color: var(--c-yt) }
+.ev-yt .ev-type-badge { background: rgba(239,68,68,.2); color: var(--c-yt) }
+
+.ev-branch   { background: rgba(234,179,8,.04); border-color: var(--c-branch) }
+.ev-branch .ev-type-badge { background: rgba(234,179,8,.2); color: var(--c-branch) }
+
+.ev-game     { background: rgba(16,185,129,.04); border-color: var(--c-game) }
+.ev-game .ev-type-badge { background: rgba(16,185,129,.2); color: var(--c-game) }
+
+/* choice */
+.choice-list { margin-top: 8px; display: flex; flex-direction: column; gap: 4px }
+.choice-item { background: rgba(234,179,8,.05); border: 1px solid rgba(234,179,8,.1); border-radius: 5px; padding: 6px 10px; font-size: .9rem }
+.choice-item-target { color: var(--c-branch); font-family: monospace; font-size: .82rem; margin-top: 2px }
+.route-list { margin-top: 8px; display: flex; flex-direction: column; gap: 3px }
+.route-item { font-size: .9rem; color: var(--c-branch); font-family: monospace }
+
+/* utype */
+.utype-badge { font-size: .75rem; padding: 2px 7px; border-radius: 8px; font-weight: 700 }
+.utype-moderator { background: rgba(34,197,94,.15); color: var(--c-move) }
+.utype-member { background: rgba(59,130,246,.15); color: var(--c-chat) }
+.utype-owner { background: rgba(239,68,68,.15); color: var(--accent) }
+
+/* ── 追加メニュー ── */
+.add-menu { display: none; position: fixed; z-index: 200; background: var(--bg1); border: 1px solid var(--bg3); border-radius: var(--radius); padding: 6px 0; min-width: 200px; box-shadow: 0 8px 32px rgba(0,0,0,.6); max-height: 420px; overflow-y: auto }
+.add-menu.show { display: block }
+.add-menu-cat { font-size: .78rem; color: var(--tx2); padding: 8px 14px 3px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px }
+.add-menu-item { padding: 6px 14px; font-size: .95rem; color: var(--tx1); cursor: pointer; transition: background .1s }
+.add-menu-item:hover { background: var(--bg2); color: var(--tx0) }
 
 /* ── FAB ── */
-.fab {
-  position: fixed; bottom: 56px; right: 28px;
-  background: var(--accent-g); color: #fff; border: none;
-  border-radius: 28px; padding: 14px 28px; font-size: 1rem; font-weight: 700;
-  box-shadow: 0 4px 24px rgba(239,68,68,.35); cursor: pointer; z-index: 50;
-  transition: transform .15s, box-shadow .15s;
-}
-.fab:hover { transform: translateY(-2px); box-shadow: 0 6px 32px rgba(239,68,68,.45) }
-
-/* ── 空状態 ── */
-.empty-state {
-  text-align: center; color: var(--tx2); padding: 80px 20px; font-size: 1.05rem; line-height: 1.8;
-}
-.empty-state .hint { font-size: .9rem; margin-top: 16px; color: var(--tx2); opacity: .7 }
+.fab { position: fixed; bottom: 44px; right: 24px; background: var(--accent-g); color: #fff; border: none; border-radius: 28px; padding: 12px 26px; font-size: 1rem; font-weight: 700; box-shadow: 0 4px 24px rgba(239,68,68,.35); cursor: pointer; z-index: 50; transition: transform .15s }
+.fab:hover { transform: translateY(-2px) }
 
 /* ── トースト ── */
-.toast {
-  position: fixed; bottom: 48px; left: 50%; transform: translateX(-50%) translateY(20px);
-  background: var(--bg2); color: var(--tx0); padding: 10px 24px; border-radius: var(--radius);
-  font-size: .9rem; opacity: 0; transition: all .3s; pointer-events: none; z-index: 999;
-  border: 1px solid rgba(255,255,255,.1); box-shadow: 0 4px 24px rgba(0,0,0,.4);
-}
+.toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg2); color: var(--tx0); padding: 10px 24px; border-radius: var(--radius); font-size: 1rem; opacity: 0; transition: all .3s; pointer-events: none; z-index: 999; border: 1px solid rgba(255,255,255,.1) }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0) }
 
 /* ── フッター ── */
-.footer {
-  background: var(--bg1); border-top: 1px solid rgba(255,255,255,.06);
-  padding: 4px 20px; display: flex; align-items: center; gap: 12px;
-  font-size: .78rem; color: var(--tx2); flex-shrink: 0; height: 32px;
-}
+.footer { background: var(--bg1); border-top: 1px solid rgba(255,255,255,.06); padding: 4px 20px; display: flex; align-items: center; gap: 12px; font-size: .85rem; color: var(--tx2); flex-shrink: 0; height: 32px }
 .footer .dirty { color: #eab308; font-weight: 600 }
 
-/* ── ドラッグ中 ── */
-.card.dragging { opacity: .3 }
-.card.drop-above { border-top: 3px solid var(--accent) }
-.card.drop-below { border-bottom: 3px solid var(--accent) }
+/* ── 選択状態 ── */
+.ev-box.selected, .tl-section.selected { outline: 2px solid #60a5fa; outline-offset: 1px; box-shadow: 0 0 12px rgba(96,165,250,.25) }
+.ev-box.selected .ev-del { opacity: 1 }
 
-/* ── ローディング ── */
+/* ── 選択ツールバー ── */
+.sel-toolbar {
+  display: none; position: fixed; bottom: 44px; left: 50%; transform: translateX(-50%);
+  background: var(--bg1); border: 1px solid rgba(96,165,250,.3); border-radius: 12px;
+  padding: 6px 10px; gap: 6px; z-index: 60; box-shadow: 0 6px 24px rgba(0,0,0,.5);
+  align-items: center;
+}
+.sel-toolbar.show { display: flex }
+.sel-toolbar .sel-count { font-size: .85rem; color: #60a5fa; font-weight: 700; padding: 0 8px; white-space: nowrap }
+.sel-toolbar .btn { font-size: .85rem; padding: 5px 12px }
+
+/* ── 詳細パネル ── */
+.detail-panel {
+  display: none; position: fixed; top: 54px; right: 0; bottom: 32px; width: 340px;
+  background: var(--bg1); border-left: 1px solid rgba(255,255,255,.08);
+  overflow-y: auto; z-index: 80; padding: 16px; box-shadow: -4px 0 24px rgba(0,0,0,.3);
+}
+.detail-panel.show { display: block }
+.detail-panel h3 { font-size: 1rem; color: var(--tx0); margin-bottom: 12px; display: flex; align-items: center; gap: 8px }
+.detail-panel .detail-close { margin-left: auto; background: none; border: none; color: var(--tx2); font-size: 1.2rem; cursor: pointer; padding: 4px }
+.detail-panel .detail-close:hover { color: var(--tx0) }
+.detail-field { margin-bottom: 10px }
+.detail-field label { display: block; font-size: .78rem; color: rgba(255,255,255,.4); text-transform: uppercase; margin-bottom: 3px; letter-spacing: .3px }
+.detail-field input, .detail-field textarea, .detail-field select {
+  width: 100%; background: rgba(0,0,0,.2); border: 1px solid rgba(255,255,255,.08);
+  color: var(--tx0); border-radius: 5px; padding: 6px 10px; font-size: .95rem;
+}
+.detail-field input:focus, .detail-field textarea:focus { outline: none; border-color: rgba(96,165,250,.4) }
+.detail-field textarea { resize: vertical; min-height: 60px; line-height: 1.6; font-family: var(--font) }
+.detail-json { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.06) }
+.detail-json pre { font-size: .8rem; color: var(--tx2); white-space: pre-wrap; background: rgba(0,0,0,.15); padding: 8px; border-radius: 5px; max-height: 200px; overflow-y: auto }
+
+.empty-state { text-align: center; color: var(--tx2); padding: 80px 20px; font-size: 1rem; line-height: 1.8 }
 .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 12px; color: var(--tx2); padding: 80px }
-.spinner { width: 36px; height: 36px; border: 3px solid var(--bg3); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite }
+.spinner { width: 32px; height: 32px; border: 3px solid var(--bg3); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite }
 @keyframes spin { to { transform: rotate(360deg) } }
+
+/* ── 画像添付 ── */
+.ev-img-area { margin-top: 8px; position: relative }
+.ev-img-drop { border: 2px dashed rgba(255,255,255,.08); border-radius: 8px; padding: 8px; text-align: center; color: var(--tx2); font-size: .82rem; cursor: pointer; transition: all .15s; display: none }
+.ev-box:hover .ev-img-drop.empty { display: block }
+.ev-img-drop.dragover { display: block !important; border-color: var(--accent); background: rgba(239,68,68,.06); color: var(--tx0) }
+.ev-img-attach-btn { background: none; border: none; color: var(--tx2); font-size: .9rem; cursor: pointer; padding: 4px 8px; transition: color .12s }
+.ev-img-attach-btn:hover { color: var(--tx0) }
+
+.ev-thumb-row { display: flex; gap: 8px; align-items: center; margin-bottom: 4px }
+.ev-thumb { max-height: 80px; max-width: 120px; border-radius: 5px; object-fit: cover; cursor: pointer; transition: opacity .12s; border: 1px solid rgba(255,255,255,.08); flex-shrink: 0 }
+.ev-thumb:hover { opacity: .85 }
+.ev-img-del { background: none; border: none; color: rgba(255,255,255,.2); font-size: .8rem; cursor: pointer; padding: 2px 6px }
+.ev-img-del:hover { color: var(--accent) }
+.ev-img-span-label { font-size: .8rem; color: var(--tx2) }
+
+/* 縦バー（ブロック左側にオーバーレイ） */
+.tl-scroll { position: relative }
+.img-vbar { position: absolute; width: 8px; background: linear-gradient(180deg, #f472b6, #ec4899, #db2777); border-radius: 4px; z-index: 10; pointer-events: auto; cursor: pointer; box-shadow: 0 0 10px rgba(236,72,153,.5), 0 0 3px rgba(236,72,153,.8); transition: box-shadow .15s }
+.img-vbar:hover { box-shadow: 0 0 16px rgba(236,72,153,.7), 0 0 4px rgba(236,72,153,1) }
+.img-vbar-handle { position: absolute; left: -5px; width: 18px; height: 10px; background: #f472b6; border: 2px solid #fff; border-radius: 5px; cursor: ns-resize; z-index: 12; pointer-events: auto; opacity: 0; transition: opacity .15s, transform .1s; box-shadow: 0 1px 4px rgba(0,0,0,.5) }
+.img-vbar:hover .img-vbar-handle, .img-vbar-handle.active { opacity: 1 }
+.img-vbar-handle:hover { background: #f9a8d4; transform: scaleY(1.2) }
+.img-vbar-handle.active { opacity: 1; background: #fbcfe8; transform: scaleY(1.3) }
+.img-vbar-handle.top { top: -5px }
+.img-vbar-handle.bottom { bottom: -5px }
+
+/* 画像拡大オーバーレイ */
+.img-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 500; display: flex; align-items: center; justify-content: center; cursor: zoom-out }
+.img-overlay img { max-width: 90vw; max-height: 90vh; border-radius: 8px }
 </style>
 </head>
 <body>
@@ -195,461 +264,772 @@ input, select, textarea { font-family: var(--font); font-size: inherit }
   <select id="fileSel"></select>
   <span class="chapter-name" id="chapterName"></span>
   <div class="spacer"></div>
-  <span class="badge" id="countBadge">0 セリフ</span>
+  <span class="badge" id="countBadge">0</span>
+  <div class="filter-group">
+    <button class="btn-ft active" data-filter="all">全部</button>
+    <button class="btn-ft" data-filter="say">セリフのみ</button>
+    <button class="btn-ft" data-filter="chat">コメント欄のみ</button>
+  </div>
   <button class="btn btn-save" id="btnSave">保存</button>
   <button class="btn" id="btnOpen">開く</button>
   <input type="file" id="fileInput" accept=".json" hidden>
 </header>
 
-<main class="card-list" id="cardList">
-  <div class="card-list-inner" id="listInner">
+<main class="tl-scroll">
+  <div class="tl-wrap" id="tlWrap">
     <div class="loading" id="loadingView"><div class="spinner"></div><div>読み込み中...</div></div>
   </div>
 </main>
 
-<button class="fab" id="btnAdd">+ セリフ追加</button>
+<button class="fab" id="btnAdd">+ 追加</button>
 <div class="toast" id="toast"></div>
-<footer class="footer"><span id="statusMsg">起動中...</span><div class="spacer"></div><span>Ctrl+S 保存 / Ctrl+Z 戻す / Ctrl+Y やり直す</span></footer>
+<div class="add-menu" id="addMenu"></div>
+
+<!-- 選択ツールバー -->
+<div class="sel-toolbar" id="selToolbar">
+  <span class="sel-count" id="selCount">0 選択</span>
+  <button class="btn" id="selCopy" title="Ctrl+C">コピー</button>
+  <button class="btn" id="selPaste" title="Ctrl+V">ペースト</button>
+  <button class="btn" id="selDup">複製</button>
+  <button class="btn" id="selDel" style="color:var(--accent)">削除</button>
+  <button class="btn" id="selClear">選択解除</button>
+</div>
+
+<!-- 詳細パネル -->
+<div class="detail-panel" id="detailPanel">
+  <h3 id="detailTitle"><span></span><button class="detail-close" id="detailClose">×</button></h3>
+  <div id="detailBody"></div>
+  <div class="detail-json"><pre id="detailJson"></pre></div>
+</div>
+
+<footer class="footer"><span id="statusMsg">起動中...</span><div class="spacer"></div><span>Ctrl+S 保存 / Ctrl+C コピー / Ctrl+V 貼付 / Ctrl+D 複製 / Ctrl+Z 戻す / Del 削除 / Esc 解除</span></footer>
 
 <script>
-const OWNER = 'Alicetel-u', REPO = 'REC-OFF-AIR', BR = 'master', DIR = 'dialogue';
-const $ = s => document.querySelector(s);
+const OWNER='Alicetel-u',REPO='REC-OFF-AIR',BR='master',DIR='dialogue';
+const $=s=>document.querySelector(s);
+let data=null,dirty=false,fname='';
+let undoStack=[],redoStack=[],_undoTimer=null,_undoPending=false;
+let filterMode='all';
+let selected=new Set(); // 選択中のイベントインデックス
+let clipboard=[]; // コピーしたイベントのディープコピー
+let _lastClickIdx=-1; // Shift選択用
 
-let data = null, dirty = false, fname = '';
-let undoStack = [], redoStack = [];
-let _undoTimer = null, _undoPending = false;
+const CATS=[
+  {id:'say',label:'セリフ',color:'#f97316',cls:'say',types:['say','say_clear']},
+  {id:'chat',label:'チャット',color:'#3b82f6',cls:'chat',types:['chat','superchat']},
+  {id:'wait',label:'待機',color:'#64748b',cls:'wait',types:['wait','sleep']},
+  {id:'move',label:'移動',color:'#22c55e',cls:'move',types:['pos_z','pos_x','pos_z_await','pos_x_await','rot_y','head_x','walk_set']},
+  {id:'effect',label:'画面効果',color:'#a855f7',cls:'effect',types:['fade_black','fade_clear','horror_flash','horror_glitch','horror_tint','horror_tint_clear','scare_flash']},
+  {id:'audio',label:'音声',color:'#06b6d4',cls:'audio',types:['sfx','flashlight_on','flashlight_off','flashlight_flicker']},
+  {id:'media',label:'メディア',color:'#ec4899',cls:'media',types:['polaroid_video']},
+  {id:'youtube',label:'YouTube',color:'#ef4444',cls:'yt',types:['set_viewers']},
+  {id:'branch',label:'分岐',color:'#eab308',cls:'branch',types:['choice','label','goto','goto_route','set_route']},
+  {id:'game',label:'ゲーム',color:'#10b981',cls:'game',types:['stage_swap','use_ofuda']},
+  {id:'comment',label:'コメント',color:'#475569',cls:'comment',types:['_comment']},
+];
+function catFor(t){for(const c of CATS)if(c.types.includes(t))return c;return{id:'other',label:'?',color:'#64748b',cls:'wait',types:[]};}
+function boxCls(t){if(t==='superchat')return'ev-superchat';if(t==='sleep')return'ev-sleep';if(t==='say_clear')return'ev-say_clear';return'ev-'+catFor(t).cls;}
+const ICONS={say:'💬',say_clear:'🔇',chat:'👤',superchat:'💰',wait:'⏱',sleep:'⏸',pos_z:'↕',pos_x:'↔',pos_z_await:'⏳',pos_x_await:'⏳',rot_y:'↻',head_x:'⤡',walk_set:'🚶',fade_black:'◼',fade_clear:'◻',horror_flash:'⚡',horror_glitch:'⚡',horror_tint:'🎨',horror_tint_clear:'🎨',scare_flash:'💥',sfx:'🔊',flashlight_on:'🔦',flashlight_off:'🔦',flashlight_flicker:'🔦',polaroid_video:'🎬',set_viewers:'📺',choice:'🔀',label:'🏷',goto:'➡',goto_route:'🔀',set_route:'🎯',stage_swap:'🗺',use_ofuda:'🏮',_comment:'§'};
+const JA={say:'セリフ',say_clear:'セリフ消去',chat:'チャット',superchat:'スパチャ',wait:'待機',sleep:'強制待機',pos_z:'Z移動',pos_x:'X移動',pos_z_await:'Z待機',pos_x_await:'X待機',rot_y:'Y回転',head_x:'頭部上下',walk_set:'歩行切替',fade_black:'暗転',fade_clear:'明転',horror_flash:'フラッシュ',horror_glitch:'グリッチ',horror_tint:'色調変更',horror_tint_clear:'色調解除',scare_flash:'恐怖フラッシュ',sfx:'効果音',flashlight_on:'懐中電灯ON',flashlight_off:'懐中電灯OFF',flashlight_flicker:'フリッカー',polaroid_video:'動画再生',set_viewers:'視聴者数',choice:'選択肢',label:'ラベル',goto:'ジャンプ',goto_route:'ルート分岐',set_route:'ルート設定',stage_swap:'ステージ変更',use_ofuda:'お札使用',_comment:'コメント'};
 
 // ── 起動 ──
-(async () => { await loadFileList(); bindAll(); })();
+(async()=>{await loadFileList();bindFilter();bindAll()})();
 
-// ══════════ データ読み込み ══════════
+// ══════════ データ ══════════
+async function loadFileList(){
+  const sel=$('#fileSel');
+  try{const r=await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${DIR}?ref=${BR}`);if(!r.ok)throw new Error(r.status);
+    (await r.json()).filter(f=>f.name.endsWith('.json')).forEach(f=>{const o=document.createElement('option');o.value=f.name;o.textContent=f.name.replace('.json','');sel.appendChild(o)});
+    if(sel.options.length)await loadFile(sel.options[0].value);else{setStatus('JSONなし');$('#loadingView').innerHTML='<div class="empty-state">JSONがありません</div>';}
+  }catch(e){setStatus('接続エラー');$('#loadingView').innerHTML='<div class="empty-state">接続失敗<br><br><button class="btn btn-save" onclick="document.getElementById(\'fileInput\').click()">開く</button></div>';}
+}
+async function loadFile(f){fname=f;setStatus('読み込み中...');try{const r=await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BR}/${DIR}/${f}`);if(!r.ok)throw new Error(r.status);applyData(await r.json(),f)}catch(e){setStatus('エラー: '+e.message)}}
+function applyData(d,f){
+  data=d;dirty=false;undoStack=[];redoStack=[];fname=f;$('#chapterName').textContent=data.chapter||'';
+  const lv=$('#loadingView');if(lv)lv.remove();
+  try{const s=localStorage.getItem('roa_'+f);if(s){const{data:bk,t}=JSON.parse(s);const ago=Math.round((Date.now()-t)/60000);if(ago<1440&&bk&&bk.events&&confirm(`${ago}分前のバックアップを復元？`)){data=bk;dirty=true}localStorage.removeItem('roa_'+f)}}catch(e){}
+  render();setStatus(dirty?'● 未保存（復元済み）':f);
+}
 
-async function loadFileList() {
-  const sel = $('#fileSel');
-  try {
-    const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${DIR}?ref=${BR}`);
-    if (!r.ok) throw new Error(r.status);
-    const files = await r.json();
-    files.filter(f => f.name.endsWith('.json')).forEach(f => {
-      const o = document.createElement('option');
-      o.value = f.name; o.textContent = f.name.replace('.json', '');
-      sel.appendChild(o);
+// ══════════ フィルター ══════════
+function bindFilter(){
+  document.querySelectorAll('.btn-ft').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.btn-ft').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');filterMode=btn.dataset.filter;render();
     });
-    if (sel.options.length) await loadFile(sel.options[0].value);
-    else { setStatus('JSONなし'); $('#loadingView').innerHTML = '<div class="empty-state">dialogue/ にJSONがありません</div>'; }
-  } catch (e) {
-    setStatus('GitHub接続エラー');
-    $('#loadingView').innerHTML = '<div class="empty-state">接続失敗<br><br><button class="btn btn-save" onclick="document.getElementById(\'fileInput\').click()">ファイルを開く</button></div>';
-  }
+  });
 }
-
-async function loadFile(f) {
-  fname = f; setStatus('読み込み中...');
-  try {
-    const r = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BR}/${DIR}/${f}`);
-    if (!r.ok) throw new Error(r.status);
-    applyData(await r.json(), f);
-  } catch (e) { setStatus('エラー: ' + e.message); }
-}
-
-function applyData(d, f, skipBackupCheck) {
-  data = d; dirty = false; undoStack = []; redoStack = [];
-  fname = f;
-  $('#chapterName').textContent = data.chapter || '';
-  const lv = $('#loadingView');
-  if (lv) lv.remove();
-
-  // localStorageにバックアップがあれば復元を提案
-  if (!skipBackupCheck) {
-    try {
-      const saved = localStorage.getItem('roa_' + f);
-      if (saved) {
-        const { data: bkData, t } = JSON.parse(saved);
-        const ago = Math.round((Date.now() - t) / 60000);
-        if (ago < 1440 && bkData && bkData.events && confirm(`${ago}分前の未保存バックアップがあります。復元しますか？`)) {
-          data = bkData; dirty = true;
-        }
-        localStorage.removeItem('roa_' + f);
-      }
-    } catch (e) {}
-  }
-
-  render();
-  setStatus(dirty ? '● 未保存（復元済み）' : f);
-}
-
-// ══════════ ビュー導出 ══════════
-
-function getSayEntries() {
-  if (!data || !data.events) return [];
-  return data.events.map((ev, i) => ({ ev, idx: i })).filter(({ ev }) => ev.type === 'say');
+function isHidden(t){
+  if(filterMode==='all')return false;
+  if(filterMode==='say')return t!=='say'&&t!=='say_clear';
+  if(filterMode==='chat')return t!=='chat'&&t!=='superchat';
+  return false;
 }
 
 // ══════════ レンダリング ══════════
+function render(){
+  if(!data||!data.events)return;
+  const evs=data.events,wrap=$('#tlWrap');wrap.innerHTML='';
+  let sayN=0,cumTime=0;const totalSay=evs.filter(e=>e.type==='say').length;
+  const frag=document.createDocumentFragment();
 
-function render() {
-  const entries = getSayEntries();
-  const total = entries.length;
-  $('#countBadge').textContent = total + ' セリフ';
+  for(let i=0;i<evs.length;i++){
+    const ev=evs[i];
+    // 累計時間は常に計算（フィルターに関わらず）
+    const isWait=ev.type==='wait'||ev.type==='sleep';
+    if(isWait) cumTime+=(ev.sec||0);
+    if(isHidden(ev.type)) continue;
+    if(ev.type==='say') sayN++;
 
-  const inner = $('#listInner');
-  inner.innerHTML = '';
+    // _comment → セクション見出し（装飾線のみは非表示）
+    if(ev.type==='_comment'){
+      const txt=(ev._||'').replace(/[═─]/g,'').trim();
+      if(!txt){continue;}
+      frag.appendChild(mkSection(ev,i));
+      continue;
+    }
 
-  if (!total) {
-    inner.innerHTML = '<div class="empty-state">セリフがありません<div class="hint">右下の「+ セリフ追加」ボタンで追加しましょう</div></div>';
-    return;
+    // タイムライン行
+    const row=document.createElement('div');row.className='tl-row';row.dataset.idx=i;
+
+    // 左: 時間マーカー
+    const timeCol=document.createElement('div');timeCol.className='tl-time';
+    if(isWait) {timeCol.classList.add('has-time');timeCol.textContent=fmtTime(cumTime);}
+
+    // 中: 縦線＋ドット
+    const lineCol=document.createElement('div');lineCol.className='tl-line';
+    const dot=document.createElement('div');dot.className='tl-dot';
+    const cat=catFor(ev.type);
+    dot.style.background=cat.color;
+    lineCol.appendChild(dot);
+
+    // 右: ボックス
+    const content=document.createElement('div');content.className='tl-content';
+    content.appendChild(mkBox(ev,i,sayN,totalSay,cumTime));
+
+    setupDrag(row,i);
+    row.append(timeCol,lineCol,content);
+    frag.appendChild(row);
+  }
+  wrap.appendChild(frag);
+  $('#countBadge').textContent=`${evs.length} 件 / ${totalSay} セリフ`;
+  requestAnimationFrame(()=>renderImgBars());
+}
+
+// ── セクション見出し ──
+function mkSection(ev,idx){
+  const row=document.createElement('div');row.className='tl-section';row.dataset.idx=idx;
+  const timeCol=document.createElement('div');timeCol.className='tl-time';
+  const lineCol=document.createElement('div');lineCol.className='tl-line';
+  const dot=document.createElement('div');dot.className='tl-dot';dot.style.background='var(--c-comment)';dot.style.width='6px';dot.style.height='6px';
+  lineCol.appendChild(dot);
+  const bar=document.createElement('div');bar.className='tl-section-bar';
+  const inp=document.createElement('input');inp.className='tl-section-input';
+  inp.value=(ev._||'').replace(/[═─]/g,'').trim();inp.placeholder='セクション名';
+  inp.addEventListener('input',()=>{pushUndo();data.events[idx]._=inp.value;markDirty()});
+  bar.appendChild(inp);
+  // 上下の＋ボタン
+  const addTop=document.createElement('div');addTop.className='ev-add-zone';
+  const btnTop=document.createElement('button');btnTop.className='ev-add-btn ev-add-top';btnTop.textContent='+';
+  btnTop.addEventListener('click',e=>{e.stopPropagation();showAddMenu(e,idx)});
+  addTop.appendChild(btnTop);bar.prepend(addTop);
+  const addBot=document.createElement('div');addBot.className='ev-add-zone';
+  const btnBot=document.createElement('button');btnBot.className='ev-add-btn ev-add-bottom';btnBot.textContent='+';
+  btnBot.addEventListener('click',e=>{e.stopPropagation();showAddMenu(e,idx+1)});
+  addBot.appendChild(btnBot);bar.appendChild(addBot);
+
+  setupDrag(row,idx);
+  bar.addEventListener('click',e=>{if(e.target.closest('input,button'))return;handleSelect(idx,e)});
+  if(selected.has(idx)) row.classList.add('selected');
+  row.append(timeCol,lineCol,bar);return row;
+}
+
+// ── ボックス ──
+function mkBox(ev,idx,sayN,totalSay,cumTime){
+  const box=document.createElement('div');box.className='ev-box '+boxCls(ev.type);
+
+  // ヘッダー
+  const head=document.createElement('div');head.className='ev-head';
+  const grip=document.createElement('span');grip.className='ev-grip';grip.textContent='⠿';
+  const icon=document.createElement('span');icon.className='ev-icon';icon.textContent=ICONS[ev.type]||'•';
+  const badge=document.createElement('span');badge.className='ev-type-badge';badge.textContent=ev.type+(JA[ev.type]?' '+JA[ev.type]:'');
+  const sp=document.createElement('div');sp.className='spacer';
+  const del=document.createElement('button');del.className='ev-del';del.textContent='×';
+  del.addEventListener('click',()=>deleteEvent(idx));
+  head.append(grip,icon,badge);
+
+  // タイプ固有ヘッダー
+  if(ev.type==='say'){
+    const num=el('span','',`#${sayN}/${totalSay}`);num.style.cssText='font-size:.85rem;color:rgba(255,255,255,.3);margin-left:3px';
+    const vb=el('span','ev-type-badge',ev.voice||'未設定');vb.id='vb_'+idx;
+    vb.style.cssText=ev.voice?'background:rgba(249,115,22,.2);color:#f97316':'background:rgba(255,255,255,.05);color:rgba(255,255,255,.25)';
+    head.append(num,sp,vb,del);
+  } else if(ev.type==='chat'&&ev.utype&&ev.utype!=='viewer'){
+    const ub=el('span','utype-badge utype-'+ev.utype,ev.utype.toUpperCase());head.append(ub,sp,del);
+  } else if(ev.type==='wait'||ev.type==='sleep'){
+    const t=el('span','',fmtTime(cumTime));t.style.cssText='font-size:.85rem;color:rgba(255,255,255,.25);margin-left:auto;font-family:monospace';
+    head.append(sp,t,del);
+  } else { head.append(sp,del); }
+
+  box.appendChild(head);
+  buildFields(box,ev,idx);
+  buildImgArea(box,ev,idx);
+
+  // クリック選択
+  box.addEventListener('click',e=>{
+    // input/textarea/button内クリックは選択しない
+    if(e.target.closest('input,textarea,button,select'))return;
+    handleSelect(idx,e);
+  });
+  // ダブルクリック → 詳細パネル
+  box.addEventListener('dblclick',e=>{
+    if(e.target.closest('input,textarea,button,select'))return;
+    openDetail(idx);
+  });
+
+  // 上下の＋ボタン
+  const addTop=document.createElement('div');addTop.className='ev-add-zone';
+  const btnTop=document.createElement('button');btnTop.className='ev-add-btn ev-add-top';btnTop.textContent='+';
+  btnTop.addEventListener('click',e=>{e.stopPropagation();showAddMenu(e,idx)});
+  addTop.appendChild(btnTop);box.prepend(addTop);
+
+  const addBot=document.createElement('div');addBot.className='ev-add-zone';
+  const btnBot=document.createElement('button');btnBot.className='ev-add-btn ev-add-bottom';btnBot.textContent='+';
+  btnBot.addEventListener('click',e=>{e.stopPropagation();showAddMenu(e,idx+1)});
+  addBot.appendChild(btnBot);box.appendChild(addBot);
+
+  if(selected.has(idx)) box.classList.add('selected');
+  return box;
+}
+
+// ── フィールド構築 ──
+function buildFields(box,ev,idx){
+  switch(ev.type){
+    case 'say': bSay(box,ev,idx);break;
+    case 'say_clear': break;
+    case 'chat': bRow(box,[['ユーザー',sIn(ev,'user',idx,'short')],['メッセージ',sIn(ev,'msg',idx,'wide')]]);break;
+    case 'superchat': bRow(box,[['名前',sIn(ev,'name',idx,'short')],['¥',nIn(ev,'amount',idx)],['メッセージ',sIn(ev,'msg',idx,'wide')]]);break;
+    case 'wait':case 'sleep': bRow(box,[['秒数',nIn(ev,'sec',idx)]]);break;
+    case 'rot_y':case 'head_x': bRow(box,[['目標値',nIn(ev,'target',idx)],['時間',nIn(ev,'dur',idx)]]);break;
+    case 'pos_z':case 'pos_x': bRow(box,[['目標値',nIn(ev,'target',idx)],['時間',nIn(ev,'dur',idx)],['ID',sIn(ev,'id',idx,'short')]]);break;
+    case 'pos_z_await':case 'pos_x_await': bRow(box,[['ID',sIn(ev,'id',idx,'short')]]);break;
+    case 'walk_set': bToggle(box,ev,idx,'on');break;
+    case 'fade_black':case 'fade_clear':case 'horror_flash': bRow(box,[['時間',nIn(ev,'dur',idx)]]);break;
+    case 'horror_glitch': bRow(box,[['強度',nIn(ev,'intensity',idx)],['回数',nIn(ev,'count',idx)]]);break;
+    case 'scare_flash': bRow(box,[['色',selIn(ev,'color',idx,[{v:'white',l:'⬜ white（白）'},{v:'red',l:'🟥 red（赤）'}],'mid')]]);break;
+    case 'sfx': {const r=[['音声',selIn(ev,'sound',idx,[
+      {v:'ambient_wind',l:'🌬 ambient_wind（風）'},
+      {v:'door_creak',l:'🚪 door_creak（ドア軋み）'},
+      {v:'monster_growl',l:'👹 monster_growl（唸り声）'},
+      {v:'footstep_leaves',l:'🍂 footstep_leaves（落ち葉）'},
+      {v:'footstep_gravel',l:'🪨 footstep_gravel（砂利）'},
+      {v:'footstep_wooden',l:'🪵 footstep_wooden（木の床）'},
+      {v:'footstep_concrete',l:'🏢 footstep_concrete（コンクリ）'},
+      {v:'footstep_metal',l:'⚙ footstep_metal（金属）'},
+      {v:'footstep_mud',l:'💧 footstep_mud（泥）'},
+      {v:'footstep_stairs',l:'🪜 footstep_stairs（階段）'},
+      {v:'superchat_chime',l:'💰 superchat_chime（スパチャ音）'},
+    ],'wide')]];r.push(['音量',nIn(ev,'vol',idx)]);bRow(box,r);break;}
+    case 'flashlight_on':case 'flashlight_off':case 'flashlight_flicker':
+    case 'horror_tint':case 'horror_tint_clear':case 'use_ofuda': break;
+    case 'polaroid_video': bRow(box,[['パス',selIn(ev,'path',idx,[{v:'res://assets/video/bus_arrival.ogv',l:'🚌 バス到着 (bus_arrival.ogv)'}],'wide')]]);break;
+    case 'set_viewers': bRow(box,[['人数',nIn(ev,'count',idx)]]);break;
+    case 'choice': bChoice(box,ev,idx);break;
+    case 'label': bRow(box,[['名前',sIn(ev,'name',idx,'mid')]]);break;
+    case 'goto': bRow(box,[['ラベル',selIn(ev,'label',idx,labelOpts(),'mid')]]);break;
+    case 'goto_route': bGotoRoute(box,ev);break;
+    case 'set_route': bRow(box,[['ルート',selIn(ev,'route',idx,[{v:'0',l:'0 — ノーマル'},{v:'1',l:'1 — トゥルー'},{v:'2',l:'2 — バッド'}],'mid')]]);break;
+    case 'stage_swap': bRow(box,[['シーン',selIn(ev,'scene',idx,[{v:'res://assets/models/public_toilet/PublicToilet.tscn',l:'🚻 公衆トイレ'},{v:'res://scenes/Stage_Village.tscn',l:'🏘 廃村'}],'mid')]]);if(ev.spawn){const r=document.createElement('div');r.className='ev-fields';r.innerHTML=`<span class="ev-field-label">出現位置</span><span style="font-size:.9rem;font-family:monospace;color:rgba(255,255,255,.4)">[${ev.spawn.join(', ')}]</span>`;box.appendChild(r);}break;
+    default: {const p=document.createElement('pre');p.style.cssText='font-size:.85rem;color:rgba(255,255,255,.25);white-space:pre-wrap;margin-top:3px';p.textContent=JSON.stringify(ev,null,2);box.appendChild(p);}
+  }
+}
+
+function bSay(box,ev,idx){
+  const ta=document.createElement('textarea');ta.className='ev-textarea';ta.value=ev.text||'';ta.placeholder='セリフを入力...';ta.rows=1;
+  ta.addEventListener('input',()=>{pushUndo();data.events[idx].text=ta.value;markDirty();autoResize(ta)});
+  requestAnimationFrame(()=>autoResize(ta));box.appendChild(ta);
+  // 読み
+  const hasR=ev.reading&&ev.reading.length>0;
+  const rt=document.createElement('button');rt.className='reading-toggle';rt.textContent=hasR?'読み ▲':'読み ▼';
+  const rb=document.createElement('div');rb.hidden=!hasR;
+  const ra=document.createElement('textarea');ra.className='field-reading';ra.value=ev.reading||'';ra.placeholder='読み（空欄＝セリフと同じ）';ra.rows=1;
+  ra.addEventListener('input',()=>{pushUndo();data.events[idx].reading=ra.value||undefined;markDirty();autoResize(ra)});
+  requestAnimationFrame(()=>autoResize(ra));
+  rt.addEventListener('click',()=>{rb.hidden=!rb.hidden;rt.textContent=rb.hidden?'読み ▼':'読み ▲';if(!rb.hidden){ra.focus();autoResize(ra)}});
+  rb.appendChild(ra);const rs=document.createElement('div');rs.append(rt,rb);box.appendChild(rs);
+  // Voice
+  const ve=document.createElement('div');ve.style.cssText='margin-top:3px;display:flex;align-items:center;gap:4px';
+  ve.append(el('span','ev-field-label','VOICE'));
+  const vi=document.createElement('input');vi.className='ev-input ev-input-short';vi.value=ev.voice||'';vi.placeholder='v001';
+  vi.addEventListener('input',()=>{pushUndo();data.events[idx].voice=vi.value;markDirty();const vb=document.getElementById('vb_'+idx);if(vb){vb.textContent=vi.value||'未設定';vb.style.cssText=vi.value?'background:rgba(249,115,22,.2);color:#f97316':'background:rgba(255,255,255,.05);color:rgba(255,255,255,.25)'}});
+  ve.appendChild(vi);box.appendChild(ve);
+}
+function bRow(box,fields){const r=document.createElement('div');r.className='ev-fields';fields.forEach(([l,inp])=>{const f=document.createElement('div');f.className='ev-field';f.append(el('span','ev-field-label',l),inp);r.appendChild(f)});box.appendChild(r)}
+function bToggle(box,ev,idx,key){const r=document.createElement('div');r.className='ev-fields';const btn=document.createElement('button');btn.className='btn';btn.style.cssText='padding:2px 10px;font-size:.78rem';btn.textContent=ev[key]?'ON':'OFF';btn.addEventListener('click',()=>{pushUndoImmediate();data.events[idx][key]=!data.events[idx][key];btn.textContent=data.events[idx][key]?'ON':'OFF';markDirty()});const f=document.createElement('div');f.className='ev-field';f.append(el('span','ev-field-label',key.toUpperCase()),btn);r.appendChild(f);box.appendChild(r)}
+function bChoice(box,ev){const list=document.createElement('div');list.className='choice-list';(ev.choices||[]).forEach((c,ci)=>{const item=document.createElement('div');item.className='choice-item';item.innerHTML=`<div style="font-weight:500">${ci+1}. ${c.text||''}</div>${c.sub?`<div style="font-size:.82rem;color:rgba(255,255,255,.35)">${c.sub}</div>`:''}${ev.targets&&ev.targets[ci]?`<div class="choice-item-target">→ ${ev.targets[ci]}</div>`:''}`;list.appendChild(item)});box.appendChild(list)}
+function bGotoRoute(box,ev){if(!ev.routes)return;const list=document.createElement('div');list.className='route-list';Object.entries(ev.routes).forEach(([k,v])=>{const item=document.createElement('div');item.className='route-item';item.textContent=`ルート ${k} → ${v}`;list.appendChild(item)});box.appendChild(list)}
+
+// ── 画像添付（ブロック内UI） ──
+function buildImgArea(box,ev,idx){
+  const area=document.createElement('div');area.className='ev-img-area';
+
+  if(ev._img&&ev._img.data){
+    // サムネイル行＋範囲表示＋削除
+    const row=document.createElement('div');row.className='ev-thumb-row';
+    const img=document.createElement('img');img.className='ev-thumb';img.src=ev._img.data;
+    img.addEventListener('click',e=>{e.stopPropagation();showImgOverlay(ev._img.data)});
+    const up=ev._img.spanUp||0, down=ev._img.spanDown||0;
+    const total=up+1+down;
+    const lbl=el('span','ev-img-span-label',`📎 ${total} ブロック`);
+    lbl.dataset.imgIdx=idx;
+    const del=document.createElement('button');del.className='ev-img-del';del.textContent='🗑 削除';
+    del.addEventListener('click',e=>{e.stopPropagation();pushUndoImmediate();delete data.events[idx]._img;markDirty();render()});
+    row.append(img,lbl,del);
+    area.appendChild(row);
+  } else {
+    // ドロップゾーン＋追加ボタン
+    const drop=document.createElement('div');drop.className='ev-img-drop empty';
+    const btn=document.createElement('button');btn.className='ev-img-attach-btn';btn.textContent='📎 画像を追加';
+    btn.addEventListener('click',e=>{e.stopPropagation();pickImage(idx)});
+    drop.appendChild(btn);
+    area.appendChild(drop);
   }
 
-  const frag = document.createDocumentFragment();
-  entries.forEach(({ ev, idx }, displayNum) => {
-    // カード間の挿入ボタン（最初のカードの前にも配置）
-    if (displayNum === 0) frag.appendChild(mkInsertGap(idx));
-    frag.appendChild(mkCard(ev, idx, displayNum + 1, total));
-    frag.appendChild(mkInsertGap(idx + 1));
+  // ドラッグ&ドロップ（ボックス全体で画像受付）
+  box.addEventListener('dragover',e=>{
+    if(!e.dataTransfer.types.includes('Files'))return;
+    e.preventDefault();e.dataTransfer.dropEffect='copy';
+    const d=box.querySelector('.ev-img-drop');
+    if(d)d.classList.add('dragover');
+    else box.style.outline='2px dashed #ec4899';
   });
-  inner.appendChild(frag);
+  box.addEventListener('dragleave',e=>{
+    if(box.contains(e.relatedTarget))return;
+    const d=box.querySelector('.ev-img-drop');if(d)d.classList.remove('dragover');
+    box.style.outline='';
+  });
+  box.addEventListener('drop',e=>{
+    const file=[...e.dataTransfer.files].find(f=>f.type.startsWith('image/'));
+    if(!file)return; // 画像でなければ並べ替え処理に任せる
+    e.preventDefault();e.stopPropagation();
+    const d=box.querySelector('.ev-img-drop');if(d)d.classList.remove('dragover');
+    box.style.outline='';
+    attachImage(idx,file);
+  });
+
+  box.appendChild(area);
 }
 
-function mkCard(ev, origIdx, num, total) {
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.dataset.idx = origIdx;
-
-  // ── ヘッダー ──
-  const head = document.createElement('div');
-  head.className = 'card-head';
-
-  const grip = document.createElement('span');
-  grip.className = 'grip'; grip.textContent = '⠿'; grip.draggable = true;
-  grip.addEventListener('dragstart', e => {
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', String(origIdx));
-    card.classList.add('dragging');
-  });
-  grip.addEventListener('dragend', () => {
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('dragging', 'drop-above', 'drop-below'));
-  });
-
-  card.addEventListener('dragover', e => {
-    e.preventDefault();
-    card.classList.remove('drop-above', 'drop-below');
-    const rect = card.getBoundingClientRect();
-    card.classList.add(e.clientY < rect.top + rect.height / 2 ? 'drop-above' : 'drop-below');
-  });
-  card.addEventListener('dragleave', () => card.classList.remove('drop-above', 'drop-below'));
-  card.addEventListener('drop', e => {
-    e.preventDefault();
-    card.classList.remove('drop-above', 'drop-below');
-    const fromIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
-    const toIdx = origIdx;
-    if (isNaN(fromIdx) || fromIdx === toIdx) return;
-    const rect = card.getBoundingClientRect();
-    const insertAfter = e.clientY >= rect.top + rect.height / 2;
+function attachImage(idx,file){
+  const reader=new FileReader();
+  reader.onload=e=>{
     pushUndoImmediate();
-    const [removed] = data.events.splice(fromIdx, 1);
-    let insertPos = insertAfter ? toIdx : toIdx;
-    if (fromIdx < toIdx) insertPos--;
-    if (insertAfter) insertPos++;
-    data.events.splice(insertPos, 0, removed);
-    markDirty(); render();
-  });
-
-  const numLabel = document.createElement('span');
-  numLabel.className = 'card-num';
-  numLabel.textContent = `#${num} / ${total}`;
-
-  const spacer = document.createElement('div');
-  spacer.className = 'spacer';
-
-  const voiceBadge = document.createElement('span');
-  voiceBadge.className = 'voice-badge' + (ev.voice ? '' : ' empty');
-  voiceBadge.textContent = ev.voice || '未設定';
-
-  const delBtn = document.createElement('button');
-  delBtn.className = 'btn-del'; delBtn.textContent = '×'; delBtn.title = '削除';
-  delBtn.addEventListener('click', () => deleteSay(origIdx));
-
-  head.append(grip, numLabel, spacer, voiceBadge, delBtn);
-
-  // ── ボディ ──
-  const body = document.createElement('div');
-
-  // セリフテキスト
-  const textArea = document.createElement('textarea');
-  textArea.className = 'field-text';
-  textArea.value = ev.text || '';
-  textArea.placeholder = 'セリフを入力...';
-  textArea.rows = 1;
-  textArea.addEventListener('input', () => {
-    pushUndo(); data.events[origIdx].text = textArea.value; markDirty();
-    autoResize(textArea);
-  });
-  requestAnimationFrame(() => autoResize(textArea));
-
-  // 読みセクション
-  const readingSec = document.createElement('div');
-  readingSec.className = 'reading-section';
-
-  const readingToggle = document.createElement('button');
-  readingToggle.className = 'reading-toggle';
-  const hasReading = ev.reading && ev.reading.length > 0;
-  readingToggle.textContent = hasReading ? '読み（発音指定）▲' : '読み（発音指定）▼';
-
-  const readingBody = document.createElement('div');
-  readingBody.className = 'reading-body';
-  readingBody.hidden = !hasReading;
-
-  const readingArea = document.createElement('textarea');
-  readingArea.className = 'field-reading';
-  readingArea.value = ev.reading || '';
-  readingArea.placeholder = 'VOICEVOXに送る読みを入力（空欄＝セリフと同じ）';
-  readingArea.rows = 1;
-  readingArea.addEventListener('input', () => {
-    pushUndo(); data.events[origIdx].reading = readingArea.value || undefined; markDirty();
-    autoResize(readingArea);
-  });
-  requestAnimationFrame(() => autoResize(readingArea));
-
-  readingToggle.addEventListener('click', () => {
-    readingBody.hidden = !readingBody.hidden;
-    readingToggle.textContent = readingBody.hidden ? '読み（発音指定）▼' : '読み（発音指定）▲';
-    if (!readingBody.hidden) { readingArea.focus(); autoResize(readingArea); }
-  });
-
-  readingBody.appendChild(readingArea);
-  readingSec.append(readingToggle, readingBody);
-
-  // Voice ID 編集
-  const voiceEdit = document.createElement('div');
-  voiceEdit.className = 'voice-edit';
-
-  const voiceLabel = document.createElement('span');
-  voiceLabel.className = 'voice-label'; voiceLabel.textContent = 'Voice ID';
-
-  const voiceInput = document.createElement('input');
-  voiceInput.type = 'text'; voiceInput.className = 'field-voice';
-  voiceInput.value = ev.voice || '';
-  voiceInput.placeholder = 'v001';
-  voiceInput.addEventListener('input', () => {
-    pushUndo(); data.events[origIdx].voice = voiceInput.value; markDirty();
-    voiceBadge.textContent = voiceInput.value || '未設定';
-    voiceBadge.className = 'voice-badge' + (voiceInput.value ? '' : ' empty');
-  });
-
-  voiceEdit.append(voiceLabel, voiceInput);
-
-  body.append(textArea, readingSec, voiceEdit);
-  card.append(head, body);
-  return card;
+    data.events[idx]._img={data:e.target.result,spanUp:0,spanDown:0};
+    markDirty();render();
+    toast('画像を追加しました');
+  };
+  reader.readAsDataURL(file);
 }
 
-function mkInsertGap(insertIdx) {
-  const gap = document.createElement('div');
-  gap.className = 'insert-gap';
-  const btn = document.createElement('button');
-  btn.className = 'insert-btn'; btn.textContent = '+'; btn.title = 'ここにセリフを追加';
-  btn.addEventListener('click', () => addSayAt(insertIdx));
-  gap.appendChild(btn);
-  return gap;
+function pickImage(idx){
+  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+  inp.addEventListener('change',()=>{if(inp.files.length)attachImage(idx,inp.files[0])});
+  inp.click();
+}
+
+function showImgOverlay(src){
+  const ov=document.createElement('div');ov.className='img-overlay';
+  const img=document.createElement('img');img.src=src;
+  ov.appendChild(img);document.body.appendChild(ov);
+  ov.addEventListener('click',()=>ov.remove());
+  document.addEventListener('keydown',function esc(e){if(e.key==='Escape'){ov.remove();document.removeEventListener('keydown',esc)}});
+}
+
+// ── 縦バー（左側、ブロックまたぎ） ──
+function renderImgBars(){
+  document.querySelectorAll('.img-vbar').forEach(e=>e.remove());
+  if(!data||!data.events)return;
+  const scroll=$('.tl-scroll');
+  const scrollRect=scroll.getBoundingClientRect();
+  const scrollTop=scroll.scrollTop;
+
+  const rowMap={};
+  document.querySelectorAll('.tl-row[data-idx],.tl-section[data-idx]').forEach(r=>{
+    rowMap[parseInt(r.dataset.idx,10)]=r;
+  });
+  const vis=Object.keys(rowMap).map(Number).sort((a,b)=>a-b);
+
+  data.events.forEach((ev,idx)=>{
+    if(!ev._img||!ev._img.data)return;
+    const anchorRow=rowMap[idx];
+    if(!anchorRow)return;
+
+    const anchorVis=vis.indexOf(idx);
+    if(anchorVis<0)return;
+    const spanUp=Math.max(0,ev._img.spanUp||0);
+    const spanDown=Math.max(0,ev._img.spanDown||0);
+
+    const topVis=Math.max(0,anchorVis-spanUp);
+    const botVis=Math.min(vis.length-1,anchorVis+spanDown);
+    const topRow=rowMap[vis[topVis]];
+    const botRow=rowMap[vis[botVis]];
+
+    const topRect=topRow.getBoundingClientRect();
+    const botRect=botRow.getBoundingClientRect();
+    const barTop=topRect.top-scrollRect.top+scrollTop;
+    const barBot=botRect.bottom-scrollRect.top+scrollTop;
+
+    // 縦バーのX位置 = ブロックのすぐ左
+    const evBox=anchorRow.querySelector('.ev-box');
+    const boxRect=evBox?evBox.getBoundingClientRect():topRect;
+    const barLeft=boxRect.left-scrollRect.left-12;
+
+    // 縦バー
+    const bar=document.createElement('div');bar.className='img-vbar';
+    bar.style.left=barLeft+'px';
+    bar.style.top=barTop+'px';
+    bar.style.height=Math.max(14,barBot-barTop)+'px';
+
+    // 上ハンドル
+    const hTop=document.createElement('div');hTop.className='img-vbar-handle top';
+    bar.appendChild(hTop);
+    // 下ハンドル
+    const hBot=document.createElement('div');hBot.className='img-vbar-handle bottom';
+    bar.appendChild(hBot);
+
+    // ドラッグ: 上ハンドル
+    initVBarDrag(hTop,ev,idx,anchorVis,vis,rowMap,scroll,scrollRect,'up');
+    // ドラッグ: 下ハンドル
+    initVBarDrag(hBot,ev,idx,anchorVis,vis,rowMap,scroll,scrollRect,'down');
+
+    scroll.appendChild(bar);
+  });
+}
+
+function initVBarDrag(handle,ev,idx,anchorVis,vis,rowMap,scroll,scrollRect,dir){
+  handle.addEventListener('mousedown',me=>{
+    me.preventDefault();me.stopPropagation();
+    handle.classList.add('active');
+    function onMove(e){
+      const mouseY=e.clientY-scrollRect.top+scroll.scrollTop;
+      let newSpan=0;
+      if(dir==='down'){
+        for(let vi=anchorVis;vi<vis.length;vi++){
+          const r=rowMap[vis[vi]];
+          const rr=r.getBoundingClientRect();
+          const rMid=rr.top+rr.height/2-scrollRect.top+scroll.scrollTop;
+          if(mouseY>=rMid) newSpan=vi-anchorVis;
+        }
+        newSpan=Math.max(0,newSpan);
+        if(newSpan!==ev._img.spanDown){ev._img.spanDown=newSpan;markDirty();updateImgLabel(idx,ev);renderImgBars();}
+      } else {
+        for(let vi=anchorVis;vi>=0;vi--){
+          const r=rowMap[vis[vi]];
+          const rr=r.getBoundingClientRect();
+          const rMid=rr.top+rr.height/2-scrollRect.top+scroll.scrollTop;
+          if(mouseY<=rMid) newSpan=anchorVis-vi;
+        }
+        newSpan=Math.max(0,newSpan);
+        if(newSpan!==ev._img.spanUp){ev._img.spanUp=newSpan;markDirty();updateImgLabel(idx,ev);renderImgBars();}
+      }
+    }
+    function onUp(){handle.classList.remove('active');pushUndoImmediate();document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);}
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('mouseup',onUp);
+  });
+}
+
+function updateImgLabel(idx,ev){
+  const lbl=document.querySelector(`[data-img-idx="${idx}"]`);
+  if(lbl){const total=(ev._img.spanUp||0)+1+(ev._img.spanDown||0);lbl.textContent=`📎 ${total} ブロック`;}
+}
+
+// スクロール時にバーを再描画
+let _imgBarRaf=0;
+document.querySelector('.tl-scroll')?.addEventListener('scroll',()=>{
+  cancelAnimationFrame(_imgBarRaf);
+  _imgBarRaf=requestAnimationFrame(()=>renderImgBars());
+});
+
+// ── ヘルパー ──
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text)e.textContent=text;return e}
+function sIn(ev,key,idx,size){const i=document.createElement('input');i.className='ev-input '+(size==='wide'?'ev-input-wide':size==='mid'?'ev-input-mid':'ev-input-short');i.value=ev[key]!=null?ev[key]:'';i.addEventListener('input',()=>{pushUndo();data.events[idx][key]=i.value;markDirty()});return i}
+function nIn(ev,key,idx){const i=document.createElement('input');i.type='number';i.step='any';i.className='ev-input ev-input-num';i.value=ev[key]!=null?ev[key]:'';i.addEventListener('input',()=>{pushUndo();const v=parseFloat(i.value);data.events[idx][key]=isNaN(v)?0:v;markDirty()});return i}
+function selIn(ev,key,idx,opts,size){const s=document.createElement('select');s.className='ev-input '+(size==='wide'?'ev-input-wide':size==='mid'?'ev-input-mid':'ev-input-short');const cur=ev[key]!=null?String(ev[key]):'';opts.forEach(o=>{const opt=document.createElement('option');const val=typeof o==='object'?o.v:o;const lbl=typeof o==='object'?o.l:o;opt.value=val;opt.textContent=lbl;if(String(val)===cur)opt.selected=true;s.appendChild(opt)});s.addEventListener('change',()=>{pushUndo();data.events[idx][key]=s.value;markDirty()});return s}
+function labelOpts(){if(!data||!data.events)return[];return data.events.filter(e=>e.type==='label'&&e.name).map(e=>e.name)}
+
+
+// ══════════ 追加メニュー ══════════
+const ADD_ITEMS=[
+  {cat:'セリフ',items:[{t:'say',l:'💬 セリフ'},{t:'say_clear',l:'🔇 セリフ消去'}]},
+  {cat:'チャット',items:[{t:'chat',l:'👤 チャット'},{t:'superchat',l:'💰 スパチャ'}]},
+  {cat:'待機',items:[{t:'wait',l:'⏱ 待機'},{t:'sleep',l:'⏸ 強制待機'}]},
+  {cat:'移動',items:[{t:'rot_y',l:'↻ Y回転'},{t:'head_x',l:'⤡ 頭部上下'},{t:'pos_z',l:'↕ Z移動'},{t:'pos_x',l:'↔ X移動'},{t:'pos_z_await',l:'⏳ Z待機'},{t:'pos_x_await',l:'⏳ X待機'},{t:'walk_set',l:'🚶 歩行切替'}]},
+  {cat:'画面効果',items:[{t:'fade_black',l:'◼ 暗転'},{t:'fade_clear',l:'◻ 明転'},{t:'horror_flash',l:'⚡ フラッシュ'},{t:'horror_glitch',l:'⚡ グリッチ'},{t:'scare_flash',l:'💥 恐怖フラッシュ'}]},
+  {cat:'音声',items:[{t:'sfx',l:'🔊 効果音'},{t:'flashlight_on',l:'🔦 懐中電灯ON'},{t:'flashlight_off',l:'🔦 懐中電灯OFF'}]},
+  {cat:'YouTube',items:[{t:'set_viewers',l:'📺 視聴者数'}]},
+  {cat:'分岐',items:[{t:'label',l:'🏷 ラベル'},{t:'goto',l:'➡ ジャンプ'},{t:'choice',l:'🔀 選択肢'},{t:'set_route',l:'🎯 ルート設定'}]},
+  {cat:'その他',items:[{t:'polaroid_video',l:'🎬 動画再生'},{t:'stage_swap',l:'🗺 ステージ変更'},{t:'_comment',l:'§ コメント'}]},
+];
+let _addIdx=-1;
+function showAddMenu(e,insertIdx){
+  const menu=$('#addMenu');_addIdx=insertIdx;menu.innerHTML='';
+  ADD_ITEMS.forEach(g=>{const cat=document.createElement('div');cat.className='add-menu-cat';cat.textContent=g.cat;menu.appendChild(cat);
+    g.items.forEach(it=>{const el=document.createElement('div');el.className='add-menu-item';el.textContent=it.l;el.addEventListener('click',()=>{addEventAt(_addIdx,it.t);menu.classList.remove('show')});menu.appendChild(el)})});
+  const rect=e.target.getBoundingClientRect();
+  menu.style.left=Math.min(rect.right+8,window.innerWidth-220)+'px';menu.style.top=Math.min(rect.top,window.innerHeight-440)+'px';
+  menu.classList.add('show');
+  setTimeout(()=>{const close=ev=>{if(!menu.contains(ev.target)){menu.classList.remove('show');document.removeEventListener('click',close)}};document.addEventListener('click',close)},10);
+}
+function newDef(type){
+  const D={say:{type:'say',text:'',voice:nextVoiceId()},say_clear:{type:'say_clear'},chat:{type:'chat',msg:'',user:''},superchat:{type:'superchat',name:'',msg:'',amount:500},wait:{type:'wait',sec:1.0},sleep:{type:'sleep',sec:1.0},rot_y:{type:'rot_y',target:0,dur:1.0},head_x:{type:'head_x',target:0,dur:0.5},pos_z:{type:'pos_z',target:0,dur:5.0,id:''},pos_x:{type:'pos_x',target:0,dur:5.0,id:''},pos_z_await:{type:'pos_z_await',id:''},pos_x_await:{type:'pos_x_await',id:''},walk_set:{type:'walk_set',on:true},fade_black:{type:'fade_black',dur:0.8},fade_clear:{type:'fade_clear',dur:0.8},horror_flash:{type:'horror_flash',dur:0.3},horror_glitch:{type:'horror_glitch',intensity:8.0,count:3},scare_flash:{type:'scare_flash',color:'white'},sfx:{type:'sfx',sound:'ambient_wind',vol:-6},flashlight_on:{type:'flashlight_on'},flashlight_off:{type:'flashlight_off'},set_viewers:{type:'set_viewers',count:100},label:{type:'label',name:'new_label'},goto:{type:'goto',label:''},choice:{type:'choice',prompt:'',choices:[{text:'',sub:''}],targets:['']},set_route:{type:'set_route',route:0},polaroid_video:{type:'polaroid_video',path:''},stage_swap:{type:'stage_swap',scene:'',spawn:[0,1,0]},_comment:{type:'_comment',_:'新しいセクション'}};
+  return D[type]||{type};
 }
 
 // ══════════ CRUD ══════════
+function nextVoiceId(){let max=0;if(data&&data.events)for(const e of data.events)if(e.voice){const m=e.voice.match(/^v(\d+)$/);if(m)max=Math.max(max,parseInt(m[1],10))}return'v'+String(max+1).padStart(3,'0')}
+function addEventAt(i,type){pushUndoImmediate();data.events.splice(i,0,newDef(type));markDirty();render();toast(type+' を追加');
+  if(type==='say')requestAnimationFrame(()=>{const el=document.querySelector(`.tl-row[data-idx="${i}"] .ev-textarea`);if(el){el.scrollIntoView({block:'center',behavior:'smooth'});setTimeout(()=>el.focus(),200)}})}
+function deleteEvent(i){pushUndoImmediate();data.events.splice(i,1);markDirty();render();toast('削除（Ctrl+Z で戻す）')}
 
-function nextVoiceId() {
-  let max = 0;
-  if (data && data.events) {
-    for (const ev of data.events) {
-      if (ev.voice) {
-        const m = ev.voice.match(/^v(\d+)$/);
-        if (m) max = Math.max(max, parseInt(m[1], 10));
+// ══════════ Undo/Redo ══════════
+function pushUndo(){if(_undoTimer){clearTimeout(_undoTimer);_undoTimer=null}if(!_undoPending){undoStack.push(JSON.stringify(data.events));if(undoStack.length>30)undoStack.shift();redoStack=[];_undoPending=true}_undoTimer=setTimeout(()=>{_undoPending=false},500)}
+function pushUndoImmediate(){_undoPending=false;if(_undoTimer){clearTimeout(_undoTimer);_undoTimer=null}undoStack.push(JSON.stringify(data.events));if(undoStack.length>30)undoStack.shift();redoStack=[]}
+function doUndo(){if(!undoStack.length)return;redoStack.push(JSON.stringify(data.events));data.events=JSON.parse(undoStack.pop());markDirty();render();toast('元に戻しました')}
+function doRedo(){if(!redoStack.length)return;undoStack.push(JSON.stringify(data.events));data.events=JSON.parse(redoStack.pop());markDirty();render();toast('やり直し')}
+
+// ══════════ D&D ══════════
+function setupDrag(row,idx){
+  row.draggable=true;
+  row.addEventListener('dragstart',e=>{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',String(idx));row.classList.add('dragging')});
+  row.addEventListener('dragend',()=>{document.querySelectorAll('.tl-row,.tl-section').forEach(r=>r.classList.remove('dragging','drop-above','drop-below'))});
+  row.addEventListener('dragover',e=>{e.preventDefault();row.classList.remove('drop-above','drop-below');const r=row.getBoundingClientRect();row.classList.add(e.clientY<r.top+r.height/2?'drop-above':'drop-below')});
+  row.addEventListener('dragleave',()=>row.classList.remove('drop-above','drop-below'));
+  row.addEventListener('drop',e=>{e.preventDefault();row.classList.remove('drop-above','drop-below');
+    if(e.dataTransfer.files&&e.dataTransfer.files.length)return; // ファイルドロップは画像処理に任せる
+    const from=parseInt(e.dataTransfer.getData('text/plain'),10),to=idx;if(isNaN(from)||from===to)return;
+    const r=row.getBoundingClientRect(),after=e.clientY>=r.top+r.height/2;pushUndoImmediate();
+    const[removed]=data.events.splice(from,1);let pos=after?to:to;if(from<to)pos--;if(after)pos++;
+    data.events.splice(pos,0,removed);markDirty();render()});
+}
+
+// ══════════ 保存 ══════════
+let _fileHandle=null;
+function exportJSON(){return JSON.stringify(data,null,'\t')}
+async function downloadJSON(){
+  // File System Access API（Chrome/Edge）
+  if(window.showSaveFilePicker){
+    try{
+      if(!_fileHandle){
+        _fileHandle=await window.showSaveFilePicker({suggestedName:fname||'dialogue.json',types:[{description:'JSON',accept:{'application/json':['.json']}}]});
       }
-    }
+      const w=await _fileHandle.createWritable();
+      await w.write(exportJSON());
+      await w.close();
+      dirty=false;setStatus(_fileHandle.name);toast('保存しました');return;
+    }catch(e){if(e.name==='AbortError')return;}
   }
-  return 'v' + String(max + 1).padStart(3, '0');
+  // フォールバック（Firefox等）
+  const b=new Blob([exportJSON()],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fname||'dialogue.json';a.click();URL.revokeObjectURL(a.href);dirty=false;setStatus(fname);toast('保存しました');
 }
-
-function addSay() {
-  pushUndoImmediate();
-  const entries = getSayEntries();
-  const insertIdx = entries.length > 0 ? entries[entries.length - 1].idx + 1 : (data.events ? data.events.length : 0);
-  const newEv = { type: 'say', text: '', voice: nextVoiceId() };
-  data.events.splice(insertIdx, 0, newEv);
-  markDirty(); render();
-  // 新しいカードにスクロール＆フォーカス
-  requestAnimationFrame(() => {
-    const cards = document.querySelectorAll('.card');
-    const last = cards[cards.length - 1];
-    if (last) {
-      last.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      const ta = last.querySelector('.field-text');
-      if (ta) setTimeout(() => ta.focus(), 300);
-    }
-  });
-  toast('セリフを追加しました');
-}
-
-function addSayAt(insertIdx) {
-  pushUndoImmediate();
-  const newEv = { type: 'say', text: '', voice: nextVoiceId() };
-  data.events.splice(insertIdx, 0, newEv);
-  markDirty(); render();
-  // 挿入したカードにフォーカス
-  requestAnimationFrame(() => {
-    const card = document.querySelector(`.card[data-idx="${insertIdx}"]`);
-    if (card) {
-      card.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      const ta = card.querySelector('.field-text');
-      if (ta) setTimeout(() => ta.focus(), 300);
-    }
-  });
-  toast('セリフを追加しました');
-}
-
-function deleteSay(origIdx) {
-  pushUndoImmediate();
-  data.events.splice(origIdx, 1);
-  markDirty(); render();
-  toast('セリフを削除しました（Ctrl+Z で戻す）');
-}
-
-// ══════════ Undo / Redo ══════════
-
-function pushUndo() {
-  // テキスト入力中は500ms後にまとめて1回だけスナップショット
-  if (_undoTimer) { clearTimeout(_undoTimer); _undoTimer = null; }
-  if (!_undoPending) {
-    undoStack.push(JSON.stringify(data.events));
-    if (undoStack.length > 80) undoStack.shift();
-    redoStack = [];
-    _undoPending = true;
-  }
-  _undoTimer = setTimeout(() => { _undoPending = false; }, 500);
-}
-function pushUndoImmediate() {
-  // 削除・並べ替え等の即時操作用
-  _undoPending = false;
-  if (_undoTimer) { clearTimeout(_undoTimer); _undoTimer = null; }
-  undoStack.push(JSON.stringify(data.events));
-  if (undoStack.length > 80) undoStack.shift();
-  redoStack = [];
-}
-
-function doUndo() {
-  if (!undoStack.length) return;
-  redoStack.push(JSON.stringify(data.events));
-  data.events = JSON.parse(undoStack.pop());
-  markDirty(); render();
-  toast('元に戻しました');
-}
-
-function doRedo() {
-  if (!redoStack.length) return;
-  undoStack.push(JSON.stringify(data.events));
-  data.events = JSON.parse(redoStack.pop());
-  markDirty(); render();
-  toast('やり直し');
-}
-
-// ══════════ 保存 / 読み込み ══════════
-
-function exportJSON() {
-  return JSON.stringify(data, null, '\t');
-}
-
-function downloadJSON() {
-  const blob = new Blob([exportJSON()], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = fname || 'dialogue.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-  dirty = false;
-  setStatus(fname);
-  toast('保存しました');
-}
-
-function loadLocal(file) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const d = JSON.parse(e.target.result);
-      if (!d.events) { alert('"events" が見つかりません'); return; }
-      applyData(d, file.name);
-      toast('読み込み完了');
-    } catch (err) { alert('JSONエラー: ' + err.message); }
-  };
-  reader.readAsText(file);
-}
+function loadLocal(file){const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.events){alert('"events"が見つかりません');return}applyData(d,file.name);toast('読み込み完了')}catch(err){alert('JSONエラー: '+err.message)}};r.readAsText(file)}
 
 // ══════════ ユーティリティ ══════════
+function markDirty(){dirty=true;setStatus('● 未保存');try{const bk={data:{...data,events:data.events.map(e=>e._img?{...e,_img:{...e._img,data:'(img)'}}:e)},t:Date.now()};localStorage.setItem('roa_'+fname,JSON.stringify(bk))}catch(e){}}
+function setStatus(msg){const el=$('#statusMsg');el.textContent=msg;el.className=dirty?'dirty':''}
+function toast(msg,dur=2500){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+function autoResize(el){el.style.height='auto';el.style.height=el.scrollHeight+'px'}
+function fmtTime(s){if(s<60)return s.toFixed(1)+'s';const m=Math.floor(s/60);return m+':'+(s%60).toFixed(1).padStart(4,'0')}
 
-function markDirty() {
-  dirty = true;
-  setStatus('● 未保存');
-  try { localStorage.setItem('roa_' + fname, JSON.stringify({ data, t: Date.now() })); } catch (e) {}
+// ══════════ 選択 ══════════
+function handleSelect(idx,e){
+  if(e.shiftKey&&_lastClickIdx>=0){
+    // Shift: 範囲選択
+    const lo=Math.min(_lastClickIdx,idx),hi=Math.max(_lastClickIdx,idx);
+    for(let i=lo;i<=hi;i++) selected.add(i);
+  } else if(e.ctrlKey||e.metaKey){
+    // Ctrl: トグル
+    if(selected.has(idx)) selected.delete(idx); else selected.add(idx);
+  } else {
+    // 通常クリック: 単一選択
+    if(selected.size===1&&selected.has(idx)){selected.clear();}
+    else{selected.clear();selected.add(idx);}
+  }
+  _lastClickIdx=idx;
+  updateSelectionUI();
 }
 
-function setStatus(msg) {
-  const el = $('#statusMsg');
-  el.textContent = msg;
-  el.className = dirty ? 'dirty' : '';
+function clearSelection(){selected.clear();_lastClickIdx=-1;updateSelectionUI();}
+
+function updateSelectionUI(){
+  // ボックスの selected クラス更新
+  document.querySelectorAll('.ev-box,.tl-section').forEach(el=>{
+    const idx=parseInt(el.dataset.idx??el.closest('[data-idx]')?.dataset.idx,10);
+    // ev-box は tl-row の子なので親のdata-idxも確認
+    let i=idx;
+    if(isNaN(i)){const row=el.closest('[data-idx]');if(row)i=parseInt(row.dataset.idx,10);}
+    if(!isNaN(i)) el.classList.toggle('selected',selected.has(i));
+  });
+  // ツールバー
+  const tb=$('#selToolbar');
+  if(selected.size>0){
+    tb.classList.add('show');
+    $('#selCount').textContent=selected.size+' 選択';
+    $('#selPaste').style.display=clipboard.length?'':'none';
+  } else {
+    tb.classList.remove('show');
+  }
+  // 詳細パネル: 単一選択時に表示
+  if(selected.size===1) openDetail([...selected][0]);
+  else closeDetail();
 }
 
-function toast(msg, dur = 2500) {
-  const t = $('#toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur);
+function copySelected(){
+  if(!selected.size)return;
+  const indices=[...selected].sort((a,b)=>a-b);
+  clipboard=indices.map(i=>JSON.parse(JSON.stringify(data.events[i])));
+  toast(`${clipboard.length} イベントをコピー`);
+  updateSelectionUI();
 }
 
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = el.scrollHeight + 'px';
+function pasteClipboard(){
+  if(!clipboard.length)return;
+  pushUndoImmediate();
+  // 選択中の最後の位置の後に挿入、なければ末尾
+  const indices=[...selected].sort((a,b)=>a-b);
+  const insertAt=indices.length?indices[indices.length-1]+1:data.events.length;
+  const pasted=clipboard.map(ev=>JSON.parse(JSON.stringify(ev)));
+  data.events.splice(insertAt,0,...pasted);
+  selected.clear();
+  for(let i=0;i<pasted.length;i++) selected.add(insertAt+i);
+  markDirty();render();
+  toast(`${pasted.length} イベントをペースト`);
 }
+
+function duplicateSelected(){
+  if(!selected.size)return;
+  pushUndoImmediate();
+  const indices=[...selected].sort((a,b)=>a-b);
+  const insertAt=indices[indices.length-1]+1;
+  const duped=indices.map(i=>JSON.parse(JSON.stringify(data.events[i])));
+  data.events.splice(insertAt,0,...duped);
+  selected.clear();
+  for(let i=0;i<duped.length;i++) selected.add(insertAt+i);
+  markDirty();render();
+  toast(`${duped.length} イベントを複製`);
+}
+
+function deleteSelected(){
+  if(!selected.size)return;
+  pushUndoImmediate();
+  const indices=[...selected].sort((a,b)=>b-a); // 逆順で削除
+  indices.forEach(i=>data.events.splice(i,1));
+  selected.clear();
+  markDirty();render();
+  toast(`${indices.length} イベントを削除（Ctrl+Z で戻す）`);
+}
+
+// ══════════ 詳細パネル ══════════
+function openDetail(idx){
+  if(!data||!data.events[idx])return;
+  const ev=data.events[idx];
+  const panel=$('#detailPanel');
+  const cat=catFor(ev.type);
+  $('#detailTitle span').textContent=`${ICONS[ev.type]||'•'} ${ev.type}${JA[ev.type]?' '+JA[ev.type]:''}`;
+  $('#detailTitle span').style.color=cat.color;
+
+  const body=$('#detailBody');body.innerHTML='';
+  // 全プロパティを編集フィールドとして表示
+  const keys=Object.keys(ev).filter(k=>k!=='type'&&k!=='_img');
+  keys.forEach(k=>{
+    const val=ev[k];
+    const field=document.createElement('div');field.className='detail-field';
+    const label=document.createElement('label');label.textContent=k;
+    field.appendChild(label);
+
+    if(typeof val==='string'){
+      if(val.length>60||k==='text'||k==='reading'||k==='_'){
+        const ta=document.createElement('textarea');ta.value=val;ta.rows=3;
+        ta.addEventListener('input',()=>{pushUndo();data.events[idx][k]=ta.value;markDirty();render()});
+        field.appendChild(ta);
+      } else {
+        const inp=document.createElement('input');inp.type='text';inp.value=val;
+        inp.addEventListener('input',()=>{pushUndo();data.events[idx][k]=inp.value;markDirty();render()});
+        field.appendChild(inp);
+      }
+    } else if(typeof val==='number'){
+      const inp=document.createElement('input');inp.type='number';inp.step='any';inp.value=val;
+      inp.addEventListener('input',()=>{pushUndo();data.events[idx][k]=parseFloat(inp.value)||0;markDirty();render()});
+      field.appendChild(inp);
+    } else if(typeof val==='boolean'){
+      const sel=document.createElement('select');
+      sel.innerHTML='<option value="true">true</option><option value="false">false</option>';
+      sel.value=String(val);
+      sel.addEventListener('change',()=>{pushUndo();data.events[idx][k]=sel.value==='true';markDirty();render()});
+      field.appendChild(sel);
+    } else {
+      // 配列やオブジェクトはJSON編集
+      const ta=document.createElement('textarea');ta.value=JSON.stringify(val,null,2);ta.rows=4;
+      ta.style.fontFamily="'Consolas','SF Mono',monospace";ta.style.fontSize='.85rem';
+      ta.addEventListener('change',()=>{try{pushUndo();data.events[idx][k]=JSON.parse(ta.value);markDirty();render()}catch(e){toast('JSONエラー: '+e.message)}});
+      field.appendChild(ta);
+    }
+    body.appendChild(field);
+  });
+
+  // 生JSON表示
+  const evForJson={...ev};delete evForJson._img;
+  $('#detailJson').textContent=JSON.stringify(evForJson,null,2);
+  panel.classList.add('show');
+}
+
+function closeDetail(){$('#detailPanel').classList.remove('show');}
 
 // ══════════ バインド ══════════
-
-function bindAll() {
-  // ファイル選択
-  $('#fileSel').addEventListener('change', async () => {
-    if (dirty && !confirm('未保存の変更があります。切り替えますか？')) {
-      $('#fileSel').value = fname; return;
-    }
-    await loadFile($('#fileSel').value);
+function bindAll(){
+  $('#fileSel').addEventListener('change',async()=>{if(dirty&&!confirm('未保存の変更があります。切り替えますか？')){$('#fileSel').value=fname;return}await loadFile($('#fileSel').value)});
+  $('#btnSave').addEventListener('click',downloadJSON);
+  $('#btnOpen').addEventListener('click',async()=>{
+    if(window.showOpenFilePicker){
+      try{const[h]=await window.showOpenFilePicker({types:[{description:'JSON',accept:{'application/json':['.json']}}]});
+        const f=await h.getFile();_fileHandle=h;loadLocal(f);
+      }catch(e){if(e.name!=='AbortError')console.error(e)}
+    }else{$('#fileInput').click()}
   });
-
-  // 保存 / 開く
-  $('#btnSave').addEventListener('click', downloadJSON);
-  $('#btnOpen').addEventListener('click', () => $('#fileInput').click());
-  $('#fileInput').addEventListener('change', () => {
-    if ($('#fileInput').files.length) loadLocal($('#fileInput').files[0]);
+  $('#fileInput').addEventListener('change',()=>{if($('#fileInput').files.length){_fileHandle=null;loadLocal($('#fileInput').files[0])}});
+  $('#btnAdd').addEventListener('click',e=>showAddMenu(e,data&&data.events?data.events.length:0));
+  // 選択ツールバーボタン
+  $('#selCopy').addEventListener('click',copySelected);
+  $('#selPaste').addEventListener('click',pasteClipboard);
+  $('#selDup').addEventListener('click',duplicateSelected);
+  $('#selDel').addEventListener('click',deleteSelected);
+  $('#selClear').addEventListener('click',clearSelection);
+  $('#detailClose').addEventListener('click',closeDetail);
+  // キーボード
+  document.addEventListener('keydown',e=>{
+    const c=e.ctrlKey||e.metaKey;
+    if(c&&e.key==='s'&&!e.shiftKey){e.preventDefault();downloadJSON()}
+    if(c&&e.key==='z'&&!e.shiftKey){e.preventDefault();doUndo()}
+    if(c&&(e.key==='y'||(e.key==='z'&&e.shiftKey))){e.preventDefault();doRedo()}
+    // コピペ（input/textarea以外で）
+    const inInput=e.target.closest('input,textarea,select');
+    if(c&&e.key==='c'&&!inInput&&selected.size){e.preventDefault();copySelected()}
+    if(c&&e.key==='v'&&!inInput&&clipboard.length){e.preventDefault();pasteClipboard()}
+    if(c&&e.key==='d'&&!inInput&&selected.size){e.preventDefault();duplicateSelected()}
+    if(e.key==='Delete'&&!inInput&&selected.size){e.preventDefault();deleteSelected()}
+    if(e.key==='Escape'){clearSelection();closeDetail();$('#addMenu').classList.remove('show')}
+    // Ctrl+A 全選択
+    if(c&&e.key==='a'&&!inInput&&data&&data.events){e.preventDefault();selected.clear();for(let i=0;i<data.events.length;i++)selected.add(i);updateSelectionUI()}
   });
-
-  // FAB
-  $('#btnAdd').addEventListener('click', addSay);
-
-  // キーボードショートカット
-  document.addEventListener('keydown', e => {
-    const ctrl = e.ctrlKey || e.metaKey;
-    if (ctrl && e.key === 's' && !e.shiftKey) { e.preventDefault(); downloadJSON(); }
-    if (ctrl && e.key === 'z' && !e.shiftKey) { e.preventDefault(); doUndo(); }
-    if (ctrl && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); doRedo(); }
+  // タイムライン空白クリックで選択解除
+  document.querySelector('.tl-scroll').addEventListener('click',e=>{
+    if(e.target.closest('.ev-box,.tl-section,.ev-add-btn,.add-menu,.sel-toolbar,.detail-panel'))return;
+    clearSelection();
   });
-
-  // ドラッグ&ドロップ（ファイル読み込み）
-  document.body.addEventListener('dragover', e => e.preventDefault());
-  document.body.addEventListener('drop', e => {
-    e.preventDefault();
-    const f = e.dataTransfer.files[0];
-    if (f && f.name.endsWith('.json')) {
-      if (!dirty || confirm('未保存です。読み込みますか？')) loadLocal(f);
-    }
-  });
-
-  // 閉じる前の確認
-  window.addEventListener('beforeunload', e => {
-    if (dirty) { e.preventDefault(); e.returnValue = ''; }
-  });
+  document.body.addEventListener('dragover',e=>e.preventDefault());
+  document.body.addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f&&f.name.endsWith('.json')){if(!dirty||confirm('未保存です。読み込みますか？'))loadLocal(f)}});
+  window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
 }
 </script>
 </body>
