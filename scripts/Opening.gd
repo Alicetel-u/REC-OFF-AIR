@@ -28,6 +28,7 @@ var _video_player  : VideoStreamPlayer = null
 var _video_started : bool  = false
 var _video_wait    : float = 0.0    # 動画開始待ちタイマー（フリーズ防止）
 var _skip_btn      : Button = null
+var _od            : Dictionary = {}   # opening.json データ
 
 # ── タイトル画面アニメーション用 ──
 var _title_elapsed   : float = 0.0
@@ -214,6 +215,7 @@ func _build_title_hud() -> void:
 func _advance_from_title() -> void:
 	_title_ready = false
 	_phase       = Phase.VIDEO
+	SoundManager.stop_bgm(1.1)
 	await _fade(panel_title, 0.0, 1.1)
 	panel_title.visible = false
 	await get_tree().create_timer(0.1).timeout
@@ -308,94 +310,100 @@ func _skip_to_start() -> void:
 
 
 func _run_sequence() -> void:
+	_load_opening_json()
 	_create_skip_button()
-	# パネル背景を追加（暗い半透明 + 赤アクセント線）
 	_add_panel_bg(panel_profile)
 	_add_panel_bg(panel_dm)
 	_add_panel_bg(panel_monologue)
-	await get_tree().create_timer(0.8).timeout
+	var t : Dictionary = _od.get("timing", {})
+	await get_tree().create_timer(t.get("initial_wait", 0.8)).timeout
 
 	# ━━ Panel 1: SNSプロフィール ━━
+	var p : Dictionary = _od.get("profile", {})
 	panel_profile.visible    = true
 	panel_profile.modulate.a = 0.0
-	await _fade(panel_profile, 1.0, 0.7)
+	await _fade(panel_profile, 1.0, p.get("fade_in", 0.7))
 	if _skipped: return
-	await _typewrite(profile_text, _profile_bbcode(), 0.018)
+	await _typewrite(profile_text, _build_bbcode("profile"), p.get("speed", 0.018))
 	if _skipped: return
-	await get_tree().create_timer(2.5).timeout
+	await get_tree().create_timer(p.get("wait", 2.5)).timeout
 	if _skipped: return
-	await _fade(panel_profile, 0.0, 0.5)
+	await _fade(panel_profile, 0.0, p.get("fade_out", 0.5))
 	panel_profile.visible = false
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(t.get("between_panels", 0.5)).timeout
 	if _skipped: return
 
 	# ━━ Panel 2: DM ━━
+	var d : Dictionary = _od.get("dm", {})
 	panel_dm.visible    = true
 	panel_dm.modulate.a = 0.0
-	await _fade(panel_dm, 1.0, 0.5)
+	await _fade(panel_dm, 1.0, d.get("fade_in", 0.5))
 	if _skipped: return
-	await _typewrite(dm_text, _dm_bbcode(), 0.022)
+	await _typewrite(dm_text, _build_bbcode("dm"), d.get("speed", 0.022))
 	if _skipped: return
-	await get_tree().create_timer(0.6).timeout
+	await get_tree().create_timer(d.get("wait", 0.6)).timeout
 	if _skipped: return
-	await _do_glitch(5)
+	await _do_glitch(int(d.get("glitch_count", 5)))
 	if _skipped: return
-	await get_tree().create_timer(1.5).timeout
+	await get_tree().create_timer(t.get("post_dm_glitch", 1.5)).timeout
 	if _skipped: return
-	await _fade(panel_dm, 0.0, 0.5)
+	await _fade(panel_dm, 0.0, d.get("fade_out", 0.5))
 	panel_dm.visible = false
-	await get_tree().create_timer(0.3).timeout
+	await get_tree().create_timer(t.get("between_panels", 0.3)).timeout
 	if _skipped: return
 
-	# ━━ 恐怖インサート: 「見ている」 ━━
-	await _scary_flash("見 て い る")
+	# ━━ 恐怖インサート ━━
+	var sf : Dictionary = _od.get("scary_flash", {})
+	await _scary_flash(sf.get("text", "見 て い る"))
 	if _skipped: return
-	await get_tree().create_timer(0.6).timeout
+	await get_tree().create_timer(t.get("post_scary", 0.6)).timeout
 	if _skipped: return
 
 	# ━━ Panel 3: 主人公の独白 ━━
+	var m : Dictionary = _od.get("monologue", {})
 	panel_monologue.visible    = true
 	panel_monologue.modulate.a = 0.0
-	await _fade(panel_monologue, 1.0, 0.5)
+	await _fade(panel_monologue, 1.0, m.get("fade_in", 0.5))
 	if _skipped: return
-	await _typewrite(monologue_text, _monologue_bbcode(), 0.036)
+	await _typewrite(monologue_text, _build_bbcode("monologue"), m.get("speed", 0.036))
 	if _skipped: return
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(m.get("wait", 2.0)).timeout
 	if _skipped: return
-	await _fade(panel_monologue, 0.0, 0.5)
+	await _fade(panel_monologue, 0.0, m.get("fade_out", 0.5))
 	panel_monologue.visible = false
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(t.get("between_panels", 0.5)).timeout
 	if _skipped: return
 
-	# ━━ Panel 4: 場所テロップ（タイプライト + グリッチ警告） ━━
+	# ━━ Panel 4: 場所テロップ ━━
+	var c : Dictionary = _od.get("caption", {})
 	caption_text.text = ""
 	caption_text.add_theme_font_size_override("font_size", 46)
 	panel_caption.visible    = true
 	panel_caption.modulate.a = 0.0
-	await _fade(panel_caption, 1.0, 1.0)
+	await _fade(panel_caption, 1.0, c.get("fade_in", 1.0))
 	if _skipped: return
-	# 一文字ずつ表示
-	for line in ["霧 原 村", "", "深 夜   0 : 0 0"]:
+	var cap_lines : Array = c.get("lines", ["霧 原 村", "", "深 夜   0 : 0 0"])
+	for line in cap_lines:
 		if line == "":
 			caption_text.text += "\n"
 			await get_tree().create_timer(0.5).timeout
 		else:
-			for ch in line:
+			for ch in str(line):
 				if _skipped: return
 				caption_text.text += ch
-				await get_tree().create_timer(0.07).timeout
+				await get_tree().create_timer(c.get("char_speed", 0.07)).timeout
 			caption_text.text += "\n"
-			await get_tree().create_timer(0.3).timeout
+			await get_tree().create_timer(c.get("line_wait", 0.3)).timeout
 	if _skipped: return
-	await get_tree().create_timer(2.5).timeout
+	await get_tree().create_timer(c.get("display_wait", 2.5)).timeout
 	if _skipped: return
 	await _caption_warning_glitch()
 	if _skipped: return
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(t.get("post_caption_warning", 1.0)).timeout
 	if _skipped: return
-	await _fade(panel_caption, 0.0, 0.8)
+	await _fade(panel_caption, 0.0, c.get("fade_out", 0.8))
 	panel_caption.visible = false
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(t.get("between_panels", 0.5)).timeout
 	if _skipped: return
 
 	# ━━ ゲームへ ━━
@@ -489,7 +497,8 @@ func _scary_flash(text: String) -> void:
 func _caption_warning_glitch() -> void:
 	## 「立入禁止」グリッチ警告
 	var orig_text := caption_text.text
-	caption_text.text = "⚠  立 入 禁 止  ⚠"
+	var c : Dictionary = _od.get("caption", {})
+	caption_text.text = c.get("warning_text", "⚠  立 入 禁 止  ⚠")
 	caption_text.add_theme_color_override("font_color", Color(1.0, 0.06, 0.06, 1))
 	caption_text.add_theme_font_size_override("font_size", 52)
 	glitch_overlay.color = Color(0.7, 0.0, 0.0, 0.22)
@@ -508,12 +517,10 @@ func _caption_warning_glitch() -> void:
 func _go_to_game() -> void:
 	_phase = Phase.DONE
 	_remove_skip_button()
-	SoundManager.stop_bgm(1.3)
 	GameManager.load_chapter(0)
 	_hide_all_panels()
-	var tw := create_tween()
-	tw.tween_property(self, "modulate:a", 0.0, 1.3)
-	await tw.finished
+	SoundManager.stop_bgm(0.0)
+	LoadingScreen.show_loading()
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")
 
 
@@ -521,57 +528,59 @@ func _go_to_game() -> void:
 # テキストコンテンツ（大きいフォント・リッチ演出）
 # ──────────────────────────────────────────────
 
-func _profile_bbcode() -> String:
+## style → BBCode テンプレート（opening.json の style に対応）
+const _STYLE := {
+	# profile
+	"name":      "[color=#f0f0f0][font_size=30][b]%s[/b][/font_size][/color]",
+	"handle":    "   [color=#777777][font_size=20]%s[/font_size][/color]",
+	"bio":       "[color=#cccccc][font_size=22]%s[/font_size][/color]",
+	"stats":     "[color=#888888][font_size=22]%s[/font_size][/color]",
+	"video":     "[color=#555555][font_size=18]　・%s[/font_size][/color]",
+	"warning":   "[color=#993333][font_size=18]　%s[/font_size][/color]",
+	# dm
+	"alert":     "[color=#ff2222][font_size=24][b]%s[/b][/font_size][/color]",
+	"normal":    "[color=#dddddd][font_size=22]%s[/font_size][/color]",
+	"bold":      "[color=#f0f0f0][font_size=26][b]%s[/b][/font_size][/color]",
+	"creepy":    "[color=#993333][font_size=22][i]%s[/i][/font_size][/color]",
+	# monologue
+	"stage_direction":  "[color=#555555][font_size=20][i]%s[/i][/font_size][/color]",
+	"dialogue_strong":  "[color=#f0f0f0][font_size=28]%s[/font_size][/color]",
+	"dialogue":         "[color=#cccccc][font_size=26]%s[/font_size][/color]",
+	"dialogue_dim":     "[color=#aaaaaa][font_size=24]%s[/font_size][/color]",
+	"dialogue_faint":   "[color=#999999][font_size=24]%s[/font_size][/color]",
+	"final":            "[color=#ffffff][font_size=34][b]%s[/b][/font_size][/color]",
+}
+
+## profile 用の固定ヘッダー（装飾線 + サイト名）
+const _PROFILE_HEADER := "[center][color=#444444]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/color][/center]\n[center][color=#888888][font_size=20]SnapshotTube[/font_size][/color][/center]\n[center][color=#444444]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/color][/center]\n\n"
+## dm 用の固定ヘッダー
+const _DM_HEADER := "[color=#888888][font_size=22]✉  ダイレクトメッセージ[/font_size][/color]\n\n"
+
+
+func _load_opening_json() -> void:
+	var f := FileAccess.open("res://dialogue/opening.json", FileAccess.READ)
+	if f:
+		_od = JSON.parse_string(f.get_as_text())
+	if _od == null:
+		_od = {}
+
+
+func _build_bbcode(section: String) -> String:
+	var sec : Dictionary = _od.get(section, {})
+	var lines : Array = sec.get("lines", [])
 	var s := ""
-	s += "[center][color=#444444]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/color][/center]\n"
-	s += "[center][color=#888888][font_size=20]SnapshotTube[/font_size][/color][/center]\n"
-	s += "[center][color=#444444]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/color][/center]\n\n"
-	s += "[color=#f0f0f0][font_size=30][b]しゅっち ch[/b][/font_size][/color]"
-	s += "   [color=#777777][font_size=20]@shucchi_horror[/font_size][/color]\n\n"
-	s += "[color=#cccccc][font_size=22]JK配信者 / ホラー凸 / 心霊スポット巡り[/font_size][/color]\n"
-	s += "[color=#bbbbbb][font_size=22]「配信で一発当てて、人生変えてやる」[/font_size][/color]\n\n"
-	s += "[color=#888888][font_size=22]▶ 動画  [color=#ffffff]7 本[/color]　　"
-	s += "👥 [color=#ffffff]347[/color] 人登録[/font_size][/color]\n\n"
-	s += "[color=#333333]──────────────────────────────────[/color]\n"
-	s += "[color=#666666][font_size=19]最近の投稿[/font_size][/color]\n"
-	s += "[color=#555555][font_size=18]　・深夜の廃病院、制服で行ってみた（再生数 210）\n"
-	s += "　・心霊スポット行ったけど何も起きなかった（再生数 83）\n"
-	s += "　・廃トンネルに潜入したら…（再生数 41）[/font_size][/color]\n\n"
-	s += "[color=#333333]──────────────────────────────────[/color]\n"
-	s += "[color=#993333][font_size=18]　収益化まであと [color=#ff4444]653人[/color]……[/font_size][/color]"
-	return s
-
-
-func _dm_bbcode() -> String:
-	var s := ""
-	s += "[color=#888888][font_size=22]✉  ダイレクトメッセージ[/font_size][/color]\n\n"
-	s += "[color=#ff2222][font_size=24][b]⚠ アカウント削除済み[/b][/font_size][/color]"
-	s += "   [color=#555555][font_size=18]23:47[/font_size][/color]\n"
-	s += "[color=#333333]──────────────────────────────────────[/color]\n\n"
-	s += "[color=#dddddd][font_size=24]はじめまして。しゅっちさんですよね。[/font_size][/color]\n\n"
-	s += "[color=#f0f0f0][font_size=26][b]今夜、霧原村に行ってみてください。[/b][/font_size][/color]\n\n"
-	s += "[color=#dddddd][font_size=22]1994年に「事件」があった廃村です。\n"
-	s += "倉庫にVHSテープが残っているはず。\n"
-	s += "配信すれば…間違いなく、バズります。[/font_size][/color]\n\n"
-	s += "[color=#333333]──────────────────────────────────────[/color]\n\n"
-	s += "[color=#dddddd][font_size=22]場所は県道沿い、霧の多い山道を進んだ先。\n\n"
-	s += "[b]必ず、深夜0時に入ってください。[/b][/font_size][/color]\n\n"
-	s += "[color=#993333][font_size=22][i]…あなたのこと、見ています。[/i][/font_size][/color]"
-	return s
-
-
-func _monologue_bbcode() -> String:
-	var s := ""
-	s += "[color=#555555][font_size=20][i]（ 自室、深夜 ── スマホの画面を見つめて ）[/i][/font_size][/color]\n\n\n"
-	s += "[color=#f0f0f0][font_size=28]「…怪しいDM。アカウントも消えてるし」[/font_size][/color]\n\n"
-	s += "[color=#cccccc][font_size=26]「でも……廃村にVHSテープ、か」[/font_size][/color]\n\n"
-	s += "[color=#cccccc][font_size=26]「本物だったらマジでバズるかも」[/font_size][/color]\n\n"
-	s += "[color=#aaaaaa][font_size=24]「再生数ぜんっぜん伸びない。登録者347人」[/font_size][/color]\n"
-	s += "[color=#aaaaaa][font_size=24]「収益化なんて夢のまた夢」[/font_size][/color]\n\n"
-	s += "[color=#999999][font_size=24]「来月の携帯代も怪しいのに」[/font_size][/color]\n"
-	s += "[color=#999999][font_size=24]「お母さんにはこれ以上頼れない……」[/font_size][/color]\n\n"
-	s += "[color=#bbbbbb][font_size=26]「あたしには配信しかないんだ」[/font_size][/color]\n"
-	s += "[color=#999999][font_size=24]「誰かが見てくれてる限り、あたしは大丈夫」[/font_size][/color]\n\n\n"
-	s += "[color=#555555][font_size=20][i]（ ── 深夜0時。霧原村行き最終バスに乗り込んだ ）[/i][/font_size][/color]\n\n"
-	s += "[color=#ffffff][font_size=34][b]「── 行くしかない」[/b][/font_size][/color]"
+	if section == "profile":
+		s += _PROFILE_HEADER
+	elif section == "dm":
+		s += _DM_HEADER
+	elif section == "monologue":
+		s += "\n"  # 上部余白
+	for line in lines:
+		var text : String = line.get("text", "")
+		var style : String = line.get("style", "normal")
+		var tmpl : String = _STYLE.get(style, "%s")
+		s += tmpl % text + "\n"
+		# スタイルに応じた改行調整
+		if style in ["name", "stats", "dialogue_strong", "dialogue", "bio"]:
+			s += "\n"
 	return s

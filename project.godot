@@ -28,6 +28,7 @@ GameManager="*res://scripts/GameManager.gd"
 ScenarioManager="*res://scripts/ScenarioManager.gd"
 Inventory="*res://Inventory/InventorySingleton.gd"
 SoundManager="*res://scripts/SoundManager.gd"
+LoadingScreen="*res://scripts/Loading.gd"
 
 [display]
 
@@ -81,10 +82,10 @@ ToggleInventory={
 ]
 }
 
-[rendering]
-
-renderer/rendering_method="gl_compatibility"
-
 [physics]
 
 common/physics_ticks_per_second=30
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"

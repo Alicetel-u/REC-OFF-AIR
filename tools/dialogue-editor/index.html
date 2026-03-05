@@ -255,6 +255,28 @@ select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; b
 /* 画像拡大オーバーレイ */
 .img-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 500; display: flex; align-items: center; justify-content: center; cursor: zoom-out }
 .img-overlay img { max-width: 90vw; max-height: 90vh; border-radius: 8px }
+/* ── タブ切替 ── */
+.tab-group { display: flex; gap: 2px; margin: 0 12px }
+.btn-tab { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06); color: var(--tx2); padding: 4px 14px; border-radius: 5px 5px 0 0; cursor: pointer; font-size: .85rem; transition: all .15s }
+.btn-tab.active { background: var(--bg2); color: var(--tx0); border-bottom-color: var(--bg2) }
+/* ── プロローグエディタ ── */
+.prologue-editor { display: none; padding: 24px 32px; overflow-y: auto; height: calc(100vh - 90px) }
+.prologue-editor.visible { display: block }
+.pro-section { background: var(--bg2); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; padding: 16px; margin-bottom: 16px }
+.pro-section-title { font-weight: 700; font-size: 1.05rem; color: var(--tx0); margin-bottom: 10px; display: flex; align-items: center; gap: 8px }
+.pro-section-title .pro-badge { background: rgba(255,255,255,.08); padding: 2px 8px; border-radius: 4px; font-size: .78rem; color: var(--tx2); font-weight: 400 }
+.pro-params { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px }
+.pro-param { display: flex; align-items: center; gap: 4px }
+.pro-param label { font-size: .82rem; color: var(--tx2) }
+.pro-param input { width: 64px; text-align: center }
+.pro-line { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 5px; margin-bottom: 4px; background: rgba(0,0,0,.2) }
+.pro-line:hover { background: rgba(255,255,255,.04) }
+.pro-line textarea { flex: 1; background: transparent; border: 1px solid rgba(255,255,255,.06); color: var(--tx0); border-radius: 4px; padding: 4px 8px; font-size: .92rem; resize: none; min-height: 28px; font-family: inherit }
+.pro-line select { background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.06); color: var(--tx1); border-radius: 4px; padding: 3px 6px; font-size: .8rem; cursor: pointer }
+.pro-line .pro-del { background: none; border: none; color: var(--accent); cursor: pointer; font-size: .9rem; opacity: 0; transition: opacity .15s; padding: 2px 6px }
+.pro-line:hover .pro-del { opacity: 1 }
+.pro-add-btn { background: rgba(255,255,255,.04); border: 1px dashed rgba(255,255,255,.1); color: var(--tx2); padding: 6px 14px; border-radius: 5px; cursor: pointer; font-size: .85rem; width: 100%; margin-top: 6px }
+.pro-add-btn:hover { background: rgba(255,255,255,.08); color: var(--tx0) }
 </style>
 </head>
 <body>
@@ -270,6 +292,10 @@ select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; b
     <button class="btn-ft" data-filter="say">セリフのみ</button>
     <button class="btn-ft" data-filter="chat">コメント欄のみ</button>
   </div>
+  <div class="tab-group">
+    <button class="btn-tab active" id="tabTimeline" data-tab="timeline">タイムライン</button>
+    <button class="btn-tab" id="tabPrologue" data-tab="prologue">プロローグ</button>
+  </div>
   <button class="btn btn-save" id="btnSave">保存</button>
   <button class="btn" id="btnOpen">開く</button>
   <input type="file" id="fileInput" accept=".json" hidden>
@@ -281,6 +307,7 @@ select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; b
   </div>
 </main>
 
+<div class="prologue-editor" id="prologueEditor"></div>
 <button class="fab" id="btnAdd">+ 追加</button>
 <div class="toast" id="toast"></div>
 <div class="add-menu" id="addMenu"></div>
@@ -1030,7 +1057,144 @@ function bindAll(){
   document.body.addEventListener('dragover',e=>e.preventDefault());
   document.body.addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f&&f.name.endsWith('.json')){if(!dirty||confirm('未保存です。読み込みますか？'))loadLocal(f)}});
   window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+  // タブ切替
+  document.querySelectorAll('.btn-tab').forEach(btn=>{
+    btn.addEventListener('click',async()=>{
+      document.querySelectorAll('.btn-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const tab=btn.dataset.tab;
+      document.querySelector('.tl-scroll').style.display=tab==='timeline'?'':'none';
+      $('#btnAdd').style.display=tab==='timeline'?'':'none';
+      const pe=$('#prologueEditor');
+      pe.classList.toggle('visible',tab==='prologue');
+      if(tab==='prologue'){
+        if(!isPrologueData()){
+          try{await loadFile('opening.json');$('#fileSel').value='opening.json'}catch(e){}
+        }
+        renderPrologue();
+      }
+    });
+  });
 }
+
+// ══════════ プロローグエディタ ══════════
+const PRO_STYLES={
+  profile:['name','handle','bio','stats','video','warning'],
+  dm:['alert','normal','bold','creepy'],
+  monologue:['stage_direction','dialogue_strong','dialogue','dialogue_dim','dialogue_faint','final']
+};
+const PRO_STYLE_JA={
+  name:'名前',handle:'ハンドル',bio:'プロフィール',stats:'統計',video:'動画',warning:'警告',
+  alert:'アラート',normal:'通常',bold:'強調',creepy:'不気味',
+  stage_direction:'ト書き',dialogue_strong:'セリフ（強）',dialogue:'セリフ',dialogue_dim:'セリフ（薄）',dialogue_faint:'セリフ（極薄）',final:'決めセリフ'
+};
+const PRO_SECTIONS=[
+  {key:'profile',title:'SNSプロフィール',icon:'📱',params:['speed','wait','fade_in','fade_out']},
+  {key:'dm',title:'ダイレクトメッセージ',icon:'✉',params:['speed','wait','glitch_count','fade_in','fade_out']},
+  {key:'scary_flash',title:'恐怖フラッシュ',icon:'⚡',params:[]},
+  {key:'monologue',title:'主人公の独白',icon:'💭',params:['speed','wait','fade_in','fade_out']},
+  {key:'caption',title:'場所テロップ',icon:'🎬',params:['char_speed','line_wait','display_wait','fade_in','fade_out']},
+  {key:'timing',title:'タイミング',icon:'⏱',params:['initial_wait','between_panels','post_scary','post_dm_glitch','post_caption_warning']},
+];
+
+function isPrologueData(){return data&&data.chapter==='opening'}
+
+function renderPrologue(){
+  const pe=$('#prologueEditor');pe.innerHTML='';
+  if(!data||!isPrologueData()){pe.innerHTML='<div style="color:var(--tx2);padding:40px;text-align:center">opening.json を選択してください</div>';return}
+  PRO_SECTIONS.forEach(sec=>{
+    const div=document.createElement('div');div.className='pro-section';
+    const secData=data[sec.key]||{};
+    // タイトル
+    const title=document.createElement('div');title.className='pro-section-title';
+    title.innerHTML=`${sec.icon} ${sec.title} <span class="pro-badge">${sec.key}</span>`;
+    div.appendChild(title);
+    // パラメータ
+    if(sec.params.length){
+      const params=document.createElement('div');params.className='pro-params';
+      sec.params.forEach(p=>{
+        const wrap=document.createElement('div');wrap.className='pro-param';
+        const lbl=document.createElement('label');lbl.textContent=p;
+        const inp=document.createElement('input');inp.className='ev-input ev-input-num';inp.type='number';inp.step='any';
+        inp.value=secData[p]!=null?secData[p]:'';
+        inp.addEventListener('input',()=>{pushUndo();if(!data[sec.key])data[sec.key]={};data[sec.key][p]=parseFloat(inp.value)||0;markDirty()});
+        wrap.append(lbl,inp);params.appendChild(wrap);
+      });
+      div.appendChild(params);
+    }
+    // lines（profile/dm/monologue）
+    if(secData.lines&&Array.isArray(secData.lines)&&secData.lines.length>0&&typeof secData.lines[0]==='object'){
+      const styles=PRO_STYLES[sec.key]||['normal'];
+      secData.lines.forEach((line,li)=>{
+        div.appendChild(mkProLine(sec.key,li,line,styles));
+      });
+      const addBtn=document.createElement('button');addBtn.className='pro-add-btn';addBtn.textContent='+ 行を追加';
+      addBtn.addEventListener('click',()=>{pushUndoImmediate();data[sec.key].lines.push({text:'',style:styles[0]});markDirty();renderPrologue()});
+      div.appendChild(addBtn);
+    }
+    // caption lines（文字列配列）
+    if(sec.key==='caption'&&secData.lines){
+      secData.lines.forEach((line,li)=>{
+        const row=document.createElement('div');row.className='pro-line';
+        const ta=document.createElement('textarea');ta.value=line;ta.rows=1;
+        ta.addEventListener('input',()=>{pushUndo();data.caption.lines[li]=ta.value;markDirty()});
+        const del=document.createElement('button');del.className='pro-del';del.textContent='×';
+        del.addEventListener('click',()=>{pushUndoImmediate();data.caption.lines.splice(li,1);markDirty();renderPrologue()});
+        row.append(ta,del);div.appendChild(row);
+      });
+      if(secData.warning_text!=null){
+        const wrapW=document.createElement('div');wrapW.className='pro-param';wrapW.style.marginTop='8px';
+        const lblW=document.createElement('label');lblW.textContent='warning_text';
+        const inpW=document.createElement('input');inpW.className='ev-input ev-input-wide';inpW.value=secData.warning_text||'';
+        inpW.addEventListener('input',()=>{pushUndo();data.caption.warning_text=inpW.value;markDirty()});
+        wrapW.append(lblW,inpW);div.appendChild(wrapW);
+      }
+      const addBtn=document.createElement('button');addBtn.className='pro-add-btn';addBtn.textContent='+ 行を追加';
+      addBtn.addEventListener('click',()=>{pushUndoImmediate();data.caption.lines.push('');markDirty();renderPrologue()});
+      div.appendChild(addBtn);
+    }
+    // scary_flash text
+    if(sec.key==='scary_flash'){
+      const row=document.createElement('div');row.className='pro-line';
+      const ta=document.createElement('textarea');ta.value=secData.text||'';ta.rows=1;
+      ta.addEventListener('input',()=>{pushUndo();data.scary_flash.text=ta.value;markDirty()});
+      row.appendChild(ta);div.appendChild(row);
+    }
+    pe.appendChild(div);
+  });
+}
+
+function mkProLine(secKey,idx,line,styles){
+  const row=document.createElement('div');row.className='pro-line';
+  const ta=document.createElement('textarea');ta.value=line.text||'';ta.rows=1;
+  ta.addEventListener('input',()=>{pushUndo();data[secKey].lines[idx].text=ta.value;markDirty()});
+  const sel=document.createElement('select');
+  styles.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=PRO_STYLE_JA[s]||s;if(s===line.style)o.selected=true;sel.appendChild(o)});
+  sel.addEventListener('change',()=>{pushUndo();data[secKey].lines[idx].style=sel.value;markDirty()});
+  const del=document.createElement('button');del.className='pro-del';del.textContent='×';
+  del.addEventListener('click',()=>{pushUndoImmediate();data[secKey].lines.splice(idx,1);markDirty();renderPrologue()});
+  row.append(ta,sel,del);return row;
+}
+
+// applyData をオーバーライドして opening.json 検出時にプロローグタブに自動切替
+const _origApplyData=applyData;
+applyData=function(d,f){
+  _origApplyData(d,f);
+  if(isPrologueData()){
+    document.querySelectorAll('.btn-tab').forEach(b=>b.classList.remove('active'));
+    $('#tabPrologue').classList.add('active');
+    document.querySelector('.tl-scroll').style.display='none';
+    $('#btnAdd').style.display='none';
+    $('#prologueEditor').classList.add('visible');
+    renderPrologue();
+  }else{
+    document.querySelectorAll('.btn-tab').forEach(b=>b.classList.remove('active'));
+    $('#tabTimeline').classList.add('active');
+    document.querySelector('.tl-scroll').style.display='';
+    $('#btnAdd').style.display='';
+    $('#prologueEditor').classList.remove('visible');
+  }
+};
 </script>
 </body>
 </html>

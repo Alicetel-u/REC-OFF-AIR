@@ -14,6 +14,7 @@ const AUTO_PROGRESS_CHAPTERS : Array[String] = [
 	"ch02_haison_naibu",
 	"ch04_haison_naibu_event",
 	"ch05_haison_dasshutsu",
+	"ch_test_toilet",
 ]
 
 @onready var player       : CharacterBody3D = $Player
@@ -105,6 +106,9 @@ func _ready() -> void:
 
 	SoundManager.start_ambient(GameManager.chapter_index)
 
+	# ローディング画面をフェードアウト
+	await LoadingScreen.fade_out()
+
 	await _run_intro()
 
 	# 廃村入口チャプターは自動演出シーケンスを実行して次チャプターへ進む
@@ -190,6 +194,8 @@ func _input(event: InputEvent) -> void:
 		KEY_F3: idx = 2
 		KEY_F4: idx = 3
 		KEY_F5: idx = 4
+		KEY_F6: idx = 5
+		KEY_F7: idx = 6
 	if idx < 0:
 		return
 	get_viewport().set_input_as_handled()
@@ -460,13 +466,14 @@ func _show_true_ending() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	player.process_mode = Node.PROCESS_MODE_DISABLED
 
-	# 画面を暗転
-	var tw := create_tween()
-	tw.tween_property(overlay_layer, "modulate:a", 1.0, 1.5)
+	# 画面を暗転（CanvasLayer には modulate がないので子の Overlay を使う）
+	var overlay_ctrl : Control = overlay_layer.get_node("Overlay")
+	overlay_ctrl.modulate.a = 0.0
 	overlay_layer.visible = true
-	overlay_layer.modulate.a = 0.0
 	caught_label.visible = false
 	win_label.visible    = false
+	var tw := create_tween()
+	tw.tween_property(overlay_ctrl, "modulate:a", 1.0, 1.5)
 	await tw.finished
 
 	match GameManager.ending_route:
@@ -495,7 +502,7 @@ func _show_true_ending() -> void:
 
 	# フェードアウト → タイトルへ
 	tw = create_tween()
-	tw.tween_property(overlay_layer, "modulate:a", 0.0, 2.0)
+	tw.tween_property(overlay_ctrl, "modulate:a", 0.0, 2.0)
 	await tw.finished
 	GameManager.restart()
 
@@ -624,7 +631,7 @@ func _refresh_debug_label() -> void:
 	var idx : int    = GameManager.chapter_index + 1
 	var cname: String = ch.chapter_name if ch else "?"
 	var free_str := " | [F9] 自由移動: ON ✓" if GameManager.debug_free_move else " | [F9] 自由移動"
-	var skip_str := "  F1=CP1  F2=CP2  F3=CP3  F4=CP4  F5=CP5" if _DEBUG_CHAPTER_SKIP else ""
+	var skip_str := "  F1=CP1  F2=CP2  F3=CP3  F4=CP4  F5=CP5  F6=屋敷  F7=トイレ" if _DEBUG_CHAPTER_SKIP else ""
 	_debug_label.text = "【DEBUG】CP%d: %s%s%s" % [idx, cname, free_str, skip_str]
 
 
