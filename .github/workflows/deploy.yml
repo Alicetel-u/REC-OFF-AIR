@@ -58,6 +58,25 @@ jobs:
           fi
           echo "OK: バリデーション通過"
 
+      - name: Validate GDScript compilation
+        run: |
+          echo "=== Godot をインストール（バリデーション用） ==="
+          if ! command -v godot &> /dev/null; then
+            wget -q https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_linux.x86_64.zip
+            unzip -q -o Godot_v4.6.1-stable_linux.x86_64.zip
+            chmod +x Godot_v4.6.1-stable_linux.x86_64
+            sudo mv Godot_v4.6.1-stable_linux.x86_64 /usr/local/bin/godot
+          fi
+          echo "=== GDScript コンパイルチェック ==="
+          output=$(godot --headless --import --path . 2>&1 || true)
+          script_errors=$(echo "$output" | grep -c "SCRIPT ERROR" || true)
+          if [ "$script_errors" -gt 0 ]; then
+            echo "ERROR: GDScript コンパイルエラーが ${script_errors} 件あります"
+            echo "$output" | grep -B1 -A3 "SCRIPT ERROR"
+            exit 1
+          fi
+          echo "OK: GDScript コンパイル成功"
+
   export-and-deploy:
     needs: validate
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'

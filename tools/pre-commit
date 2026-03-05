@@ -1,13 +1,52 @@
 #!/bin/bash
-# pre-commit hook: コミット前にアセット・ボイスの整合性を自動チェック
+# pre-commit hook: コミット前にアセット・ボイス・スクリプトの整合性を自動チェック
 # インストール: tools/setup-hooks.sh を実行
 
 set -e
 
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
 NC='\033[0m'
 errors=0
+
+# ── 0. GDScript コンパイルチェック（.gd 変更時） ──
+staged_gd=$(git diff --cached --name-only --diff-filter=ACM | grep '\.gd$' || true)
+if [ -n "$staged_gd" ]; then
+    # Godot 実行ファイルを探す（PATH → 既知の場所）
+    GODOT=""
+    if command -v godot &> /dev/null; then
+        GODOT="godot"
+    elif command -v godot.exe &> /dev/null; then
+        GODOT="godot.exe"
+    else
+        # Windows デスクトップの既知パス
+        for p in \
+            "/c/Users/"*"/Desktop/Godot_v"*"_win64.exe/Godot_v"*"_console.exe" \
+            "/c/Program Files/Godot/"*"console.exe"; do
+            if [ -f "$p" ]; then
+                GODOT="$p"
+                break
+            fi
+        done
+    fi
+
+    if [ -n "$GODOT" ]; then
+        echo "=== GDScript コンパイルチェック ==="
+        # --headless --import で起動し、SCRIPT ERROR を検出
+        compile_output=$("$GODOT" --headless --import --path . 2>&1 || true)
+        script_errors=$(echo "$compile_output" | grep -c "SCRIPT ERROR" || true)
+        if [ "$script_errors" -gt 0 ]; then
+            echo -e "${RED}ERROR: GDScript コンパイルエラーが ${script_errors} 件あります${NC}"
+            echo "$compile_output" | grep -A2 "SCRIPT ERROR"
+            errors=$((errors + 1))
+        else
+            echo -e "${GREEN}OK: GDScript コンパイル成功${NC}"
+        fi
+    else
+        echo -e "${YELLOW}WARN: Godot が見つかりません — GDScript チェックをスキップ${NC}"
+    fi
+fi
 
 # ── 1. WAV変更時に.importファイルがステージされているか ──
 staged_wavs=$(git diff --cached --name-only --diff-filter=ACM | grep '\.wav$' || true)
@@ -33,7 +72,7 @@ staged_json=$(git diff --cached --name-only --diff-filter=ACM | grep 'dialogue/.
 if [ -n "$staged_json" ]; then
     if command -v python &> /dev/null && [ -f "tools/fix_voice_wait.py" ]; then
         echo "=== ボイスバリデーション実行中 ==="
-        output=$(python tools/fix_voice_wait.py --validate-only 2>&1)
+        output=$(python tools/fix_voice_wait.py --validate-only 2>&1 || true)
         echo "$output"
 
         # CONSECUTIVE_WAIT または MISSING_WAV があればエラー（致命的な問題）

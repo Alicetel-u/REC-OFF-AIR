@@ -11,8 +11,6 @@
 [ext_resource type="PackedScene" path="res://shaders/素材/立ち入り禁止.glb" id="14_3p2gp"]
 [ext_resource type="PackedScene" path="res://shaders/素材/鳥居.glb" id="14_cvmbd"]
 [ext_resource type="PackedScene" path="res://shaders/素材/dead_tree.glb" id="15_cvmbd"]
-[ext_resource type="Script" path="res://scripts/PublicToilet.gd" id="20_toilet"]
-[ext_resource type="PackedScene" path="res://shaders/素材/案山子.glb" id="16_ksmzk"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cvmbd"]
 render_priority = 0
@@ -30,418 +28,419 @@ emission_energy_multiplier = 2.0
 
 [node name="Stage_Village" type="Node3D"]
 
-[node name="BusStop" type="Node3D" parent="." instance=ExtResource("1_bus_stop")]
+[node name="BusStop" parent="." instance=ExtResource("1_bus_stop")]
 
-[node name="DarkStreet" type="Node3D" parent="." instance=ExtResource("6_nxtc6")]
+[node name="DarkStreet" parent="." instance=ExtResource("6_nxtc6")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0.05, 4.3)
 
-[node name="VillageGate" type="Node3D" parent="." instance=ExtResource("7_nxtc6")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25, 0, 4.3)
+[node name="VillageGate" parent="." instance=ExtResource("7_nxtc6")]
+transform = Transform3D(-6.097243e-08, 0, 1.3948866, 0, 1.3948866, 0, -1.3948866, 0, -6.097243e-08, 25, 0, 4.3)
 
 [node name="SpookyForest" type="Node3D" parent="."]
 
-[node name="Tree_0" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_0" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.50814223, 0, 0.86127317, 0, 1, 0, -0.86127317, 0, -0.50814223, 12.710893, 0, -11.707957)
 
-[node name="Tree_1" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_1" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.4117421, 0, 0.9113004, 0, 1, 0, -0.9113004, 0, 0.4117421, -6.4867573, 0, -4.583129)
 
-[node name="Tree_2" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_2" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.84670675, 0, 0.53205985, 0, 1, 0, -0.53205985, 0, -0.84670675, 16.740517, 0, 11.740445)
 
-[node name="Tree_3" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_3" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.5203579, 0, 0.8539483, 0, 1, 0, -0.8539483, 0, -0.5203579, 1.146801, 0, -16.857254)
 
-[node name="Tree_4" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_4" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.23340142, 0, -0.97238046, 0, 1, 0, 0.97238046, 0, 0.23340142, 17.383215, 0, -15.68096)
 
-[node name="Tree_5" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_5" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.99403733, 0, -0.10904007, 0, 1, 0, 0.10904007, 0, -0.99403733, 21.08268, 0, 10.489606)
 
-[node name="Tree_6" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_6" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.7175827, 0, 0.6964733, 0, 1, 0, -0.6964733, 0, -0.7175827, 23.54155, 0, 16.297033)
 
-[node name="Tree_8" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_8" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.7518767, 0, -0.6593037, 0, 1, 0, 0.6593037, 0, 0.7518767, 26.851238, 0, -11.5722685)
 
-[node name="Tree_9" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_9" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.7754044, 0, 0.63146496, 0, 1, 0, -0.63146496, 0, -0.7754044, 39.986057, 0, -0.14061853)
 
-[node name="Tree_11" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_11" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.19459705, 0, 0.98088324, 0, 1, 0, -0.98088324, 0, 0.19459705, -6.1547303, 0, -3.5425892)
 
-[node name="Tree_12" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_12" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.77749914, 0, -0.62888396, 0, 1, 0, 0.62888396, 0, -0.77749914, 1.1124287, 0, -12.570013)
 
-[node name="Tree_14" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_14" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.9907258, 0, -0.13587639, 0, 1, 0, 0.13587639, 0, 0.9907258, 17.545246, 0, -6.9239774)
 
-[node name="Tree_15" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_15" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.9816459, 0, -0.19071274, 0, 1, 0, 0.19071274, 0, 0.9816459, 21.652508, 0, -16.377682)
 
-[node name="Tree_16" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_16" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.6835245, 0, 0.7299276, 0, 1, 0, -0.7299276, 0, -0.6835245, 10.015792, 0, -13.323005)
 
-[node name="Tree_17" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_17" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.39375868, 0, 0.91921383, 0, 1, 0, -0.91921383, 0, 0.39375868, 20.996635, 0, -13.619619)
 
-[node name="Tree_18" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_18" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.99958885, 0, 0.028673207, 0, 1, 0, -0.028673207, 0, -0.99958885, 4.2015657, 0, 15.396932)
 
-[node name="Tree_20" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_20" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.6731083, 0, -0.7395439, 0, 1, 0, 0.7395439, 0, -0.6731083, 36.567123, 0, 3.64308)
 
-[node name="Tree_21" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_21" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.7223564, 0, -0.691521, 0, 1, 0, 0.691521, 0, 0.7223564, -0.056485146, 0, -6.6351223)
 
-[node name="Tree_22" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_22" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.384156, 0, 0.9232682, 0, 1, 0, -0.9232682, 0, 0.384156, -0.35402706, 0, -14.936396)
 
-[node name="Tree_23" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_23" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.72393733, 0, 0.68986577, 0, 1, 0, -0.68986577, 0, -0.72393733, 21.563236, 0, 18.825956)
 
-[node name="Tree_24" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_24" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.98720306, 0, 0.15946813, 0, 1, 0, -0.15946813, 0, -0.98720306, 18.076124, 0, -8.980189)
 
-[node name="Tree_25" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_25" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.07561801, 0, -0.99713683, 0, 1, 0, 0.99713683, 0, -0.07561801, -3.5410857, 0, 15.092836)
 
-[node name="Tree_27" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_27" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.5731724, 0, 0.8194348, 0, 1, 0, -0.8194348, 0, 0.5731724, -5.2134976, 0, 13.410596)
 
-[node name="Tree_28" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_28" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.5947605, 0, -0.803903, 0, 1, 0, 0.803903, 0, -0.5947605, -0.8149329, 0, -9.338823)
 
-[node name="Tree_29" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_29" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.9722088, 0, -0.23411548, 0, 1, 0, 0.23411548, 0, -0.9722088, 37.111076, 0, -2.299693)
 
-[node name="Tree_30" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_30" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.42710558, 0, 0.90420175, 0, 1, 0, -0.90420175, 0, 0.42710558, 31.213642, 0, -6.216947)
 
-[node name="Tree_31" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_31" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.9983762, 0, 0.05696471, 0, 1, 0, -0.05696471, 0, 0.9983762, 17.723011, 0, 19.849417)
 
-[node name="Tree_32" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_32" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.8854959, 0, 0.46464723, 0, 1, 0, -0.46464723, 0, 0.8854959, -7.9148917, 0, -9.553921)
 
-[node name="Tree_33" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_33" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.99585927, 0, -0.09090808, 0, 1, 0, 0.09090808, 0, 0.99585927, 35.49858, 0, -8.126625)
 
-[node name="Tree_34" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_34" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.75859874, 0, -0.6515581, 0, 1, 0, 0.6515581, 0, 0.75859874, 24.990786, 0, -6.0755835)
 
-[node name="Tree_36" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_36" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.9013602, 0, 0.43307018, 0, 1, 0, -0.43307018, 0, -0.9013602, 11.940839, 0, 15.465155)
 
-[node name="Tree_37" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_37" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.9922332, 0, -0.12439165, 0, 1, 0, 0.12439165, 0, -0.9922332, 6.7351327, 0, -3.8196545)
 
-[node name="Tree_39" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_39" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.067201465, 0, -0.99773943, 0, 1, 0, 0.99773943, 0, -0.067201465, 36.537426, 0, 13.146435)
 
-[node name="Tree_40" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_40" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.833771, 0, -0.55211043, 0, 1, 0, 0.55211043, 0, -0.833771, 18.784292, 0, 14.383145)
 
-[node name="Tree_41" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_41" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.0373293, 0, 0.99930304, 0, 1, 0, -0.99930304, 0, 0.0373293, 39.10007, 0, -4.9660707)
 
-[node name="Tree_43" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_43" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.8799797, 0, -0.4750113, 0, 1, 0, 0.4750113, 0, -0.8799797, 25.07551, 0, -17.298721)
 
-[node name="Tree_44" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_44" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.7923099, 0, 0.6101189, 0, 1, 0, -0.6101189, 0, 0.7923099, -8.728662, 0, 19.313625)
 
-[node name="Tree_46" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_46" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.05950461, 0, -0.998228, 0, 1, 0, 0.998228, 0, -0.05950461, -3.293354, 0, -11.748847)
 
-[node name="Tree_47" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_47" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.44832534, 0, -0.8938705, 0, 1, 0, 0.8938705, 0, 0.44832534, 38.324703, 0, 15.176438)
 
-[node name="Tree_48" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_48" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.898739, 0, 0.43848404, 0, 1, 0, -0.43848404, 0, -0.898739, 5.390276, 0, -4.1977324)
 
-[node name="Tree_49" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_49" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.6616771, 0, 0.7497889, 0, 1, 0, -0.7497889, 0, -0.6616771, -1.2162504, 0, -14.947246)
 
-[node name="Tree_51" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_51" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.57080406, 0, -0.8210863, 0, 1, 0, 0.8210863, 0, -0.57080406, -5.5932255, 0, 0.96127266)
 
-[node name="Tree_52" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_52" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.99953455, 0, -0.0305079, 0, 1, 0, 0.0305079, 0, 0.99953455, -7.0196342, 0, 10.306221)
 
-[node name="Tree_53" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_53" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.46769848, 0, 0.88388807, 0, 1, 0, -0.88388807, 0, 0.46769848, 11.433967, 0, 12.36624)
 
-[node name="Tree_54" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_54" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.2265046, 0, -0.9740101, 0, 1, 0, 0.9740101, 0, 0.2265046, 0.96382505, 0, -6.400605)
 
-[node name="Tree_55" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_55" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.3986468, 0, -0.91710454, 0, 1, 0, 0.91710454, 0, 0.3986468, 35.214367, 0, -12.819532)
 
-[node name="Tree_56" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_56" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.9865158, 0, -0.16366602, 0, 1, 0, 0.16366602, 0, 0.9865158, 0.6273897, 0, 14.237861)
 
-[node name="Tree_57" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_57" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.92660916, 0, -0.37602583, 0, 1, 0, 0.37602583, 0, 0.92660916, -9.219944, 0, -8.933459)
 
-[node name="Tree_58" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_58" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.29997545, 0, 0.95394695, 0, 1, 0, -0.95394695, 0, -0.29997545, 24.551863, 0, -11.993555)
 
-[node name="Tree_59" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_59" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.3927584, 0, 0.9196417, 0, 1, 0, -0.9196417, 0, -0.3927584, 35.55474, 0, -3.6205792)
 
-[node name="Tree_60" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_60" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.7054955, 0, -0.7087144, 0, 1, 0, 0.7087144, 0, -0.7054955, 36.857376, 0, 15.240896)
 
-[node name="Tree_61" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_61" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.9661061, 0, 0.25814524, 0, 1, 0, -0.25814524, 0, -0.9661061, 32.861862, 0, -13.6458645)
 
-[node name="Tree_62" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_62" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.8545482, 0, 0.5193721, 0, 1, 0, -0.5193721, 0, -0.8545482, 36.50939, 0, 18.475718)
 
-[node name="Tree_63" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_63" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.9958384, 0, -0.09113651, 0, 1, 0, 0.09113651, 0, -0.9958384, 26.1961, 0, 7.7201557)
 
-[node name="Tree_64" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_64" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.26102495, 0, 0.96533203, 0, 1, 0, -0.96533203, 0, 0.26102495, 24.938831, 0, 7.8533087)
 
-[node name="Tree_66" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_66" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.18436134, 0, 0.98285854, 0, 1, 0, -0.98285854, 0, 0.18436134, 19.640282, 0, -3.7606258)
 
-[node name="Tree_67" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_67" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.8695389, 0, -0.49386445, 0, 1, 0, 0.49386445, 0, 0.8695389, 6.727643, 0, -7.781604)
 
-[node name="Tree_68" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_68" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.7309597, 0, 0.6824206, 0, 1, 0, -0.6824206, 0, 0.7309597, -2.5246396, 0, 17.505426)
 
-[node name="Tree_69" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_69" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.7235746, 0, 0.6902462, 0, 1, 0, -0.6902462, 0, -0.7235746, 4.7012734, 0, -10.76045)
 
-[node name="Tree_70" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_70" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.66845167, 0, -0.7437556, 0, 1, 0, 0.7437556, 0, -0.66845167, -3.2390676, 0, 12.842144)
 
-[node name="Tree_71" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_71" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.76238316, 0, 0.6471259, 0, 1, 0, -0.6471259, 0, 0.76238316, 24.454813, 0, -7.015875)
 
-[node name="Tree_72" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_72" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.6730371, 0, 0.7396087, 0, 1, 0, -0.7396087, 0, 0.6730371, 16.714945, 0, -5.8802295)
 
-[node name="Tree_73" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_73" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.86804116, 0, -0.4964922, 0, 1, 0, 0.4964922, 0, -0.86804116, 20.716675, 0, 9.952677)
 
-[node name="Tree_74" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_74" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.11689059, 0, -0.9931448, 0, 1, 0, 0.9931448, 0, 0.11689059, 23.431616, 0, 10.459053)
 
-[node name="Tree_75" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_75" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.6390867, 0, -0.7691347, 0, 1, 0, 0.7691347, 0, -0.6390867, 29.23273, 0, -6.5719953)
 
-[node name="Tree_76" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_76" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.30043462, 0, 0.9538024, 0, 1, 0, -0.9538024, 0, -0.30043462, 36.796978, 0, -7.575607)
 
-[node name="Tree_77" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_77" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.992897, 0, -0.11897716, 0, 1, 0, 0.11897716, 0, 0.992897, 21.525755, 0, 13.832829)
 
-[node name="Tree_78" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_78" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.14355244, 0, -0.98964274, 0, 1, 0, 0.98964274, 0, -0.14355244, 14.798769, 0, 10.988113)
 
-[node name="Tree_79" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_79" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.05759824, 0, 0.99833983, 0, 1, 0, -0.99833983, 0, 0.05759824, 39.261227, 0, 12.143983)
 
-[node name="Tree_80" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_80" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.66512275, 0, 0.746734, 0, 1, 0, -0.746734, 0, -0.66512275, 12.776591, 0, -9.923112)
 
-[node name="Tree_81" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_81" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.97880423, 0, 0.20479809, 0, 1, 0, -0.20479809, 0, 0.97880423, 17.16997, 0, -19.4028)
 
-[node name="Tree_82" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_82" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.9865818, 0, 0.16326766, 0, 1, 0, -0.16326766, 0, -0.9865818, 29.181942, 0, 17.161016)
 
-[node name="Tree_83" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_83" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.61165327, 0, 0.79112595, 0, 1, 0, -0.79112595, 0, -0.61165327, 7.1080303, 0, -3.7075799)
 
-[node name="Tree_84" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_84" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.8060927, 0, -0.5917893, 0, 1, 0, 0.5917893, 0, -0.8060927, 31.150717, 0, 7.5826817)
 
-[node name="Tree_85" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_85" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.73326194, 0, 0.6799463, 0, 1, 0, -0.6799463, 0, 0.73326194, 32.161934, 0, -5.006348)
 
-[node name="Tree_86" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_86" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.3513971, 0, 0.9362265, 0, 1, 0, -0.9362265, 0, -0.3513971, 3.473366, 0, 15.265733)
 
-[node name="Tree_87" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_87" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.60660183, 0, -0.7950058, 0, 1, 0, 0.7950058, 0, -0.60660183, 39.506733, 0, 18.395897)
 
-[node name="Tree_88" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_88" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.032494057, 0, -0.9994719, 0, 1, 0, 0.9994719, 0, -0.032494057, 15.265636, 0, -13.8984165)
 
-[node name="Tree_89" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_89" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.016105445, 0, -0.9998703, 0, 1, 0, 0.9998703, 0, 0.016105445, 1.360862, 0, 16.360872)
 
-[node name="Tree_90" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_90" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.4830128, 0, -0.8756133, 0, 1, 0, 0.8756133, 0, 0.4830128, 8.797055, 0, -9.309607)
 
-[node name="Tree_91" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_91" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.9993172, 0, 0.036946144, 0, 1, 0, -0.036946144, 0, -0.9993172, 16.48772, 0, 13.366354)
 
-[node name="Tree_93" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_93" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.47333375, 0, 0.88088316, 0, 1, 0, -0.88088316, 0, -0.47333375, 8.678912, 0, -17.17711)
 
-[node name="Tree_94" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_94" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.7441121, 0, -0.66805476, 0, 1, 0, 0.66805476, 0, -0.7441121, 29.839457, 0, -6.360846)
 
-[node name="Tree_95" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_95" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.5032451, 0, -0.8641437, 0, 1, 0, 0.8641437, 0, 0.5032451, 19.05274, 0, -12.873547)
 
-[node name="Tree_96" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_96" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.91324526, 0, -0.40741026, 0, 1, 0, 0.40741026, 0, 0.91324526, -1.5842059, 0, -15.423986)
 
-[node name="Tree_97" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_97" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.4198101, 0, 0.90761197, 0, 1, 0, -0.90761197, 0, 0.4198101, 29.381025, 0, 18.371273)
 
-[node name="Tree_98" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_98" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.8897961, 0, -0.45635837, 0, 1, 0, 0.45635837, 0, 0.8897961, 20.787066, 0, -3.37286)
 
-[node name="Tree_99" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_99" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.08966693, 0, 0.9959718, 0, 1, 0, -0.9959718, 0, -0.08966693, 30.621845, 0, -0.51527494)
 
-[node name="Tree_100" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_100" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.92585146, 0, -0.37788767, 0, 1, 0, 0.37788767, 0, -0.92585146, 37.14779, 0, 4.950493)
 
-[node name="Tree_101" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_101" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.88874966, 0, 0.45839292, 0, 1, 0, -0.45839292, 0, 0.88874966, 7.226083, 0, -9.428239)
 
-[node name="Tree_102" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_102" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.35639533, 0, -0.93433523, 0, 1, 0, 0.93433523, 0, -0.35639533, 14.38948, 0, 11.033516)
 
-[node name="Tree_103" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_103" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.9995483, 0, 0.030052103, 0, 1, 0, -0.030052103, 0, -0.9995483, 1.0250276, 0, -16.481867)
 
-[node name="Tree_104" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_104" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.6933044, 0, -0.72064483, 0, 1, 0, 0.72064483, 0, -0.6933044, 18.493687, 0, -4.438441)
 
-[node name="Tree_105" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_105" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.2947769, 0, 0.9555661, 0, 1, 0, -0.9555661, 0, -0.2947769, 8.556968, 0, 7.942027)
 
-[node name="Tree_106" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_106" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.01953315, 0, 0.9998092, 0, 1, 0, -0.9998092, 0, -0.01953315, 39.86166, 0, 16.667156)
 
-[node name="Tree_107" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_107" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.92162955, 0, -0.38807085, 0, 1, 0, 0.38807085, 0, -0.92162955, 5.988607, 0, -7.9086046)
 
-[node name="Tree_108" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_108" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.68529993, 0, 0.72826093, 0, 1, 0, -0.72826093, 0, 0.68529993, 22.583305, 0, 18.035275)
 
-[node name="Tree_109" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_109" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.16134539, 0, 0.986898, 0, 1, 0, -0.986898, 0, -0.16134539, 39.421135, 0, 5.457308)
 
-[node name="Tree_110" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_110" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.11538102, 0, 0.9933213, 0, 1, 0, -0.9933213, 0, 0.11538102, 34.135777, 0, 16.454445)
 
-[node name="Tree_111" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_111" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.020056376, 0, 0.99979883, 0, 1, 0, -0.99979883, 0, -0.020056376, 23.445322, 0, 18.900824)
 
-[node name="Tree_112" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_112" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.92332876, 0, 0.38401046, 0, 1, 0, -0.38401046, 0, -0.92332876, 31.913675, 0, 15.738793)
 
-[node name="Tree_113" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_113" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.60523015, 0, -0.79605055, 0, 1, 0, 0.79605055, 0, -0.60523015, 18.776037, 0, 14.808205)
 
-[node name="Tree_114" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_114" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.21729079, 0, 0.97610694, 0, 1, 0, -0.97610694, 0, 0.21729079, 4.1025033, 0, -9.813232)
 
-[node name="Tree_115" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_115" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.423243, 0, -0.90601623, 0, 1, 0, 0.90601623, 0, -0.423243, 31.417192, 0, 12.363392)
 
-[node name="Tree_116" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_116" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.9943377, 0, -0.10626631, 0, 1, 0, 0.10626631, 0, -0.9943377, 30.14342, 0, 1.5208817)
 
-[node name="Tree_117" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_117" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.7818249, 0, -0.6234981, 0, 1, 0, 0.6234981, 0, -0.7818249, 22.96706, 0, -17.80698)
 
-[node name="Tree_118" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_118" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.078137346, 0, 0.9969426, 0, 1, 0, -0.9969426, 0, -0.078137346, 7.8529353, 0, -15.649804)
 
-[node name="Tree_119" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_119" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.045701806, 0, -0.99895513, 0, 1, 0, 0.99895513, 0, 0.045701806, 27.511368, 0, -12.141134)
 
-[node name="Tree_120" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_120" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.9070445, 0, -0.4210348, 0, 1, 0, 0.4210348, 0, 0.9070445, 23.912422, 0, -7.612891)
 
-[node name="Tree_121" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_121" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.99967676, 0, -0.025422996, 0, 1, 0, 0.025422996, 0, 0.99967676, 0.9261546, 0, 11.187638)
 
-[node name="Tree_122" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_122" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.77363324, 0, 0.6336337, 0, 1, 0, -0.6336337, 0, 0.77363324, 15.633819, 0, -16.539722)
 
-[node name="Tree_124" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_124" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.818722, 0, -0.5741901, 0, 1, 0, 0.5741901, 0, 0.818722, 2.8814113, 0, -5.868022)
 
-[node name="Tree_125" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_125" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.54034334, 0, -0.8414446, 0, 1, 0, 0.8414446, 0, -0.54034334, 39.43124, 0, 14.802045)
 
-[node name="Tree_126" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_126" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.9403309, 0, 0.34026137, 0, 1, 0, -0.34026137, 0, 0.9403309, -6.2860613, 0, 13.508049)
 
-[node name="Tree_128" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_128" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.7498455, 0, 0.6616129, 0, 1, 0, -0.6616129, 0, -0.7498455, 12.191236, 0, 19.172184)
 
-[node name="Tree_129" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_129" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.20267025, 0, 0.97924703, 0, 1, 0, -0.97924703, 0, 0.20267025, -6.589989, 0, 7.00669)
 
-[node name="Tree_130" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_130" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.9810212, 0, 0.1939004, 0, 1, 0, -0.1939004, 0, -0.9810212, -6.095148, 0, 18.956554)
 
-[node name="Tree_131" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_131" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.76620644, 0, -0.64259446, 0, 1, 0, 0.64259446, 0, 0.76620644, 19.1008, 0, -10.613446)
 
-[node name="Tree_132" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_132" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.99776596, 0, -0.06680641, 0, 1, 0, 0.06680641, 0, 0.99776596, 13.106245, 0, -16.212015)
 
-[node name="Tree_134" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_134" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.28566065, 0, -0.9583308, 0, 1, 0, 0.9583308, 0, 0.28566065, 17.78704, 0, 8.858927)
 
-[node name="Tree_135" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_135" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.33825168, 0, -0.94105566, 0, 1, 0, 0.94105566, 0, 0.33825168, 37.37887, 0, -12.984295)
 
-[node name="Tree_136" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_136" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.35273886, 0, -0.9357218, 0, 1, 0, 0.9357218, 0, -0.35273886, -1.5286032, 0, -16.225946)
 
-[node name="Tree_138" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_138" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.6962372, 0, 0.7178118, 0, 1, 0, -0.7178118, 0, -0.6962372, 26.271309, 0, -7.8621955)
 
-[node name="Tree_139" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_139" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.41062805, 0, 0.91180295, 0, 1, 0, -0.91180295, 0, 0.41062805, 14.989618, 0, -16.581554)
 
-[node name="Tree_140" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_140" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.9739126, 0, 0.2269234, 0, 1, 0, -0.2269234, 0, -0.9739126, 0.36646396, 0, -15.817094)
 
-[node name="Tree_141" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_141" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.9726339, 0, -0.23234302, 0, 1, 0, 0.23234302, 0, 0.9726339, 19.22564, 0, 14.228198)
 
-[node name="Tree_142" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_142" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.81258744, 0, -0.5828393, 0, 1, 0, 0.5828393, 0, -0.81258744, -2.7718642, 0, 10.261669)
 
-[node name="Tree_143" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_143" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.76288426, 0, 0.6465351, 0, 1, 0, -0.6465351, 0, 0.76288426, 4.7487135, 0, -16.55981)
 
-[node name="Tree_145" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_145" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.13612854, 0, 0.9906912, 0, 1, 0, -0.9906912, 0, 0.13612854, 32.047558, 0, 13.946351)
 
-[node name="Tree_146" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_146" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.24258488, 0, -0.9701302, 0, 1, 0, 0.9701302, 0, -0.24258488, 9.758844, 0, -19.686028)
 
-[node name="Tree_147" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_147" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.8335257, 0, -0.5524807, 0, 1, 0, 0.5524807, 0, 0.8335257, -8.729128, 0, 10.537968)
 
-[node name="Tree_148" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_148" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(0.80951065, 0, 0.5871052, 0, 1, 0, -0.5871052, 0, 0.80951065, 4.8910174, 0, -11.845674)
 
-[node name="Tree_149" type="Node3D" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
+[node name="Tree_149" parent="SpookyForest" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-0.9528112, 0, -0.3035636, 0, 1, 0, 0.3035636, 0, -0.9528112, 29.854343, 0, -5.7804465)
 
-[node name="MountainsAndFields" type="Node3D" parent="." instance=ExtResource("8_jlsqs")]
+[node name="MountainsAndFields" parent="." instance=ExtResource("8_jlsqs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00062799454, -0.006415248, -0.0068559647)
 
-[node name="ShoppingStreetGate" type="Node3D" parent="." instance=ExtResource("9_q8u5g")]
+[node name="ShoppingStreetGate" parent="." instance=ExtResource("9_q8u5g")]
 transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 38, 0, -4)
 
 [node name="SmallShrine" type="Node3D" parent="."]
@@ -452,7 +451,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.045, 2)
 size = Vector3(6, 0.1, 5.5)
 material = SubResource("ShaderMaterial_cvmbd")
 
-[node name="MainHall" type="Node3D" parent="SmallShrine" instance=ExtResource("11_mwfav")]
+[node name="MainHall" parent="SmallShrine" instance=ExtResource("11_mwfav")]
 transform = Transform3D(-3.496911e-07, 0, -8, 0, 8, 0, 8, 0, -3.496911e-07, 0, 3.3, 0)
 
 [node name="Pedestal_Model_A" type="Node3D" parent="SmallShrine"]
@@ -470,7 +469,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 size = Vector3(1.1, 0.4, 1.1)
 material = SubResource("ShaderMaterial_cvmbd")
 
-[node name="komainu" type="Node3D" parent="SmallShrine/Pedestal_Model_A" instance=ExtResource("11_bjd11")]
+[node name="komainu" parent="SmallShrine/Pedestal_Model_A" instance=ExtResource("11_bjd11")]
 transform = Transform3D(1.0875694, 0, 0.50714195, 0, 1.2, 0, -0.50714195, 0, 1.0875694, 0, 1.6, 0)
 
 [node name="Eyes" type="Node3D" parent="SmallShrine/Pedestal_Model_A"]
@@ -501,7 +500,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 size = Vector3(1.1, 0.4, 1.1)
 material = SubResource("ShaderMaterial_cvmbd")
 
-[node name="komainu" type="Node3D" parent="SmallShrine/Pedestal_Model_Un" instance=ExtResource("11_bjd11")]
+[node name="komainu" parent="SmallShrine/Pedestal_Model_Un" instance=ExtResource("11_bjd11")]
 transform = Transform3D(1.0875694, 0, -0.50714195, 0, 1.2, 0, 0.50714195, 0, 1.0875694, 0, 1.6, 0)
 
 [node name="Eyes" type="Node3D" parent="SmallShrine/Pedestal_Model_Un"]
@@ -522,19 +521,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 7.4)
 size = Vector3(1.5, 0.03, 16)
 material = SubResource("ShaderMaterial_cvmbd")
 
-[node name="DeadTree_0" type="Node3D" parent="SmallShrine" instance=ExtResource("15_cvmbd")]
+[node name="DeadTree_0" parent="SmallShrine" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(7, 0, 0, 0, 7, 0, 0, 0, 7, -8.627467, 3, -6.1624765)
 
-[node name="DeadTree_1" type="Node3D" parent="SmallShrine" instance=ExtResource("15_cvmbd")]
+[node name="DeadTree_1" parent="SmallShrine" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(2.48516, 0, 8.128591, 0, 8.5, 0, -8.128591, 0, 2.48516, 9.6, 3, -7.2)
 
-[node name="DeadTree_2" type="Node3D" parent="SmallShrine" instance=ExtResource("15_cvmbd")]
+[node name="DeadTree_2" parent="SmallShrine" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-8.290375, 0, 5.5919304, 0, 10, 0, -5.5919304, 0, -8.290375, -10.223868, 4, 6.01404)
 
-[node name="DeadTree_3" type="Node3D" parent="SmallShrine" instance=ExtResource("15_cvmbd")]
+[node name="DeadTree_3" parent="SmallShrine" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(-5.4400215, 0, -4.405243, 0, 7, 0, 4.405243, 0, -5.4400215, 10.536443, 3, 8.780369)
 
-[node name="DeadTree_4" type="Node3D" parent="SmallShrine" instance=ExtResource("15_cvmbd")]
+[node name="DeadTree_4" parent="SmallShrine" instance=ExtResource("15_cvmbd")]
 transform = Transform3D(3.184154, 0, -7.8810635, 0, 8.5, 0, 7.8810635, 0, 3.184154, 0, 3, -14)
 
 [node name="PathStone_L_0" type="CSGSphere3D" parent="SmallShrine"]
@@ -847,21 +846,14 @@ transform = Transform3D(1, 0, 0, 0, 0.5, 0, 0, 0, 1, 0.95, 0.05, 15.5)
 radius = 0.15
 material = SubResource("ShaderMaterial_cvmbd")
 
-[node name="ToriiGate" type="Node3D" parent="SmallShrine" instance=ExtResource("14_cvmbd")]
+[node name="ToriiGate" parent="SmallShrine" instance=ExtResource("14_cvmbd")]
 transform = Transform3D(-1.7484555e-07, 0, 4, 0, 4, 0, -4, 0, -1.7484555e-07, 0, 1.8, 13)
 
-[node name="NoEntryBarrier" type="Node3D" parent="." instance=ExtResource("14_3p2gp")]
-transform = Transform3D(7.154928e-08, 0, -6, 0, 6, 0, 6, 0, 7.154928e-08, 38, 1, -4)
+[node name="NoEntryBarrier" parent="." instance=ExtResource("14_3p2gp")]
+transform = Transform3D(7.154928e-08, 0, -6, 0, 6, 0, 6, 0, 7.154928e-08, 38, 0.8, -3.8)
 
-[node name="GateDeadTree_Left" type="Node3D" parent="." instance=ExtResource("15_cvmbd")]
+[node name="GateDeadTree_Left" parent="." instance=ExtResource("15_cvmbd")]
 transform = Transform3D(9.396926, 0, 3.4202013, 0, 12, 0, -3.4202013, 0, 9.396926, 34, 5.5, -3)
 
-[node name="GateDeadTree_Right" type="Node3D" parent="." instance=ExtResource("15_cvmbd")]
+[node name="GateDeadTree_Right" parent="." instance=ExtResource("15_cvmbd")]
 transform = Transform3D(7.7134514, 0, -9.1925335, 0, 15, 0, 9.1925335, 0, 7.7134514, 45, 6.5, -2)
-
-[node name="Scarecrow" type="Node3D" parent="." instance=ExtResource("16_ksmzk")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 7)
-
-[node name="PublicToilet" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 14)
-script = ExtResource("20_toilet")

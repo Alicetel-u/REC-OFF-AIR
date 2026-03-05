@@ -34,8 +34,8 @@ func _process(delta: float) -> void:
 	if _walking:
 		var prev_bob := _bob_t
 		_bob_t += delta * Player.BOB_FREQ
-		var ty := abs(sin(_bob_t)) * Player.BOB_AMP
-		var tx := sin(_bob_t * 2.0) * Player.BOB_AMP * 0.4
+		var ty : float = abs(sin(_bob_t)) * Player.BOB_AMP
+		var tx : float = sin(_bob_t * 2.0) * Player.BOB_AMP * 0.4
 		player.camera.position.y = lerp(player.camera.position.y, ty, delta * 12.0)
 		player.camera.position.x = lerp(player.camera.position.x, tx, delta * 12.0)
 		# 足音 — bob_t が π の倍数を通過（着地タイミング）で再生
@@ -264,6 +264,9 @@ func run_from_path(json_path: String) -> void:
 			"fade_clear":
 				await _fade_clear(float(ev.get("dur", 0.8)))
 
+			"stage_swap":
+				await _stage_swap(ev.get("scene", ""), ev.get("spawn", [0, 1, 0]))
+
 			_:
 				pass  # 未知タイプは無視
 
@@ -469,6 +472,7 @@ func _polaroid_video(_video_path: String) -> void:
 	# AtlasTexture を1つ作り、region を切り替えて再生
 	var atlas := AtlasTexture.new()
 	atlas.atlas = sheet_tex
+	atlas.region = Rect2(0, 0, CELL_W, CELL_H)
 	tex_rect.texture = atlas
 
 	# ── 下部テキスト（手書き風メモ） ──
@@ -603,3 +607,59 @@ func _fade_clear(dur: float = 0.8) -> void:
 	var tw := create_tween()
 	tw.tween_property(_fade_rect, "color:a", 0.0, dur)
 	await tw.finished
+
+
+# ════════════════════════════════════════════════════════════════════
+# ステージ差し替え（暗転中に呼ぶ想定）
+# ════════════════════════════════════════════════════════════════════
+
+func _stage_swap(scene_path: String, spawn: Array) -> void:
+	var main := get_tree().current_scene
+
+	# 現在のステージ系ノードを削除（Player/HUD/UI/カメラ等は残す）
+	var keep_names : Array = ["Player", "HUD", "WorldEnvironment",
+		"DirectionalLight3D", "OverlayLayer", "YouTubeChrome",
+		"ScenarioUI", "InventoryUI"]
+	for child in main.get_children():
+		if child == player:
+			continue
+		if child is CanvasLayer:
+			continue
+		if child.name in keep_names:
+			continue
+		if child is Node3D:
+			child.queue_free()
+	await get_tree().process_frame
+
+	# 新シーン読み込み
+	var packed := load(scene_path) as PackedScene
+	if packed:
+		var stage := packed.instantiate()
+		main.add_child(stage)
+	else:
+		push_warning("EntranceDirector: stage_swap — シーンが読み込めません: " + scene_path)
+
+	# トイレ用の地面（暗い環境）
+	var ground_mesh := MeshInstance3D.new()
+	var plane := BoxMesh.new()
+	plane.size = Vector3(60, 0.2, 60)
+	ground_mesh.mesh = plane
+	ground_mesh.position = Vector3(0, -0.1, 0)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.12, 0.12, 0.10)
+	ground_mesh.material_override = mat
+	main.add_child(ground_mesh)
+
+	# 薄暗い環境光
+	var env_light := OmniLight3D.new()
+	env_light.position = Vector3(0, 4, 0)
+	env_light.light_color = Color(0.5, 0.55, 0.6)
+	env_light.light_energy = 0.4
+	env_light.omni_range = 20.0
+	main.add_child(env_light)
+
+	# プレイヤー位置設定
+	var sx : float = float(spawn[0]) if spawn.size() > 0 else 0.0
+	var sy : float = float(spawn[1]) if spawn.size() > 1 else 1.0
+	var sz : float = float(spawn[2]) if spawn.size() > 2 else 0.0
+	player.position = Vector3(sx, sy, sz)

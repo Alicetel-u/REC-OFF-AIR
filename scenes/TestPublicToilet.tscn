@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/public_toilet/PublicToilet.tscn" id="1_b1w88"]
+[ext_resource type="Script" path="res://scenes/HandheldCamera.gd" id="2_kdsf2"]
+[ext_resource type="PackedScene" path="res://scenes/StreamUI.tscn" id="3_bnc5b"]
+[ext_resource type="Script" path="res://scenes/StreamUI.gd" id="4_gwedv"]
+
+[node name="TestPublicToilet" type="Node3D" unique_id=375559061]
+
+[node name="PublicToilet" type="Node3D" parent="." unique_id=1995605221 instance=ExtResource("1_b1w88")]
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=602554587]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.5, 4)
+script = ExtResource("2_kdsf2")
+flashlight_path = NodePath("../Flashlight")
+
+[node name="Flashlight" type="SpotLight3D" parent="." unique_id=1845263922]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 4)
+light_energy = 5.0
+shadow_enabled = true
+spot_range = 15.0
+spot_angle = 50.0
+
+[node name="StreamUI" type="Control" parent="." unique_id=1811563355 instance=ExtResource("3_bnc5b")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_gwedv")

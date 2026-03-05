@@ -12,8 +12,7 @@ func _ready() -> void:
 	_build_fields()
 	_build_bus_stop()
 	_build_gate()
-	_build_toilet()
-	_build_toilet_deco()
+	_build_shopping_gate()
 	# エディター上で全ノードを選択・移動できるようにする
 	if Engine.is_editor_hint():
 		_set_editor_owner(self)
@@ -39,9 +38,10 @@ func _build_ground() -> void:
 
 # ── 砂利道 ───────────────────────────────────────────────────────
 func _build_road() -> void:
-	_box(Vector3(0, 0.01, -2), Vector3(4.5, 0.05, 42), Color(0.55, 0.52, 0.46))
-	_box(Vector3(-2.6, 0.03, -2), Vector3(0.3, 0.04, 42), Color(0.40, 0.38, 0.34))
-	_box(Vector3( 2.6, 0.03, -2), Vector3(0.3, 0.04, 42), Color(0.40, 0.38, 0.34))
+	# Z=19 から Z=-33 まで（村門・商店街ゲートを通過する長さ）
+	_box(Vector3(0, 0.01, -7), Vector3(4.5, 0.05, 52), Color(0.55, 0.52, 0.46))
+	_box(Vector3(-2.6, 0.03, -7), Vector3(0.3, 0.04, 52), Color(0.40, 0.38, 0.34))
+	_box(Vector3( 2.6, 0.03, -7), Vector3(0.3, 0.04, 52), Color(0.40, 0.38, 0.34))
 
 
 # ── 畑 ───────────────────────────────────────────────────────────
@@ -93,71 +93,12 @@ func _build_gate() -> void:
 	_box(Vector3( 8.0, 0.5, -14.0), Vector3(8.0, 1.0, 0.8), Color(0.55, 0.52, 0.48))  # 右石垣
 
 
-# ── 公衆トイレ（GLBモデル・門くぐって右の脇道奥） ───────────────
-func _build_toilet() -> void:
-	# 脇道（右石垣 X=12 から建物入口 Z=-17 まで）
-	_box(Vector3(15.5, 0.02, -15.5), Vector3(7.5, 0.05, 3.5), Color(0.46, 0.42, 0.38))
-
-	# GLBモデルを配置
-	var packed := load("res://assets/models/environment/PublicToilet.glb") as PackedScene
+# ── 商店街ゲート（村門の先） ───────────────────────────────────
+func _build_shopping_gate() -> void:
+	var packed := load("res://assets/models/environment/ShoppingStreetGate.tscn") as PackedScene
 	if packed:
-		var toilet := packed.instantiate()
-		toilet.position = Vector3(18.0, 0.0, -22.0)
-		toilet.rotation_degrees.y = 180.0  # 南向き（入口が道路側を向く）
-		add_child(toilet)
+		var gate := packed.instantiate()
+		gate.position = Vector3(0, 0, -28.0)
+		add_child(gate)
 	else:
-		push_warning("PublicToilet.glb が読み込めません")
-
-	# 建物全体のコリジョン（GLBにコリジョンがない場合のフォールバック）
-	var sb    := StaticBody3D.new()
-	sb.position = Vector3(18.0, 1.6, -22.0)
-	var cs    := CollisionShape3D.new()
-	var shape := BoxShape3D.new()
-	shape.size = Vector3(7.0, 3.2, 10.0)
-	cs.shape   = shape
-	sb.add_child(cs)
-	add_child(sb)
-
-	# 廊下の蛍光灯（青白い・不安定な雰囲気）
-	var lamp := OmniLight3D.new()
-	lamp.position     = Vector3(15.8, 2.8, -22.0)
-	lamp.light_color  = Color(0.82, 0.90, 0.75)
-	lamp.light_energy = 1.6
-	lamp.omni_range   = 10.0
-	add_child(lamp)
-
-
-# ── トイレ内部デコレーション（目の札・スマホ破片） ─────────────
-func _build_toilet_deco() -> void:
-	var col_wood := Color(0.32, 0.24, 0.14)
-	var col_eye  := Color(0.06, 0.04, 0.04)   # 黒い眼窩
-
-	# ── 個室扉の上部に貼られた「目の札」（3枚） ──
-	# 個室3扉（Z≈-19）
-	_build_eye_tag(Vector3(17.06, 1.6, -19.0), col_wood, col_eye)
-	# 個室2扉（Z≈-22.8）★スマホのある個室
-	_build_eye_tag(Vector3(17.06, 1.6, -22.8), col_wood, col_eye)
-	# 個室1扉（Z≈-26.0）
-	_build_eye_tag(Vector3(17.06, 1.6, -26.0), col_wood, col_eye)
-
-	# ── 個室2の床にあるスマホ破片（1994年刻印・霊の遺物） ──
-	# 画面割れたスマホ本体
-	_deco(Vector3(20.0, 0.03, -23.5), Vector3(0.13, 0.018, 0.065), Color(0.14, 0.14, 0.17))
-	# 割れた画面（青白い光で内側から光っている）
-	_deco(Vector3(20.0, 0.04, -23.5), Vector3(0.10, 0.005, 0.055), Color(0.55, 0.70, 0.95, 0.7))
-	# スマホの青白いグロー光
-	var phone_light := OmniLight3D.new()
-	phone_light.position     = Vector3(20.0, 0.35, -23.5)
-	phone_light.light_color  = Color(0.65, 0.80, 1.0)
-	phone_light.light_energy = 0.9
-	phone_light.omni_range   = 2.8
-	add_child(phone_light)
-
-
-func _build_eye_tag(pos: Vector3, col_wood: Color, col_eye: Color) -> void:
-	# 木製の札（縦長・薄い板）
-	_deco(pos,                                   Vector3(0.04, 0.28, 0.18), col_wood)
-	# 左の眼窩（暗い楕円を2つのboxで近似）
-	_deco(pos + Vector3(0.03, 0.04,  0.04),      Vector3(0.02, 0.07, 0.05), col_eye)
-	# 右の眼窩
-	_deco(pos + Vector3(0.03, 0.04, -0.04),      Vector3(0.02, 0.07, 0.05), col_eye)
+		push_warning("ShoppingStreetGate.tscn が読み込めません")

@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
-[ext_resource type="Shader" uid="uid://cjt3an2g0xjvt" path="res://assets/models/environment/shaders/heavy_rust.gdshader" id="1_3xk1r"]
-[ext_resource type="Texture2D" uid="uid://dg31b0wyliu74" path="res://shaders/素材/新しい看板.jpg" id="1_ts4rm"]
+[ext_resource type="Shader" uid="uid://dyor474rock18" path="res://assets/models/environment/shaders/heavy_rust.gdshader" id="1_3xk1r"]
+[ext_resource type="Texture2D" uid="uid://b67f6cugnaxl3" path="res://shaders/素材/新しい看板.jpg" id="1_ts4rm"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8244m"]
 render_priority = 0

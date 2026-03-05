@@ -501,7 +501,7 @@
 		},
 		{
 			"type": "_comment",
-			"_": "── アーチ前に到着・一時停止 ──"
+			"_": "── 桐原村アーチ手前で停止・看板を見上げる ──"
 		},
 		{
 			"type": "pos_x_await",
@@ -517,7 +517,16 @@
 		},
 		{
 			"type": "rot_y",
-			"target": -2.3,
+			"target": -1.57,
+			"dur": 1.0
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "head_x",
+			"target": -0.5,
 			"dur": 1.5
 		},
 		{
@@ -526,17 +535,35 @@
 		},
 		{
 			"type": "say",
-			"text": "……ここが村の入口……『霧原村』。",
+			"text": "……看板がある。『霧原村』……ここが入口か。",
 			"voice": "v019"
 		},
 		{
 			"type": "wait",
-			"sec": 2.69
+			"sec": 3.5
 		},
 		{
-			"type": "rot_y",
-			"target": -1.57,
-			"dur": 1
+			"type": "chat",
+			"msg": "ガチの廃村じゃん……",
+			"user": "深夜組"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "看板がもう怖い",
+			"user": "視聴者A"
+		},
+		{
+			"type": "wait",
+			"sec": 1.0
+		},
+		{
+			"type": "head_x",
+			"target": 0,
+			"dur": 1.0
 		},
 		{
 			"type": "wait",
@@ -544,19 +571,19 @@
 		},
 		{
 			"type": "say",
-			"text": "……右の方に何か見える。あれがトイレだ。",
+			"text": "……中に入ってみよう。",
 			"voice": "v020"
 		},
 		{
 			"type": "wait",
-			"sec": 2.7
+			"sec": 1.5
 		},
 		{
 			"type": "say_clear"
 		},
 		{
 			"type": "_comment",
-			"_": "── アーチ通過・トイレへ向かう ──"
+			"_": "── アーチ通過・商店街ゲートへ歩行 ──"
 		},
 		{
 			"type": "walk_set",
@@ -565,8 +592,8 @@
 		{
 			"type": "pos_x",
 			"target": 30,
-			"dur": 7,
-			"id": "walk_past_arch"
+			"dur": 12,
+			"id": "walk_to_shopping"
 		},
 		{
 			"type": "wait",
@@ -574,40 +601,27 @@
 		},
 		{
 			"type": "say",
-			"text": "……行くか。",
+			"text": "……この先に商店街があったらしいけど……",
 			"voice": "v021"
 		},
 		{
 			"type": "wait",
-			"sec": 0.89
+			"sec": 3.5
 		},
 		{
-			"type": "pos_x_await",
-			"id": "walk_past_arch"
-		},
-		{
-			"type": "rot_y",
-			"target": 3.14,
-			"dur": 1.5
+			"type": "chat",
+			"msg": "その先にトイレがあるって",
+			"user": "ホラー好き太郎",
+			"utype": "member"
 		},
 		{
 			"type": "wait",
-			"sec": 0.5
+			"sec": 0.4
 		},
 		{
-			"type": "say",
-			"text": "……近づいてみよう。",
-			"voice": "v022"
-		},
-		{
-			"type": "wait",
-			"sec": 1.29
-		},
-		{
-			"type": "pos_z",
-			"target": 6,
-			"dur": 8,
-			"id": "walk_to_toilet_z"
+			"type": "chat",
+			"msg": "やめとけって！",
+			"user": "恐怖体験済み"
 		},
 		{
 			"type": "wait",
@@ -615,16 +629,16 @@
 		},
 		{
 			"type": "say",
-			"text": "……近づくと余計に嫌な感じがする。",
-			"voice": "v023"
+			"text": "……みんなが言ってた公衆トイレ、この近くにあるんだよね。行ってみよっか。",
+			"voice": "v022"
 		},
 		{
 			"type": "wait",
-			"sec": 2.23
+			"sec": 5.0
 		},
 		{
-			"type": "pos_z_await",
-			"id": "walk_to_toilet_z"
+			"type": "pos_x_await",
+			"id": "walk_to_shopping"
 		},
 		{
 			"type": "walk_set",
@@ -635,7 +649,42 @@
 			"sec": 0.5
 		},
 		{
+			"type": "say",
+			"text": "……近づくと余計に嫌な感じがする。",
+			"voice": "v023"
+		},
+		{
+			"type": "wait",
+			"sec": 2.5
+		},
+		{
 			"type": "say_clear"
+		},
+		{
+			"type": "_comment",
+			"_": "── 暗転→トイレマップへ切替 ──"
+		},
+		{
+			"type": "fade_black",
+			"dur": 1.0
+		},
+		{
+			"type": "stage_swap",
+			"scene": "res://assets/models/public_toilet/PublicToilet.tscn",
+			"spawn": [0, 1, 5]
+		},
+		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 0.01
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "fade_clear",
+			"dur": 1.0
 		},
 		{
 			"type": "_comment",
@@ -643,7 +692,7 @@
 		},
 		{
 			"type": "_comment",
-			"_": "【シーン3：公衆トイレの首無し少女】画面暗転→トイレ演出"
+			"_": "【シーン3：公衆トイレの首無し少女】トイレマップ演出"
 		},
 		{
 			"type": "_comment",
@@ -1864,7 +1913,7 @@
 		},
 		{
 			"type": "_comment",
-			"_": "── 暗転で場面転換：トイレ→道路（門付近）へ ──"
+			"_": "── 暗転で場面転換：トイレ→道路（入口マップ）へ ──"
 		},
 		{
 			"type": "fade_black",
@@ -1872,17 +1921,12 @@
 		},
 		{
 			"type": "wait",
-			"sec": 1.5
+			"sec": 1.0
 		},
 		{
-			"type": "pos_x",
-			"target": 25,
-			"dur": 0.01
-		},
-		{
-			"type": "pos_z",
-			"target": 4,
-			"dur": 0.01
+			"type": "stage_swap",
+			"scene": "res://scenes/Stage_Village.tscn",
+			"spawn": [25, 1, 4]
 		},
 		{
 			"type": "rot_y",

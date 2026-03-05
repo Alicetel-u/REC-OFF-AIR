@@ -130,6 +130,7 @@ func _hide_all_panels() -> void:
 # ──────────────────────────────────────────────
 
 func _run_title() -> void:
+	SoundManager.play_bgm("res://assets/audio/bgm/山あいのわらべ歌.mp3", -10.0)
 	panel_title.visible    = true
 	panel_title.modulate.a = 0.0
 	_build_title_hud()
@@ -507,6 +508,7 @@ func _caption_warning_glitch() -> void:
 func _go_to_game() -> void:
 	_phase = Phase.DONE
 	_remove_skip_button()
+	SoundManager.stop_bgm(1.3)
 	GameManager.load_chapter(0)
 	_hide_all_panels()
 	var tw := create_tween()

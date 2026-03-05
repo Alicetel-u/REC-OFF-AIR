@@ -13,6 +13,12 @@
 - `.import` ファイルがないとCIのWebエクスポートで正しくPCKに含まれない
 - 例: `v001.wav` を追加 → `v001.wav.import` も一緒にコミット
 
+## GDScript コーディングルール（重要）
+
+- `var x :=` の型推論は **`abs()`, `sign()`, `clamp()` 等の多態関数と外部 const の掛け算** で失敗する（Godot 4.6）
+- 型が曖昧になる式では **明示的に型を書く**: `var x : float = abs(y) * CONST`
+- コンパイルエラーはシーン遷移時にフリーズを引き起こすため、`.gd` 変更後は必ず動作確認する
+
 ## 対話JSON (`dialogue/*.json`) のルール
 
 - ボイス生成スクリプト (`tools/generate_voice_ch01.py`) は対話JSONを**書き換えない**
@@ -35,12 +41,14 @@
 
 ### pre-commitフック（ローカル）
 - **新しいPCでclone後、最初に実行**: `bash tools/setup-hooks.sh`
+- **GDScript コンパイルチェック**: `.gd` 変更時に `godot --headless --import` で SCRIPT ERROR を検出 → コミット拒否
 - WAV変更時に`.import`がステージされていなければコミット拒否
 - dialogue JSON変更時にバリデーション自動実行（CONSECUTIVE_WAIT/LONG_GAP/MISSING_WAVでブロック）
 - ボイスツール変更時にCLAUDE.md未更新を警告
 
 ### CI（GitHub Actions — 最終防壁）
 - PRおよびmaster pushでバリデーション自動実行
+- **GDScript コンパイルチェック**: Godot の `--headless --import` で SCRIPT ERROR があればデプロイ停止
 - 全WAVに`.import`ファイルがあるか確認
 - `fix_voice_wait.py --validate-only` の致命的警告でデプロイ停止
 

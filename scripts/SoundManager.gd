@@ -26,6 +26,7 @@ var _step_cats     : Dictionary = {}   # category → Array of paths
 var _monster_idx   : int = 0
 
 var _voice    : AudioStreamPlayer = null
+var _bgm      : AudioStreamPlayer = null
 
 
 func _ready() -> void:
@@ -34,6 +35,7 @@ func _ready() -> void:
 	_monster = _make_player(0.0)
 	_door    = _make_player(0.0)
 	_voice   = _make_player(0.0)
+	_bgm     = _make_player(0.0)
 	_scan_all()
 
 
@@ -204,6 +206,29 @@ func play_voice(path: String, vol_db: float = 0.0) -> void:
 ## ボイスを停止
 func stop_voice() -> void:
 	_voice.stop()
+
+
+## BGM を再生（ループ再生）
+func play_bgm(path: String, vol_db: float = -10.0) -> void:
+	var s := _load_audio(path)
+	if not s:
+		push_warning("SoundManager: BGM not found: " + path)
+		return
+	s.set("loop", true)
+	_bgm.stop()
+	_bgm.stream    = s
+	_bgm.volume_db = vol_db
+	_bgm.play()
+
+
+## BGM をフェードアウトして停止
+func stop_bgm(fade_sec: float = 1.0) -> void:
+	if not _bgm.playing:
+		return
+	var tw := create_tween()
+	tw.tween_property(_bgm, "volume_db", -60.0, fade_sec)
+	await tw.finished
+	_bgm.stop()
 
 
 ## ボイス再生中かどうかを返す

@@ -1,0 +1,168 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://assets/models/public_toilet/shaders/dirty_tile.gdshader" id="1_q8vp5"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kbaor"]
+render_priority = 0
+shader = ExtResource("1_q8vp5")
+shader_parameter/base_color = Color(0.85, 0.9, 0.85, 1)
+shader_parameter/dirt_color = Color(0.2, 0.3, 0.1, 1)
+shader_parameter/dirt_amount = 0.5
+shader_parameter/tile_size = 10.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pdi7o"]
+render_priority = 0
+shader = ExtResource("1_q8vp5")
+shader_parameter/base_color = Color(0.6, 0.6, 0.6, 1)
+shader_parameter/dirt_color = Color(0.1, 0.05, 0, 1)
+shader_parameter/dirt_amount = 0.5
+shader_parameter/tile_size = 5.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_br2fb"]
+albedo_color = Color(0.4, 0.4, 0.4, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5ohua"]
+albedo_color = Color(0.4, 0.4, 0.4, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x6wmm"]
+albedo_color = Color(0.4, 0.4, 0.4, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mbbmn"]
+albedo_color = Color(0.4, 0.4, 0.4, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_76464"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+metallic = 1.0
+roughness = 0.2
+
+[node name="PublicToilet" type="Node3D" unique_id=1995605221]
+
+[node name="Building" type="CSGCombiner3D" parent="." unique_id=175378811]
+use_collision = true
+
+[node name="@CSGBox3D@2" type="CSGBox3D" parent="Building" unique_id=2143214670]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+size = Vector3(6, 3, 8)
+material = SubResource("ShaderMaterial_kbaor")
+
+[node name="@CSGBox3D@3" type="CSGBox3D" parent="Building" unique_id=1576279766]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+operation = 2
+size = Vector3(5.6, 2.8, 7.6)
+material = SubResource("ShaderMaterial_kbaor")
+
+[node name="@CSGBox3D@4" type="CSGBox3D" parent="Building" unique_id=684400218]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 4)
+operation = 2
+size = Vector3(2, 2.2, 1)
+
+[node name="Floor" type="CSGBox3D" parent="." unique_id=1110031112]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+use_collision = true
+size = Vector3(5.6, 0.1, 7.6)
+material = SubResource("ShaderMaterial_pdi7o")
+
+[node name="Stalls" type="Node3D" parent="." unique_id=11986446]
+
+[node name="Divider_0" type="CSGBox3D" parent="Stalls" unique_id=235260208]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.1, -3)
+use_collision = true
+size = Vector3(2.5, 2.2, 0.1)
+material = SubResource("ShaderMaterial_kbaor")
+
+[node name="FrontWall_0" type="CSGBox3D" parent="Stalls" unique_id=1605640635]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.1, -2.25)
+use_collision = true
+size = Vector3(0.5, 2.2, 1.5)
+material = SubResource("ShaderMaterial_kbaor")
+
+[node name="Door_0" type="CSGBox3D" parent="Stalls" unique_id=291790993]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1, -2.25)
+use_collision = true
+size = Vector3(0.05, 2, 0.9)
+material = SubResource("StandardMaterial3D_br2fb")
+
+[node name="Divider_1" type="CSGBox3D" parent="Stalls" unique_id=2075165784]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.1, -1.5)
+use_collision = true
+size = Vector3(2.5, 2.2, 0.1)
+material = SubResource("ShaderMaterial_kbaor")
+
+[node name="FrontWall_1" type="CSGBox3D" parent="Stalls" unique_id=2112089313]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.1, -0.75)
+use_collision = true
+size = Vector3(0.5, 2.2, 1.5)
+material = SubResource("ShaderMaterial_kbaor")
+
+[node name="IncidentDoor_Target" type="CSGBox3D" parent="Stalls" unique_id=1973239578]
+transform = Transform3D(0.9659258, 0, 0.25881904, 0, 1, 0, -0.25881904, 0, 0.9659258, 0.25, 1, -0.75)
+use_collision = true
+size = Vector3(0.05, 2, 0.9)
+material = SubResource("StandardMaterial3D_5ohua")
+
+[node name="Divider_2" type="CSGBox3D" parent="Stalls" unique_id=116339338]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.1, 0)
+use_collision = true
+size = Vector3(2.5, 2.2, 0.1)
+material = SubResource("ShaderMaterial_kbaor")
+
+[node name="FrontWall_2" type="CSGBox3D" parent="Stalls" unique_id=1139587629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.1, 0.75)
+use_collision = true
+size = Vector3(0.5, 2.2, 1.5)
+material = SubResource("ShaderMaterial_kbaor")
+
+[node name="Door_2" type="CSGBox3D" parent="Stalls" unique_id=1394109329]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1, 0.75)
+use_collision = true
+size = Vector3(0.05, 2, 0.9)
+material = SubResource("StandardMaterial3D_x6wmm")
+
+[node name="Divider_3" type="CSGBox3D" parent="Stalls" unique_id=2068332513]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.1, 1.5)
+use_collision = true
+size = Vector3(2.5, 2.2, 0.1)
+material = SubResource("ShaderMaterial_kbaor")
+
+[node name="FrontWall_3" type="CSGBox3D" parent="Stalls" unique_id=718136857]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.1, 2.25)
+use_collision = true
+size = Vector3(0.5, 2.2, 1.5)
+material = SubResource("ShaderMaterial_kbaor")
+
+[node name="Door_3" type="CSGBox3D" parent="Stalls" unique_id=1445873274]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1, 2.25)
+use_collision = true
+size = Vector3(0.05, 2, 0.9)
+material = SubResource("StandardMaterial3D_mbbmn")
+
+[node name="Lights" type="Node3D" parent="." unique_id=1559637643]
+
+[node name="FlickeringFluorescent" type="OmniLight3D" parent="Lights" unique_id=587601561]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+light_color = Color(0.6, 0.9, 0.8, 1)
+light_energy = 0.3
+shadow_enabled = true
+omni_range = 8.0
+
+[node name="BackDarkLight" type="OmniLight3D" parent="Lights" unique_id=1956830422]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.5, -3)
+light_color = Color(0.2, 0.05, 0.05, 1)
+light_energy = 0.1
+shadow_enabled = true
+omni_range = 3.0
+
+[node name="SinkArea" type="CSGBox3D" parent="." unique_id=266082779]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0.4, 2)
+use_collision = true
+size = Vector3(2, 0.8, 0.6)
+material = SubResource("ShaderMaterial_pdi7o")
+
+[node name="Mirror" type="CSGBox3D" parent="." unique_id=638702645]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 1.5, 2)
+size = Vector3(1.8, 1, 0.05)
+material = SubResource("StandardMaterial3D_76464")
