@@ -662,6 +662,176 @@
 		},
 		{
 			"type": "_comment",
+			"_": "── 視聴者投票：トイレへのアプローチ ──"
+		},
+		{
+			"type": "set_viewers",
+			"count": 38
+		},
+		{
+			"type": "choice",
+			"prompt": "嫌な予感がする公衆トイレが目の前にある。どうする？",
+			"choices": [
+				{
+					"text": "覚悟決めて正面から入る",
+					"sub": "配信者たるもの、ビビってたらコンテンツにならない"
+				},
+				{
+					"text": "外をぐるっと一周してから入る",
+					"sub": "窓とか裏口とか…逃げ道を確認しておきたい"
+				},
+				{
+					"text": "コンビニ行ってガリガリ君買ってくる",
+					"sub": "あ、この村にコンビニないわ。詰んだ"
+				}
+			],
+			"targets": ["toilet_direct", "toilet_check", "toilet_gari"]
+		},
+		{
+			"type": "label",
+			"name": "toilet_direct"
+		},
+		{
+			"type": "say",
+			"text": "よし……行くしかないでしょ。配信者なめんな！"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "chat",
+			"msg": "かっけぇ！！",
+			"user": "配信民99",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "フラグやめろｗ",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "goto",
+			"label": "toilet_entry"
+		},
+		{
+			"type": "label",
+			"name": "toilet_check"
+		},
+		{
+			"type": "say",
+			"text": "ちょっと待って、先に外を確認させて……"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "say",
+			"text": "……窓、全部コンクリで塞がれてる。裏口もない。入口ひとつだけ"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "chat",
+			"msg": "逃げ場なくて草",
+			"user": "配信民99",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "余計怖くなったじゃん！",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "goto",
+			"label": "toilet_entry"
+		},
+		{
+			"type": "label",
+			"name": "toilet_gari"
+		},
+		{
+			"type": "say",
+			"text": "ガリガリ君食べたい……って、この村にコンビニあるわけないじゃん！！"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "chat",
+			"msg": "ｗｗｗｗｗｗ",
+			"user": "配信民99",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.2
+		},
+		{
+			"type": "chat",
+			"msg": "廃村にコンビニは草",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "現実逃避すなｗ",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "……はぁ。覚悟決めよう"
+		},
+		{
+			"type": "wait",
+			"sec": 1.0
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "label",
+			"name": "toilet_entry"
+		},
+		{
+			"type": "_comment",
 			"_": "── 暗転→トイレマップへ切替 ──"
 		},
 		{

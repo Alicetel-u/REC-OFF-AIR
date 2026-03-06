@@ -1,509 +1,26 @@
 {
 	"chapter": "ch01_haison_souko",
-	"_note": "CP3 廃倉庫 — VHS探索・視聴者10万・体の重さ・Kが個人情報を漏らす・「見ている」埋め尽くし",
+	"_note": "CP3 廃倉庫 — VHS5本収集前の導入演出。屋敷で発見した手記に従い倉庫へ。Kの恐怖・視聴者投票あり",
 	"events": [
 		{
-			"type": "say",
-			"text": "倉庫だ。鍵がかかってると思ったのに…扉が半開きになってる"
+			"type": "_comment",
+			"_": "════════════════════════════════════════════"
 		},
 		{
-			"type": "wait",
-			"sec": 1.5
+			"type": "_comment",
+			"_": "【CP3 導入：廃倉庫への侵入】"
 		},
 		{
-			"type": "chat",
-			"msg": "待ってたみたいじゃん",
-			"user": "幽霊ガチ勢",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "入るな入るなｗｗ",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "VHSある？",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.6
-		},
-		{
-			"type": "say",
-			"text": "…中に入ると。暗い。懐中電灯だけが頼り。棚がずらっと並んでる"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "chat",
-			"msg": "棚に何が？",
-			"user": "視聴者A",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "VHSあったらやばい",
-			"user": "暗闇ウォッチャー",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.6
-		},
-		{
-			"type": "say",
-			"text": "…あった。VHSテープ。ラベルに「1994_06_みゆき」って書いてある"
-		},
-		{
-			"type": "wait",
-			"sec": 1.8
-		},
-		{
-			"type": "chat",
-			"msg": "みゆき！？",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "人の名前じゃん",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "1994年また出てきた",
-			"user": "深夜探偵",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.6
-		},
-		{
-			"type": "say",
-			"text": "1994年。またこの年だ。みゆき…村の子供の名前だろうか"
-		},
-		{
-			"type": "wait",
-			"sec": 1.8
-		},
-		{
-			"type": "chat",
-			"msg": "他にもある？",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "全部で5本ある。「1994_06_みゆき」「1994_07_みゆき」「1994_08_みゆき」「1994_09_みゆき」「1994_10_みゆき」。全部みゆきだ"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "chat",
-			"msg": "6月から10月まで…",
-			"user": "深夜探偵",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "毎月撮ってたの？",
-			"user": "視聴者A",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "5本全部持って帰って！！",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.7
-		},
-		{
-			"type": "say",
-			"text": "わかった。全部持ってく。これが目的だったから"
-		},
-		{
-			"type": "wait",
-			"sec": 1.2
-		},
-		{
-			"type": "chat",
-			"msg": "やったぁ！！",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "配信事故じゃん！！",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
+			"type": "_comment",
+			"_": "════════════════════════════════════════════"
 		},
 		{
 			"type": "set_viewers",
-			"count": 100000
+			"count": 8000
 		},
 		{
 			"type": "say",
-			"text": "…10万人。視聴者が10万人になってる"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "chat",
-			"msg": "10万！！！！",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "マジかよ！！",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "どんどん増えてる",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "にゅーす来てる！！",
-			"user": "視聴者A",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.7
-		},
-		{
-			"type": "say",
-			"text": "うれしいんだけど…なんで急にこんなに。なんか…体が重い。さっきから"
-		},
-		{
-			"type": "wait",
-			"sec": 1.8
-		},
-		{
-			"type": "chat",
-			"msg": "大丈夫？",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "ビビって緊張してるんじゃないの",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "足が沈む感じ？",
-			"user": "深夜探偵",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.6
-		},
-		{
-			"type": "say",
-			"text": "深夜探偵さんが「足が沈む感じ」って言ってくれたけど…そう、まさにそれ。なんだろうこれ"
-		},
-		{
-			"type": "wait",
-			"sec": 1.8
-		},
-		{
-			"type": "chat",
-			"msg": "早く出て",
-			"user": "幽霊ガチ勢",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "その場所がおかしいんだよ",
-			"user": "暗闇ウォッチャー",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "しゅっちくん今日夕飯は唐揚げだったよね",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.8
-		},
-		{
-			"type": "say",
-			"text": "…え？K さん…なんで知ってるの。今日の夕飯"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "chat",
-			"msg": "え？",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "配信で言った？",
-			"user": "視聴者A",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "言ってない気がする",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "部屋を見ている",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.8
-		},
-		{
-			"type": "say",
-			"text": "…部屋を見てる。K さん、何が見えてるの"
-		},
-		{
-			"type": "wait",
-			"sec": 1.2
-		},
-		{
-			"type": "chat",
-			"msg": "怖すぎ！！！",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "部屋ってしゅっちの部屋？",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "配信切れ配信切れ",
-			"user": "幽霊ガチ勢",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "机の上の本のタイトルも見えている",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.8
-		},
-		{
-			"type": "say",
-			"text": "…冗談やめて。どこから見てるんだよ"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "chat",
-			"msg": "Kブロックしろ！",
-			"user": "幽霊ガチ勢",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "話しかけてみたら？",
-			"user": "深夜探偵",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "無視しろ無視！",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "choice",
-			"prompt": "Kがお前の部屋を見ている。夕飯のメニューまで知っている。",
-			"choices": [
-				{
-					"text": "Kに直接話しかける",
-					"sub": "何者なのか問い詰める。答えが返ってくるとは限らない"
-				},
-				{
-					"text": "コメント欄をオフにする",
-					"sub": "Kを遮断する。ただし視聴者全員の声も消える"
-				},
-				{
-					"text": "無視してVHSを持って出る",
-					"sub": "目的はVHS。Kに構っている場合じゃない"
-				}
-			]
-		},
-		{
-			"type": "say",
-			"text": "…何をしても同じだ。Kはどこにでもいる"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "chat",
-			"msg": "全部見えている",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "お前の目を通して",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.8
-		},
-		{
-			"type": "say",
-			"text": "…俺の目を通して。カメラじゃなくて、俺の目を…？"
+			"text": "……屋敷の裏手に出た。手記に書いてあった『倉』……あれだ"
 		},
 		{
 			"type": "wait",
@@ -511,59 +28,8 @@
 		},
 		{
 			"type": "chat",
-			"msg": "やばいやばい！！",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "viewer"
+			"msg": "あの建物？",
+			"user": "視聴者A"
 		},
 		{
 			"type": "wait",
@@ -571,19 +37,9 @@
 		},
 		{
 			"type": "chat",
-			"msg": "Kこわい！！！",
+			"msg": "蔦がすごい…",
 			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "チャット欄埋め尽くしてる",
-			"user": "配信民99",
-			"utype": "viewer"
+			"utype": "moderator"
 		},
 		{
 			"type": "wait",
@@ -591,17 +47,16 @@
 		},
 		{
 			"type": "say",
-			"text": "…出る。ここから早く出る。VHSは全部持った"
+			"text": "『倉の中にあの子たちの記録が残っている。全部消さなければ』……誰かが証拠を隠そうとして、できなかったんだ"
 		},
 		{
 			"type": "wait",
-			"sec": 1.2
+			"sec": 2.5
 		},
 		{
 			"type": "chat",
-			"msg": "頑張れ！！",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
+			"msg": "あの子たちって…",
+			"user": "深夜探偵"
 		},
 		{
 			"type": "wait",
@@ -609,23 +64,189 @@
 		},
 		{
 			"type": "chat",
-			"msg": "出れる？",
+			"msg": "みゆきちゃん以外にもいたの？",
 			"user": "ゆきんこ77",
-			"utype": "viewer"
+			"utype": "moderator"
 		},
 		{
 			"type": "wait",
 			"sec": 0.5
 		},
 		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "viewer"
+			"type": "sfx",
+			"sound": "door_creak"
+		},
+		{
+			"type": "say",
+			"text": "南京錠が……もう壊れてる。誰かが先に来た？それとも、ずっと開いてた？"
 		},
 		{
 			"type": "wait",
-			"sec": 0.7
+			"sec": 2.0
+		},
+		{
+			"type": "chat",
+			"msg": "入るなって意味じゃ…",
+			"user": "幽霊ガチ勢",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "むしろ入れって言ってるんだよ",
+			"user": "配信民99",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.6
+		},
+		{
+			"type": "say",
+			"text": "中に入ると……暗い。懐中電灯だけが頼り。棚がずらっと並んでる"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "flashlight_flicker"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "……あった。VHSテープ。ラベルに『1994_06_記録』って書いてある"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "chat",
+			"msg": "1994年！",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "みゆきが殺された年だ",
+			"user": "深夜探偵"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "say",
+			"text": "全部で5本ある。6月から10月まで……全部『記録』とだけ書いてある。これが証拠だ"
+		},
+		{
+			"type": "wait",
+			"sec": 2.5
+		},
+		{
+			"type": "chat",
+			"msg": "全部持って帰れ！！",
+			"user": "ホラー好き太郎",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "配信的にも最高じゃん",
+			"user": "配信民99",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
+		},
+		{
+			"type": "set_viewers",
+			"count": 10000
+		},
+		{
+			"type": "say",
+			"text": "同接1万人……マジで来てる。みんな、あたしが全部見つけるから待ってて"
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "_comment",
+			"_": "── 視聴者投票：倉庫の探索方針 ──"
+		},
+		{
+			"type": "say_clear"
+		},
+		{
+			"type": "choice",
+			"prompt": "VHSテープが棚のあちこちに散らばっている。倉庫は広い。どう探索する？",
+			"choices": [
+				{
+					"text": "手前から順番にしらみつぶし",
+					"sub": "確実だけど時間がかかる。何かが近づいてくる前に……"
+				},
+				{
+					"text": "ラベルの年月順に探す",
+					"sub": "6月→7月→…って順番に。物語を追いかける"
+				},
+				{
+					"text": "光ってるやつから回収する",
+					"sub": "暗闇の中で微かに光って見えるのは……気のせい？"
+				}
+			]
+		},
+		{
+			"type": "say",
+			"text": "よし……全部で5本。見つけたら出口から脱出する"
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "chat",
+			"msg": "頑張れ！",
+			"user": "ゆきんこ77",
+			"utype": "moderator"
+		},
+		{
+			"type": "wait",
+			"sec": 0.3
+		},
+		{
+			"type": "chat",
+			"msg": "ひとりで見つかるの？",
+			"user": "視聴者A"
+		},
+		{
+			"type": "wait",
+			"sec": 0.4
+		},
+		{
+			"type": "chat",
+			"msg": "1万人で見守ってるから大丈夫",
+			"user": "配信民99",
+			"utype": "member"
+		},
+		{
+			"type": "wait",
+			"sec": 0.5
 		},
 		{
 			"type": "say_clear"

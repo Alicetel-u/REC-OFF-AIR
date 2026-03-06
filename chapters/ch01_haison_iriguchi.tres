@@ -61,4 +61,4 @@ volumetric_fog_enabled = true
 volumetric_fog_density = 0.02
 vhs_overlay = false
 monologue_lines = PackedStringArray("深夜0時…バスを降りたらすごい霧だ", "ここが霧原村の入口か…", "奥の倉庫にVHSテープがあるって情報があった", "門をくぐって奥に進もう")
-next_chapter_id = "ch01_haison_souko"
+next_chapter_id = "ch02_yashiki"

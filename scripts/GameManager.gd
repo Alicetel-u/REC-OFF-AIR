@@ -27,13 +27,11 @@ var current_chapter: Resource = null
 var chapter_index: int = 0
 
 var chapter_order: Array[String] = [
-	"res://chapters/ch01_haison_iriguchi.tres",   # CP1: 廃村入口
-	"res://chapters/ch02_haison_naibu.tres",       # CP2: 廃村内部
+	"res://chapters/ch01_haison_iriguchi.tres",   # CP1: 廃村入口→トイレ
+	"res://chapters/ch02_yashiki.tres",            # CP2: 村長の屋敷
 	"res://chapters/ch01_haison_souko.tres",       # CP3: 廃倉庫
-	"res://chapters/ch04_haison_naibu_event.tres", # CP4: 廃村内部（イベント）
-	"res://chapters/ch05_haison_dasshutsu.tres",   # CP5: 脱出 → エンディング
-	"res://chapters/ch_test_yashiki.tres",         # CP6: 廃屋敷（テスト）
-	"res://chapters/ch_test_toilet.tres",          # CP7: 公衆トイレ（テスト）
+	"res://chapters/ch04_kirihara_jinja.tres",     # CP4: 桐原神社
+	"res://chapters/ch05_haison_dasshutsu.tres",   # CP5: 脱出＋最終分岐
 ]
 
 signal item_collected(count: int, total: int)

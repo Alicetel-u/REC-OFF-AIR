@@ -93,5 +93,5 @@ directional_light_energy = 0.0
 background_color = Color(0.3, 0.35, 0.5, 1)
 fog_enabled = false
 fog_density = 0.01
-monologue_lines = PackedStringArray("ここが…例の廃村倉庫か", "VHSテープを全部回収して脱出しよう")
-next_chapter_id = ""
+monologue_lines = PackedStringArray("ここが…屋敷の裏の倉庫か", "あの子たちの記録が残ってるはず……VHSテープを全部回収しよう")
+next_chapter_id = "ch04_kirihara_jinja"

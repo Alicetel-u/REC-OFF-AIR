@@ -11,10 +11,9 @@ const _DANK_ROW_H     = 44
 
 # 演出終了後に自動で次チャプターへ進むチャプターID一覧（CP3のみ手動）
 const AUTO_PROGRESS_CHAPTERS : Array[String] = [
-	"ch02_haison_naibu",
-	"ch04_haison_naibu_event",
+	"ch02_yashiki",
+	"ch04_kirihara_jinja",
 	"ch05_haison_dasshutsu",
-	"ch_test_toilet",
 ]
 
 @onready var player       : CharacterBody3D = $Player
@@ -194,8 +193,6 @@ func _input(event: InputEvent) -> void:
 		KEY_F3: idx = 2
 		KEY_F4: idx = 3
 		KEY_F5: idx = 4
-		KEY_F6: idx = 5
-		KEY_F7: idx = 6
 	if idx < 0:
 		return
 	get_viewport().set_input_as_handled()
@@ -631,7 +628,7 @@ func _refresh_debug_label() -> void:
 	var idx : int    = GameManager.chapter_index + 1
 	var cname: String = ch.chapter_name if ch else "?"
 	var free_str := " | [F9] 自由移動: ON ✓" if GameManager.debug_free_move else " | [F9] 自由移動"
-	var skip_str := "  F1=CP1  F2=CP2  F3=CP3  F4=CP4  F5=CP5  F6=屋敷  F7=トイレ" if _DEBUG_CHAPTER_SKIP else ""
+	var skip_str := "  F1=入口  F2=屋敷  F3=倉庫  F4=神社  F5=脱出" if _DEBUG_CHAPTER_SKIP else ""
 	_debug_label.text = "【DEBUG】CP%d: %s%s%s" % [idx, cname, free_str, skip_str]
 
 
