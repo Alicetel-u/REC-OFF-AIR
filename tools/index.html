@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>REC-OFF-AIR — Dev Tools</title>
+<script src="dashboard_data.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 
@@ -117,10 +118,9 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg0); co
 /* Section */
 .section-hdr {
   display:flex; align-items:center; gap:10px;
-  margin-bottom:14px; margin-top:6px;
+  margin-bottom:14px; margin-top:24px;
 }
-.section-hdr + .section-hdr,
-.tool-grid + .section-hdr { margin-top:28px; }
+.section-hdr:first-child { margin-top:0; }
 
 .section-gem {
   width:12px; height:12px; border-radius:2px;
@@ -132,7 +132,7 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg0); co
 .section-line { flex:1; height:1px; background:linear-gradient(90deg, var(--ff-inner) 0%, transparent 100%); }
 
 /* Tool grid */
-.tool-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-bottom:4px; }
+.tool-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-bottom:0; }
 
 /* Tool card */
 .tool-card {
@@ -310,6 +310,156 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg0); co
 /* Hidden */
 .tool-card.hidden { display:none !important; }
 .section-hidden { display:none !important; }
+
+/* ── Dashboard Panel ── */
+#dashboard-panel {
+  display:grid; grid-template-columns:1fr 1fr; gap:14px;
+  margin-top:24px; margin-bottom:0;
+}
+
+.dash-card {
+  background: var(--ff-panel);
+  border:1px solid var(--ff-outer);
+  box-shadow: inset 0 0 0 1px var(--ff-inner), 0 2px 10px rgba(0,0,0,.35);
+  border-radius:4px; padding:16px; position:relative; overflow:hidden;
+}
+.dash-card::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 0%, rgba(100,140,220,.07) 0%, transparent 65%);
+  pointer-events:none;
+}
+
+.dash-card-title {
+  font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--tx2);
+  margin-bottom:12px; display:flex; align-items:center; gap:8px;
+}
+.dash-card-title::after { content:''; flex:1; height:1px; background:var(--ff-inner); }
+
+/* Progress items */
+.progress-list { display:flex; flex-direction:column; gap:8px; }
+.progress-item { display:flex; align-items:center; gap:10px; }
+.progress-label {
+  font-size:11px; color:var(--tx1); width:120px; flex-shrink:0;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.progress-bar-bg {
+  flex:1; height:10px; background:rgba(0,0,0,.35);
+  border:1px solid var(--ff-inner); border-radius:2px;
+  overflow:hidden; position:relative; cursor:pointer;
+}
+.progress-bar-fill {
+  height:100%; border-radius:1px; transition:width .3s;
+  background:linear-gradient(90deg, var(--sapphire), var(--aqua));
+}
+.progress-bar-fill.high { background:linear-gradient(90deg, var(--emerald), #6de0a0); }
+.progress-bar-fill.mid  { background:linear-gradient(90deg, var(--topaz), var(--accent2)); }
+.progress-bar-fill.low  { background:linear-gradient(90deg, var(--ruby), #e06060); }
+
+.progress-pct {
+  font-size:11px; font-weight:700; color:var(--accent); width:36px; text-align:right; flex-shrink:0;
+}
+
+/* TODO list */
+.todo-input-row { display:flex; gap:6px; margin-bottom:10px; }
+#todo-input {
+  flex:1; background:rgba(0,0,0,.3); border:1px solid var(--ff-inner);
+  border-radius:3px; color:var(--tx0); font-size:12px;
+  padding:6px 10px; outline:none; transition:border-color .15s;
+}
+#todo-input:focus { border-color:var(--accent); box-shadow:0 0 0 2px rgba(212,168,55,.15); }
+#todo-input::placeholder { color:var(--tx2); }
+#todo-add-btn {
+  background:rgba(212,168,55,.15); border:1px solid rgba(212,168,55,.4);
+  border-radius:3px; color:var(--accent); font-size:11px; padding:4px 12px;
+  cursor:pointer; transition:all .15s; white-space:nowrap;
+}
+#todo-add-btn:hover { background:rgba(212,168,55,.25); }
+
+.todo-list { display:flex; flex-direction:column; gap:4px; max-height:200px; overflow-y:auto; }
+.todo-list::-webkit-scrollbar { width:4px; }
+.todo-list::-webkit-scrollbar-thumb { background:var(--bg3); border-radius:2px; }
+
+.todo-item {
+  display:flex; align-items:center; gap:8px;
+  padding:5px 8px; border-radius:3px;
+  transition:background .15s; font-size:12px; color:var(--tx1);
+}
+.todo-item:hover { background:rgba(255,255,255,.04); }
+.todo-check {
+  width:14px; height:14px; border:1px solid var(--ff-inner);
+  border-radius:2px; background:rgba(0,0,0,.3); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:all .15s; font-size:10px; color:transparent;
+}
+.todo-check.done { background:rgba(61,174,110,.2); border-color:var(--emerald); color:var(--emerald); }
+.todo-text { flex:1; line-height:1.4; }
+.todo-text.done { text-decoration:line-through; color:var(--tx2); }
+.todo-del {
+  font-size:14px; color:var(--tx2); cursor:pointer; opacity:0;
+  transition:opacity .15s, color .15s; flex-shrink:0; padding:0 2px;
+}
+.todo-item:hover .todo-del { opacity:1; }
+.todo-del:hover { color:var(--ruby); }
+
+/* Dev notes — sticky note style */
+.note-list {
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+  gap:12px; max-height:320px; overflow-y:auto; padding:2px;
+}
+.note-list::-webkit-scrollbar { width:4px; }
+.note-list::-webkit-scrollbar-thumb { background:var(--bg3); border-radius:2px; }
+
+.note-card {
+  position:relative; min-height:110px;
+  padding:28px 14px 14px; border-radius:2px;
+  display:flex; flex-direction:column; gap:6px;
+  box-shadow: 2px 3px 10px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.04);
+  transition:transform .15s, box-shadow .15s;
+}
+.note-card:hover {
+  transform:translateY(-3px) rotate(0deg);
+  box-shadow: 3px 6px 18px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+/* Slight random rotation via nth-child */
+.note-card:nth-child(odd)  { transform:rotate(-0.8deg); }
+.note-card:nth-child(even) { transform:rotate(0.6deg); }
+.note-card:nth-child(3n)   { transform:rotate(-0.3deg); }
+.note-card:hover { transform:translateY(-3px) rotate(0deg) !important; }
+
+/* Pin dot */
+.note-card::before {
+  content:''; position:absolute; top:8px; left:50%; transform:translateX(-50%);
+  width:8px; height:8px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.6), rgba(0,0,0,.3));
+  box-shadow:0 1px 3px rgba(0,0,0,.4);
+  z-index:1;
+}
+
+/* Tag colors define the card background */
+.note-card[data-tag="演出"]   { background:linear-gradient(160deg, #1a3060, #122450); }
+.note-card[data-tag="バグ"]   { background:linear-gradient(160deg, #3a1818, #2a1010); }
+.note-card[data-tag="アイデア"] { background:linear-gradient(160deg, #2a1848, #1e1038); }
+.note-card[data-tag="注意"]   { background:linear-gradient(160deg, #3a2e10, #2a2008); }
+.note-card[data-tag="メモ"]   { background:linear-gradient(160deg, #103030, #082020); }
+
+.note-tag {
+  font-size:8px; letter-spacing:0.12em; text-transform:uppercase;
+  padding:1px 6px; border-radius:1px; border:1px solid currentColor;
+  align-self:flex-start; opacity:.8;
+}
+.note-tag[data-tag="演出"]   { color:var(--sapphire); }
+.note-tag[data-tag="バグ"]   { color:var(--ruby); }
+.note-tag[data-tag="アイデア"] { color:var(--amethyst); }
+.note-tag[data-tag="注意"]   { color:var(--topaz); }
+.note-tag[data-tag="メモ"]   { color:var(--aqua); }
+
+.note-text { font-size:12px; color:var(--tx0); line-height:1.6; flex:1; }
+.note-date { font-size:9px; color:var(--tx2); align-self:flex-end; }
+
+.note-empty { font-size:12px; color:var(--tx2); padding:12px 0; }
+.note-hint { font-size:9px; color:var(--tx2); margin-top:10px; opacity:.7; }
+
+#devnotes-panel { margin-top:24px; margin-bottom:0; }
 </style>
 </head>
 <body>
@@ -359,14 +509,13 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg0); co
   <div id="main">
     <div id="no-results">検索結果がありません</div>
 
-    <!-- ◆ 演出・セリフ -->
-    <div class="section-hdr" data-section="story">
-      <div class="section-gem" style="color:var(--sapphire); background:var(--sapphire)"></div>
-      <div class="section-title">演出・セリフ</div>
-      <div class="section-count" id="cnt-story"></div>
+    <!-- ◆ 稼働中ツール（最上部） -->
+    <div class="section-hdr" data-section="active-tools">
+      <div class="section-gem" style="color:var(--accent); background:var(--accent)"></div>
+      <div class="section-title">稼働中ツール</div>
       <div class="section-line"></div>
     </div>
-    <div class="tool-grid" data-section="story">
+    <div class="tool-grid" data-section="active-tools">
 
       <a class="tool-card" href="dialogue-editor/index.html" data-cat="story" data-keywords="セリフ 演出 JSON イベント タイムライン">
         <div class="card-shine"></div>
@@ -378,6 +527,71 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg0); co
         <div class="card-desc">チャプター演出JSONをタイムライン形式で編集。画像添付・縦バー・フィルター・FF風UI。</div>
         <div class="card-launch">▶ 起動</div>
       </a>
+
+      <a class="tool-card" href="path-viewer/index.html" data-cat="map" data-keywords="パス ビューア マップ カメラ 移動 EntranceDirector">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#0e4020,#1e7040); color:var(--emerald)"></div>
+          <div><div class="card-name">イベントパスビューア</div></div>
+          <span class="card-badge badge-active">ACTIVE</span>
+        </div>
+        <div class="card-desc">EntranceDirector演出のカメラ移動パスを2D平面図で可視化。座標ピックアップ・距離測定。</div>
+        <div class="card-launch">▶ 起動</div>
+      </a>
+
+      <a class="tool-card" href="https://alicetel-u.github.io/REC-OFF-AIR/" target="_blank" data-cat="system" data-keywords="ゲーム 起動 本番 Web プレイ テスト">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#3a1010,#701818); color:var(--ruby)"></div>
+          <div><div class="card-name">本番環境を起動</div></div>
+          <span class="card-badge badge-active">ACTIVE</span>
+        </div>
+        <div class="card-desc">GitHub Pages にデプロイされたWeb版REC-OFF-AIRをブラウザで起動。</div>
+        <div class="card-launch">▶ 起動</div>
+      </a>
+
+    </div>
+
+    <!-- ◆ Dashboard: 進捗 & TODO -->
+    <div id="dashboard-panel">
+
+      <!-- 進捗トラッカー -->
+      <div class="dash-card">
+        <div class="dash-card-title">Progress</div>
+        <div class="progress-list" id="progress-list">
+          <!-- JS で生成 -->
+        </div>
+      </div>
+
+      <!-- TODO -->
+      <div class="dash-card">
+        <div class="dash-card-title">TODO</div>
+        <div class="todo-input-row">
+          <input id="todo-input" type="text" placeholder="タスクを追加...">
+          <button id="todo-add-btn">追加</button>
+        </div>
+        <div class="todo-list" id="todo-list"></div>
+      </div>
+
+    </div>
+
+    <!-- 開発コメント (dashboard_data.js から読み込み) -->
+    <div id="devnotes-panel">
+      <div class="dash-card">
+        <div class="dash-card-title">Dev Notes</div>
+        <div class="note-list" id="note-list"></div>
+        <div class="note-hint">tools/dashboard_data.js を編集 → リロードで反映</div>
+      </div>
+    </div>
+
+    <!-- ◆ 演出・セリフ -->
+    <div class="section-hdr" data-section="story">
+      <div class="section-gem" style="color:var(--sapphire); background:var(--sapphire)"></div>
+      <div class="section-title">演出・セリフ</div>
+      <div class="section-count" id="cnt-story"></div>
+      <div class="section-line"></div>
+    </div>
+    <div class="tool-grid" data-section="story">
 
       <div class="tool-card coming-soon" data-cat="story" data-keywords="シナリオ プレビュー シミュレーション">
         <div class="card-shine"></div>
@@ -411,17 +625,6 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg0); co
       <div class="section-line"></div>
     </div>
     <div class="tool-grid" data-section="map">
-
-      <a class="tool-card" href="path-viewer/index.html" data-cat="map" data-keywords="パス ビューア マップ カメラ 移動 EntranceDirector">
-        <div class="card-shine"></div>
-        <div class="card-header">
-          <div class="card-gem" style="background:linear-gradient(135deg,#0e4020,#1e7040); color:var(--emerald)"></div>
-          <div><div class="card-name">イベントパスビューア</div></div>
-          <span class="card-badge badge-active">ACTIVE</span>
-        </div>
-        <div class="card-desc">EntranceDirector演出のカメラ移動パスを2D平面図で可視化。座標ピックアップ・距離測定。</div>
-        <div class="card-launch">▶ 起動</div>
-      </a>
 
       <div class="tool-card coming-soon" data-cat="map" data-keywords="WFC ウェーブ 波 マップ 自動生成">
         <div class="card-shine"></div>
@@ -545,7 +748,7 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg0); co
       <div class="project-sub">YouTuberホラー配信ゲーム<br>プロトタイプ</div>
       <div class="stats-grid">
         <div class="stat-box"><div class="stat-val">7</div><div class="stat-lbl">チャプター</div></div>
-        <div class="stat-box"><div class="stat-val">2</div><div class="stat-lbl">稼働ツール</div></div>
+        <div class="stat-box"><div class="stat-val">3</div><div class="stat-lbl">稼働ツール</div></div>
         <div class="stat-box"><div class="stat-val">5</div><div class="stat-lbl">VHSアイテム</div></div>
         <div class="stat-box"><div class="stat-val">4</div><div class="stat-lbl">ゴースト数</div></div>
       </div>
@@ -730,6 +933,128 @@ Object.entries(clips).forEach(([id, cmd]) => {
     navigator.clipboard.writeText(cmd).then(() => showToast('コピーしました: ' + cmd));
   });
 });
+
+// ── Dashboard: Progress ──
+const PROGRESS_KEY = 'rec-offair-progress';
+const defaultProgress = [
+  { id:'opening',   label:'オープニング',   pct:80 },
+  { id:'ch01',      label:'Ch01 廃村入口',  pct:70 },
+  { id:'toilet',    label:'公衆トイレ',     pct:60 },
+  { id:'yashiki',   label:'屋敷ステージ',   pct:30 },
+  { id:'ghost',     label:'ゴースト/AI',    pct:20 },
+  { id:'ending',    label:'エンディング',   pct:5  },
+];
+
+function loadProgress() {
+  try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || null; } catch { return null; }
+}
+function saveProgress(data) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(data)); }
+
+function pctClass(p) { return p >= 70 ? 'high' : p >= 40 ? 'mid' : 'low'; }
+
+function renderProgress() {
+  let data = loadProgress() || defaultProgress;
+  const list = document.getElementById('progress-list');
+  list.innerHTML = '';
+  data.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'progress-item';
+    row.innerHTML = `
+      <span class="progress-label">${item.label}</span>
+      <div class="progress-bar-bg" data-idx="${i}">
+        <div class="progress-bar-fill ${pctClass(item.pct)}" style="width:${item.pct}%"></div>
+      </div>
+      <span class="progress-pct">${item.pct}%</span>`;
+    list.appendChild(row);
+  });
+
+  // Click to set progress
+  list.querySelectorAll('.progress-bar-bg').forEach(bar => {
+    bar.addEventListener('click', e => {
+      const rect = bar.getBoundingClientRect();
+      const pct = Math.round(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
+      const idx = parseInt(bar.dataset.idx);
+      data[idx].pct = pct;
+      saveProgress(data);
+      renderProgress();
+      showToast(`${data[idx].label}: ${pct}%`);
+    });
+  });
+}
+renderProgress();
+
+// ── Dashboard: TODO ──
+const TODO_KEY = 'rec-offair-todos';
+function loadTodos() { try { return JSON.parse(localStorage.getItem(TODO_KEY)) || []; } catch { return []; } }
+function saveTodos(t) { localStorage.setItem(TODO_KEY, JSON.stringify(t)); }
+
+function renderTodos() {
+  const todos = loadTodos();
+  const list = document.getElementById('todo-list');
+  list.innerHTML = '';
+  todos.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'todo-item';
+    row.innerHTML = `
+      <div class="todo-check ${t.done ? 'done' : ''}" data-idx="${i}">${t.done ? '✓' : ''}</div>
+      <span class="todo-text ${t.done ? 'done' : ''}">${t.text}</span>
+      <span class="todo-del" data-idx="${i}">×</span>`;
+    list.appendChild(row);
+  });
+
+  list.querySelectorAll('.todo-check').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = parseInt(el.dataset.idx);
+      todos[idx].done = !todos[idx].done;
+      saveTodos(todos);
+      renderTodos();
+    });
+  });
+  list.querySelectorAll('.todo-del').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = parseInt(el.dataset.idx);
+      todos.splice(idx, 1);
+      saveTodos(todos);
+      renderTodos();
+    });
+  });
+}
+
+function addTodo() {
+  const input = document.getElementById('todo-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const todos = loadTodos();
+  todos.unshift({ text, done: false });
+  saveTodos(todos);
+  input.value = '';
+  renderTodos();
+}
+
+document.getElementById('todo-add-btn').addEventListener('click', addTodo);
+document.getElementById('todo-input').addEventListener('keydown', e => { if (e.key === 'Enter') addTodo(); });
+renderTodos();
+
+// ── Dashboard: Dev Notes (from dashboard_data.js) ──
+function renderNotes() {
+  const list = document.getElementById('note-list');
+  if (typeof DEV_NOTES === 'undefined' || !DEV_NOTES.length) {
+    list.innerHTML = '<div class="note-empty">コメントなし</div>';
+    return;
+  }
+  list.innerHTML = '';
+  DEV_NOTES.forEach(n => {
+    const card = document.createElement('div');
+    card.className = 'note-card';
+    card.setAttribute('data-tag', n.tag);
+    card.innerHTML = `
+      <span class="note-tag" data-tag="${n.tag}">${n.tag}</span>
+      <div class="note-text">${n.text.replace(/\n/g, '<br>')}</div>
+      ${n.date ? `<div class="note-date">${n.date}</div>` : ''}`;
+    list.appendChild(card);
+  });
+}
+renderNotes();
 </script>
 </body>
 </html>
