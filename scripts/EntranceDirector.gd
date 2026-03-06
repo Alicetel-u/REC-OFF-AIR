@@ -259,6 +259,7 @@ func run_from_path(json_path: String) -> void:
 					"ambient_wind":  SoundManager.start_ambient(0)
 					"door_creak":    SoundManager.play_door_creak()
 					"monster_growl": SoundManager.play_monster_growl(vol)
+					"wooden_floor":  SoundManager.play_footstep(GameManager.chapter_index, false)
 
 			"flashlight_off":
 				_flashlight_off()
