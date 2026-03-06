@@ -19,6 +19,7 @@ const AUTO_PROGRESS_CHAPTERS : Array[String] = [
 @onready var player       : CharacterBody3D = $Player
 @onready var hud          : Control         = $HUDLayer/HUDRoot
 @onready var overlay_layer: CanvasLayer     = $OverlayLayer
+@onready var overlay_ctrl : Control         = $OverlayLayer/Overlay
 @onready var caught_label : Label           = $OverlayLayer/Overlay/VBox/CaughtLabel
 @onready var win_label    : Label           = $OverlayLayer/Overlay/VBox/WinLabel
 @onready var sub_label    : Label           = $OverlayLayer/Overlay/VBox/SubLabel
@@ -128,7 +129,11 @@ func _ready() -> void:
 
 	# 映像演出チャプター: 演出完了後に自動で次チャプターへ
 	if is_cinematic:
+		if not is_inside_tree():
+			return
 		await get_tree().create_timer(1.5).timeout
+		if not is_inside_tree():
+			return
 		GameManager.advance_to_next_chapter()
 		return
 
@@ -464,7 +469,6 @@ func _show_true_ending() -> void:
 	player.process_mode = Node.PROCESS_MODE_DISABLED
 
 	# 画面を暗転（CanvasLayer には modulate がないので子の Overlay を使う）
-	var overlay_ctrl : Control = overlay_layer.get_node("Overlay")
 	overlay_ctrl.modulate.a = 0.0
 	overlay_layer.visible = true
 	caught_label.visible = false
