@@ -3,65 +3,258 @@
 <head>
 <meta charset="UTF-8">
 <title>イベントパスビューア</title>
+<script src="dialogue_cache.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:#1a1a2e; color:#e0e0e0; font-family:'Segoe UI',sans-serif; display:flex; height:100vh; overflow:hidden; }
 
-#sidebar { width:340px; background:#16213e; border-right:1px solid #333; display:flex; flex-direction:column; flex-shrink:0; }
-#sidebar h1 { font-size:15px; padding:10px; background:#0f3460; text-align:center; }
-#controls { padding:8px; display:flex; flex-direction:column; gap:6px; }
-#controls label { font-size:12px; color:#aaa; }
-#controls select, #controls button, #controls input[type=file] {
-  padding:5px 8px; border:1px solid #444; border-radius:4px; background:#1a1a2e; color:#e0e0e0; font-size:12px; cursor:pointer;
+:root {
+  --pv-bg: #080c1a;
+  --pv-panel: linear-gradient(180deg, #0d1e42 0%, #090f28 50%, #0d1e42 100%);
+  --pv-border: #131f3a;
+  --pv-inner: rgba(130,160,210,0.3);
+  --pv-accent: #d4a837;
+  --pv-accent2: #f0d060;
+  --pv-tx0: #eef0f5;
+  --pv-tx1: #a8b4cc;
+  --pv-tx2: #6b7a99;
+  --pv-glow: rgba(80,120,200,0.12);
+  --red: #ff6b6b; --yellow: #ffd93d; --green: #6bcb77; --blue: #4d96ff; --cyan: #3db8b8;
 }
-#controls button { background:#0f3460; border-color:#1a73e8; }
-#controls button:hover { background:#1a73e8; }
+
+body { background:var(--pv-bg); color:var(--pv-tx0); font-family:'Segoe UI',system-ui,sans-serif; display:flex; height:100vh; overflow:hidden; }
+
+/* ── Sidebar ── */
+#sidebar {
+  width:340px; background:var(--pv-panel);
+  border-right:1px solid var(--pv-border);
+  box-shadow:inset -1px 0 0 var(--pv-inner), 2px 0 20px rgba(0,0,0,.5);
+  display:flex; flex-direction:column; flex-shrink:0;
+}
+#sidebar h1 {
+  font-size:14px; padding:12px 16px; letter-spacing:.12em;
+  background:linear-gradient(135deg, var(--pv-accent) 0%, var(--pv-accent2) 50%, var(--pv-accent) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  text-align:center; font-weight:700;
+  border-bottom:1px solid var(--pv-border);
+  box-shadow:inset 0 -1px 0 var(--pv-inner);
+  text-shadow:none;
+}
+#controls {
+  padding:10px 12px; display:flex; flex-direction:column; gap:6px;
+  border-bottom:1px solid var(--pv-border);
+  box-shadow:inset 0 -1px 0 rgba(130,160,210,.07);
+}
+#controls label { font-size:11px; color:var(--pv-tx2); letter-spacing:.04em; }
+#controls select, #controls input[type=file] {
+  padding:6px 10px; border:1px solid var(--pv-inner); border-radius:3px;
+  background:rgba(0,0,0,.3); color:var(--pv-tx0); font-size:12px; cursor:pointer;
+  transition:border-color .15s;
+}
+#controls select:focus { border-color:var(--pv-accent); outline:none; box-shadow:0 0 0 2px rgba(212,168,55,.15); }
+#controls button {
+  padding:6px 10px; border:1px solid var(--pv-inner); border-radius:3px;
+  background:rgba(0,0,0,.3); color:var(--pv-tx1); font-size:11px; cursor:pointer;
+  letter-spacing:.04em; transition:all .15s;
+}
+#controls button:hover { background:rgba(130,160,210,.15); color:var(--pv-tx0); border-color:rgba(130,160,210,.5); }
 .btn-row { display:flex; gap:4px; flex-wrap:wrap; }
 
 /* 選択地点パネル */
-#pick-panel { padding:8px; background:#0d1b2a; border-top:1px solid #333; border-bottom:1px solid #333; }
+#pick-panel {
+  padding:10px 12px; background:rgba(0,0,0,.2);
+  border-top:1px solid var(--pv-border); border-bottom:1px solid var(--pv-border);
+  box-shadow:inset 0 1px 0 rgba(130,160,210,.07), inset 0 -1px 0 rgba(130,160,210,.07);
+}
 #pick-panel.hidden { display:none; }
-#pick-panel h3 { font-size:12px; color:#ffd93d; margin-bottom:6px; }
-#pick-coords { font-size:13px; font-weight:bold; color:#fff; margin-bottom:6px; }
+#pick-panel h3 { font-size:10px; color:var(--pv-accent); margin-bottom:8px; letter-spacing:.15em; text-transform:uppercase; }
+#pick-coords {
+  font-size:14px; font-weight:bold; color:var(--pv-tx0); margin-bottom:8px;
+  font-family:'Consolas','SF Mono',monospace; letter-spacing:.05em;
+}
 #pick-actions { display:flex; flex-wrap:wrap; gap:4px; }
-#pick-actions button { padding:4px 8px; font-size:11px; background:#2d6a4f; border:1px solid #40916c; border-radius:3px; color:#fff; cursor:pointer; }
-#pick-actions button:hover { background:#40916c; }
-#pick-dist { font-size:11px; color:#888; margin-top:4px; }
+#pick-actions button {
+  padding:5px 10px; font-size:10px; letter-spacing:.06em;
+  background:rgba(61,174,110,.15); border:1px solid rgba(61,174,110,.4);
+  border-radius:3px; color:#6bcb77; cursor:pointer; transition:all .15s;
+}
+#pick-actions button:hover { background:rgba(61,174,110,.3); color:#a0f0b0; }
+#pick-dist { font-size:10px; color:var(--pv-tx2); margin-top:6px; }
 
-#event-list { flex:1; overflow-y:auto; padding:4px; }
-.ev-item { padding:4px 8px; margin:1px 0; border-radius:3px; font-size:11px; cursor:pointer; border-left:3px solid transparent; }
-.ev-item:hover { background:#1a1a2e; }
-.ev-item.active { background:#0f3460; border-left-color:#1a73e8; }
-.ev-item.movement { border-left-color:#ff6b6b; font-weight:bold; }
-.ev-item .ev-idx { color:#666; margin-right:4px; }
-.ev-item .ev-type { color:#7ec8e3; }
-.ev-item .ev-detail { color:#aaa; margin-left:4px; }
+/* Event list */
+#event-list {
+  flex:1; overflow-y:auto; padding:4px 6px;
+}
+#event-list::-webkit-scrollbar { width:5px; }
+#event-list::-webkit-scrollbar-track { background:rgba(0,0,0,.2); }
+#event-list::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#1e3a6e,#2a4a80); border-radius:3px; }
 
-#detail-panel { padding:8px; background:#0d1b2a; border-top:1px solid #333; max-height:180px; overflow-y:auto; }
-#detail-panel h3 { font-size:12px; margin-bottom:4px; color:#7ec8e3; }
-.detail-row { display:flex; align-items:center; gap:4px; margin:2px 0; font-size:11px; }
-.detail-row label { width:65px; color:#888; text-align:right; flex-shrink:0; }
-.detail-row input { width:70px; padding:2px 5px; background:#1a1a2e; border:1px solid #444; border-radius:3px; color:#e0e0e0; font-size:11px; }
-.detail-row .apply-btn { padding:1px 6px; background:#2d6a4f; border:1px solid #40916c; border-radius:3px; color:#fff; cursor:pointer; font-size:10px; }
+.ev-item {
+  padding:5px 10px; margin:2px 0; border-radius:3px; font-size:11px;
+  cursor:pointer; border-left:3px solid transparent;
+  transition:all .12s; position:relative;
+}
+.ev-item:hover { background:rgba(130,160,210,.08); }
+.ev-item.active {
+  background:linear-gradient(90deg, rgba(26,115,232,.2) 0%, rgba(26,115,232,.05) 100%);
+  border-left-color:var(--blue);
+  box-shadow:inset 0 0 0 1px rgba(26,115,232,.15);
+}
+.ev-item.movement { border-left-color:var(--red); }
+.ev-item.movement.active { border-left-color:var(--red); }
+.ev-item .ev-idx {
+  display:inline-block; width:28px; text-align:right; margin-right:6px;
+  color:var(--pv-tx2); font-family:'Consolas',monospace; font-size:10px;
+}
+.ev-item .ev-type { color:var(--cyan); font-weight:600; }
+.ev-item .ev-detail { color:var(--pv-tx2); margin-left:6px; font-size:10px; }
 
-#canvas-area { flex:1; position:relative; overflow:hidden; }
-canvas { display:block; cursor:crosshair; }
-#coords { position:absolute; bottom:8px; left:8px; font-size:11px; color:#888; background:rgba(0,0,0,0.6); padding:3px 8px; border-radius:3px; }
-#legend { position:absolute; top:8px; right:8px; font-size:10px; background:rgba(0,0,0,0.7); padding:6px 10px; border-radius:5px; line-height:1.7; }
-.legend-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:3px; vertical-align:middle; }
+/* Detail panel */
+#detail-panel {
+  padding:10px 12px; background:rgba(0,0,0,.2);
+  border-top:1px solid var(--pv-border); max-height:180px; overflow-y:auto;
+  box-shadow:inset 0 1px 0 rgba(130,160,210,.07);
+}
+#detail-panel h3 {
+  font-size:10px; margin-bottom:6px; color:var(--pv-accent);
+  letter-spacing:.15em; text-transform:uppercase;
+}
+.detail-row { display:flex; align-items:center; gap:6px; margin:3px 0; font-size:11px; }
+.detail-row label { width:65px; color:var(--pv-tx2); text-align:right; flex-shrink:0; font-size:10px; }
+.detail-row input {
+  width:72px; padding:4px 6px; background:rgba(0,0,0,.3); border:1px solid var(--pv-inner);
+  border-radius:3px; color:var(--pv-tx0); font-size:11px; font-family:'Consolas',monospace;
+}
+.detail-row input:focus { border-color:var(--pv-accent); outline:none; }
+.detail-row .apply-btn {
+  padding:3px 8px; background:rgba(61,174,110,.15); border:1px solid rgba(61,174,110,.4);
+  border-radius:3px; color:#6bcb77; cursor:pointer; font-size:10px; transition:all .15s;
+}
+.detail-row .apply-btn:hover { background:rgba(61,174,110,.3); }
 
-#save-status { position:absolute; top:8px; left:8px; font-size:12px; padding:4px 10px; border-radius:4px; display:none; }
-#save-status.ok { display:block; background:#2d6a4f; color:#fff; }
-#save-status.err { display:block; background:#c0392b; color:#fff; }
+/* Canvas area */
+#canvas-area { flex:1; position:relative; overflow:hidden; background:var(--pv-bg); }
+#bubbles-container { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+canvas#cv { display:block; cursor:crosshair; }
+#coords {
+  position:absolute; bottom:10px; left:10px; font-size:11px; color:var(--pv-tx1);
+  background:rgba(8,12,26,.85); border:1px solid var(--pv-inner);
+  padding:5px 12px; border-radius:4px; font-family:'Consolas',monospace;
+  backdrop-filter:blur(4px);
+}
+#legend {
+  position:absolute; top:10px; right:10px; font-size:10px;
+  background:rgba(8,12,26,.88); border:1px solid var(--pv-inner);
+  padding:10px 14px; border-radius:6px; line-height:2;
+  backdrop-filter:blur(4px); box-shadow:0 4px 16px rgba(0,0,0,.4);
+}
+.legend-dot {
+  display:inline-block; width:8px; height:8px; border-radius:50%;
+  margin-right:5px; vertical-align:middle;
+  box-shadow:0 0 6px currentColor;
+}
+
+#save-status {
+  position:absolute; top:10px; left:10px; font-size:12px; padding:6px 14px;
+  border-radius:4px; display:none; backdrop-filter:blur(4px);
+  box-shadow:0 4px 16px rgba(0,0,0,.4);
+}
+#save-status.ok {
+  display:block; background:rgba(45,106,79,.9); border:1px solid rgba(61,174,110,.5); color:#a0f0b0;
+}
+#save-status.err { display:block; background:rgba(196,60,60,.9); border:1px solid rgba(255,100,100,.5); color:#ffa0a0; }
 
 /* クロスヘア */
-#crosshair-info { position:absolute; bottom:8px; right:8px; font-size:11px; background:rgba(0,0,0,0.7); padding:4px 8px; border-radius:3px; color:#ffd93d; }
+#crosshair-info {
+  position:absolute; bottom:8px; right:8px; font-size:11px;
+  background:rgba(8,12,26,.85); border:1px solid var(--pv-inner);
+  padding:4px 10px; border-radius:4px; color:var(--pv-accent);
+  font-family:'Consolas',monospace; backdrop-filter:blur(4px);
+}
+
+/* ── A1: JSON選択ドロップダウン ── */
+#dialogue-select { width:100%; }
+#data-source {
+  font-size:9px; letter-spacing:.08em; padding:2px 8px;
+  border-radius:2px; display:inline-block; margin-top:2px;
+}
+#data-source.src-cache { color:var(--pv-tx2); border:1px solid var(--pv-inner); }
+#data-source.src-file  { color:var(--green); border:1px solid rgba(107,203,119,.4); }
+
+/* ── A2: フィルタートグル ── */
+.filter-row { display:flex; align-items:center; gap:8px; }
+.filter-row label { font-size:11px; color:#aaa; cursor:pointer; display:flex; align-items:center; gap:4px; }
+.filter-row input[type=checkbox] { accent-color:#1a73e8; cursor:pointer; }
+.ev-item.filtered { display:none; }
+
+/* ── A3: Undo/Redo ── */
+.undo-row { display:flex; gap:4px; }
+.undo-row button { flex:1; font-size:11px; }
+.undo-row button:disabled { opacity:.35; cursor:default; }
+
+/* ── A4: 複数選択 ── */
+.ev-item.multi-selected { background:#1a3a60; outline:1px solid rgba(26,115,232,.5); }
+
+/* ── B5: セリフ吹き出し ── */
+.speech-bubble {
+  position:absolute; pointer-events:none; z-index:10;
+  background:rgba(8,12,26,.92); border:1px solid rgba(61,184,184,.4);
+  border-radius:8px; padding:8px 12px; max-width:220px;
+  font-size:11px; color:var(--pv-tx0); line-height:1.5;
+  box-shadow:0 4px 16px rgba(0,0,0,.6), inset 0 0 0 1px rgba(61,184,184,.1);
+  backdrop-filter:blur(4px);
+}
+.speech-bubble::after {
+  content:''; position:absolute; bottom:-7px; left:20px;
+  border-left:7px solid transparent; border-right:7px solid transparent;
+  border-top:7px solid rgba(61,184,184,.4);
+}
+.speech-bubble .sb-speaker {
+  font-size:8px; color:var(--pv-accent); margin-bottom:3px;
+  letter-spacing:.1em; text-transform:uppercase;
+}
+
+/* ── B7: ミニマップ ── */
+#minimap {
+  position:absolute; bottom:10px; right:10px; width:170px; height:130px;
+  background:rgba(8,12,26,.8); border:1px solid var(--pv-inner);
+  border-radius:6px; pointer-events:none; z-index:5;
+  box-shadow:0 4px 16px rgba(0,0,0,.5); backdrop-filter:blur(4px);
+}
+#crosshair-info { bottom:148px; }
+
+/* ── B8: ライトモード ── */
+body.light { background:#e4e6f0; color:#222; --pv-bg:#e4e6f0; }
+body.light #sidebar { background:linear-gradient(180deg,#dce0ec,#c8cee0,#dce0ec); border-right-color:#b0b8cc; }
+body.light #sidebar h1 { background:linear-gradient(135deg,#3a5a8a,#5a80b8,#3a5a8a); -webkit-background-clip:text; }
+body.light #controls select, body.light #controls input[type=file] {
+  background:rgba(255,255,255,.6); color:#222; border-color:#b0b8cc;
+}
+body.light #controls button { background:rgba(255,255,255,.4); color:#3a5a8a; border-color:#b0b8cc; }
+body.light #controls button:hover { background:rgba(58,90,138,.15); color:#2a4a78; }
+body.light #controls label { color:#6a7a9a; }
+body.light .ev-item { color:#333; }
+body.light .ev-item:hover { background:rgba(58,90,138,.08); }
+body.light .ev-item.active { background:rgba(58,90,138,.15); border-left-color:#3a5a8a; }
+body.light .ev-item .ev-idx { color:#999; }
+body.light .ev-item .ev-type { color:#2a6ab8; }
+body.light .ev-item .ev-detail { color:#6a7a9a; }
+body.light #pick-panel { background:rgba(255,255,255,.3); }
+body.light #detail-panel { background:rgba(255,255,255,.3); }
+body.light #detail-panel h3 { color:#3a5a8a; }
+body.light .detail-row label { color:#6a7a9a; }
+body.light .detail-row input { background:rgba(255,255,255,.6); color:#222; border-color:#b0b8cc; }
+body.light #legend { background:rgba(255,255,255,.88); color:#333; border-color:#b0b8cc; }
+body.light #coords { background:rgba(255,255,255,.85); color:#444; border-color:#b0b8cc; }
+body.light #minimap { background:rgba(255,255,255,.7); border-color:#b0b8cc; }
+body.light .speech-bubble { background:rgba(255,255,255,.92); color:#222; border-color:rgba(58,90,138,.3); }
+
+#theme-btn { margin-left:auto; font-size:10px; padding:4px 10px; letter-spacing:.08em; }
 </style>
 </head>
 <body>
 
 <div id="sidebar">
-  <h1>イベントパスビューア</h1>
+  <h1>EVENT PATH VIEWER</h1>
   <div id="controls">
     <label>マップ</label>
     <select id="map-select">
@@ -74,13 +267,33 @@ canvas { display:block; cursor:crosshair; }
       <option value="empty">空のグリッド</option>
     </select>
     <label>対話JSON</label>
+    <select id="dialogue-select">
+      <option value="">-- ファイルから選択 --</option>
+      <option value="ch01_entrance">CP1: 廃村入口</option>
+      <option value="ch01_haison_souko">CP3: 廃倉庫</option>
+      <option value="ch02_haison_naibu">CP2: 廃村内部</option>
+      <option value="ch04_haison_naibu_event">CP4: 廃村内部イベント</option>
+      <option value="ch05_haison_dasshutsu">CP5: 脱出</option>
+      <option value="ch_test_toilet">テスト: 公衆トイレ</option>
+      <option value="opening">オープニング</option>
+    </select>
     <input type="file" id="json-file" accept=".json">
+    <span id="data-source"></span>
     <div class="btn-row">
       <button id="btn-save">JSON保存</button>
       <button id="btn-play">再生</button>
       <button id="btn-reset">表示リセット</button>
+      <button id="theme-btn">Light</button>
     </div>
-    <label style="font-size:10px;color:#555;">クリック=地点選択 / ドラッグ=パン / ホイール=ズーム / 赤丸ドラッグ=位置変更</label>
+    <div class="undo-row">
+      <button id="btn-undo" disabled>← 元に戻す</button>
+      <button id="btn-redo" disabled>やり直す →</button>
+    </div>
+    <div class="filter-row">
+      <label><input type="checkbox" id="filter-movement"> 移動系のみ</label>
+      <label><input type="checkbox" id="show-bubbles"> セリフ表示</label>
+    </div>
+    <label style="font-size:10px;color:#555;">クリック=地点選択 / ドラッグ=パン / ホイール=ズーム / 赤丸ドラッグ=位置変更 / Shift+クリック=複数選択</label>
   </div>
 
   <div id="pick-panel" class="hidden">
@@ -103,15 +316,17 @@ canvas { display:block; cursor:crosshair; }
   <canvas id="cv"></canvas>
   <div id="coords">X: 0.00, Z: 0.00</div>
   <div id="legend">
-    <span class="legend-dot" style="background:#ff6b6b;"></span>位置移動<br>
-    <span class="legend-dot" style="background:#ffd93d;"></span>回転<br>
-    <span class="legend-dot" style="background:#6bcb77;"></span>歩行ON/OFF<br>
-    <span class="legend-dot" style="background:#4d96ff;"></span>マップ切替<br>
-    <span class="legend-dot" style="background:#fff;"></span>初期位置<br>
-    <span style="color:rgba(100,180,255,0.4);">扇</span> 視野
+    <span class="legend-dot" style="background:#ff6b6b; box-shadow:0 0 6px #ff6b6b;"></span>位置移動<br>
+    <span class="legend-dot" style="background:#ffd93d; box-shadow:0 0 6px #ffd93d;"></span>回転<br>
+    <span class="legend-dot" style="background:#6bcb77; box-shadow:0 0 6px #6bcb77;"></span>歩行ON/OFF<br>
+    <span class="legend-dot" style="background:#4d96ff; box-shadow:0 0 6px #4d96ff;"></span>マップ切替<br>
+    <span class="legend-dot" style="background:#fff; box-shadow:0 0 6px #fff;"></span>初期位置<br>
+    <span style="color:rgba(100,180,255,0.5); font-size:14px;">&#9698;</span> 視野コーン
   </div>
   <div id="save-status"></div>
   <div id="crosshair-info"></div>
+  <canvas id="minimap" width="170" height="130"></canvas>
+  <div id="bubbles-container"></div>
 </div>
 
 <script>
@@ -319,6 +534,17 @@ let events = [], jsonData = null, currentMap = MAPS.stage_iriguchi;
 let selectedIdx = -1, playerPath = [];
 let pickedPoint = null; // {x, z} クリックで選んだ地点
 
+// A2: フィルター
+let filterMovementOnly = false;
+// A3: Undo/Redo
+let undoStack = [], redoStack = [];
+// A4: 複数選択
+let multiSelected = new Set();
+// B5: セリフ吹き出し
+let showBubbles = false;
+// B8: テーマ
+let lightMode = false;
+
 const cv = document.getElementById("cv");
 const ctx = cv.getContext("2d");
 let camX = 0, camZ = 0, zoom = 40, dragWP = -1, panStart = null;
@@ -339,6 +565,21 @@ function init() {
   document.getElementById("btn-save").addEventListener("click", onSave);
   document.getElementById("btn-play").addEventListener("click", onPlay);
   document.getElementById("btn-reset").addEventListener("click", resetView);
+  // A1: 対話JSON選択
+  document.getElementById("dialogue-select").addEventListener("change", onDialogueSelect);
+  // A2: フィルター
+  document.getElementById("filter-movement").addEventListener("change", e => { filterMovementOnly = e.target.checked; buildEventList(); });
+  // A3: Undo/Redo
+  document.getElementById("btn-undo").addEventListener("click", undo);
+  document.getElementById("btn-redo").addEventListener("click", redo);
+  document.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
+    if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
+  });
+  // B5: セリフ表示トグル
+  document.getElementById("show-bubbles").addEventListener("change", e => { showBubbles = e.target.checked; draw(); });
+  // B8: テーマ
+  document.getElementById("theme-btn").addEventListener("click", toggleTheme);
   resetView(); draw();
 }
 function resize() {
@@ -379,92 +620,222 @@ function extractPath() {
 // ═══════════════════════════════════════════════════
 function draw() {
   ctx.clearRect(0,0,cv.width,cv.height);
-  ctx.fillStyle = "#111122"; ctx.fillRect(0,0,cv.width,cv.height);
-  drawGrid(); drawMap(); drawPath(); drawFOV(); drawWaypoints(); drawPickedPoint();
+  // Background with subtle radial gradient
+  const bgGrad = ctx.createRadialGradient(cv.width/2,cv.height/2,0,cv.width/2,cv.height/2,cv.width*.7);
+  if (lightMode) { bgGrad.addColorStop(0,"#e8eaf4"); bgGrad.addColorStop(1,"#d0d4e0"); }
+  else { bgGrad.addColorStop(0,"#0e1428"); bgGrad.addColorStop(1,"#060a14"); }
+  ctx.fillStyle = bgGrad; ctx.fillRect(0,0,cv.width,cv.height);
+  drawGrid(); drawMap(); drawPathGlow(); drawPath(); drawSegmentLabels(); drawFOV(); drawWaypoints(); drawPickedPoint();
+  drawMinimap();
+  if (showBubbles) drawSpeechBubbles();
 }
 
 function drawGrid() {
   let gs = 1; if (zoom < 15) gs = 5; if (zoom < 5) gs = 10;
   const [x0,z0] = s2w(0,cv.height), [x1,z1] = s2w(cv.width,0);
-  ctx.strokeStyle = "#1a1a2e"; ctx.lineWidth = 1;
-  for (let x = Math.floor(x0/gs)*gs; x <= x1; x += gs) { const [sx]=w2s(x,0); ctx.beginPath(); ctx.moveTo(sx,0); ctx.lineTo(sx,cv.height); ctx.stroke(); }
-  for (let z = Math.floor(z0/gs)*gs; z <= z1; z += gs) { const [,sy]=w2s(0,z); ctx.beginPath(); ctx.moveTo(0,sy); ctx.lineTo(cv.width,sy); ctx.stroke(); }
-  ctx.strokeStyle = "#333"; const [ax]=w2s(0,0), [,ay]=w2s(0,0);
+  // Dot grid
+  const dotR = lightMode ? 1.2 : 1;
+  ctx.fillStyle = lightMode ? "rgba(100,110,140,.25)" : "rgba(60,80,120,.25)";
+  for (let x = Math.floor(x0/gs)*gs; x <= x1; x += gs) {
+    for (let z = Math.floor(z0/gs)*gs; z <= z1; z += gs) {
+      const [sx,sy] = w2s(x,z);
+      ctx.beginPath(); ctx.arc(sx,sy,dotR,0,Math.PI*2); ctx.fill();
+    }
+  }
+  // Axis lines with glow
+  const [ax]=w2s(0,0), [,ay]=w2s(0,0);
+  ctx.strokeStyle = lightMode ? "rgba(100,110,140,.2)" : "rgba(80,120,200,.15)"; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(ax,0); ctx.lineTo(ax,cv.height); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(0,ay); ctx.lineTo(cv.width,ay); ctx.stroke();
-  ctx.fillStyle = "#555"; ctx.font = "10px sans-serif";
-  ctx.fillText("+X (右)", ax+4, 14); ctx.fillText("-Z (前方)", 4, w2s(0,z0)[1]+14);
+  // Axis labels with background pill
+  ctx.font = "bold 9px 'Segoe UI',sans-serif";
+  const labels = [{text:"+X", x:ax+8, y:16}, {text:"-Z", x:8, y:ay-8}];
+  labels.forEach(lb => {
+    const m = ctx.measureText(lb.text);
+    ctx.fillStyle = lightMode ? "rgba(100,110,140,.15)" : "rgba(40,60,100,.5)";
+    ctx.beginPath(); ctx.roundRect(lb.x-4, lb.y-10, m.width+8, 14, 3); ctx.fill();
+    ctx.fillStyle = lightMode ? "#8090b0" : "#4a6a9a"; ctx.fillText(lb.text, lb.x, lb.y);
+  });
 }
 
 function drawMap() {
+  ctx.save();
   for (const r of currentMap.rects) {
     const [sx,sy] = w2s(r.x, r.z);
-    ctx.fillStyle = r.color; ctx.fillRect(sx,sy, r.w*zoom, r.h*zoom);
-    if (r.label) { ctx.fillStyle = "#888"; ctx.font = "10px sans-serif"; ctx.fillText(r.label, sx+3, sy+12); }
+    const w = r.w*zoom, h = r.h*zoom;
+    // Fill with subtle gradient
+    const grad = ctx.createLinearGradient(sx,sy,sx,sy+h);
+    const base = r.color;
+    grad.addColorStop(0, base);
+    grad.addColorStop(1, base);
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.roundRect(sx, sy, w, h, Math.min(3, w/6)); ctx.fill();
+    // Border
+    ctx.strokeStyle = lightMode ? "rgba(100,110,140,.2)" : "rgba(100,140,220,.12)";
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(sx, sy, w, h, Math.min(3, w/6)); ctx.stroke();
+    // Label
+    if (r.label) {
+      ctx.font = "bold 10px 'Segoe UI',sans-serif";
+      ctx.fillStyle = lightMode ? "rgba(80,90,120,.6)" : "rgba(160,180,220,.5)";
+      ctx.fillText(r.label, sx+5, sy+14);
+    }
   }
   for (const lb of (currentMap.labels||[])) {
     const [sx,sy] = w2s(lb.x, lb.z);
-    ctx.fillStyle = "#666"; ctx.font = `${lb.size||10}px sans-serif`; ctx.fillText(lb.text, sx, sy);
+    ctx.font = `bold ${lb.size||10}px 'Segoe UI',sans-serif`;
+    // Text with glow
+    ctx.shadowColor = lightMode ? "rgba(58,90,138,.3)" : "rgba(80,120,200,.4)";
+    ctx.shadowBlur = 8;
+    ctx.fillStyle = lightMode ? "#6a7a9a" : "#5a7aaa";
+    ctx.fillText(lb.text, sx, sy);
+    ctx.shadowBlur = 0;
   }
+  ctx.restore();
+}
+
+// Glow layer under path
+function drawPathGlow() {
+  if (playerPath.length < 2) return;
+  ctx.save();
+  ctx.strokeStyle = "rgba(255,80,80,.08)"; ctx.lineWidth = 12; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  ctx.filter = "blur(6px)";
+  ctx.beginPath();
+  const [gx0,gy0] = w2s(playerPath[0].x, playerPath[0].z); ctx.moveTo(gx0,gy0);
+  for (let i=1;i<playerPath.length;i++){const [gx,gy]=w2s(playerPath[i].x,playerPath[i].z);ctx.lineTo(gx,gy);}
+  ctx.stroke();
+  ctx.filter = "none";
+  ctx.restore();
 }
 
 function drawPath() {
   if (playerPath.length < 2) return;
-  ctx.strokeStyle = "rgba(255,107,107,0.4)"; ctx.lineWidth = 2; ctx.setLineDash([6,4]);
+  // Gradient path line
+  ctx.lineWidth = 2.5; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  for (let i=1;i<playerPath.length;i++){
+    const p0=playerPath[i-1],p1=playerPath[i];
+    const [x0,y0]=w2s(p0.x,p0.z),[x1,y1]=w2s(p1.x,p1.z);
+    const grad = ctx.createLinearGradient(x0,y0,x1,y1);
+    const t = i / playerPath.length;
+    grad.addColorStop(0, `rgba(255,${Math.floor(80+80*t)},${Math.floor(80+40*t)},0.7)`);
+    grad.addColorStop(1, `rgba(255,${Math.floor(80+80*(t+0.05))},${Math.floor(80+40*(t+0.05))},0.7)`);
+    ctx.strokeStyle = grad;
+    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+  }
+  // Animated dash overlay
+  ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 1.5;
+  const dashOffset = (performance.now() / 40) % 20;
+  ctx.setLineDash([4,8]); ctx.lineDashOffset = -dashOffset;
   ctx.beginPath(); const [sx0,sy0] = w2s(playerPath[0].x, playerPath[0].z); ctx.moveTo(sx0,sy0);
   for (let i=1;i<playerPath.length;i++){const [sx,sy]=w2s(playerPath[i].x,playerPath[i].z);ctx.lineTo(sx,sy);}
-  ctx.stroke(); ctx.setLineDash([]);
-  // 矢印
+  ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset = 0;
+  // Arrows
   for (let i=1;i<playerPath.length;i++){
     const p0=playerPath[i-1],p1=playerPath[i],dx=p1.x-p0.x,dz=p1.z-p0.z;
     if(Math.sqrt(dx*dx+dz*dz)<0.01)continue;
     const [a,b]=w2s(p0.x,p0.z),[c,d]=w2s(p1.x,p1.z),mx=(a+c)/2,my=(b+d)/2,ang=Math.atan2(d-b,c-a);
-    ctx.fillStyle="rgba(255,107,107,0.6)";ctx.beginPath();
-    ctx.moveTo(mx+Math.cos(ang)*8,my+Math.sin(ang)*8);
-    ctx.lineTo(mx+Math.cos(ang+2.5)*6,my+Math.sin(ang+2.5)*6);
-    ctx.lineTo(mx+Math.cos(ang-2.5)*6,my+Math.sin(ang-2.5)*6);ctx.closePath();ctx.fill();
+    ctx.fillStyle="rgba(255,160,120,0.7)";ctx.beginPath();
+    ctx.moveTo(mx+Math.cos(ang)*9,my+Math.sin(ang)*9);
+    ctx.lineTo(mx+Math.cos(ang+2.5)*7,my+Math.sin(ang+2.5)*7);
+    ctx.lineTo(mx+Math.cos(ang-2.5)*7,my+Math.sin(ang-2.5)*7);ctx.closePath();ctx.fill();
+  }
+  // Animated dashes: schedule next frame only if path has segments and no play animation
+  if (!playAnim && playerPath.length > 1 && !window._dashRaf) {
+    window._dashRaf = requestAnimationFrame(() => { window._dashRaf = null; if (!playAnim) draw(); });
   }
 }
 
-// 視野コーン描画
+// 視野コーン描画 with gradient
 function drawFOV() {
   for (let i=0;i<playerPath.length;i++){
     const wp = playerPath[i];
     if (wp.rot === undefined) continue;
     const [sx,sy] = w2s(wp.x, wp.z);
     const isSelected = (wp.eventIdx === selectedIdx);
-    const fovAngle = Math.PI / 3; // 60度 FOV
-    const fovLen = isSelected ? 50 : 25;
+    const fovAngle = Math.PI / 3;
+    const fovLen = isSelected ? 55 : 28;
     const dir = -(wp.rot) - Math.PI/2;
-    ctx.fillStyle = isSelected ? "rgba(100,180,255,0.12)" : "rgba(100,180,255,0.05)";
-    ctx.beginPath();
-    ctx.moveTo(sx, sy);
+    // Gradient cone
+    const grad = ctx.createRadialGradient(sx,sy,0,sx,sy,fovLen);
+    if (isSelected) {
+      grad.addColorStop(0, "rgba(100,180,255,0.18)");
+      grad.addColorStop(0.7, "rgba(100,180,255,0.06)");
+      grad.addColorStop(1, "rgba(100,180,255,0)");
+    } else {
+      grad.addColorStop(0, "rgba(100,180,255,0.08)");
+      grad.addColorStop(1, "rgba(100,180,255,0)");
+    }
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.moveTo(sx, sy);
     ctx.arc(sx, sy, fovLen, dir - fovAngle/2, dir + fovAngle/2);
     ctx.closePath(); ctx.fill();
+    // Edge lines
+    if (isSelected) {
+      ctx.strokeStyle = "rgba(100,180,255,.2)"; ctx.lineWidth = 1;
+      for (const off of [-fovAngle/2, fovAngle/2]) {
+        ctx.beginPath(); ctx.moveTo(sx,sy);
+        ctx.lineTo(sx+Math.cos(dir+off)*fovLen, sy+Math.sin(dir+off)*fovLen);
+        ctx.stroke();
+      }
+    }
   }
 }
 
 const WP_COLORS = { spawn:"#ffffff", pos_z:"#ff6b6b", pos_x:"#ff6b6b", rot_y:"#ffd93d", walk_set:"#6bcb77", stage_swap:"#4d96ff" };
+const WP_ICONS = { spawn:"\u2302", pos_z:"\u2195", pos_x:"\u2194", rot_y:"\u21BB", walk_set:"\u2B50", stage_swap:"\u21C4" };
 
 function drawWaypoints() {
   for (let i=0;i<playerPath.length;i++){
     const wp=playerPath[i],[sx,sy]=w2s(wp.x,wp.z);
-    const color=WP_COLORS[wp.type]||"#aaa", isSel=(wp.eventIdx===selectedIdx), r=isSel?8:6;
-    if(isSel){ctx.strokeStyle="#fff";ctx.lineWidth=2;ctx.beginPath();ctx.arc(sx,sy,r+3,0,Math.PI*2);ctx.stroke();}
-    ctx.fillStyle=color;ctx.beginPath();ctx.arc(sx,sy,r,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="#000";ctx.font="bold 9px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(i,sx,sy);
-    // 向き矢印
-    if(wp.rot!==undefined){
-      const ang=-(wp.rot)-Math.PI/2,al=16,ax=sx+Math.cos(ang)*al,ay=sy+Math.sin(ang)*al;
-      ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ax,ay);ctx.stroke();
-      ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(ax,ay);
-      ctx.lineTo(ax+Math.cos(ang+2.6)*5,ay+Math.sin(ang+2.6)*5);
-      ctx.lineTo(ax+Math.cos(ang-2.6)*5,ay+Math.sin(ang-2.6)*5);ctx.closePath();ctx.fill();
+    const color=WP_COLORS[wp.type]||"#aaa", isSel=(wp.eventIdx===selectedIdx), r=isSel?9:6;
+    // Glow
+    ctx.save();
+    ctx.shadowColor = color; ctx.shadowBlur = isSel ? 16 : 8;
+    // Outer ring for selected
+    if(isSel){
+      ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(sx,sy,r+4,0,Math.PI*2); ctx.stroke();
+      ctx.strokeStyle = color; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(sx,sy,r+4,0,Math.PI*2); ctx.stroke();
     }
-    // 座標
-    ctx.fillStyle="#888";ctx.font="9px sans-serif";ctx.textAlign="left";ctx.textBaseline="top";
-    if(wp.type==="pos_z"||wp.type==="pos_x"||wp.type==="spawn") ctx.fillText(`(${wp.x.toFixed(1)}, ${wp.z.toFixed(1)})`,sx+10,sy-4);
-    if(wp.type==="rot_y") ctx.fillText(`${(wp.rot*180/Math.PI).toFixed(0)}°`,sx+10,sy-4);
+    // Filled circle with gradient
+    const wpGrad = ctx.createRadialGradient(sx-r*.3, sy-r*.3, 0, sx, sy, r);
+    wpGrad.addColorStop(0, "#fff");
+    wpGrad.addColorStop(0.4, color);
+    wpGrad.addColorStop(1, color);
+    ctx.fillStyle = wpGrad;
+    ctx.beginPath(); ctx.arc(sx,sy,r,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+    // Number
+    ctx.fillStyle = "#000"; ctx.font = `bold ${isSel?10:8}px 'Segoe UI',sans-serif`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(i, sx, sy+0.5);
+    // Direction arrow
+    if(wp.rot!==undefined){
+      const ang=-(wp.rot)-Math.PI/2,al=isSel?20:14;
+      const ax=sx+Math.cos(ang)*al,ay=sy+Math.sin(ang)*al;
+      // Arrow line with glow
+      ctx.save(); ctx.shadowColor=color; ctx.shadowBlur=4;
+      ctx.strokeStyle=color;ctx.lineWidth=isSel?2:1.5;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ax,ay);ctx.stroke();
+      ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(ax,ay);
+      ctx.lineTo(ax+Math.cos(ang+2.6)*6,ay+Math.sin(ang+2.6)*6);
+      ctx.lineTo(ax+Math.cos(ang-2.6)*6,ay+Math.sin(ang-2.6)*6);ctx.closePath();ctx.fill();
+      ctx.restore();
+    }
+    // Coordinate label with pill background
+    ctx.textAlign="left";ctx.textBaseline="top";
+    let label = "";
+    if(wp.type==="pos_z"||wp.type==="pos_x"||wp.type==="spawn") label = `(${wp.x.toFixed(1)}, ${wp.z.toFixed(1)})`;
+    if(wp.type==="rot_y") label = `${(wp.rot*180/Math.PI).toFixed(0)}°`;
+    if (label) {
+      ctx.font = "10px 'Consolas',monospace";
+      const m = ctx.measureText(label);
+      const lx = sx+12, ly = sy-6;
+      ctx.fillStyle = lightMode ? "rgba(230,235,245,.8)" : "rgba(8,12,26,.7)";
+      ctx.beginPath(); ctx.roundRect(lx-3, ly-2, m.width+6, 14, 3); ctx.fill();
+      ctx.fillStyle = lightMode ? "#4a5a7a" : "#8a9aba";
+      ctx.fillText(label, lx, ly);
+    }
   }
   ctx.textAlign="start";ctx.textBaseline="alphabetic";
 }
@@ -473,20 +844,41 @@ function drawWaypoints() {
 function drawPickedPoint() {
   if (!pickedPoint) return;
   const [sx,sy] = w2s(pickedPoint.x, pickedPoint.z);
-  ctx.strokeStyle = "#ffd93d"; ctx.lineWidth = 1; ctx.setLineDash([3,3]);
-  ctx.beginPath(); ctx.moveTo(sx-15,sy); ctx.lineTo(sx+15,sy); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(sx,sy-15); ctx.lineTo(sx,sy+15); ctx.stroke();
+  ctx.save();
+  // Outer glow ring
+  ctx.shadowColor = "#ffd93d"; ctx.shadowBlur = 12;
+  ctx.strokeStyle = "rgba(255,217,61,.6)"; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(sx,sy,8,0,Math.PI*2); ctx.stroke();
+  ctx.shadowBlur = 0;
+  // Crosshair lines
+  ctx.strokeStyle = "rgba(255,217,61,.4)"; ctx.lineWidth = 1; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(sx-20,sy); ctx.lineTo(sx-10,sy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(sx+10,sy); ctx.lineTo(sx+20,sy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(sx,sy-20); ctx.lineTo(sx,sy-10); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(sx,sy+10); ctx.lineTo(sx,sy+20); ctx.stroke();
   ctx.setLineDash([]);
-  ctx.strokeStyle = "#ffd93d"; ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.arc(sx,sy,4,0,Math.PI*2); ctx.stroke();
+  // Center dot
+  ctx.fillStyle = "#ffd93d";
+  ctx.beginPath(); ctx.arc(sx,sy,2.5,0,Math.PI*2); ctx.fill();
 
-  // 現在プレイヤー位置からの距離線
+  // Distance line to player
   const lastWP = getPlayerPosAtSelected();
   if (lastWP) {
     const [lx,ly] = w2s(lastWP.x, lastWP.z);
-    ctx.strokeStyle = "rgba(255,217,61,0.3)"; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+    const dist = Math.sqrt((pickedPoint.x-lastWP.x)**2+(pickedPoint.z-lastWP.z)**2);
+    ctx.strokeStyle = "rgba(255,217,61,0.25)"; ctx.lineWidth = 1; ctx.setLineDash([4,6]);
     ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(sx,sy); ctx.stroke(); ctx.setLineDash([]);
+    // Distance label at midpoint
+    const mx=(lx+sx)/2, my=(ly+sy)/2;
+    ctx.font = "bold 10px 'Consolas',monospace";
+    const text = dist.toFixed(1)+"m";
+    const tm = ctx.measureText(text);
+    ctx.fillStyle = "rgba(8,12,26,.7)";
+    ctx.beginPath(); ctx.roundRect(mx-tm.width/2-4, my-8, tm.width+8, 16, 3); ctx.fill();
+    ctx.fillStyle = "#ffd93d"; ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.fillText(text, mx, my); ctx.textAlign="start"; ctx.textBaseline="alphabetic";
   }
+  ctx.restore();
 }
 
 // ═══════════════════════════════════════════════════
@@ -508,8 +900,13 @@ function buildEventList() {
   const el = document.getElementById("event-list"); el.innerHTML = "";
   for (let i=0;i<events.length;i++){
     const ev=events[i],t=ev.type||""; if(t==="_comment")continue;
+    const isMovement = MOVEMENT_TYPES.has(t);
     const div=document.createElement("div");
-    div.className="ev-item"+(MOVEMENT_TYPES.has(t)?" movement":""); if(i===selectedIdx)div.className+=" active";
+    let cls = "ev-item" + (isMovement ? " movement" : "");
+    if (i === selectedIdx) cls += " active";
+    if (multiSelected.has(i)) cls += " multi-selected";
+    if (filterMovementOnly && !isMovement) cls += " filtered";
+    div.className = cls;
     const ja=TYPE_JA[t]||t; let det="";
     if(t==="say")det=ev.text?ev.text.substring(0,25):"";
     else if(t==="pos_z")det=`z=${ev.target}`; else if(t==="pos_x")det=`x=${ev.target}`;
@@ -519,8 +916,15 @@ function buildEventList() {
     else if(t==="chat")det=ev.msg?ev.msg.substring(0,20):"";
     else if(t==="set_viewers")det=`${ev.count}人`; else if(t==="sfx")det=ev.sound||"";
     div.innerHTML=`<span class="ev-idx">${i}</span><span class="ev-type">${ja}</span><span class="ev-detail">${det}</span>`;
-    div.addEventListener("click",()=>selectEvent(i)); el.appendChild(div);
+    div.addEventListener("click",(e)=>{ if(e.shiftKey){toggleMultiSelect(i);}else{multiSelected.clear();selectEvent(i);} });
+    el.appendChild(div);
   }
+}
+
+// A4: 複数選択トグル
+function toggleMultiSelect(idx) {
+  if (multiSelected.has(idx)) multiSelected.delete(idx); else multiSelected.add(idx);
+  buildEventList(); draw();
 }
 
 function selectEvent(idx) {
@@ -558,6 +962,7 @@ function showDetail(idx) {
 window.applyEdit = function(idx, field) {
   const inp=document.getElementById("edit-"+field); if(!inp)return;
   const val=parseFloat(inp.value); if(isNaN(val))return;
+  pushUndo();
   events[idx][field]=val; extractPath(); buildEventList(); showDetail(idx); draw();
 };
 
@@ -594,6 +999,7 @@ function updatePickPanel() {
 // ここに歩かせる
 window.actionWalkHere = function() {
   if (!pickedPoint || !jsonData) return;
+  pushUndo();
   const pp = getPlayerPosAtSelected();
   if (!pp) return;
   const dx = Math.abs(pickedPoint.x - pp.x), dz = Math.abs(pickedPoint.z - pp.z);
@@ -620,6 +1026,7 @@ window.actionWalkHere = function() {
 // ここを向かせる
 window.actionFaceHere = function() {
   if (!pickedPoint || !jsonData) return;
+  pushUndo();
   const pp = getPlayerPosAtSelected();
   if (!pp) return;
   const dx = pickedPoint.x - pp.x, dz = pickedPoint.z - pp.z;
@@ -672,7 +1079,7 @@ function onMouseDown(e) {
   const rect=cv.getBoundingClientRect(), mx=e.clientX-rect.left, my=e.clientY-rect.top;
   mouseDownPos = { x: mx, y: my };
   const wpIdx=findNearestWP(mx,my,12);
-  if(wpIdx>=0&&e.button===0){dragWP=wpIdx;const wp=playerPath[wpIdx];if(wp.eventIdx>=0)selectEvent(wp.eventIdx);return;}
+  if(wpIdx>=0&&e.button===0){pushUndo();dragWP=wpIdx;const wp=playerPath[wpIdx];if(wp.eventIdx>=0)selectEvent(wp.eventIdx);return;}
   if(e.button===0||e.button===1){panStart={x:mx,y:my,cx:camX,cz:camZ};}
 }
 
@@ -733,7 +1140,17 @@ function onFileLoad(e) {
   const file=e.target.files[0]; if(!file)return;
   const reader=new FileReader();
   reader.onload=function(ev){
-    try{jsonData=JSON.parse(ev.target.result);events=jsonData.events||[];extractPath();buildEventList();resetView();draw();}
+    try{
+      jsonData=JSON.parse(ev.target.result);events=jsonData.events||[];
+      // メモリ内キャッシュを更新（セッション中は最新を使える）
+      const name = file.name.replace(/\.json$/,"");
+      if (typeof DIALOGUE_CACHE !== "undefined") {
+        DIALOGUE_CACHE[name] = JSON.parse(ev.target.result);
+      }
+      undoStack=[]; redoStack=[]; updateUndoButtons();
+      extractPath();buildEventList();resetView();draw();
+      setDataSource("file", file.name);
+    }
     catch(err){alert("JSON解析エラー: "+err.message);}
   }; reader.readAsText(file);
 }
@@ -788,19 +1205,232 @@ function onPlay() {
     camX = cx; camZ = cz;
     if (seg.to.eventIdx >= 0) selectedIdx = seg.to.eventIdx;
     draw();
-    // プレイヤーハイライト
+    // プレイヤーハイライト with glow
     const [sx,sy] = w2s(cx, cz);
-    ctx.fillStyle = "rgba(255,255,0,0.5)"; ctx.beginPath(); ctx.arc(sx,sy,12,0,Math.PI*2); ctx.fill();
-    // 視野コーン（アニメ中）
+    ctx.save();
+    ctx.shadowColor = "#ffd93d"; ctx.shadowBlur = 20;
+    const pulse = Math.sin(now/200)*0.15 + 0.85;
+    const plGrad = ctx.createRadialGradient(sx,sy,0,sx,sy,14*pulse);
+    plGrad.addColorStop(0, "rgba(255,217,61,.6)");
+    plGrad.addColorStop(0.5, "rgba(255,200,50,.2)");
+    plGrad.addColorStop(1, "rgba(255,200,50,0)");
+    ctx.fillStyle = plGrad;
+    ctx.beginPath(); ctx.arc(sx,sy,14*pulse,0,Math.PI*2); ctx.fill();
+    // Core dot
+    ctx.fillStyle = "#ffd93d"; ctx.beginPath(); ctx.arc(sx,sy,4,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+    // 視野コーン（アニメ中）with gradient
     const rot = seg.from.rot + (seg.to.rot - seg.from.rot) * t;
     const dir = -rot - Math.PI/2;
-    ctx.fillStyle = "rgba(255,255,100,0.15)"; ctx.beginPath(); ctx.moveTo(sx,sy);
-    ctx.arc(sx,sy,60,dir-Math.PI/6,dir+Math.PI/6); ctx.closePath(); ctx.fill();
+    const fovGrad = ctx.createRadialGradient(sx,sy,0,sx,sy,70);
+    fovGrad.addColorStop(0, "rgba(255,255,100,.18)");
+    fovGrad.addColorStop(0.6, "rgba(255,255,100,.05)");
+    fovGrad.addColorStop(1, "rgba(255,255,100,0)");
+    ctx.fillStyle = fovGrad; ctx.beginPath(); ctx.moveTo(sx,sy);
+    ctx.arc(sx,sy,70,dir-Math.PI/6,dir+Math.PI/6); ctx.closePath(); ctx.fill();
 
     if (t >= 1) { segIdx++; segT = 0; }
     playAnim.raf = requestAnimationFrame(tick);
   }
   playAnim = { raf: requestAnimationFrame(tick) };
+}
+
+// ═══════════════════════════════════════════════════
+// A1: 対話JSON選択（dialogue/ フォルダから）
+// ═══════════════════════════════════════════════════
+function onDialogueSelect() {
+  const val = document.getElementById("dialogue-select").value;
+  if (!val) return;
+  // DIALOGUE_CACHE から読み込み（dialogue_cache.js で定義）
+  const data = typeof DIALOGUE_CACHE !== "undefined" && DIALOGUE_CACHE[val];
+  if (!data) {
+    showStatus("キャッシュにありません: " + val);
+    return;
+  }
+  jsonData = JSON.parse(JSON.stringify(data)); // deep copy
+  events = jsonData.events || [];
+  // マップ自動選択
+  const autoMap = {
+    ch01_entrance: "stage_iriguchi", ch01_haison_souko: "stage_souko",
+    ch02_haison_naibu: "stage_naibu", ch04_haison_naibu_event: "stage_naibu",
+    ch05_haison_dasshutsu: "stage_escape", ch_test_toilet: "public_toilet",
+    opening: "stage_iriguchi",
+  };
+  if (autoMap[val]) {
+    currentMap = MAPS[autoMap[val]];
+    document.getElementById("map-select").value = autoMap[val];
+  }
+  undoStack = []; redoStack = []; updateUndoButtons();
+  extractPath(); buildEventList(); resetView(); draw();
+  setDataSource("cache", val + ".json");
+  showStatus(val + ".json を読み込みました");
+}
+
+function setDataSource(type, name) {
+  const el = document.getElementById("data-source");
+  if (type === "cache") {
+    el.className = "src-cache";
+    el.textContent = "CACHE: " + name;
+    el.title = "dialogue_cache.js から読み込み。最新でない可能性あり";
+  } else {
+    el.className = "src-file";
+    el.textContent = "FILE: " + name;
+    el.title = "ファイルから直接読み込み（最新）";
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// A3: Undo / Redo
+// ═══════════════════════════════════════════════════
+function pushUndo() {
+  undoStack.push(JSON.stringify(events));
+  if (undoStack.length > 50) undoStack.shift();
+  redoStack = [];
+  updateUndoButtons();
+}
+function undo() {
+  if (undoStack.length === 0) return;
+  redoStack.push(JSON.stringify(events));
+  events = JSON.parse(undoStack.pop());
+  if (jsonData) jsonData.events = events;
+  extractPath(); buildEventList(); showDetail(selectedIdx); draw();
+  updateUndoButtons();
+}
+function redo() {
+  if (redoStack.length === 0) return;
+  undoStack.push(JSON.stringify(events));
+  events = JSON.parse(redoStack.pop());
+  if (jsonData) jsonData.events = events;
+  extractPath(); buildEventList(); showDetail(selectedIdx); draw();
+  updateUndoButtons();
+}
+function updateUndoButtons() {
+  document.getElementById("btn-undo").disabled = undoStack.length === 0;
+  document.getElementById("btn-redo").disabled = redoStack.length === 0;
+}
+
+// ═══════════════════════════════════════════════════
+// B5: セリフ吹き出し描画
+// ═══════════════════════════════════════════════════
+function drawSpeechBubbles() {
+  const container = document.getElementById("bubbles-container");
+  container.innerHTML = "";
+  // sayイベントの位置を計算
+  let px = currentMap.spawn.x, pz = currentMap.spawn.z;
+  for (let i = 0; i < events.length; i++) {
+    const ev = events[i], t = ev.type;
+    if (t === "pos_z") pz = parseFloat(ev.target) || 0;
+    else if (t === "pos_x") px = parseFloat(ev.target) || 0;
+    else if (t === "say" && ev.text) {
+      const [sx, sy] = w2s(px, pz);
+      // 画面内のみ
+      if (sx > -100 && sx < cv.width + 100 && sy > -100 && sy < cv.height + 100) {
+        const bubble = document.createElement("div");
+        bubble.className = "speech-bubble";
+        const clean = ev.text.replace(/\[.*?\]/g, "").substring(0, 40);
+        bubble.innerHTML = `<div class="sb-speaker">#${i}</div>${clean}${ev.text.length > 40 ? "..." : ""}`;
+        bubble.style.left = (sx + document.getElementById("sidebar").offsetWidth - 20) + "px";
+        bubble.style.top = (sy + document.getElementById("header")?.offsetHeight || 0) - 50 + "px";
+        // canvas-area内の位置
+        const area = document.getElementById("canvas-area").getBoundingClientRect();
+        bubble.style.left = (sx + 10) + "px";
+        bubble.style.top = (sy - 50) + "px";
+        container.appendChild(bubble);
+      }
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// B6: 区間タイムライン（パスセグメント上に秒数表示）
+// ═══════════════════════════════════════════════════
+function drawSegmentLabels() {
+  if (playerPath.length < 2) return;
+  ctx.font = "bold 9px sans-serif";
+  ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+  for (let i = 1; i < playerPath.length; i++) {
+    const p0 = playerPath[i-1], p1 = playerPath[i];
+    const dx = p1.x - p0.x, dz = p1.z - p0.z, dist = Math.sqrt(dx*dx + dz*dz);
+    if (dist < 0.1) continue;
+    let dur = 0;
+    if (p1.eventIdx >= 0) {
+      const ev = events[p1.eventIdx];
+      dur = ev.dur || (dist / 1.5);
+    }
+    const [sx0, sy0] = w2s(p0.x, p0.z);
+    const [sx1, sy1] = w2s(p1.x, p1.z);
+    const mx = (sx0 + sx1) / 2, my = (sy0 + sy1) / 2;
+    ctx.fillStyle = lightMode ? "rgba(180,80,80,.8)" : "rgba(255,150,150,.7)";
+    ctx.fillText(`${dur.toFixed(1)}s / ${dist.toFixed(1)}m`, mx, my - 6);
+  }
+  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
+}
+
+// ═══════════════════════════════════════════════════
+// B7: ミニマップ
+// ═══════════════════════════════════════════════════
+function drawMinimap() {
+  const mc = document.getElementById("minimap");
+  const mctx = mc.getContext("2d");
+  const mw = mc.width, mh = mc.height;
+  mctx.clearRect(0, 0, mw, mh);
+
+  const b = currentMap.bounds;
+  const bw = b.xMax - b.xMin, bh = b.zMax - b.zMin;
+  const scale = Math.min((mw - 12) / bw, (mh - 12) / bh);
+  const ox = (mw - bw * scale) / 2, oy = (mh - bh * scale) / 2;
+
+  function mm(wx, wz) { return [ox + (wx - b.xMin) * scale, oy + (wz - b.zMin) * scale]; }
+
+  // 矩形
+  for (const r of currentMap.rects) {
+    const [rx, ry] = mm(r.x, r.z);
+    mctx.fillStyle = r.color; mctx.globalAlpha = 0.5;
+    mctx.fillRect(rx, ry, r.w * scale, r.h * scale);
+  }
+  mctx.globalAlpha = 1;
+
+  // パス with glow
+  if (playerPath.length > 1) {
+    // Glow
+    mctx.save();
+    mctx.strokeStyle = "rgba(255,80,80,.3)"; mctx.lineWidth = 4; mctx.lineCap = "round";
+    mctx.filter = "blur(2px)";
+    mctx.beginPath();
+    const [gx0, gy0] = mm(playerPath[0].x, playerPath[0].z); mctx.moveTo(gx0, gy0);
+    for (let i = 1; i < playerPath.length; i++) { const [gx, gy] = mm(playerPath[i].x, playerPath[i].z); mctx.lineTo(gx, gy); }
+    mctx.stroke(); mctx.filter = "none"; mctx.restore();
+    // Line
+    mctx.strokeStyle = "#ff6b6b"; mctx.lineWidth = 1.5; mctx.lineCap = "round";
+    mctx.beginPath();
+    const [sx0, sy0] = mm(playerPath[0].x, playerPath[0].z); mctx.moveTo(sx0, sy0);
+    for (let i = 1; i < playerPath.length; i++) { const [sx, sy] = mm(playerPath[i].x, playerPath[i].z); mctx.lineTo(sx, sy); }
+    mctx.stroke();
+    // Spawn dot
+    const [spx, spy] = mm(playerPath[0].x, playerPath[0].z);
+    mctx.fillStyle = "#fff"; mctx.beginPath(); mctx.arc(spx, spy, 2.5, 0, Math.PI*2); mctx.fill();
+  }
+
+  // 現在のビュー範囲
+  const [vx0, vz0] = s2w(0, 0);
+  const [vx1, vz1] = s2w(cv.width, cv.height);
+  const [rx0, ry0] = mm(vx0, vz0);
+  const [rx1, ry1] = mm(vx1, vz1);
+  mctx.strokeStyle = "rgba(212,168,55,.7)"; mctx.lineWidth = 1.5;
+  mctx.strokeRect(rx0, ry0, rx1 - rx0, ry1 - ry0);
+  // Fill viewport area
+  mctx.fillStyle = "rgba(212,168,55,.06)";
+  mctx.fillRect(rx0, ry0, rx1 - rx0, ry1 - ry0);
+}
+
+// ═══════════════════════════════════════════════════
+// B8: テーマ切替
+// ═══════════════════════════════════════════════════
+function toggleTheme() {
+  lightMode = !lightMode;
+  document.body.classList.toggle("light", lightMode);
+  document.getElementById("theme-btn").textContent = lightMode ? "Dark" : "Light";
+  draw();
 }
 
 // ═══════════════════════════════════════════════════

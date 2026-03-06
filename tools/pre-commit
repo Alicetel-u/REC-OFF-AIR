@@ -81,6 +81,24 @@ if [ -n "$staged_json" ]; then
             errors=$((errors + 1))
         fi
     fi
+
+    # dialogue_cache.js を自動再生成（パスビューア用）
+    PYTHON=""
+    for p in python python3 \
+        "$HOME/AppData/Local/Python/bin/python.exe" \
+        "$HOME/AppData/Local/Programs/Python/Python312/python.exe" \
+        "$HOME/AppData/Local/Programs/Python/Python311/python.exe"; do
+        if command -v "$p" &> /dev/null 2>&1 || [ -f "$p" ]; then
+            PYTHON="$p"
+            break
+        fi
+    done
+    if [ -n "$PYTHON" ] && [ -f "tools/path-viewer/update_cache.py" ]; then
+        echo "=== dialogue_cache.js 再生成 ==="
+        "$PYTHON" tools/path-viewer/update_cache.py
+        git add tools/path-viewer/dialogue_cache.js
+        echo -e "${GREEN}OK: dialogue_cache.js を更新しました${NC}"
+    fi
 fi
 
 # ── 3. CLAUDE.mdの設定値とコードの整合性チェック ──
