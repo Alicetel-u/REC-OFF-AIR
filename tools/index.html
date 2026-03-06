@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>REC-OFF-AIR — Dev Tools</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg0: #040b1a;
+  --bg1: #0c1a35;
+  --bg2: #101f3e;
+  --bg3: #1e3a6e;
+  --tx0: #eef0f5;
+  --tx1: #a8b4cc;
+  --tx2: #6b7a99;
+  --accent: #d4a837;
+  --accent2: #f0d060;
+  --ff-outer: #131f3a;
+  --ff-inner: rgba(130,160,210,0.3);
+  --ff-panel: linear-gradient(180deg, #0d1e42 0%, #090f28 50%, #0d1e42 100%);
+  --ff-glow: rgba(80,120,200,0.12);
+
+  --sapphire: #4a8fd4;
+  --emerald:  #3dae6e;
+  --amethyst: #9b6bd4;
+  --ruby:     #c43c3c;
+  --topaz:    #d4a837;
+  --aqua:     #3db8b8;
+  --onyx:     #4a5a78;
+}
+
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg0); color:var(--tx0); font-family:'Segoe UI',system-ui,sans-serif; }
+
+/* ── Starfield ── */
+#stars { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+/* ── Layout ── */
+#app { position:relative; z-index:1; display:flex; flex-direction:column; height:100vh; }
+
+/* ── Header ── */
+#header {
+  background: var(--ff-panel);
+  border-bottom: 1px solid var(--ff-outer);
+  box-shadow: inset 0 -1px 0 var(--ff-inner), 0 2px 24px rgba(0,0,0,.6);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.hdr-logo { display:flex; align-items:center; gap:12px; }
+
+.hdr-crystal { width:36px; height:36px; flex-shrink:0; }
+
+.hdr-title {
+  font-size:19px; font-weight:700; letter-spacing:0.1em;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hdr-sub { font-size:10px; color:var(--tx2); letter-spacing:0.18em; text-transform:uppercase; margin-top:2px; }
+
+.hdr-sep { width:1px; height:32px; background:var(--ff-inner); margin:0 6px; }
+
+/* Search */
+#search-wrap {
+  position:relative;
+  margin-left: 4px;
+}
+#search {
+  background: rgba(0,0,0,.3);
+  border: 1px solid var(--ff-inner);
+  border-radius:3px;
+  color: var(--tx0);
+  font-size:12px;
+  padding: 5px 10px 5px 28px;
+  width:180px;
+  outline:none;
+  transition: border-color .15s, box-shadow .15s;
+}
+#search:focus { border-color:var(--accent); box-shadow:0 0 0 2px rgba(212,168,55,.15); }
+#search::placeholder { color:var(--tx2); }
+.search-icon { position:absolute; left:8px; top:50%; transform:translateY(-50%); font-size:12px; color:var(--tx2); pointer-events:none; }
+
+/* Category tabs */
+#cat-tabs { display:flex; gap:2px; margin-left:auto; }
+
+.cat-tab {
+  padding:5px 14px; font-size:12px;
+  border:1px solid transparent; border-radius:3px;
+  cursor:pointer; color:var(--tx1); letter-spacing:0.06em;
+  transition:all .15s; background:transparent; white-space:nowrap;
+}
+.cat-tab:hover { color:var(--tx0); background:rgba(255,255,255,.05); }
+.cat-tab.active {
+  background: linear-gradient(180deg,#1e3a6e,#122247);
+  border-color:var(--ff-inner); color:var(--accent);
+  box-shadow: inset 0 1px 0 rgba(140,170,220,.15);
+}
+.gem-dot {
+  display:inline-block; width:6px; height:6px;
+  border-radius:1px; transform:rotate(45deg);
+  margin-right:5px; vertical-align:middle;
+}
+
+/* ── Body ── */
+#body { display:flex; flex:1; overflow:hidden; }
+
+/* ── Main ── */
+#main { flex:1; overflow-y:auto; padding:20px 24px; }
+#main::-webkit-scrollbar { width:6px; }
+#main::-webkit-scrollbar-track { background:rgba(10,22,48,.5); }
+#main::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#1e3a6e,#2a4a80); border-radius:3px; }
+
+/* Section */
+.section-hdr {
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:14px; margin-top:6px;
+}
+.section-hdr + .section-hdr,
+.tool-grid + .section-hdr { margin-top:28px; }
+
+.section-gem {
+  width:12px; height:12px; border-radius:2px;
+  transform:rotate(45deg); flex-shrink:0;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+.section-title { font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--tx1); font-weight:600; }
+.section-count { font-size:10px; color:var(--tx2); }
+.section-line { flex:1; height:1px; background:linear-gradient(90deg, var(--ff-inner) 0%, transparent 100%); }
+
+/* Tool grid */
+.tool-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-bottom:4px; }
+
+/* Tool card */
+.tool-card {
+  background: var(--ff-panel);
+  border: 1px solid var(--ff-outer);
+  box-shadow: inset 0 0 0 1px var(--ff-inner), 0 2px 10px rgba(0,0,0,.35);
+  border-radius:4px; padding:16px;
+  cursor:pointer; transition:all .2s;
+  position:relative; overflow:hidden;
+  text-decoration:none; color:inherit;
+  display:flex; flex-direction:column; gap:10px;
+  min-height:148px;
+}
+.tool-card::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(100,140,220,.07) 0%, transparent 65%);
+  pointer-events:none;
+}
+.tool-card:not(.coming-soon):hover {
+  border-color:rgba(140,170,220,.45);
+  box-shadow: inset 0 0 0 1px rgba(140,170,220,.5), 0 6px 24px rgba(0,0,0,.5), 0 0 24px rgba(100,140,220,.12);
+  transform:translateY(-2px);
+}
+.tool-card:not(.coming-soon):hover .card-launch { color:var(--accent); border-color:rgba(212,168,55,.6); }
+.tool-card:not(.coming-soon):hover .card-gem { filter: drop-shadow(0 0 8px currentColor); }
+
+.tool-card.coming-soon { opacity:.42; cursor:not-allowed; }
+
+/* Corner accent */
+.tool-card::after {
+  content:''; position:absolute; top:0; right:0;
+  width:0; height:0; border-style:solid;
+  border-width:0 18px 18px 0;
+  border-color:transparent rgba(140,170,220,.2) transparent transparent;
+  opacity:0; transition:opacity .2s;
+}
+.tool-card:not(.coming-soon):hover::after { opacity:1; }
+
+/* Card shine sweep */
+.card-shine {
+  position:absolute; top:-50%; left:-50%;
+  width:40%; height:200%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.045),transparent);
+  pointer-events:none; transform:translateX(-100%) rotate(25deg);
+}
+@keyframes shine { from { transform:translateX(-100%) rotate(25deg); } to { transform:translateX(400%) rotate(25deg); } }
+.tool-card:not(.coming-soon):hover .card-shine { animation:shine 0.55s ease forwards; }
+
+.card-header { display:flex; align-items:center; gap:10px; }
+
+.card-gem {
+  width:30px; height:30px; border-radius:3px;
+  transform:rotate(45deg); flex-shrink:0;
+  position:relative; transition:filter .2s;
+}
+.card-gem::after {
+  content:''; position:absolute; inset:3px; border-radius:2px;
+  background:rgba(255,255,255,.18);
+  clip-path:polygon(0 30%,50% 0,100% 30%,50% 100%);
+}
+
+.card-name { font-size:14px; font-weight:600; color:var(--tx0); letter-spacing:0.04em; line-height:1.3; }
+
+.card-badge {
+  font-size:9px; letter-spacing:0.12em; text-transform:uppercase;
+  padding:1px 6px; border-radius:2px; border:1px solid currentColor;
+  opacity:.75; margin-left:auto; flex-shrink:0;
+}
+.badge-active { color:#3dae6e; }
+.badge-soon   { color:#6b7a99; }
+.badge-wip    { color:#d4a837; }
+
+.card-desc { font-size:11px; color:var(--tx2); line-height:1.6; flex:1; }
+
+.card-launch {
+  font-size:10px; letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--tx2); border:1px solid rgba(130,160,210,.2);
+  padding:4px 12px; border-radius:2px; text-align:center;
+  transition:all .15s; align-self:flex-start;
+}
+
+/* ── Sidebar ── */
+#sidebar {
+  width:268px; flex-shrink:0;
+  background:var(--ff-panel);
+  border-left:1px solid var(--ff-outer);
+  box-shadow:inset 1px 0 0 var(--ff-inner);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+
+.sb-section {
+  padding:14px 16px;
+  border-bottom:1px solid var(--ff-outer);
+  box-shadow:inset 0 -1px 0 rgba(140,170,220,.07);
+}
+.sb-section.grow { flex:1; overflow-y:auto; }
+.sb-section.grow::-webkit-scrollbar { width:4px; }
+.sb-section.grow::-webkit-scrollbar-thumb { background:var(--bg3); border-radius:2px; }
+
+.sb-title {
+  font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:var(--tx2);
+  margin-bottom:10px; display:flex; align-items:center; gap:6px;
+}
+.sb-title::after { content:''; flex:1; height:1px; background:var(--ff-inner); }
+
+.project-name { font-size:15px; font-weight:700; color:var(--accent); margin-bottom:3px; }
+.project-sub  { font-size:11px; color:var(--tx2); line-height:1.5; }
+
+/* Stats */
+.stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+.stat-box {
+  background:rgba(0,0,0,.28); border:1px solid var(--ff-inner);
+  border-radius:3px; padding:8px; text-align:center;
+}
+.stat-val { font-size:20px; font-weight:700; color:var(--accent); line-height:1; }
+.stat-lbl { font-size:9px; color:var(--tx2); margin-top:3px; letter-spacing:0.08em; }
+
+/* Recent */
+.recent-list { display:flex; flex-direction:column; gap:3px; }
+.recent-item {
+  display:flex; align-items:center; gap:7px;
+  padding:5px 6px; border-radius:3px;
+  cursor:pointer; transition:background .15s;
+  font-size:11px; color:var(--tx1);
+}
+.recent-item:hover { background:rgba(255,255,255,.05); color:var(--tx0); }
+.recent-dot { width:5px; height:5px; border-radius:1px; transform:rotate(45deg); flex-shrink:0; }
+.recent-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.recent-tag  { font-size:9px; color:var(--tx2); flex-shrink:0; letter-spacing:0.06em; }
+
+/* Engine info */
+.engine-row { font-size:11px; color:var(--tx1); line-height:2; display:flex; align-items:center; gap:6px; }
+.engine-row span { color:var(--accent); }
+
+/* Links */
+.link-list { display:flex; flex-direction:column; gap:2px; }
+.link-item {
+  display:flex; align-items:center; gap:8px;
+  padding:6px 6px; border-radius:3px; cursor:pointer;
+  font-size:11px; color:var(--tx1);
+  text-decoration:none; transition:all .15s;
+}
+.link-item:hover { background:rgba(255,255,255,.05); color:var(--accent); }
+.link-item .lic { font-size:14px; width:18px; text-align:center; flex-shrink:0; }
+.link-arrow { color:var(--tx2); font-size:10px; margin-left:auto; }
+
+/* ── Footer ── */
+#footer {
+  background:var(--ff-panel);
+  border-top:1px solid var(--ff-outer);
+  box-shadow:inset 0 1px 0 var(--ff-inner);
+  padding:6px 20px;
+  display:flex; align-items:center; gap:14px;
+  font-size:10px; color:var(--tx2); flex-shrink:0;
+}
+.footer-sep { width:1px; height:12px; background:var(--ff-inner); }
+.footer-key {
+  display:inline-block; background:rgba(0,0,0,.4); border:1px solid var(--ff-inner);
+  border-radius:2px; padding:0px 5px; font-size:9px; color:var(--tx1); margin-right:2px;
+}
+#toast {
+  position:fixed; bottom:36px; left:50%; transform:translateX(-50%) translateY(12px);
+  background:linear-gradient(180deg,#1e3a6e,#122247);
+  border:1px solid var(--ff-inner);
+  box-shadow:0 4px 20px rgba(0,0,0,.5), inset 0 0 0 1px rgba(212,168,55,.2);
+  color:var(--accent); font-size:11px; letter-spacing:0.06em;
+  padding:7px 20px; border-radius:3px;
+  opacity:0; transition:all .25s; pointer-events:none; z-index:100;
+}
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* No results */
+#no-results { display:none; text-align:center; padding:60px 20px; color:var(--tx2); font-size:14px; }
+
+/* Hidden */
+.tool-card.hidden { display:none !important; }
+.section-hidden { display:none !important; }
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div id="app">
+
+<!-- ═══ Header ═══ -->
+<div id="header">
+  <div class="hdr-logo">
+    <svg class="hdr-crystal" viewBox="0 0 36 36">
+      <polygon points="18,3 32,11 32,25 18,33 4,25 4,11" fill="none" stroke="rgba(212,168,55,.5)" stroke-width="1.5"/>
+      <polygon points="18,7 28,13 28,23 18,29 8,23 8,13" fill="rgba(100,140,220,.1)" stroke="rgba(140,170,220,.35)" stroke-width="1"/>
+      <polygon points="18,3 32,11 18,16" fill="rgba(212,168,55,.28)"/>
+      <polygon points="18,3  4,11 18,16" fill="rgba(212,168,55,.14)"/>
+      <polygon points="18,33 32,25 18,20" fill="rgba(100,140,220,.2)"/>
+      <polygon points="18,33  4,25 18,20" fill="rgba(100,140,220,.12)"/>
+      <line x1="18" y1="3"  x2="18" y2="33" stroke="rgba(212,168,55,.2)" stroke-width="1"/>
+      <line x1="4"  y1="11" x2="32" y2="25" stroke="rgba(140,170,220,.12)" stroke-width="1"/>
+      <line x1="32" y1="11" x2="4"  y2="25" stroke="rgba(140,170,220,.12)" stroke-width="1"/>
+    </svg>
+    <div>
+      <div class="hdr-title">REC-OFF-AIR</div>
+      <div class="hdr-sub">Developer Tools</div>
+    </div>
+  </div>
+
+  <div class="hdr-sep"></div>
+
+  <div id="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input id="search" type="text" placeholder="ツールを検索...">
+  </div>
+
+  <div id="cat-tabs">
+    <button class="cat-tab active" data-cat="all"><span class="gem-dot" style="background:#d4a837"></span>すべて</button>
+    <button class="cat-tab" data-cat="story"><span class="gem-dot" style="background:#4a8fd4"></span>演出</button>
+    <button class="cat-tab" data-cat="map"><span class="gem-dot" style="background:#3dae6e"></span>マップ</button>
+    <button class="cat-tab" data-cat="asset"><span class="gem-dot" style="background:#9b6bd4"></span>アセット</button>
+    <button class="cat-tab" data-cat="system"><span class="gem-dot" style="background:#c43c3c"></span>システム</button>
+  </div>
+</div>
+
+<!-- ═══ Body ═══ -->
+<div id="body">
+
+  <!-- Main grid -->
+  <div id="main">
+    <div id="no-results">検索結果がありません</div>
+
+    <!-- ◆ 演出・セリフ -->
+    <div class="section-hdr" data-section="story">
+      <div class="section-gem" style="color:var(--sapphire); background:var(--sapphire)"></div>
+      <div class="section-title">演出・セリフ</div>
+      <div class="section-count" id="cnt-story"></div>
+      <div class="section-line"></div>
+    </div>
+    <div class="tool-grid" data-section="story">
+
+      <a class="tool-card" href="dialogue-editor/index.html" data-cat="story" data-keywords="セリフ 演出 JSON イベント タイムライン">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#163a80,#2a6ad4); color:var(--sapphire)"></div>
+          <div><div class="card-name">セリフエディタ</div></div>
+          <span class="card-badge badge-active">ACTIVE</span>
+        </div>
+        <div class="card-desc">チャプター演出JSONをタイムライン形式で編集。画像添付・縦バー・フィルター・FF風UI。</div>
+        <div class="card-launch">▶ 起動</div>
+      </a>
+
+      <div class="tool-card coming-soon" data-cat="story" data-keywords="シナリオ プレビュー シミュレーション">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#122060,#1e3a90); color:#3a6ab8"></div>
+          <div><div class="card-name">シナリオプレビュー</div></div>
+          <span class="card-badge badge-soon">SOON</span>
+        </div>
+        <div class="card-desc">演出JSONをブラウザ上でシミュレーション再生。セリフ・カメラパス・wait タイミングを確認。</div>
+        <div class="card-launch">▶ 起動</div>
+      </div>
+
+      <div class="tool-card coming-soon" data-cat="story" data-keywords="ボイス VOICEVOX WAV 音声">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#122060,#1e3a90); color:#3a6ab8"></div>
+          <div><div class="card-name">ボイス管理</div></div>
+          <span class="card-badge badge-soon">SOON</span>
+        </div>
+        <div class="card-desc">VOICEVOXボイスの生成・差分チェック・バリデーション。WAVファイル一覧とJSONとの対応確認。</div>
+        <div class="card-launch">▶ 起動</div>
+      </div>
+
+    </div>
+
+    <!-- ◆ マップ・ステージ -->
+    <div class="section-hdr" data-section="map">
+      <div class="section-gem" style="color:var(--emerald); background:var(--emerald)"></div>
+      <div class="section-title">マップ・ステージ</div>
+      <div class="section-count" id="cnt-map"></div>
+      <div class="section-line"></div>
+    </div>
+    <div class="tool-grid" data-section="map">
+
+      <a class="tool-card" href="path-viewer/index.html" data-cat="map" data-keywords="パス ビューア マップ カメラ 移動 EntranceDirector">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#0e4020,#1e7040); color:var(--emerald)"></div>
+          <div><div class="card-name">イベントパスビューア</div></div>
+          <span class="card-badge badge-active">ACTIVE</span>
+        </div>
+        <div class="card-desc">EntranceDirector演出のカメラ移動パスを2D平面図で可視化。座標ピックアップ・距離測定。</div>
+        <div class="card-launch">▶ 起動</div>
+      </a>
+
+      <div class="tool-card coming-soon" data-cat="map" data-keywords="WFC ウェーブ 波 マップ 自動生成">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#0e3018,#185028); color:#2a7838"></div>
+          <div><div class="card-name">WFCマップビューア</div></div>
+          <span class="card-badge badge-soon">SOON</span>
+        </div>
+        <div class="card-desc">Wave Function Collapseの生成結果を俯瞰確認。ルール・重みパラメータの調整UI。</div>
+        <div class="card-launch">▶ 起動</div>
+      </div>
+
+      <div class="tool-card coming-soon" data-cat="map" data-keywords="ステージ レイアウト 廃村 アイテム 配置">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#0e3018,#185028); color:#2a7838"></div>
+          <div><div class="card-name">ステージレイアウト</div></div>
+          <span class="card-badge badge-soon">SOON</span>
+        </div>
+        <div class="card-desc">廃村・屋敷・公衆トイレ等の手書きステージを俯瞰表示。アイテム・ゴースト配置の一覧チェック。</div>
+        <div class="card-launch">▶ 起動</div>
+      </div>
+
+    </div>
+
+    <!-- ◆ アセット管理 -->
+    <div class="section-hdr" data-section="asset">
+      <div class="section-gem" style="color:var(--amethyst); background:var(--amethyst)"></div>
+      <div class="section-title">アセット管理</div>
+      <div class="section-count" id="cnt-asset"></div>
+      <div class="section-line"></div>
+    </div>
+    <div class="tool-grid" data-section="asset">
+
+      <div class="tool-card coming-soon" data-cat="asset" data-keywords="スプライトシート 画像 PNG フレーム">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#2e1060,#6030a0); color:var(--amethyst)"></div>
+          <div><div class="card-name">スプライトシート生成</div></div>
+          <span class="card-badge badge-wip">WIP</span>
+        </div>
+        <div class="card-desc">連番画像フレームからスプライトシートPNGを生成。make_spritesheet.py のWebフロントエンド。</div>
+        <div class="card-launch">▶ 起動</div>
+      </div>
+
+      <div class="tool-card coming-soon" data-cat="asset" data-keywords="SFX 音声 MP3 サウンド">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#2e1060,#6030a0); color:var(--amethyst)"></div>
+          <div><div class="card-name">SFX管理</div></div>
+          <span class="card-badge badge-soon">SOON</span>
+        </div>
+        <div class="card-desc">assets/audio/sfx/ のMP3一覧・試聴。SoundManagerのチャプター別割り当て確認とパラメータ編集。</div>
+        <div class="card-launch">▶ 起動</div>
+      </div>
+
+      <div class="tool-card coming-soon" data-cat="asset" data-keywords="import インポート チェック WAV PNG GLB">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#2e1060,#6030a0); color:var(--amethyst)"></div>
+          <div><div class="card-name">インポートチェッカー</div></div>
+          <span class="card-badge badge-soon">SOON</span>
+        </div>
+        <div class="card-desc">.import ファイルの漏れ検出。WAV・PNG・GLBの対応.importが揃っているか一括チェック。</div>
+        <div class="card-launch">▶ 起動</div>
+      </div>
+
+    </div>
+
+    <!-- ◆ システム・デバッグ -->
+    <div class="section-hdr" data-section="system">
+      <div class="section-gem" style="color:var(--ruby); background:var(--ruby)"></div>
+      <div class="section-title">システム・デバッグ</div>
+      <div class="section-count" id="cnt-system"></div>
+      <div class="section-line"></div>
+    </div>
+    <div class="tool-grid" data-section="system">
+
+      <div class="tool-card coming-soon" data-cat="system" data-keywords="ログ ビューア デバッグ ノード メモリ">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#3a1010,#701818); color:var(--ruby)"></div>
+          <div><div class="card-name">ログビューア</div></div>
+          <span class="card-badge badge-soon">SOON</span>
+        </div>
+        <div class="card-desc">game_stdout.txt のリアルタイム表示・フィルタリング。ノードリーク・メモリスパイクを視覚検出。</div>
+        <div class="card-launch">▶ 起動</div>
+      </div>
+
+      <div class="tool-card coming-soon" data-cat="system" data-keywords="チャプター 設定 バリデーション 検証">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#3a1010,#701818); color:var(--ruby)"></div>
+          <div><div class="card-name">チャプター設定エディタ</div></div>
+          <span class="card-badge badge-soon">SOON</span>
+        </div>
+        <div class="card-desc">ChapterData .tres のパラメータをブラウザ上で編集。chapter_order の視覚的並び替えと確認。</div>
+        <div class="card-launch">▶ 起動</div>
+      </div>
+
+      <div class="tool-card coming-soon" data-cat="system" data-keywords="バリデーション 検証 WAV wait JSON">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#3a1010,#701818); color:var(--ruby)"></div>
+          <div><div class="card-name">バリデーター</div></div>
+          <span class="card-badge badge-soon">SOON</span>
+        </div>
+        <div class="card-desc">fix_voice_wait.py のWebフロント。CONSECUTIVE_WAIT / MISSING_WAV等をブラウザで即確認。</div>
+        <div class="card-launch">▶ 起動</div>
+      </div>
+
+    </div>
+  </div><!-- #main -->
+
+  <!-- ═══ Sidebar ═══ -->
+  <div id="sidebar">
+
+    <div class="sb-section">
+      <div class="sb-title">Project</div>
+      <div class="project-name">REC-OFF-AIR</div>
+      <div class="project-sub">YouTuberホラー配信ゲーム<br>プロトタイプ</div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-val">7</div><div class="stat-lbl">チャプター</div></div>
+        <div class="stat-box"><div class="stat-val">2</div><div class="stat-lbl">稼働ツール</div></div>
+        <div class="stat-box"><div class="stat-val">5</div><div class="stat-lbl">VHSアイテム</div></div>
+        <div class="stat-box"><div class="stat-val">4</div><div class="stat-lbl">ゴースト数</div></div>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">Engine</div>
+      <div class="engine-row">Godot <span>4.6</span> — GL Compatibility</div>
+      <div class="engine-row">30fps / <span>1280</span>×<span>720</span></div>
+      <div class="engine-row">Git LFS: <span>*.meshlib</span></div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">Recent Files</div>
+      <div class="recent-list">
+        <div class="recent-item"><div class="recent-dot" style="background:var(--sapphire)"></div><div class="recent-name">ch01_entrance.json</div><div class="recent-tag">演出</div></div>
+        <div class="recent-item"><div class="recent-dot" style="background:var(--sapphire)"></div><div class="recent-name">opening.json</div><div class="recent-tag">演出</div></div>
+        <div class="recent-item"><div class="recent-dot" style="background:var(--sapphire)"></div><div class="recent-name">ch_test_toilet.json</div><div class="recent-tag">演出</div></div>
+        <div class="recent-item"><div class="recent-dot" style="background:var(--amethyst)"></div><div class="recent-name">bus_spritesheet.png</div><div class="recent-tag">アセット</div></div>
+        <div class="recent-item"><div class="recent-dot" style="background:var(--emerald)"></div><div class="recent-name">Stage_Yashiki.tscn</div><div class="recent-tag">マップ</div></div>
+      </div>
+    </div>
+
+    <div class="sb-section grow">
+      <div class="sb-title">Quick Links</div>
+      <div class="link-list">
+        <a class="link-item" href="https://docs.godotengine.org/en/stable/" target="_blank">
+          <span class="lic">📚</span>Godot 4.6 ドキュメント<span class="link-arrow">↗</span>
+        </a>
+        <div class="link-item" id="copy-validate">
+          <span class="lic">🔍</span>バリデーション実行<span class="link-arrow">⧉</span>
+        </div>
+        <div class="link-item" id="copy-import">
+          <span class="lic">📦</span>Godot --import<span class="link-arrow">⧉</span>
+        </div>
+        <div class="link-item" id="copy-push">
+          <span class="lic">🚀</span>push-all.bat<span class="link-arrow">⧉</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- #sidebar -->
+</div><!-- #body -->
+
+<!-- ═══ Footer ═══ -->
+<div id="footer">
+  <span class="footer-ver">v1.0.0</span>
+  <div class="footer-sep"></div>
+  <span><span class="footer-key">Click</span> カードを開く</span>
+  <div class="footer-sep"></div>
+  <span><span class="footer-key">⧉</span> コマンドをコピー</span>
+  <div class="footer-sep"></div>
+  <span><span class="footer-key">1</span>〜<span class="footer-key">5</span> カテゴリ切替</span>
+  <div style="margin-left:auto; color:var(--tx2)">REC-OFF-AIR Dev Tools</div>
+</div>
+
+</div><!-- #app -->
+<div id="toast"></div>
+
+<script>
+// ── Starfield ──
+const canvas = document.getElementById('stars');
+const ctx    = canvas.getContext('2d');
+let stars = [];
+
+function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+
+function initStars() {
+  stars = [];
+  const n = Math.floor((canvas.width * canvas.height) / 5500);
+  for (let i = 0; i < n; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.1 + 0.2,
+      a: Math.random(),
+      da: (Math.random() - 0.5) * 0.007,
+      speed: Math.random() * 0.025 + 0.008,
+    });
+  }
+}
+
+function tick() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const s of stars) {
+    s.a += s.da;
+    if (s.a <= 0 || s.a >= 1) s.da *= -1;
+    s.y -= s.speed;
+    if (s.y < 0) { s.y = canvas.height; s.x = Math.random() * canvas.width; }
+    ctx.globalAlpha = Math.max(0, Math.min(1, s.a));
+    ctx.fillStyle = '#a8c4ff';
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(tick);
+}
+
+resize(); initStars(); tick();
+window.addEventListener('resize', () => { resize(); initStars(); });
+
+// ── Toast ──
+const toast = document.getElementById('toast');
+let toastTimer;
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ── Category filter ──
+const cats = document.querySelectorAll('.cat-tab');
+cats.forEach((tab, i) => {
+  tab.addEventListener('click', () => applyFilter(tab.dataset.cat));
+});
+
+function applyFilter(cat) {
+  cats.forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
+  filterCards(cat, document.getElementById('search').value.trim());
+  updateCounts();
+}
+
+function filterCards(cat, query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('.tool-card').forEach(card => {
+    const matchCat = cat === 'all' || card.dataset.cat === cat;
+    const matchQ   = !q || (card.dataset.keywords||'').toLowerCase().includes(q)
+                       || card.querySelector('.card-name').textContent.toLowerCase().includes(q)
+                       || card.querySelector('.card-desc').textContent.toLowerCase().includes(q);
+    card.classList.toggle('hidden', !(matchCat && matchQ));
+  });
+
+  let anyVisible = false;
+  document.querySelectorAll('[data-section]').forEach(el => {
+    if (!el.classList.contains('tool-grid')) return;
+    const vis = el.querySelectorAll('.tool-card:not(.hidden)').length > 0;
+    el.classList.toggle('section-hidden', !vis);
+    const hdr = document.querySelector(`.section-hdr[data-section="${el.dataset.section}"]`);
+    if (hdr) hdr.classList.toggle('section-hidden', !vis);
+    if (vis) anyVisible = true;
+  });
+  document.getElementById('no-results').style.display = anyVisible ? 'none' : 'block';
+}
+
+function updateCounts() {
+  ['story','map','asset','system'].forEach(cat => {
+    const grid = document.querySelector(`.tool-grid[data-section="${cat}"]`);
+    const el   = document.getElementById(`cnt-${cat}`);
+    if (!grid || !el) return;
+    const total  = grid.querySelectorAll('.tool-card').length;
+    const active = grid.querySelectorAll('.tool-card:not(.coming-soon)').length;
+    el.textContent = `${active} / ${total}`;
+  });
+}
+updateCounts();
+
+// ── Search ──
+document.getElementById('search').addEventListener('input', e => {
+  const cat = document.querySelector('.cat-tab.active').dataset.cat;
+  filterCards(cat, e.target.value.trim());
+  document.getElementById('no-results').style.display =
+    document.querySelectorAll('.tool-card:not(.hidden)').length ? 'none' : 'block';
+});
+
+// ── Keyboard shortcuts ──
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  const map = { '1':'all', '2':'story', '3':'map', '4':'asset', '5':'system' };
+  if (map[e.key]) applyFilter(map[e.key]);
+});
+
+// ── Quick link clipboard ──
+const clips = {
+  'copy-validate': 'python tools/fix_voice_wait.py --validate-only',
+  'copy-import':   'godot.exe --headless --import',
+  'copy-push':     'call push-all.bat',
+};
+Object.entries(clips).forEach(([id, cmd]) => {
+  document.getElementById(id)?.addEventListener('click', () => {
+    navigator.clipboard.writeText(cmd).then(() => showToast('コピーしました: ' + cmd));
+  });
+});
+</script>
+</body>
+</html>
