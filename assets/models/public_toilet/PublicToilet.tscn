@@ -1,6 +1,10 @@
-[gd_scene format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Shader" path="res://assets/models/public_toilet/shaders/dirty_tile.gdshader" id="1_q8vp5"]
+[ext_resource type="PackedScene" path="res://assets/models/public_toilet/fluorescent_light.glb" id="2_fluo"]
+[ext_resource type="PackedScene" path="res://assets/models/public_toilet/washbasin.glb" id="3_wash"]
+[ext_resource type="Shader" path="res://assets/models/public_toilet/shaders/broken_white_tile.gdshader" id="4_broken"]
+[ext_resource type="Shader" path="res://assets/models/public_toilet/shaders/ancient_dirty_tile.gdshader" id="5_ancient"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kbaor"]
 render_priority = 0
@@ -162,7 +166,19 @@ use_collision = true
 size = Vector3(2, 0.8, 0.6)
 material = SubResource("ShaderMaterial_pdi7o")
 
+[node name="Washbasin1" parent="." instance=ExtResource("3_wash")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0.8, 2)
+
+[node name="Washbasin2" parent="." instance=ExtResource("3_wash")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.8, 2)
+
 [node name="Mirror" type="CSGBox3D" parent="." unique_id=638702645]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 1.5, 2)
 size = Vector3(1.8, 1, 0.05)
 material = SubResource("StandardMaterial3D_76464")
+
+[node name="FluorescentLight1" parent="Lights" instance=ExtResource("2_fluo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, 1)
+
+[node name="FluorescentLight2" parent="Lights" instance=ExtResource("2_fluo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, -2)

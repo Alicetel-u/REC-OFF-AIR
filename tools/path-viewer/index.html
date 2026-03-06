@@ -179,6 +179,9 @@ canvas#cv { display:block; cursor:crosshair; }
 }
 #data-source.src-cache { color:var(--pv-tx2); border:1px solid var(--pv-inner); }
 #data-source.src-file  { color:var(--green); border:1px solid rgba(107,203,119,.4); }
+#data-source.src-watch { color:#f0c040; border:1px solid rgba(240,192,64,.5); }
+#data-source.src-watch::before { content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:#f0c040; margin-right:4px; animation:watchPulse 1.5s infinite; }
+@keyframes watchPulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
 /* ── A2: フィルタートグル ── */
 .filter-row { display:flex; align-items:center; gap:8px; }
@@ -278,6 +281,7 @@ body.light .speech-bubble { background:rgba(255,255,255,.92); color:#222; border
       <option value="opening">オープニング</option>
     </select>
     <input type="file" id="json-file" accept=".json">
+    <button id="btn-open" title="ファイルを開いて変更を自動監視">開く（自動監視）</button>
     <span id="data-source"></span>
     <div class="btn-row">
       <button id="btn-save">JSON保存</button>
@@ -563,6 +567,7 @@ function init() {
   document.getElementById("map-select").addEventListener("change", onMapChange);
   document.getElementById("json-file").addEventListener("change", onFileLoad);
   document.getElementById("btn-save").addEventListener("click", onSave);
+  document.getElementById("btn-open").addEventListener("click", onOpenAndWatch);
   document.getElementById("btn-play").addEventListener("click", onPlay);
   document.getElementById("btn-reset").addEventListener("click", resetView);
   // A1: 対話JSON選択
@@ -1138,11 +1143,11 @@ function onMapChange() {
 
 function onFileLoad(e) {
   const file=e.target.files[0]; if(!file)return;
+  stopWatch();
   const reader=new FileReader();
   reader.onload=function(ev){
     try{
       jsonData=JSON.parse(ev.target.result);events=jsonData.events||[];
-      // メモリ内キャッシュを更新（セッション中は最新を使える）
       const name = file.name.replace(/\.json$/,"");
       if (typeof DIALOGUE_CACHE !== "undefined") {
         DIALOGUE_CACHE[name] = JSON.parse(ev.target.result);
@@ -1153,6 +1158,73 @@ function onFileLoad(e) {
     }
     catch(err){alert("JSON解析エラー: "+err.message);}
   }; reader.readAsText(file);
+}
+
+// ═══════════════════════════════════════════════════
+// ファイル自動監視（File System Access API）
+// ═══════════════════════════════════════════════════
+let watchHandle = null;
+let watchTimer = null;
+let watchLastText = "";
+
+async function onOpenAndWatch() {
+  if (!window.showOpenFilePicker) {
+    alert("このブラウザは File System Access API 非対応です。Chrome/Edge を使用してください。");
+    return;
+  }
+  try {
+    const [handle] = await window.showOpenFilePicker({
+      types: [{ description: "JSON", accept: { "application/json": [".json"] } }]
+    });
+    stopWatch();
+    watchHandle = handle;
+    await loadFromHandle(handle, true);
+    startWatch();
+  } catch (err) {
+    if (err.name !== "AbortError") showStatus("エラー: " + err.message);
+  }
+}
+
+async function loadFromHandle(handle, isFirst) {
+  const file = await handle.getFile();
+  const text = await file.text();
+  if (!isFirst && text === watchLastText) return false;
+  watchLastText = text;
+  try {
+    jsonData = JSON.parse(text); events = jsonData.events || [];
+    const name = file.name.replace(/\.json$/, "");
+    if (typeof DIALOGUE_CACHE !== "undefined") {
+      DIALOGUE_CACHE[name] = JSON.parse(text);
+    }
+    if (isFirst) {
+      undoStack = []; redoStack = []; updateUndoButtons();
+      extractPath(); buildEventList(); resetView(); draw();
+    } else {
+      const prevSel = selectedIdx;
+      extractPath(); buildEventList(); draw();
+      selectedIdx = Math.min(prevSel, events.length - 1);
+      showDetail(selectedIdx);
+      showStatus("ファイル変更を検知 — 自動リロード");
+    }
+    setDataSource("watch", file.name);
+  } catch (err) {
+    showStatus("JSON解析エラー: " + err.message);
+  }
+  return true;
+}
+
+function startWatch() {
+  if (watchTimer) return;
+  watchTimer = setInterval(async () => {
+    if (!watchHandle) return;
+    try { await loadFromHandle(watchHandle, false); }
+    catch (e) { /* file temporarily locked etc. */ }
+  }, 1000);
+}
+
+function stopWatch() {
+  if (watchTimer) { clearInterval(watchTimer); watchTimer = null; }
+  watchHandle = null; watchLastText = "";
 }
 
 async function onSave() {
@@ -1272,6 +1344,10 @@ function setDataSource(type, name) {
     el.className = "src-cache";
     el.textContent = "CACHE: " + name;
     el.title = "dialogue_cache.js から読み込み。最新でない可能性あり";
+  } else if (type === "watch") {
+    el.className = "src-watch";
+    el.textContent = "WATCHING: " + name;
+    el.title = "ファイルを監視中 — 変更時に自動リロード";
   } else {
     el.className = "src-file";
     el.textContent = "FILE: " + name;
