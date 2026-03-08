@@ -267,6 +267,7 @@
 		{
 			"type": "pos_x",
 			"target": 21.75,
+			"dur": 13.8,
 			"id": "walk_to_arch"
 		},
 		{
@@ -591,6 +592,7 @@
 		{
 			"type": "pos_x",
 			"target": 38,
+			"dur": 8.7,
 			"id": "walk_to_shopping"
 		},
 		{
@@ -660,15 +662,54 @@
 		},
 		{
 			"type": "_comment",
-			"_": "── 暗転→トイレマップへ切替 ──"
+			"_": "── 商店街の方を向いて見上げる → 3択 → 暗転 → トイレ遷移 ──"
+		},
+		{
+			"type": "rot_y",
+			"target": 0,
+			"dur": 1.2
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
+			"type": "head_x",
+			"target": 0.5,
+			"dur": 1.0
+		},
+		{
+			"type": "wait",
+			"sec": 2.0
+		},
+		{
+			"type": "choice",
+			"prompt": "同接3410人……スパチャ6万超え……\nみんなが見てる。このまま奥へ進む？",
+			"choices": [
+				{
+					"text": "当然進む。ここまで来たら止まれない"
+				},
+				{
+					"text": "お祓いしてから行く。お札まだ２枚ある"
+				},
+				{
+					"text": "一旦帰る！準備が足りなさすぎる！"
+				}
+			]
 		},
 		{
 			"type": "fade_black",
 			"dur": 1
 		},
 		{
-			"type": "fade_black",
-			"dur": 1
+			"type": "rot_y",
+			"target": 3.14,
+			"dur": 0.8
+		},
+		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 0.8
 		},
 		{
 			"type": "stage_swap",
@@ -771,6 +812,7 @@
 		{
 			"type": "pos_z",
 			"target": -1,
+			"dur": 8,
 			"id": "walk_inside"
 		},
 		{
@@ -2384,6 +2426,7 @@
 		{
 			"type": "pos_x",
 			"target": 30,
+			"dur": 10,
 			"id": "walk_road2"
 		},
 		{
@@ -2492,11 +2535,13 @@
 		{
 			"type": "pos_x",
 			"target": 37,
+			"dur": 8,
 			"id": "walk_to_shop"
 		},
 		{
 			"type": "pos_z",
 			"target": -3.5,
+			"dur": 8,
 			"id": "walk_to_shop_z"
 		},
 		{
@@ -2674,6 +2719,23 @@
 		},
 		{
 			"type": "say_clear"
+		},
+		{
+			"type": "walk_set",
+			"on": false
+		},
+		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 1.5
+		},
+		{
+			"type": "wait",
+			"sec": 1
+		},
+		{
+			"type": "fade_black",
+			"dur": 1
 		}
 	]
 }

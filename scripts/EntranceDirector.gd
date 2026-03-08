@@ -495,7 +495,7 @@ func _motion(motion_name: String, dur: float) -> void:
 
 var _tw_pos_z : Tween = null
 var _tw_pos_x : Tween = null
-const _WALK_SPEED := 0.45  # 自動演出の歩行速度 (units/s) — セリフ尺に合わせた定速
+const _WALK_SPEED := 1.8  # 自動演出の歩行速度 (units/s)
 
 func _pos_z(target_z: float, dur: float) -> Tween:
 	if _tw_pos_z and _tw_pos_z.is_valid():

@@ -2345,17 +2345,16 @@ const PV_ROT_Y = [
 ];
 const PV_HEAD_X = [
   {v:0,    e:'😐', l:'正面'},
-  {v:-0.15,e:'🙂', l:'わずかに上'},
-  {v:-0.3, e:'😊', l:'少し上 17°'},
-  {v:-0.52,e:'🔭', l:'上を向く 30°'},
-  {v:-0.79,e:'🌙', l:'大きく上 45°'},
-  {v:-1.22,e:'🌟', l:'ほぼ真上 70°'},
-  {v:-1.57,e:'☀️', l:'真上 90°'},
-  {v:0.15, e:'🙃', l:'わずかに下'},
-  {v:0.3,  e:'👟', l:'少し下 17°'},
-  {v:0.52, e:'🔍', l:'下を向く 30°'},
-  {v:0.79, e:'⬇️', l:'大きく下 45°'},
-  {v:1.2,  e:'🕳️', l:'真下近く 69°'},
+  {v:0.15, e:'🙂', l:'わずかに上'},
+  {v:0.3,  e:'😊', l:'少し上 17°'},
+  {v:0.52, e:'🔭', l:'上を向く 30°'},
+  {v:0.79, e:'🌙', l:'大きく上 45°'},
+  {v:1.2,  e:'🌟', l:'ほぼ真上 70°'},
+  {v:-0.15,e:'🙃', l:'わずかに下'},
+  {v:-0.3, e:'👟', l:'少し下 17°'},
+  {v:-0.52,e:'🔍', l:'下を向く 30°'},
+  {v:-0.79,e:'⬇️', l:'大きく下 45°'},
+  {v:-1.2, e:'🕳️', l:'真下近く 69°'},
 ];
 const PV_MOTION = [
   {v:'look_around',      e:'👀', l:'見回す'},
@@ -2401,9 +2400,9 @@ function pvRotYCompass(cur, inputId) {
 function pvHeadXStrip(cur, inputId) {
   let matched = false;
   const X = PV_HEAD_X;
-  // X: 0=正面, 1-6=上方向(わずか→真上), 7-11=下方向(わずか→真下)
-  const ups   = [X[6], X[5], X[4], X[3], X[2], X[1]]; // 真上→わずか上
-  const downs = [X[7], X[8], X[9], X[10], X[11]];       // わずか下→真下
+  // X: 0=正面, 1-5=上方向(正値:わずか→大きく), 6-10=下方向(負値:わずか→大きく)
+  const ups   = [X[5], X[4], X[3], X[2], X[1]]; // 大きく上→わずか上
+  const downs = [X[6], X[7], X[8], X[9], X[10]]; // わずか下→大きく下
   let h = `<div class="preset-grid vstrip-grid" data-input="${inputId}">`;
   // 上方向（左列に上から）
   ups.forEach((p, i) => {
@@ -3221,6 +3220,7 @@ function onPlay() {
   }
   let tlT = 0, lastTime = performance.now();
   let playSayText = "", playChatText = "";
+  let curHeadX = 0, prevHeadX = 0;
 
   function tick(now) {
     if (tlIdx >= timeline.length) {
@@ -3261,6 +3261,12 @@ function onPlay() {
       cx = step.x; cz = step.z; curRot = step.rot;
     }
 
+    // head_x 追跡
+    if (step.type === "head") {
+      curHeadX = prevHeadX + (step.headTarget - prevHeadX) * t;
+      if (t >= 1) { prevHeadX = step.headTarget; curHeadX = step.headTarget; }
+    }
+
     // セリフ・チャット追跡
     if (step.type === "say" && t >= 1) playSayText = step.text.replace(/\[.*?\]/g, "").substring(0, 50);
     if (step.type === "chat" && t >= 1) playChatText = step.user + ": " + step.msg;
@@ -3294,14 +3300,31 @@ function onPlay() {
     ctx.fillStyle = "#ffd93d"; ctx.beginPath(); ctx.arc(sx,sy,7,0,Math.PI*2); ctx.fill();
     ctx.restore();
 
-    // 視野コーン
+    // 視野コーン（head_xで色変化: 上=青, 正面=黄, 下=赤）
     const dir = -curRot - Math.PI/2;
+    const hxNorm = Math.max(-1, Math.min(1, curHeadX / 1.2)); // -1(下)〜0(正面)〜+1(上)
+    const fovR = hxNorm < 0 ? 255 : Math.round(255 - hxNorm * 200);
+    const fovG = Math.round(255 - Math.abs(hxNorm) * 150);
+    const fovB = hxNorm > 0 ? 255 : Math.round(100 + hxNorm * 100);
+    const fovCol = `${fovR},${fovG},${fovB}`;
     const fovGrad = ctx.createRadialGradient(sx,sy,0,sx,sy,70);
-    fovGrad.addColorStop(0, "rgba(255,255,100,.18)");
-    fovGrad.addColorStop(0.6, "rgba(255,255,100,.05)");
-    fovGrad.addColorStop(1, "rgba(255,255,100,0)");
+    fovGrad.addColorStop(0, `rgba(${fovCol},.22)`);
+    fovGrad.addColorStop(0.6, `rgba(${fovCol},.06)`);
+    fovGrad.addColorStop(1, `rgba(${fovCol},0)`);
     ctx.fillStyle = fovGrad; ctx.beginPath(); ctx.moveTo(sx,sy);
     ctx.arc(sx,sy,70,dir-Math.PI/6,dir+Math.PI/6); ctx.closePath(); ctx.fill();
+
+    // head_xラベル（0でなければ表示）
+    if (Math.abs(curHeadX) > 0.05) {
+      ctx.save();
+      ctx.font = "bold 11px 'Segoe UI', sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+      const hxDeg = (curHeadX * 180 / Math.PI).toFixed(0);
+      const hxLabel = curHeadX > 0 ? `↑${hxDeg}°` : `↓${Math.abs(hxDeg)}°`;
+      ctx.fillStyle = hxNorm > 0 ? "#88bbff" : "#ff8866";
+      ctx.fillText(hxLabel, sx, sy - 14);
+      ctx.restore();
+    }
 
     // セリフ・チャット表示（画面中央）
     if (playSayText || playChatText) {
@@ -3352,15 +3375,14 @@ async function onDialogueSelect() {
     const data = await res.json();
     jsonData = data;
     allEvents = jsonData.events || [];
-    DIALOGUE_CACHE[val] = JSON.parse(JSON.stringify(data));
+    if (typeof DIALOGUE_CACHE !== "undefined") DIALOGUE_CACHE[val] = JSON.parse(JSON.stringify(data));
   } catch (e) {
     // フォールバック: DIALOGUE_CACHE から読み込み
-    const cached = DIALOGUE_CACHE[val];
-    if (!cached) {
-      showStatus("読み込み失敗: " + e.message + "（サーバー未起動？ python tools/server.py）");
+    if (typeof DIALOGUE_CACHE === "undefined" || !DIALOGUE_CACHE[val]) {
+      showStatus("読み込み失敗: " + e.message + "（サーバー未起動？ python tools/path-viewer/server.py）");
       return;
     }
-    jsonData = JSON.parse(JSON.stringify(cached));
+    jsonData = JSON.parse(JSON.stringify(DIALOGUE_CACHE[val]));
     allEvents = jsonData.events || [];
   }
   // マップ自動選択

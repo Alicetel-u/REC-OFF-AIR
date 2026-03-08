@@ -43,10 +43,35 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             with open(CACHE_JS, "rb") as f:
                 self.wfile.write(f.read())
             return
+        # /api/list — dialogue/*.json のファイル一覧
+        if self.path == "/api/list":
+            files = sorted([os.path.basename(f) for f in glob.glob(os.path.join(DIALOGUE, "*.json"))])
+            self._json(200, {"files": files})
+            return
+        # /api/load?name=xxx.json — JSONファイルを直接読み込み（常に最新）
+        if self.path.startswith("/api/load"):
+            from urllib.parse import urlparse, parse_qs
+            qs = parse_qs(urlparse(self.path).query)
+            name = qs.get("name", [""])[0]
+            if not name.endswith(".json"):
+                self._json(400, {"error": "invalid filename"})
+                return
+            fpath = os.path.join(DIALOGUE, os.path.basename(name))
+            if not os.path.isfile(fpath):
+                self._json(404, {"error": "not found: " + name})
+                return
+            with open(fpath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            self._json(200, data)
+            return
+        # /api/save — POST用だがGETで来た場合は405
+        if self.path.startswith("/api/save"):
+            self._json(405, {"error": "use POST"})
+            return
         super().do_GET()
 
     def do_POST(self):
-        if self.path == "/save":
+        if self.path in ("/save", "/api/save"):
             length = int(self.headers.get("Content-Length", 0))
             body = json.loads(self.rfile.read(length))
             name = os.path.basename(body.get("filename", ""))
