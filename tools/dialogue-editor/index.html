@@ -346,7 +346,9 @@ select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; b
 <footer class="footer"><span id="statusMsg">起動中...</span><div class="spacer"></div><span>Ctrl+S 保存 / Ctrl+C コピー / Ctrl+V 貼付 / Ctrl+D 複製 / Ctrl+Z 戻す / Del 削除 / Esc 解除</span></footer>
 
 <script>
+// GitHub API はフォールバック用に残す
 const OWNER='Alicetel-u',REPO='REC-OFF-AIR',BR='master',DIR='dialogue';
+const API_BASE = '/api'; // 統合サーバー（python tools/server.py）
 const $=s=>document.querySelector(s);
 let data=null,dirty=false,fname='';
 let undoStack=[],redoStack=[],_undoTimer=null,_undoPending=false;
@@ -359,7 +361,7 @@ const CATS=[
   {id:'say',label:'セリフ',color:'#e8a430',cls:'say',types:['say','say_clear']},
   {id:'chat',label:'チャット',color:'#4a8fd4',cls:'chat',types:['chat','superchat']},
   {id:'wait',label:'待機',color:'#6b7a99',cls:'wait',types:['wait','sleep']},
-  {id:'move',label:'移動',color:'#3dae6e',cls:'move',types:['pos_z','pos_x','pos_z_await','pos_x_await','rot_y','head_x','walk_set']},
+  {id:'move',label:'移動',color:'#3dae6e',cls:'move',types:['pos_z','pos_x','pos_z_await','pos_x_await','rot_y','head_x','walk_set','motion']},
   {id:'effect',label:'画面効果',color:'#9b6bd4',cls:'effect',types:['fade_black','fade_clear','horror_flash','horror_glitch','horror_tint','horror_tint_clear','scare_flash']},
   {id:'audio',label:'音声',color:'#3db8b8',cls:'audio',types:['sfx','flashlight_on','flashlight_off','flashlight_flicker']},
   {id:'media',label:'メディア',color:'#d46ba8',cls:'media',types:['polaroid_video']},
@@ -370,8 +372,8 @@ const CATS=[
 ];
 function catFor(t){for(const c of CATS)if(c.types.includes(t))return c;return{id:'other',label:'?',color:'#6b7a99',cls:'wait',types:[]};}
 function boxCls(t){if(t==='superchat')return'ev-superchat';if(t==='sleep')return'ev-sleep';if(t==='say_clear')return'ev-say_clear';return'ev-'+catFor(t).cls;}
-const ICONS={say:'💬',say_clear:'🔇',chat:'👤',superchat:'💰',wait:'⏱',sleep:'⏸',pos_z:'↕',pos_x:'↔',pos_z_await:'⏳',pos_x_await:'⏳',rot_y:'↻',head_x:'⤡',walk_set:'🚶',fade_black:'◼',fade_clear:'◻',horror_flash:'⚡',horror_glitch:'⚡',horror_tint:'🎨',horror_tint_clear:'🎨',scare_flash:'💥',sfx:'🔊',flashlight_on:'🔦',flashlight_off:'🔦',flashlight_flicker:'🔦',polaroid_video:'🎬',set_viewers:'📺',choice:'🔀',label:'🏷',goto:'➡',goto_route:'🔀',set_route:'🎯',stage_swap:'🗺',use_ofuda:'🏮',_comment:'§'};
-const JA={say:'セリフ',say_clear:'セリフ消去',chat:'チャット',superchat:'スパチャ',wait:'待機',sleep:'強制待機',pos_z:'Z移動',pos_x:'X移動',pos_z_await:'Z待機',pos_x_await:'X待機',rot_y:'Y回転',head_x:'頭部上下',walk_set:'歩行切替',fade_black:'暗転',fade_clear:'明転',horror_flash:'フラッシュ',horror_glitch:'グリッチ',horror_tint:'色調変更',horror_tint_clear:'色調解除',scare_flash:'恐怖フラッシュ',sfx:'効果音',flashlight_on:'懐中電灯ON',flashlight_off:'懐中電灯OFF',flashlight_flicker:'フリッカー',polaroid_video:'動画再生',set_viewers:'視聴者数',choice:'選択肢',label:'ラベル',goto:'ジャンプ',goto_route:'ルート分岐',set_route:'ルート設定',stage_swap:'ステージ変更',use_ofuda:'お札使用',_comment:'コメント'};
+const ICONS={say:'💬',say_clear:'🔇',chat:'👤',superchat:'💰',wait:'⏱',sleep:'⏸',pos_z:'↕',pos_x:'↔',pos_z_await:'⏳',pos_x_await:'⏳',rot_y:'↻',head_x:'⤡',walk_set:'🚶',motion:'🎭',fade_black:'◼',fade_clear:'◻',horror_flash:'⚡',horror_glitch:'⚡',horror_tint:'🎨',horror_tint_clear:'🎨',scare_flash:'💥',sfx:'🔊',flashlight_on:'🔦',flashlight_off:'🔦',flashlight_flicker:'🔦',polaroid_video:'🎬',set_viewers:'📺',choice:'🔀',label:'🏷',goto:'➡',goto_route:'🔀',set_route:'🎯',stage_swap:'🗺',use_ofuda:'🏮',_comment:'§'};
+const JA={say:'セリフ',say_clear:'セリフ消去',chat:'チャット',superchat:'スパチャ',wait:'待機',sleep:'強制待機',pos_z:'Z移動',pos_x:'X移動',pos_z_await:'Z待機',pos_x_await:'X待機',rot_y:'体の向き',head_x:'頭の上下',walk_set:'歩行切替',motion:'モーション',fade_black:'暗転',fade_clear:'明転',horror_flash:'フラッシュ',horror_glitch:'グリッチ',horror_tint:'色調変更',horror_tint_clear:'色調解除',scare_flash:'恐怖フラッシュ',sfx:'効果音',flashlight_on:'懐中電灯ON',flashlight_off:'懐中電灯OFF',flashlight_flicker:'フリッカー',polaroid_video:'動画再生',set_viewers:'視聴者数',choice:'選択肢',label:'ラベル',goto:'ジャンプ',goto_route:'ルート分岐',set_route:'ルート設定',stage_swap:'ステージ変更',use_ofuda:'お札使用',_comment:'コメント'};
 
 // ── 起動 ──
 (async()=>{await loadFileList();bindFilter();bindAll()})();
@@ -379,12 +381,54 @@ const JA={say:'セリフ',say_clear:'セリフ消去',chat:'チャット',superc
 // ══════════ データ ══════════
 async function loadFileList(){
   const sel=$('#fileSel');
-  try{const r=await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${DIR}?ref=${BR}`);if(!r.ok)throw new Error(r.status);
-    (await r.json()).filter(f=>f.name.endsWith('.json')).forEach(f=>{const o=document.createElement('option');o.value=f.name;o.textContent=f.name.replace('.json','');sel.appendChild(o)});
-    if(sel.options.length)await loadFile(sel.options[0].value);else{setStatus('JSONなし');$('#loadingView').innerHTML='<div class="empty-state">JSONがありません</div>';}
-  }catch(e){setStatus('接続エラー');$('#loadingView').innerHTML='<div class="empty-state">接続失敗<br><br><button class="btn btn-save" onclick="document.getElementById(\'fileInput\').click()">開く</button></div>';}
+  // サーバーAPI優先 → フォールバック: GitHub API
+  try {
+    const r = await fetch(`${API_BASE}/list`);
+    if (!r.ok) throw new Error('server ' + r.status);
+    _useServer = true;
+    const { files } = await r.json();
+    files.forEach(f => {
+      const o = document.createElement('option');
+      o.value = f; o.textContent = f.replace('.json','');
+      sel.appendChild(o);
+    });
+    if (sel.options.length) {
+      const ok = await loadFile(sel.options[0].value);
+      if (!ok) { const lv=$('#loadingView'); if(lv) lv.innerHTML='<div class="empty-state">読み込み失敗</div>'; }
+    } else { setStatus('JSONなし'); $('#loadingView').innerHTML='<div class="empty-state">JSONがありません</div>'; }
+  } catch(e1) {
+    // フォールバック: GitHub API
+    try {
+      const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${DIR}?ref=${BR}`);
+      if (!r.ok) throw new Error(r.status);
+      (await r.json()).filter(f=>f.name.endsWith('.json')).forEach(f=>{const o=document.createElement('option');o.value=f.name;o.textContent=f.name.replace('.json','');sel.appendChild(o)});
+      if(sel.options.length) await loadFile(sel.options[0].value);
+      else { setStatus('JSONなし'); $('#loadingView').innerHTML='<div class="empty-state">JSONがありません</div>'; }
+    } catch(e2) {
+      setStatus('接続エラー（サーバー: python tools/server.py）');
+      $('#loadingView').innerHTML='<div class="empty-state">接続失敗<br><small>python tools/server.py を起動してください</small><br><br><button class="btn btn-save" onclick="document.getElementById(\'fileInput\').click()">ローカルファイルを開く</button></div>';
+    }
+  }
 }
-async function loadFile(f){fname=f;setStatus('読み込み中...');try{const r=await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BR}/${DIR}/${f}`);if(!r.ok)throw new Error(r.status);applyData(await r.json(),f);return true}catch(e){setStatus('エラー: '+e.message);return false}}
+let _useServer = false; // サーバー経由で読み込めたらtrue
+async function loadFile(f){
+  fname=f; setStatus('読み込み中...');
+  // サーバーAPI優先
+  try {
+    const r = await fetch(`${API_BASE}/load?name=${encodeURIComponent(f)}`);
+    if (!r.ok) throw new Error(r.status);
+    _useServer = true;
+    applyData(await r.json(), f); return true;
+  } catch(e1) {
+    // フォールバック: GitHub raw
+    try {
+      const r = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BR}/${DIR}/${f}`);
+      if (!r.ok) throw new Error(r.status);
+      _useServer = false;
+      applyData(await r.json(), f); return true;
+    } catch(e2) { setStatus('エラー: ' + e2.message); return false; }
+  }
+}
 function applyData(d,f){
   data=d;dirty=false;undoStack=[];redoStack=[];fname=f;$('#chapterName').textContent=data.chapter||'';
   const lv=$('#loadingView');if(lv)lv.remove();
@@ -557,7 +601,9 @@ function buildFields(box,ev,idx){
     case 'chat': bRow(box,[['ユーザー',sIn(ev,'user',idx,'short')],['メッセージ',sIn(ev,'msg',idx,'wide')]]);break;
     case 'superchat': bRow(box,[['名前',sIn(ev,'name',idx,'short')],['¥',nIn(ev,'amount',idx)],['メッセージ',sIn(ev,'msg',idx,'wide')]]);break;
     case 'wait':case 'sleep': bRow(box,[['秒数',nIn(ev,'sec',idx)]]);break;
-    case 'rot_y':case 'head_x': bRow(box,[['目標値',nIn(ev,'target',idx)],['時間',nIn(ev,'dur',idx)]]);break;
+    case 'rot_y': bRow(box,[['向き',numPresetIn(ev,'target',idx,ROT_Y_PRESETS)],['時間',nIn(ev,'dur',idx)]]);break;
+    case 'head_x': bRow(box,[['向き',numPresetIn(ev,'target',idx,HEAD_X_PRESETS)],['時間',nIn(ev,'dur',idx)]]);break;
+    case 'motion': bRow(box,[['動作',selIn(ev,'name',idx,MOTION_PRESETS,'mid')],['時間',nIn(ev,'dur',idx)]]);break;
     case 'pos_z':case 'pos_x': bRow(box,[['目標値',nIn(ev,'target',idx)],['時間',nIn(ev,'dur',idx)],['ID',sIn(ev,'id',idx,'short')]]);break;
     case 'pos_z_await':case 'pos_x_await': bRow(box,[['ID',sIn(ev,'id',idx,'short')]]);break;
     case 'walk_set': bToggle(box,ev,idx,'on');break;
@@ -849,6 +895,66 @@ function sIn(ev,key,idx,size){const i=document.createElement('input');i.classNam
 function nIn(ev,key,idx){const i=document.createElement('input');i.type='number';i.step='any';i.className='ev-input ev-input-num';i.value=ev[key]!=null?ev[key]:'';i.addEventListener('input',()=>{pushUndo();const v=parseFloat(i.value);data.events[idx][key]=isNaN(v)?0:v;markDirty()});return i}
 function selIn(ev,key,idx,opts,size){const s=document.createElement('select');s.className='ev-input '+(size==='wide'?'ev-input-wide':size==='mid'?'ev-input-mid':'ev-input-short');const cur=ev[key]!=null?String(ev[key]):'';opts.forEach(o=>{const opt=document.createElement('option');const val=typeof o==='object'?o.v:o;const lbl=typeof o==='object'?o.l:o;opt.value=val;opt.textContent=lbl;if(String(val)===cur)opt.selected=true;s.appendChild(opt)});s.addEventListener('change',()=>{pushUndo();data.events[idx][key]=s.value;markDirty()});return s}
 function labelOpts(){if(!data||!data.events)return[];return data.events.filter(e=>e.type==='label'&&e.name).map(e=>e.name)}
+// ── 回転プリセット ──
+const ROT_Y_PRESETS=[
+  {v:0,l:'⬆ 正面'},
+  {v:0.39,l:'↗ わずかに右 (22°)'},
+  {v:0.79,l:'➡ 少し右 (45°)'},
+  {v:1.57,l:'➡➡ 右を見る (90°)'},
+  {v:2.36,l:'↘ 右後ろ (135°)'},
+  {v:3.14,l:'⬇ 真後ろ (180°)'},
+  {v:-0.39,l:'↖ わずかに左 (22°)'},
+  {v:-0.79,l:'⬅ 少し左 (45°)'},
+  {v:-1.57,l:'⬅⬅ 左を見る (90°)'},
+  {v:-2.36,l:'↙ 左後ろ (135°)'},
+  {v:'__custom',l:'✏ カスタム値…'},
+];
+const HEAD_X_PRESETS=[
+  {v:0,l:'— 正面'},
+  {v:-0.15,l:'↑ わずかに上 (9°)'},
+  {v:-0.3,l:'↑↑ 少し上 (17°)'},
+  {v:-0.52,l:'⬆ 上を向く (30°)'},
+  {v:-0.79,l:'⬆⬆ 大きく上 (45°)'},
+  {v:-1.22,l:'⬆⬆⬆ ほぼ真上 (70°)'},
+  {v:-1.57,l:'⤴ 真上 (90°)'},
+  {v:0.15,l:'↓ わずかに下 (9°)'},
+  {v:0.3,l:'↓↓ 少し下 (17°)'},
+  {v:0.52,l:'⬇ 下を向く (30°)'},
+  {v:0.79,l:'⬇⬇ 大きく下 (45°)'},
+  {v:1.2,l:'⤵ 真下近く (69°)'},
+  {v:'__custom',l:'✏ カスタム値…'},
+];
+const MOTION_PRESETS=[
+  {v:'look_around',l:'👀 見回す'},
+  {v:'nod',l:'🙂 うなずく'},
+  {v:'shake_head',l:'🙅 首を横に振る'},
+  {v:'look_behind_slow',l:'😨 ゆっくり振り返る'},
+  {v:'startle_up',l:'😱 びくっと上を見る'},
+  {v:'peek_left',l:'👁 左をチラ見'},
+  {v:'peek_right',l:'👁 右をチラ見'},
+  {v:'look_down_up',l:'🔍 下を見てから上'},
+  {v:'tremble',l:'😰 ガタガタ震える'},
+];
+function numPresetIn(ev,key,idx,presets){
+  const wrap=document.createElement('span');wrap.style.display='inline-flex';wrap.style.alignItems='center';wrap.style.gap='4px';
+  const sel=document.createElement('select');sel.className='ev-input ev-input-mid';
+  const cur=ev[key]!=null?ev[key]:0;
+  let matched=false;
+  presets.forEach(p=>{
+    const opt=document.createElement('option');opt.value=p.v;opt.textContent=p.l;
+    if(p.v!=='__custom'&&Math.abs(Number(p.v)-Number(cur))<0.01){opt.selected=true;matched=true}
+    sel.appendChild(opt);
+  });
+  const numI=document.createElement('input');numI.type='number';numI.step='any';numI.className='ev-input ev-input-num';numI.value=cur;
+  numI.style.display=matched?'none':'inline-block';
+  if(!matched){sel.value='__custom'}
+  sel.addEventListener('change',()=>{
+    if(sel.value==='__custom'){numI.style.display='inline-block';numI.focus()}
+    else{numI.style.display='none';pushUndo();data.events[idx][key]=parseFloat(sel.value);markDirty()}
+  });
+  numI.addEventListener('input',()=>{pushUndo();const v=parseFloat(numI.value);data.events[idx][key]=isNaN(v)?0:v;markDirty()});
+  wrap.appendChild(sel);wrap.appendChild(numI);return wrap;
+}
 
 
 // ══════════ 追加メニュー ══════════
@@ -856,7 +962,7 @@ const ADD_ITEMS=[
   {cat:'セリフ',items:[{t:'say',l:'💬 セリフ'},{t:'say_clear',l:'🔇 セリフ消去'}]},
   {cat:'チャット',items:[{t:'chat',l:'👤 チャット'},{t:'superchat',l:'💰 スパチャ'}]},
   {cat:'待機',items:[{t:'wait',l:'⏱ 待機'},{t:'sleep',l:'⏸ 強制待機'}]},
-  {cat:'移動',items:[{t:'rot_y',l:'↻ Y回転'},{t:'head_x',l:'⤡ 頭部上下'},{t:'pos_z',l:'↕ Z移動'},{t:'pos_x',l:'↔ X移動'},{t:'pos_z_await',l:'⏳ Z待機'},{t:'pos_x_await',l:'⏳ X待機'},{t:'walk_set',l:'🚶 歩行切替'}]},
+  {cat:'移動',items:[{t:'rot_y',l:'↻ 体の向き'},{t:'head_x',l:'⤡ 頭の上下'},{t:'pos_z',l:'↕ Z移動'},{t:'pos_x',l:'↔ X移動'},{t:'pos_z_await',l:'⏳ Z待機'},{t:'pos_x_await',l:'⏳ X待機'},{t:'walk_set',l:'🚶 歩行切替'},{t:'motion',l:'🎭 モーション'}]},
   {cat:'画面効果',items:[{t:'fade_black',l:'◼ 暗転'},{t:'fade_clear',l:'◻ 明転'},{t:'horror_flash',l:'⚡ フラッシュ'},{t:'horror_glitch',l:'⚡ グリッチ'},{t:'scare_flash',l:'💥 恐怖フラッシュ'}]},
   {cat:'音声',items:[{t:'sfx',l:'🔊 効果音'},{t:'flashlight_on',l:'🔦 懐中電灯ON'},{t:'flashlight_off',l:'🔦 懐中電灯OFF'}]},
   {cat:'YouTube',items:[{t:'set_viewers',l:'📺 視聴者数'}]},
@@ -874,7 +980,7 @@ function showAddMenu(e,insertIdx){
   setTimeout(()=>{const close=ev=>{if(!menu.contains(ev.target)){menu.classList.remove('show');document.removeEventListener('click',close)}};document.addEventListener('click',close)},10);
 }
 function newDef(type){
-  const D={say:{type:'say',text:'',voice:nextVoiceId()},say_clear:{type:'say_clear'},chat:{type:'chat',msg:'',user:''},superchat:{type:'superchat',name:'',msg:'',amount:500},wait:{type:'wait',sec:1.0},sleep:{type:'sleep',sec:1.0},rot_y:{type:'rot_y',target:0,dur:1.0},head_x:{type:'head_x',target:0,dur:0.5},pos_z:{type:'pos_z',target:0,dur:5.0,id:''},pos_x:{type:'pos_x',target:0,dur:5.0,id:''},pos_z_await:{type:'pos_z_await',id:''},pos_x_await:{type:'pos_x_await',id:''},walk_set:{type:'walk_set',on:true},fade_black:{type:'fade_black',dur:0.8},fade_clear:{type:'fade_clear',dur:0.8},horror_flash:{type:'horror_flash',dur:0.3},horror_glitch:{type:'horror_glitch',intensity:8.0,count:3},scare_flash:{type:'scare_flash',color:'white'},sfx:{type:'sfx',sound:'ambient_wind',vol:-6},flashlight_on:{type:'flashlight_on'},flashlight_off:{type:'flashlight_off'},set_viewers:{type:'set_viewers',count:100},label:{type:'label',name:'new_label'},goto:{type:'goto',label:''},choice:{type:'choice',prompt:'',choices:[{text:'',sub:''}],targets:['']},set_route:{type:'set_route',route:0},polaroid_video:{type:'polaroid_video',path:''},stage_swap:{type:'stage_swap',scene:'',spawn:[0,1,0]},_comment:{type:'_comment',_:'新しいセクション'}};
+  const D={say:{type:'say',text:'',voice:nextVoiceId()},say_clear:{type:'say_clear'},chat:{type:'chat',msg:'',user:''},superchat:{type:'superchat',name:'',msg:'',amount:500},wait:{type:'wait',sec:1.0},sleep:{type:'sleep',sec:1.0},rot_y:{type:'rot_y',target:0,dur:1.0},head_x:{type:'head_x',target:0,dur:0.5},motion:{type:'motion',name:'look_around',dur:2.0},pos_z:{type:'pos_z',target:0,dur:5.0,id:''},pos_x:{type:'pos_x',target:0,dur:5.0,id:''},pos_z_await:{type:'pos_z_await',id:''},pos_x_await:{type:'pos_x_await',id:''},walk_set:{type:'walk_set',on:true},fade_black:{type:'fade_black',dur:0.8},fade_clear:{type:'fade_clear',dur:0.8},horror_flash:{type:'horror_flash',dur:0.3},horror_glitch:{type:'horror_glitch',intensity:8.0,count:3},scare_flash:{type:'scare_flash',color:'white'},sfx:{type:'sfx',sound:'ambient_wind',vol:-6},flashlight_on:{type:'flashlight_on'},flashlight_off:{type:'flashlight_off'},set_viewers:{type:'set_viewers',count:100},label:{type:'label',name:'new_label'},goto:{type:'goto',label:''},choice:{type:'choice',prompt:'',choices:[{text:'',sub:''}],targets:['']},set_route:{type:'set_route',route:0},polaroid_video:{type:'polaroid_video',path:''},stage_swap:{type:'stage_swap',scene:'',spawn:[0,1,0]},_comment:{type:'_comment',_:'新しいセクション'}};
   return D[type]||{type};
 }
 
@@ -909,20 +1015,31 @@ function setupDrag(row,idx){
 let _fileHandle=null;
 function exportJSON(){const clean={...data,events:data.events.map(e=>{const ev={...e};delete ev._img;return ev})};return JSON.stringify(clean,null,'\t')}
 async function downloadJSON(){
-  // File System Access API（Chrome/Edge）
+  const content = exportJSON();
+  // サーバーAPI経由で保存（最優先 — dialogue/*.json に直接書き込み）
+  if (_useServer) {
+    try {
+      const r = await fetch(`${API_BASE}/save`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ filename: fname, content: content })
+      });
+      if (r.ok) { dirty=false; setStatus(fname); toast('保存しました → dialogue/'+fname); return; }
+    } catch(e) { /* フォールバックへ */ }
+  }
+  // フォールバック: File System Access API（Chrome/Edge）
   if(window.showSaveFilePicker){
     try{
       if(!_fileHandle){
         _fileHandle=await window.showSaveFilePicker({suggestedName:fname||'dialogue.json',types:[{description:'JSON',accept:{'application/json':['.json']}}]});
       }
       const w=await _fileHandle.createWritable();
-      await w.write(exportJSON());
+      await w.write(content);
       await w.close();
       dirty=false;setStatus(_fileHandle.name);toast('保存しました');return;
     }catch(e){if(e.name==='AbortError')return;}
   }
-  // フォールバック（Firefox等）
-  const b=new Blob([exportJSON()],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fname||'dialogue.json';a.click();URL.revokeObjectURL(a.href);dirty=false;setStatus(fname);toast('保存しました');
+  // 最終フォールバック（ダウンロード）
+  const b=new Blob([content],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fname||'dialogue.json';a.click();URL.revokeObjectURL(a.href);dirty=false;setStatus(fname);toast('保存しました');
 }
 function loadLocal(file){const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.events){alert('"events"が見つかりません');return}applyData(d,file.name);toast('読み込み完了')}catch(err){alert('JSONエラー: '+err.message)}};r.readAsText(file)}
 
@@ -1031,6 +1148,11 @@ function openDetail(idx){
   $('#detailTitle span').style.color=cat.color;
 
   const body=$('#detailBody');body.innerHTML='';
+  // プリセットマッピング（詳細パネル用）
+  const DETAIL_PRESETS={};
+  if(ev.type==='rot_y'){DETAIL_PRESETS['target']=ROT_Y_PRESETS}
+  if(ev.type==='head_x'){DETAIL_PRESETS['target']=HEAD_X_PRESETS}
+  if(ev.type==='motion'){DETAIL_PRESETS['name']=MOTION_PRESETS}
   // 全プロパティを編集フィールドとして表示
   const keys=Object.keys(ev).filter(k=>k!=='type'&&k!=='_img');
   keys.forEach(k=>{
@@ -1039,7 +1161,41 @@ function openDetail(idx){
     const label=document.createElement('label');label.textContent=k;
     field.appendChild(label);
 
-    if(typeof val==='string'){
+    // プリセットがあるフィールドはドロップダウン表示
+    if(DETAIL_PRESETS[k]){
+      const presets=DETAIL_PRESETS[k];
+      if(typeof val==='number'){
+        // 数値プリセット（rot_y target, head_x target）
+        const wrap=document.createElement('div');wrap.style.display='flex';wrap.style.gap='6px';wrap.style.alignItems='center';
+        const sel=document.createElement('select');sel.style.flex='1';
+        const cur=val;let matched=false;
+        presets.forEach(p=>{
+          const opt=document.createElement('option');opt.value=p.v;opt.textContent=p.l;
+          if(p.v!=='__custom'&&Math.abs(Number(p.v)-Number(cur))<0.01){opt.selected=true;matched=true}
+          sel.appendChild(opt);
+        });
+        const numI=document.createElement('input');numI.type='number';numI.step='any';numI.value=cur;numI.style.width='80px';
+        numI.style.display=matched?'none':'inline-block';
+        if(!matched)sel.value='__custom';
+        sel.addEventListener('change',()=>{
+          if(sel.value==='__custom'){numI.style.display='inline-block';numI.focus()}
+          else{numI.style.display='none';pushUndo();data.events[idx][k]=parseFloat(sel.value);markDirty();render()}
+        });
+        numI.addEventListener('input',()=>{pushUndo();data.events[idx][k]=parseFloat(numI.value)||0;markDirty();render()});
+        wrap.appendChild(sel);wrap.appendChild(numI);field.appendChild(wrap);
+      } else {
+        // 文字列プリセット（motion name）
+        const sel=document.createElement('select');sel.style.width='100%';
+        const cur=String(val);
+        presets.forEach(p=>{
+          const opt=document.createElement('option');opt.value=p.v;opt.textContent=p.l;
+          if(String(p.v)===cur)opt.selected=true;
+          sel.appendChild(opt);
+        });
+        sel.addEventListener('change',()=>{pushUndo();data.events[idx][k]=sel.value;markDirty();render()});
+        field.appendChild(sel);
+      }
+    } else if(typeof val==='string'){
       if(val.length>60||k==='text'||k==='reading'||k==='_'){
         const ta=document.createElement('textarea');ta.value=val;ta.rows=3;
         ta.addEventListener('input',()=>{pushUndo();data.events[idx][k]=ta.value;markDirty();render()});

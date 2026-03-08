@@ -2,8 +2,13 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>イベントパスビューア</title>
-<script src="dialogue_cache.js"></script>
+<title>REC-OFF-AIR Path Viewer</title>
+<script>
+// dialogue_cache.js をキャッシュ無効で動的読み込み
+var _cacheScript = document.createElement("script");
+_cacheScript.src = "dialogue_cache.js?t=" + Date.now();
+document.write(_cacheScript.outerHTML);
+</script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 
@@ -21,7 +26,9 @@
   --red: #ff6b6b; --yellow: #ffd93d; --green: #6bcb77; --blue: #4d96ff; --cyan: #3db8b8;
 }
 
-body { background:var(--pv-bg); color:var(--pv-tx0); font-family:'Segoe UI',system-ui,sans-serif; display:flex; height:100vh; overflow:hidden; }
+body { background:var(--pv-bg); color:var(--pv-tx0); font-family:'Segoe UI',system-ui,sans-serif; height:100vh; overflow:hidden;
+  display:grid; grid-template-columns:220px 1fr 340px; grid-template-rows:1fr 200px;
+}
 
 /* ── Sidebar ── */
 #sidebar {
@@ -29,7 +36,18 @@ body { background:var(--pv-bg); color:var(--pv-tx0); font-family:'Segoe UI',syst
   border-right:1px solid var(--pv-border);
   box-shadow:inset -1px 0 0 var(--pv-inner), 2px 0 20px rgba(0,0,0,.5);
   display:flex; flex-direction:column; flex-shrink:0;
+  overflow:hidden;
+  transition:width .2s, min-width .2s;
 }
+#sidebar.collapsed { width:0; min-width:0; overflow:hidden; border:none; }
+#sidebar-toggle {
+  position:absolute; top:8px; left:8px; z-index:70;
+  padding:4px 10px; font-size:14px; cursor:pointer;
+  background:rgba(10,16,34,.8); border:1px solid rgba(130,160,210,.3);
+  border-radius:4px; color:var(--pv-tx1);
+}
+#sidebar-toggle:hover { background:rgba(130,160,210,.2); }
+body.light #sidebar-toggle { background:rgba(240,242,250,.9); border-color:#b0b8cc; color:#333; }
 #sidebar h1 {
   font-size:14px; padding:12px 16px; letter-spacing:.12em;
   background:linear-gradient(135deg, var(--pv-accent) 0%, var(--pv-accent2) 50%, var(--pv-accent) 100%);
@@ -82,7 +100,7 @@ body { background:var(--pv-bg); color:var(--pv-tx0); font-family:'Segoe UI',syst
 
 /* Event list */
 #event-list {
-  flex:1; overflow-y:auto; padding:4px 6px;
+  flex:1; min-height:0; overflow-y:auto; padding:4px 6px;
 }
 #event-list::-webkit-scrollbar { width:5px; }
 #event-list::-webkit-scrollbar-track { background:rgba(0,0,0,.2); }
@@ -111,9 +129,11 @@ body { background:var(--pv-bg); color:var(--pv-tx0); font-family:'Segoe UI',syst
 /* Detail panel */
 #detail-panel {
   padding:10px 12px; background:rgba(0,0,0,.2);
-  border-top:1px solid var(--pv-border); max-height:180px; overflow-y:auto;
+  border-top:1px solid var(--pv-border);
+  max-height:50vh; overflow-y:auto; flex-shrink:0;
   box-shadow:inset 0 1px 0 rgba(130,160,210,.07);
 }
+#detail-panel:empty { display:none; }
 #detail-panel h3 {
   font-size:10px; margin-bottom:6px; color:var(--pv-accent);
   letter-spacing:.15em; text-transform:uppercase;
@@ -169,6 +189,670 @@ canvas#cv { display:block; cursor:crosshair; }
   background:rgba(8,12,26,.85); border:1px solid var(--pv-inner);
   padding:4px 10px; border-radius:4px; color:var(--pv-accent);
   font-family:'Consolas',monospace; backdrop-filter:blur(4px);
+}
+
+/* ── 右クリックコンテキストメニュー ── */
+#ctx-menu {
+  position:absolute; display:none; z-index:100;
+  background:rgba(13,30,66,.96); border:1px solid rgba(130,160,210,.35);
+  border-radius:6px; padding:4px 0; min-width:180px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6); backdrop-filter:blur(8px);
+}
+#ctx-menu .ctx-item {
+  padding:7px 16px; font-size:11px; cursor:pointer; display:flex; align-items:center; gap:8px;
+  color:var(--pv-tx0); transition:background .1s;
+}
+#ctx-menu .ctx-item:hover { background:rgba(130,160,210,.15); }
+#ctx-menu .ctx-item .ctx-icon { width:16px; text-align:center; font-size:13px; }
+#ctx-menu .ctx-item .ctx-key { margin-left:auto; font-size:9px; color:var(--pv-tx2); font-family:monospace; }
+#ctx-menu .ctx-sep { height:1px; background:rgba(130,160,210,.15); margin:4px 0; }
+body.light #ctx-menu { background:rgba(230,235,245,.96); border-color:#b0b8cc; }
+body.light #ctx-menu .ctx-item { color:#333; }
+body.light #ctx-menu .ctx-item:hover { background:rgba(58,90,138,.1); }
+
+
+/* ══════════════════════════════════════════════════
+   NLE (Non-Linear Editor) MODE — 動画編集風UI
+   ══════════════════════════════════════════════════ */
+
+/* === 全体レイアウト（常時カード編集モード） === */
+#sidebar { display:none; }
+#canvas-area {
+  grid-column:2; grid-row:1; position:relative;
+  border-left:1px solid rgba(130,160,210,.15);
+  border-right:1px solid rgba(130,160,210,.15);
+  border-bottom:1px solid rgba(130,160,210,.15);
+  padding-top:36px; padding-bottom:38px;
+}
+#minimap { display:none; }
+#legend { display:none; }
+#crosshair-info { display:none; }
+#bubbles-container { display:none; }
+#sidebar-toggle { display:none; }
+#director-hud { display:none !important; }
+#dir-insert-indicator { display:none !important; }
+
+/* MAPプレビュー内ヘッダー */
+#ce-monitor-bar {
+  position:absolute; top:0; left:0; right:0; z-index:42;
+  height:36px; padding:0 14px;
+  background:rgba(8,12,26,.85); border-bottom:1px solid rgba(130,160,210,.12);
+  align-items:center; gap:10px; backdrop-filter:blur(8px);
+}
+#ce-monitor-bar .cem-title {
+  font-size:13px; font-weight:700; color:var(--pv-accent); letter-spacing:.1em;
+}
+#ce-monitor-bar .cem-coords {
+  font-size:12px; color:var(--pv-tx2); font-family:monospace; margin-left:auto;
+}
+#ce-monitor-bar select {
+  padding:3px 8px; font-size:12px; background:rgba(0,0,0,.4); border:1px solid rgba(130,160,210,.2);
+  border-radius:4px; color:var(--pv-tx1); cursor:pointer;
+}
+#ce-monitor-bar .cem-btn {
+  padding:3px 10px; font-size:12px; background:transparent; border:1px solid rgba(130,160,210,.2);
+  border-radius:4px; color:var(--pv-tx2); cursor:pointer; transition:all .12s;
+}
+#ce-monitor-bar .cem-btn:hover { background:rgba(130,160,210,.12); color:var(--pv-tx0);
+}
+#coords { display:none; }
+
+/* === 左: イベント挿入パネル === */
+#ce-insert-panel {
+  display:flex; grid-column:1; grid-row:1;
+  flex-direction:column; background:#0a0f22; overflow:hidden;
+  border-bottom:1px solid rgba(130,160,210,.15);
+}
+body.light #ce-insert-panel { background:#e4e8f4; }
+#ce-insert-panel .cip-header {
+  padding:10px 14px 8px; font-size:13px; font-weight:700; color:var(--pv-accent);
+  letter-spacing:.05em; border-bottom:1px solid rgba(130,160,210,.1); flex-shrink:0;
+}
+#ce-insert-panel .cip-pos {
+  padding:6px 12px; font-size:11px; color:var(--pv-tx2); font-family:monospace;
+  border-bottom:1px solid rgba(130,160,210,.06); flex-shrink:0;
+}
+#ce-insert-panel .cip-list { flex:1; overflow-y:auto; padding:6px 0; }
+.cip-list::-webkit-scrollbar { width:5px; }
+.cip-list::-webkit-scrollbar-track { background:rgba(0,0,0,.2); }
+.cip-list::-webkit-scrollbar-thumb { background:#1e3a6e; border-radius:3px; }
+.cip-item {
+  display:flex; align-items:center; gap:10px; padding:8px 14px;
+  cursor:pointer; transition:background .1s; font-size:13px; color:var(--pv-tx1);
+}
+.cip-item:hover { background:rgba(130,160,210,.1); color:var(--pv-tx0); }
+.cip-item .cip-icon { font-size:18px; width:26px; text-align:center; flex-shrink:0; }
+.cip-item .cip-label { flex:1; }
+.cip-item .cip-key { font-size:10px; color:var(--pv-tx2); font-family:monospace; }
+body.light .cip-item:hover { background:rgba(58,90,138,.08); }
+
+/* MAPプレビュー内の再生コントロール */
+#ce-play-controls {
+  display:flex; position:absolute; bottom:0; left:0; right:0; z-index:43;
+  height:38px; padding:0 14px;
+  background:rgba(8,12,26,.85); border-top:1px solid rgba(130,160,210,.12);
+  align-items:center; gap:10px; justify-content:center; backdrop-filter:blur(8px);
+}
+#ce-play-controls button {
+  padding:4px 14px; font-size:13px; border:1px solid rgba(130,160,210,.25);
+  border-radius:5px; background:rgba(255,255,255,.05); color:var(--pv-tx1); cursor:pointer;
+  transition:all .12s; font-weight:500;
+}
+#ce-play-controls button:hover { background:rgba(130,160,210,.15); color:#fff; }
+#ce-play-controls .ce-btn-play { color:#4d96ff !important; border-color:rgba(77,150,255,.35) !important; }
+#ce-play-controls .ce-btn-play.playing { color:#ff6b6b !important; border-color:rgba(255,107,107,.35) !important; }
+
+/* === 右: プロパティパネル === */
+#ce-edit-panel {
+  display:flex; flex-direction:column; grid-column:3; grid-row:1;
+  overflow-y:auto; overflow-x:hidden; background:#0a0f22;
+  border-bottom:1px solid rgba(130,160,210,.15);
+  min-height:0;
+}
+body.light #ce-edit-panel { background:#e4e8f4; }
+
+/* === 下: タイムライン === */
+#card-editor {
+  display:flex; grid-column:1/-1; grid-row:2;
+  flex-direction:column; background:#060a16;
+  overflow:hidden;
+}
+body.light #card-editor { background:#d8dce8; }
+
+/* ツールバー */
+#ce-toolbar {
+  display:flex; align-items:center; gap:10px; padding:0 16px; height:42px; flex-shrink:0;
+  background:linear-gradient(180deg,#0f1a36,#0c1428); border-bottom:1px solid rgba(130,160,210,.12);
+}
+#ce-toolbar button {
+  padding:5px 12px; font-size:13px; border:1px solid rgba(130,160,210,.25);
+  border-radius:5px; background:rgba(255,255,255,.05); color:var(--pv-tx1); cursor:pointer;
+  transition:all .12s; font-weight:500;
+}
+#ce-toolbar button:hover { background:rgba(130,160,210,.15); color:#fff; }
+#ce-toolbar .ce-btn-save { color:#6bcb77; border-color:rgba(61,174,110,.35); }
+#ce-count { font-size:13px; color:var(--pv-tx2); margin-left:auto; font-family:monospace; }
+
+/* フィルター */
+#ce-filters { display:flex; gap:5px; margin-left:8px; align-items:center; }
+.ce-filter-btn {
+  padding:5px 14px; font-size:13px; border-radius:16px; cursor:pointer;
+  border:1px solid rgba(130,160,210,.15); background:rgba(20,30,50,.6);
+  color:var(--pv-tx2); transition:all .2s ease; font-weight:700; white-space:nowrap;
+  opacity:.45; filter:grayscale(.7); user-select:none;
+  text-shadow:none; position:relative; overflow:hidden;
+}
+.ce-filter-btn:hover { opacity:.7; filter:grayscale(.3); background:rgba(40,55,90,.6); }
+.ce-filter-btn.active {
+  opacity:1; filter:grayscale(0); border-color:transparent;
+  text-shadow:0 0 8px currentColor;
+}
+.ce-filter-btn[data-cat="all"].active {
+  background:rgba(130,160,210,.2); color:#d0daf0;
+  box-shadow:0 0 12px rgba(130,160,210,.25), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.ce-filter-btn[data-cat="move"].active {
+  background:rgba(255,107,107,.2); color:#ffaaaa;
+  box-shadow:0 0 14px rgba(255,107,107,.35), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.ce-filter-btn[data-cat="rotate"].active {
+  background:rgba(249,115,22,.18); color:#ffbb77;
+  box-shadow:0 0 14px rgba(249,115,22,.3), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.ce-filter-btn[data-cat="say"].active {
+  background:rgba(255,217,61,.15); color:#ffe888;
+  box-shadow:0 0 14px rgba(255,217,61,.35), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.ce-filter-btn[data-cat="chat"].active {
+  background:rgba(77,150,255,.18); color:#99ccff;
+  box-shadow:0 0 14px rgba(77,150,255,.35), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.ce-filter-btn[data-cat="sfx"].active {
+  background:rgba(107,203,119,.15); color:#a0f0b0;
+  box-shadow:0 0 14px rgba(107,203,119,.35), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.ce-filter-btn[data-cat="horror"].active {
+  background:rgba(192,96,255,.15); color:#dd99ff;
+  box-shadow:0 0 14px rgba(192,96,255,.35), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.ce-filter-btn[data-cat="wait"].active {
+  background:rgba(107,122,153,.15); color:#aabbcc;
+  box-shadow:0 0 12px rgba(107,122,153,.25), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.ce-filter-btn[data-cat="system"].active {
+  background:rgba(90,122,170,.15); color:#aabbdd;
+  box-shadow:0 0 12px rgba(90,122,170,.3), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.ce-filter-btn .ce-filter-count { font-size:10px; opacity:.5; margin-left:3px; }
+.ce-filter-btn.active .ce-filter-count { opacity:.7; }
+.ce-card.ce-filtered {
+  min-width:6px !important; max-width:6px !important; width:6px !important;
+  padding:4px 0 !important; border-width:1px !important; opacity:.4;
+  overflow:hidden; gap:0 !important;
+}
+.ce-card.ce-filtered .ce-icon,
+.ce-card.ce-filtered .ce-type,
+.ce-card.ce-filtered .ce-summary,
+.ce-card.ce-filtered .ce-idx { display:none; }
+.ce-card.ce-filtered:hover { opacity:.7; min-width:80px !important; max-width:140px !important; width:auto !important; padding:4px 8px !important; }
+.ce-card.ce-filtered:hover .ce-icon,
+.ce-card.ce-filtered:hover .ce-type { display:block; }
+.ce-card.ce-filtered:hover .ce-summary { display:block; }
+
+/* シークバー */
+#ce-seekbar {
+  position:relative; height:18px; flex-shrink:0; cursor:pointer;
+  background:rgba(255,255,255,.04); border-bottom:1px solid rgba(130,160,210,.08);
+}
+#ce-seekbar:hover { background:rgba(255,255,255,.07); }
+#ce-progress {
+  height:100%; background:linear-gradient(90deg,rgba(255,217,61,.25),rgba(249,115,22,.2));
+  pointer-events:none; transition:width .05s linear;
+}
+#ce-seek-chibi {
+  position:absolute; top:-22px; left:0%; transform:translateX(-50%);
+  width:28px; height:28px; pointer-events:none;
+  filter:drop-shadow(0 0 4px rgba(255,217,61,.6));
+  transition:left .05s linear;
+  background:url('../../assets/textures/loading_chibi.png') center/contain no-repeat;
+}
+@keyframes chibiRun { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-3px)} }
+#ce-seek-chibi.running { animation:chibiRun .3s ease infinite; }
+
+/* タイムラインレーン */
+#ce-lane {
+  flex:1; overflow-x:auto; overflow-y:hidden; padding:10px 10px 4px; min-height:0;
+  display:flex; align-items:flex-start; gap:10px; white-space:nowrap;
+}
+#ce-lane::-webkit-scrollbar { height:5px; }
+#ce-lane::-webkit-scrollbar-track { background:rgba(0,0,0,.2); }
+#ce-lane::-webkit-scrollbar-thumb { background:#1e3a6e; border-radius:3px; }
+#ce-lane-footer {
+  display:flex; flex-wrap:wrap; gap:2px 12px; flex-shrink:0;
+  padding:2px 16px 3px; border-top:1px solid rgba(130,160,210,.08);
+  font-size:9px; color:var(--pv-tx2); letter-spacing:.03em;
+}
+body.light #ce-lane-footer { border-color:#b0b8cc; }
+
+/* カード — タイムラインクリップ風 */
+.ce-card {
+  display:inline-flex; flex-direction:column; justify-content:center;
+  min-width:120px; max-width:220px; width:auto; padding:8px 14px;
+  border-radius:10px; cursor:pointer; flex-shrink:0;
+  border:2px solid var(--card-color, #334);
+  transition:all .1s ease; position:relative;
+  background:rgba(14,20,40,.6); vertical-align:top;
+  gap:2px;
+}
+body.light .ce-card { background:rgba(255,255,255,.7); }
+.ce-card:hover { background:rgba(30,40,70,.8); }
+.ce-card.ce-selected {
+  border-color:#4d96ff !important;
+  background:rgba(20,35,70,.85) !important;
+  box-shadow:0 0 0 2px #4d96ff, 0 0 20px rgba(77,150,255,.5), 0 0 40px rgba(77,150,255,.15);
+  transform:scale(1.08) translateY(-3px);
+  z-index:5;
+  animation:cardSelectGlow .8s ease-in-out infinite alternate;
+}
+@keyframes cardSelectGlow {
+  from { box-shadow:0 0 0 2px #4d96ff, 0 0 16px rgba(77,150,255,.4), 0 0 32px rgba(77,150,255,.1); }
+  to   { box-shadow:0 0 0 2px #4d96ff, 0 0 28px rgba(77,150,255,.6), 0 0 50px rgba(77,150,255,.2); }
+}
+.ce-card.ce-select-pop {
+  animation:cardSelectPop .3s cubic-bezier(.34,1.56,.64,1), cardSelectGlow .8s .3s ease-in-out infinite alternate;
+}
+@keyframes cardSelectPop {
+  0% { transform:scale(0.95) translateY(0); }
+  50% { transform:scale(1.12) translateY(-5px); }
+  100% { transform:scale(1.08) translateY(-3px); }
+}
+body.light .ce-card.ce-selected {
+  background:rgba(220,230,255,.9) !important;
+  box-shadow:0 0 0 2px #4d96ff, 0 0 16px rgba(77,150,255,.4), 0 0 32px rgba(77,150,255,.12);
+  animation:cardSelectGlowLight .8s ease-in-out infinite alternate;
+}
+@keyframes cardSelectGlowLight {
+  from { box-shadow:0 0 0 2px #4d96ff, 0 0 12px rgba(77,150,255,.3), 0 0 24px rgba(77,150,255,.08); }
+  to   { box-shadow:0 0 0 2px #4d96ff, 0 0 22px rgba(77,150,255,.5), 0 0 40px rgba(77,150,255,.15); }
+}
+.ce-card .ce-icon { font-size:26px; text-align:center; line-height:1; }
+.ce-card .ce-type {
+  font-size:13px; font-weight:700; text-align:center; letter-spacing:.02em;
+  white-space:nowrap; overflow:hidden;
+}
+.ce-card .ce-summary {
+  font-size:12px; color:var(--pv-tx2); text-align:center;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  max-width:200px;
+}
+.ce-card .ce-idx {
+  position:absolute; top:3px; right:6px; font-size:11px; color:var(--pv-tx2);
+  font-family:monospace; opacity:.6;
+}
+
+/* カード色（角丸＋全辺ボーダー） */
+.ce-card.ce-move { background:rgba(255,107,107,.1); border-color:#ff6b6b; }
+.ce-card.ce-move .ce-type { color:#ff6b6b; }
+.ce-card.ce-rotate { background:rgba(249,115,22,.08); border-color:#f97316; }
+.ce-card.ce-rotate .ce-type { color:#f97316; }
+.ce-card.ce-say { background:rgba(255,217,61,.08); border-color:#ffd93d; }
+.ce-card.ce-say .ce-type { color:#ffd93d; }
+.ce-card.ce-chat { background:rgba(77,150,255,.1); border-color:#4d96ff; }
+.ce-card.ce-chat .ce-type { color:#4d96ff; }
+.ce-card.ce-sfx { background:rgba(107,203,119,.08); border-color:#6bcb77; }
+.ce-card.ce-sfx .ce-type { color:#6bcb77; }
+.ce-card.ce-horror { background:rgba(192,96,255,.1); border-color:#c060ff; }
+.ce-card.ce-horror .ce-type { color:#c060ff; }
+.ce-card.ce-wait { background:rgba(107,122,153,.06); border-color:#6b7a99; }
+.ce-card.ce-wait .ce-type { color:#8899b3; }
+.ce-card.ce-system { background:rgba(130,160,210,.06); border-color:#5a7aaa; }
+.ce-card.ce-system .ce-type { color:#8899b3; }
+
+/* ゴーストカード（挿入プレビュー） */
+.ce-card.ce-ghost {
+  opacity:.7; border-style:dashed; pointer-events:none;
+  animation:ghostPulse 1s ease-in-out infinite alternate;
+}
+@keyframes ghostPulse {
+  from { box-shadow:0 0 8px rgba(61,174,110,.3), 0 0 20px rgba(61,174,110,.1); transform:scale(1.0); }
+  to   { box-shadow:0 0 16px rgba(61,174,110,.6), 0 0 40px rgba(61,174,110,.25); transform:scale(1.05) translateY(-2px); }
+}
+/* プレビュー確認バー */
+#ce-preview-bar {
+  display:none; position:fixed; bottom:180px; left:50%; transform:translateX(-50%); z-index:200;
+  padding:8px 16px; border-radius:12px;
+  background:rgba(10,18,40,.92); border:1px solid rgba(61,174,110,.5);
+  box-shadow:0 4px 24px rgba(0,0,0,.5), 0 0 20px rgba(61,174,110,.15);
+  backdrop-filter:blur(10px);
+  gap:10px; align-items:center; font-size:13px; color:var(--pv-tx0);
+}
+#ce-preview-bar.open { display:flex; }
+#ce-preview-bar .preview-label { color:var(--green); font-weight:700; }
+#ce-preview-bar button {
+  padding:5px 16px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;
+  border:1px solid; transition:all .12s;
+}
+#ce-preview-bar .preview-ok {
+  background:rgba(61,174,110,.2); border-color:rgba(61,174,110,.5); color:var(--green);
+}
+#ce-preview-bar .preview-ok:hover { background:rgba(61,174,110,.35); }
+#ce-preview-bar .preview-cancel {
+  background:rgba(255,107,107,.1); border-color:rgba(255,107,107,.3); color:var(--red);
+}
+#ce-preview-bar .preview-cancel:hover { background:rgba(255,107,107,.25); }
+
+/* 追加ボタン */
+.ce-lane-insert {
+  display:flex; align-items:center; justify-content:center;
+  width:28px; flex-shrink:0; cursor:pointer; border-radius:4px;
+  color:rgba(130,160,210,.2); font-size:18px; transition:all .12s;
+}
+.ce-lane-insert:hover { background:rgba(61,174,110,.1); color:var(--green); }
+
+/* 再生ボタン */
+.ce-btn-play { color:#4d96ff !important; border-color:rgba(77,150,255,.35) !important; }
+.ce-btn-play.playing {
+  color:#ff6b6b !important; border-color:rgba(255,107,107,.35) !important;
+  animation:playPulse 1s infinite;
+}
+@keyframes playPulse { 0%,100%{opacity:1} 50%{opacity:.7} }
+
+/* 再生中カード — 強調 */
+.ce-card.ce-playing {
+  border-color:#ffd93d !important;
+  background:#332800 !important;
+  box-shadow:0 0 0 2px #ffd93d, 0 0 24px rgba(255,217,61,.5), 0 0 48px rgba(255,217,61,.15) !important;
+  transform:scale(1.15) translateY(-4px);
+  z-index:10;
+  animation:cardGlow .8s ease-in-out infinite alternate;
+}
+@keyframes cardGlow {
+  from { box-shadow:0 0 0 2px #ffd93d, 0 0 20px rgba(255,217,61,.4), 0 0 40px rgba(255,217,61,.1); }
+  to   { box-shadow:0 0 0 2px #ffd93d, 0 0 30px rgba(255,217,61,.6), 0 0 60px rgba(255,217,61,.2); }
+}
+.ce-card.ce-playing .ce-icon { font-size:30px; }
+.ce-card.ce-playing .ce-type { color:#ffd93d !important; font-size:14px; }
+.ce-card.ce-playing .ce-summary { color:#e0c040 !important; font-size:13px; }
+
+/* 再生済み */
+.ce-card.ce-played { opacity:.3; }
+
+/* 再生マーカー (未使用だが互換) */
+#ce-play-marker { display:none; }
+
+/* === プロパティパネル内部 === */
+#ce-edit-panel .ce-panel-empty {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  height:100%; color:var(--pv-tx2); font-size:14px; gap:8px;
+}
+#ce-edit-panel .ce-panel-empty .ce-empty-icon { font-size:40px; opacity:.3; }
+
+#ce-edit-panel .ce-panel-header {
+  padding:14px 14px 10px; border-bottom:1px solid rgba(130,160,210,.1);
+  display:flex; align-items:center; gap:10px; flex-shrink:0;
+}
+#ce-edit-panel .ce-panel-header .ce-ph-icon { font-size:28px; }
+#ce-edit-panel .ce-panel-header .ce-ph-info { flex:1; }
+#ce-edit-panel .ce-panel-header .ce-ph-type { font-size:15px; font-weight:700; color:var(--pv-tx0); }
+#ce-edit-panel .ce-panel-header .ce-ph-idx { font-size:12px; color:var(--pv-tx2); font-family:monospace; }
+
+#ce-edit-panel .ce-panel-nav {
+  display:flex; gap:4px; padding:8px 14px 6px;
+  border-bottom:1px solid rgba(130,160,210,.06); flex-shrink:0;
+}
+#ce-edit-panel .ce-panel-nav button {
+  flex:1; padding:6px 0; font-size:13px; border:1px solid rgba(130,160,210,.15);
+  border-radius:5px; background:rgba(255,255,255,.03); color:var(--pv-tx1); cursor:pointer;
+}
+#ce-edit-panel .ce-panel-nav button:hover { background:rgba(130,160,210,.1); }
+#ce-edit-panel .ce-panel-nav button:disabled { opacity:.25; cursor:default; }
+
+#ce-edit-panel .ce-fields { padding:12px 14px; display:flex; flex-direction:column; gap:12px; flex:1; overflow-y:auto; }
+#ce-edit-panel .ce-field { display:flex; flex-direction:column; gap:4px; }
+#ce-edit-panel .ce-field-label {
+  font-size:11px; font-weight:600; color:var(--pv-tx2); letter-spacing:.06em; text-transform:uppercase;
+}
+#ce-edit-panel input, #ce-edit-panel textarea, #ce-edit-panel select {
+  padding:7px 10px; background:rgba(0,0,0,.3); border:1px solid rgba(130,160,210,.15);
+  border-radius:5px; color:var(--pv-tx0); font-size:14px; font-family:'Consolas','SF Mono',monospace;
+}
+body.light #ce-edit-panel input, body.light #ce-edit-panel textarea { background:rgba(255,255,255,.7); color:#333; }
+#ce-edit-panel input:focus, #ce-edit-panel textarea:focus {
+  border-color:var(--pv-accent); outline:none; box-shadow:0 0 0 2px rgba(212,168,55,.08);
+}
+#ce-edit-panel textarea { width:100%; min-height:80px; max-height:200px; resize:vertical; line-height:1.5; }
+#ce-edit-panel input[type=number] { width:100%; }
+
+#ce-edit-panel .ce-panel-actions {
+  padding:10px 14px; border-top:1px solid rgba(130,160,210,.08);
+  display:flex; flex-direction:column; gap:4px; flex-shrink:0;
+}
+#ce-edit-panel .ce-panel-actions button {
+  padding:8px 12px; font-size:13px; border-radius:5px; cursor:pointer;
+  border:1px solid rgba(130,160,210,.15); background:rgba(255,255,255,.03);
+  color:var(--pv-tx1); transition:all .12s; text-align:center;
+}
+#ce-edit-panel .ce-panel-actions button:hover { background:rgba(130,160,210,.1); color:var(--pv-tx0); }
+#ce-edit-panel .ce-act-apply {
+  background:rgba(61,174,110,.12)!important; border-color:rgba(61,174,110,.3)!important; color:#6bcb77!important; font-weight:600!important;
+}
+#ce-edit-panel .ce-act-delete {
+  background:rgba(255,107,107,.06)!important; border-color:rgba(255,107,107,.2)!important; color:#ff6b6b!important;
+}
+.ce-act-row { display:flex; gap:4px; }
+.ce-act-row button { flex:1; }
+
+/* 挿入メニュー */
+#ce-insert-menu {
+  position:fixed; z-index:100; display:none;
+  background:rgba(10,16,34,.96); border:1px solid rgba(130,160,210,.25);
+  border-radius:8px; padding:4px 0; min-width:160px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6); backdrop-filter:blur(10px);
+}
+body.light #ce-insert-menu { background:rgba(245,247,255,.97); }
+.ce-ins-item {
+  padding:6px 14px; font-size:11px; cursor:pointer; display:flex; align-items:center; gap:8px;
+  color:var(--pv-tx1); transition:background .08s;
+}
+.ce-ins-item:hover { background:rgba(130,160,210,.12); color:var(--pv-tx0); }
+
+/* イベント挿入モーダル */
+/* 適用確認モーダル */
+#apply-modal-overlay {
+  display:none; position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,.55); backdrop-filter:blur(4px);
+  align-items:center; justify-content:center;
+}
+#apply-modal-overlay.open { display:flex; }
+#apply-modal {
+  background:linear-gradient(180deg, #131f42 0%, #0c1530 100%);
+  border:1px solid rgba(130,160,210,.3); border-radius:14px;
+  min-width:380px; max-width:520px; width:90vw;
+  box-shadow:0 16px 60px rgba(0,0,0,.7), 0 0 40px rgba(77,150,255,.08);
+  animation:cipModalIn .2s ease-out;
+}
+#apply-modal-header {
+  display:flex; align-items:center; gap:10px;
+  padding:16px 20px; border-bottom:1px solid rgba(130,160,210,.15);
+}
+#apply-modal-icon { font-size:22px; }
+#apply-modal-title { font-size:16px; font-weight:700; color:var(--pv-tx0); flex:1; }
+#apply-modal-body {
+  padding:16px 20px; display:flex; flex-direction:column; gap:10px;
+  max-height:50vh; overflow-y:auto; font-size:13px; color:var(--pv-tx1);
+}
+.apply-diff {
+  display:flex; gap:8px; padding:6px 10px; align-items:baseline;
+  border-radius:6px; background:rgba(0,0,0,.2); border:1px solid rgba(130,160,210,.1);
+}
+.apply-diff-label { font-size:11px; font-weight:700; color:var(--pv-tx2); min-width:70px; flex-shrink:0; }
+.apply-diff-old { color:var(--red); text-decoration:line-through; opacity:.7; word-break:break-all; }
+.apply-diff-arrow { color:var(--pv-tx2); flex-shrink:0; }
+.apply-diff-new { color:var(--green); font-weight:600; word-break:break-all; }
+.apply-no-change { color:var(--pv-tx2); font-style:italic; text-align:center; padding:10px; }
+#apply-modal-footer {
+  display:flex; justify-content:flex-end; gap:8px;
+  padding:12px 20px; border-top:1px solid rgba(130,160,210,.12);
+}
+
+#cip-modal-overlay {
+  display:none; position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,.55); backdrop-filter:blur(4px);
+  align-items:center; justify-content:center;
+}
+#cip-modal-overlay.open { display:flex; }
+#cip-modal {
+  background:linear-gradient(180deg, #131f42 0%, #0c1530 100%);
+  border:1px solid rgba(130,160,210,.3); border-radius:14px;
+  min-width:360px; max-width:480px; width:90vw;
+  box-shadow:0 16px 60px rgba(0,0,0,.7), 0 0 40px rgba(77,150,255,.08);
+  animation:cipModalIn .2s ease-out;
+}
+@keyframes cipModalIn {
+  from { opacity:0; transform:scale(.92) translateY(12px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+#cip-modal-header {
+  display:flex; align-items:center; gap:10px;
+  padding:16px 20px; border-bottom:1px solid rgba(130,160,210,.15);
+}
+#cip-modal-icon { font-size:22px; }
+#cip-modal-title { font-size:16px; font-weight:700; color:var(--pv-tx0); flex:1; }
+.cip-modal-close {
+  background:none; border:none; color:var(--pv-tx2); font-size:18px;
+  cursor:pointer; padding:2px 6px; border-radius:4px; transition:all .12s;
+}
+.cip-modal-close:hover { color:var(--red); background:rgba(255,107,107,.1); }
+#cip-modal-fields {
+  padding:16px 20px; display:flex; flex-direction:column; gap:12px;
+  max-height:50vh; overflow-y:auto;
+}
+#cip-modal-fields .cip-field { display:flex; flex-direction:column; gap:4px; }
+#cip-modal-fields .cip-field-label {
+  font-size:11px; font-weight:700; color:var(--pv-tx2);
+  letter-spacing:.06em; text-transform:uppercase;
+}
+#cip-modal-fields input, #cip-modal-fields textarea, #cip-modal-fields select {
+  padding:8px 12px; font-size:14px; border-radius:6px;
+  border:1px solid rgba(130,160,210,.2); background:rgba(0,0,0,.35);
+  color:var(--pv-tx0); transition:border-color .15s;
+  font-family:inherit;
+}
+#cip-modal-fields input:focus, #cip-modal-fields textarea:focus {
+  outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 2px rgba(77,150,255,.15);
+}
+#cip-modal-fields textarea { resize:vertical; min-height:60px; }
+#cip-modal-fields .cip-field-hint {
+  font-size:10px; color:var(--pv-tx2); opacity:.7;
+}
+#cip-modal-footer {
+  display:flex; justify-content:flex-end; gap:8px;
+  padding:12px 20px; border-top:1px solid rgba(130,160,210,.12);
+}
+.cip-modal-cancel {
+  padding:8px 20px; font-size:13px; font-weight:600; border-radius:8px;
+  border:1px solid rgba(130,160,210,.2); background:rgba(0,0,0,.3);
+  color:var(--pv-tx2); cursor:pointer; transition:all .12s;
+}
+.cip-modal-cancel:hover { background:rgba(130,160,210,.1); color:var(--pv-tx1); }
+.cip-modal-ok {
+  padding:8px 28px; font-size:13px; font-weight:700; border-radius:8px;
+  border:none; background:linear-gradient(135deg, #4d96ff 0%, #3a7bdf 100%);
+  color:#fff; cursor:pointer; transition:all .15s;
+  box-shadow:0 2px 12px rgba(77,150,255,.3);
+}
+.cip-modal-ok:hover {
+  background:linear-gradient(135deg, #5da3ff 0%, #4d96ff 100%);
+  box-shadow:0 4px 20px rgba(77,150,255,.45);
+  transform:translateY(-1px);
+}
+#ce-edit-panel .ce-panel-empty {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  height:100%; color:var(--pv-tx2); font-size:13px; gap:8px;
+}
+#ce-edit-panel .ce-panel-empty .ce-empty-icon { font-size:40px; opacity:.4; }
+
+/* パネルヘッダー */
+#ce-edit-panel .ce-panel-header {
+  padding:16px 18px 12px; border-bottom:1px solid rgba(130,160,210,.1);
+  display:flex; align-items:center; gap:10px;
+}
+#ce-edit-panel .ce-panel-header .ce-ph-icon { font-size:28px; }
+#ce-edit-panel .ce-panel-header .ce-ph-info { flex:1; }
+#ce-edit-panel .ce-panel-header .ce-ph-type {
+  font-size:14px; font-weight:700; color:var(--pv-tx0);
+}
+#ce-edit-panel .ce-panel-header .ce-ph-idx {
+  font-size:11px; color:var(--pv-tx2); font-family:monospace;
+}
+/* パネルナビ */
+#ce-edit-panel .ce-panel-nav {
+  display:flex; gap:4px; padding:10px 18px 6px;
+  border-bottom:1px solid rgba(130,160,210,.08);
+}
+#ce-edit-panel .ce-panel-nav button {
+  flex:1; padding:6px 0; font-size:12px; border:1px solid rgba(130,160,210,.2);
+  border-radius:6px; background:rgba(255,255,255,.04); color:var(--pv-tx1); cursor:pointer;
+  transition:all .12s;
+}
+#ce-edit-panel .ce-panel-nav button:hover { background:rgba(130,160,210,.12); color:var(--pv-tx0); }
+#ce-edit-panel .ce-panel-nav button:disabled { opacity:.3; cursor:default; }
+
+/* パネルフィールド */
+#ce-edit-panel .ce-fields { padding:14px 18px; display:flex; flex-direction:column; gap:12px; }
+#ce-edit-panel .ce-field { display:flex; flex-direction:column; gap:4px; }
+#ce-edit-panel .ce-field-label {
+  font-size:10px; font-weight:600; color:var(--pv-tx2); letter-spacing:.08em; text-transform:uppercase;
+}
+#ce-edit-panel input, #ce-edit-panel textarea, #ce-edit-panel select {
+  padding:8px 10px; background:rgba(0,0,0,.25); border:1px solid rgba(130,160,210,.2);
+  border-radius:6px; color:var(--pv-tx0); font-size:13px; font-family:'Consolas','SF Mono',monospace;
+  transition:border-color .15s;
+}
+body.light #ce-edit-panel input, body.light #ce-edit-panel textarea {
+  background:rgba(255,255,255,.7); color:#333; border-color:#b0b8cc;
+}
+#ce-edit-panel input:focus, #ce-edit-panel textarea:focus {
+  border-color:var(--pv-accent); outline:none;
+  box-shadow:0 0 0 3px rgba(212,168,55,.1);
+}
+#ce-edit-panel textarea { width:100%; min-height:60px; resize:vertical; line-height:1.5; }
+#ce-edit-panel input[type=number] { width:100%; }
+
+/* パネルアクション */
+#ce-edit-panel .ce-panel-actions {
+  padding:14px 18px; border-top:1px solid rgba(130,160,210,.1);
+  display:flex; flex-direction:column; gap:6px; margin-top:auto;
+}
+#ce-edit-panel .ce-panel-actions button {
+  padding:8px 14px; font-size:12px; border-radius:6px; cursor:pointer;
+  border:1px solid rgba(130,160,210,.2); background:rgba(255,255,255,.04);
+  color:var(--pv-tx1); transition:all .15s; font-weight:500; text-align:center;
+}
+#ce-edit-panel .ce-panel-actions button:hover {
+  background:rgba(130,160,210,.12); color:var(--pv-tx0);
+}
+#ce-edit-panel .ce-act-apply {
+  background:rgba(61,174,110,.15)!important; border-color:rgba(61,174,110,.4)!important;
+  color:#6bcb77!important; font-weight:600!important;
+}
+#ce-edit-panel .ce-act-apply:hover { background:rgba(61,174,110,.3)!important; color:#a0f0b0!important; }
+#ce-edit-panel .ce-act-delete {
+  background:rgba(255,107,107,.08)!important; border-color:rgba(255,107,107,.25)!important;
+  color:#ff6b6b!important;
+}
+#ce-edit-panel .ce-act-delete:hover { background:rgba(255,107,107,.2)!important; }
+.ce-act-row { display:flex; gap:6px; }
+.ce-act-row button { flex:1; }
+
+/* ── ドラッグ中ツールチップ ── */
+#drag-tooltip {
+  position:absolute; display:none; z-index:50; pointer-events:none;
+  background:rgba(8,12,26,.9); border:1px solid rgba(255,107,107,.5);
+  border-radius:4px; padding:4px 10px; font-size:11px;
+  font-family:'Consolas',monospace; color:#ff6b6b;
+  box-shadow:0 4px 12px rgba(0,0,0,.5);
 }
 
 /* ── A1: JSON選択ドロップダウン ── */
@@ -252,6 +936,270 @@ body.light #minimap { background:rgba(255,255,255,.7); border-color:#b0b8cc; }
 body.light .speech-bubble { background:rgba(255,255,255,.92); color:#222; border-color:rgba(58,90,138,.3); }
 
 #theme-btn { margin-left:auto; font-size:10px; padding:4px 10px; letter-spacing:.08em; }
+
+/* ev-dot: シンプルな色丸 */
+.ev-dot {
+  width:8px; height:8px; border-radius:50%; flex-shrink:0;
+  display:inline-block; margin-right:2px;
+}
+
+/* ═══════════════════════════════════════════
+   DIRECTOR MODE — ゲーム感覚キャラ操作
+   ═══════════════════════════════════════════ */
+#director-toggle.active {
+  background:rgba(255,60,60,.35) !important; color:#fff !important;
+  border-color:#ff6b6b !important; box-shadow:0 0 12px rgba(255,60,60,.3);
+}
+
+#director-hud {
+  display:none; position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+  z-index:30; pointer-events:auto;
+}
+#director-hud.visible { display:flex; gap:16px; align-items:flex-end; }
+
+/* キャラ状態表示 */
+#dir-status {
+  background:rgba(8,12,26,.92); border:1px solid rgba(255,107,107,.4);
+  border-radius:10px; padding:12px 18px; min-width:180px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5); backdrop-filter:blur(8px);
+}
+#dir-status h4 {
+  font-size:9px; letter-spacing:.15em; text-transform:uppercase;
+  color:#ff8080; margin-bottom:8px; text-align:center;
+}
+#dir-status .ds-row {
+  display:flex; justify-content:space-between; font-size:11px; margin:3px 0;
+}
+#dir-status .ds-label { color:var(--pv-tx2); }
+#dir-status .ds-val { color:var(--pv-tx0); font-family:'Consolas',monospace; font-weight:600; }
+
+/* 方向パッド */
+#dir-pad {
+  background:rgba(8,12,26,.92); border:1px solid rgba(130,160,210,.3);
+  border-radius:16px; padding:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5); backdrop-filter:blur(8px);
+  display:grid; grid-template-columns:52px 52px 52px; grid-template-rows:52px 52px 52px;
+  gap:3px;
+}
+.dir-btn {
+  width:52px; height:52px; border:1px solid rgba(130,160,210,.25); border-radius:10px;
+  background:rgba(20,30,60,.8); color:var(--pv-tx0); font-size:18px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all .12s; user-select:none; position:relative;
+}
+.dir-btn:hover { background:rgba(40,60,120,.6); border-color:rgba(130,160,210,.5); }
+.dir-btn:active, .dir-btn.pressed {
+  background:rgba(60,100,200,.5); border-color:#4d96ff;
+  box-shadow:0 0 16px rgba(77,150,255,.3); transform:scale(0.95);
+}
+.dir-btn .dir-label {
+  position:absolute; bottom:3px; font-size:7px; letter-spacing:.05em;
+  color:var(--pv-tx2); text-transform:uppercase;
+}
+.dir-btn.center-btn {
+  background:rgba(255,217,61,.15); border-color:rgba(255,217,61,.4); font-size:14px;
+}
+.dir-btn.center-btn:hover { background:rgba(255,217,61,.3); }
+
+/* アクションボタン群 */
+#dir-actions {
+  background:rgba(8,12,26,.92); border:1px solid rgba(130,160,210,.3);
+  border-radius:12px; padding:10px 12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5); backdrop-filter:blur(8px);
+  display:flex; flex-direction:column; gap:5px;
+}
+.dir-act-btn {
+  padding:8px 14px; border:1px solid rgba(130,160,210,.25); border-radius:8px;
+  background:rgba(20,30,60,.8); color:var(--pv-tx0); font-size:11px;
+  cursor:pointer; display:flex; align-items:center; gap:8px;
+  transition:all .12s; user-select:none; white-space:nowrap;
+}
+.dir-act-btn:hover { background:rgba(40,60,120,.6); border-color:rgba(130,160,210,.5); }
+.dir-act-btn:active { background:rgba(60,100,200,.5); transform:scale(0.97); }
+.dir-act-btn .act-icon { font-size:16px; width:22px; text-align:center; }
+.dir-act-btn .act-key {
+  margin-left:auto; font-size:9px; color:var(--pv-tx2);
+  background:rgba(0,0,0,.3); padding:2px 6px; border-radius:3px;
+  font-family:monospace;
+}
+.dir-act-btn.toggled {
+  background:rgba(107,203,119,.2); border-color:rgba(107,203,119,.5); color:#a0f0b0;
+}
+
+/* 挿入位置インジケーター */
+#dir-insert-indicator {
+  position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:31;
+  display:none; background:rgba(255,60,60,.9); color:#fff;
+  padding:6px 18px; border-radius:20px; font-size:12px; font-weight:700;
+  letter-spacing:.08em; box-shadow:0 4px 20px rgba(255,60,60,.4);
+  animation:dirPulse 1.5s infinite;
+}
+#dir-insert-indicator.visible { display:block; }
+@keyframes dirPulse { 0%,100%{opacity:1;} 50%{opacity:.7;} }
+
+/* ステップ幅スライダー */
+#dir-step-row {
+  display:flex; align-items:center; gap:6px; font-size:10px; color:var(--pv-tx2);
+  margin-top:4px;
+}
+#dir-step-row input[type=range] {
+  flex:1; accent-color:#ff8080; height:4px;
+}
+#dir-step-val { color:var(--pv-tx0); font-family:monospace; font-weight:600; min-width:32px; }
+
+/* キューリスト */
+#dir-queue-list {
+  max-height:120px; overflow-y:auto; margin-bottom:6px;
+}
+#dir-queue-list::-webkit-scrollbar { width:4px; }
+#dir-queue-list::-webkit-scrollbar-thumb { background:rgba(130,160,210,.3); border-radius:2px; }
+.dq-item {
+  display:flex; align-items:center; gap:4px; padding:2px 4px; font-size:10px;
+  border-radius:3px; margin:1px 0;
+}
+.dq-item:nth-child(odd) { background:rgba(255,255,255,.03); }
+.dq-idx { width:18px; text-align:right; color:var(--pv-tx2); font-family:monospace; font-size:9px; }
+.dq-type { color:var(--cyan); font-weight:600; }
+.dq-detail { color:var(--pv-tx2); margin-left:auto; font-family:monospace; font-size:9px; }
+.dq-more { color:var(--pv-tx2); font-style:italic; justify-content:center; }
+
+.dir-queue-btn {
+  padding:3px 8px; font-size:9px; border:1px solid rgba(130,160,210,.3);
+  border-radius:4px; background:rgba(0,0,0,.3); color:var(--pv-tx1);
+  cursor:pointer; transition:all .12s;
+}
+.dir-queue-btn:hover { background:rgba(130,160,210,.15); color:var(--pv-tx0); }
+
+.dir-commit-btn {
+  width:100%; padding:8px; font-size:12px; font-weight:700; letter-spacing:.06em;
+  border:2px solid rgba(107,203,119,.5); border-radius:8px;
+  background:rgba(107,203,119,.15); color:#6bcb77;
+  cursor:pointer; transition:all .2s;
+}
+.dir-commit-btn:hover {
+  background:rgba(107,203,119,.3); border-color:#6bcb77;
+  box-shadow:0 0 16px rgba(107,203,119,.2);
+}
+.dir-commit-btn:active { transform:scale(0.97); }
+
+/* ライトモード対応 */
+body.light #director-hud #dir-status,
+body.light #director-hud #dir-pad,
+body.light #director-hud #dir-actions {
+  background:rgba(240,242,250,.95); border-color:#b0b8cc;
+}
+body.light .dir-btn { background:rgba(220,225,240,.8); color:#333; border-color:#b0b8cc; }
+body.light .dir-btn:active { background:rgba(100,140,220,.3); }
+body.light .dir-act-btn { background:rgba(220,225,240,.8); color:#333; border-color:#b0b8cc; }
+
+/* ── プリセットカード共通 ── */
+.preset-card {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; padding:8px 4px; border-radius:12px; cursor:pointer;
+  background:rgba(10,18,40,.5); border:1.5px solid rgba(130,160,210,.18);
+  color:var(--pv-tx1); transition:all .18s; user-select:none;
+  text-align:center; min-width:0;
+}
+.preset-card .pc-emoji {
+  font-size:22px; line-height:1; filter:saturate(.8);
+  transition:transform .15s, filter .15s;
+}
+.preset-card .pc-label {
+  font-size:9px; line-height:1.2; letter-spacing:.02em;
+  overflow:hidden; text-overflow:ellipsis; max-width:100%;
+}
+.preset-card:hover {
+  background:rgba(130,160,210,.12); border-color:rgba(130,160,210,.45);
+  color:var(--pv-tx0); transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+.preset-card:hover .pc-emoji { transform:scale(1.15); filter:saturate(1.2); }
+.preset-card.active {
+  background:linear-gradient(160deg, rgba(212,168,55,.18), rgba(212,168,55,.06));
+  border-color:rgba(212,168,55,.65); color:var(--pv-accent); font-weight:600;
+  box-shadow:0 0 14px rgba(212,168,55,.12), inset 0 0 0 1px rgba(212,168,55,.1);
+}
+.preset-card.active .pc-emoji { filter:saturate(1.4) brightness(1.1); }
+.preset-card.custom-card { border-style:dashed; color:var(--pv-tx2); }
+.preset-card.custom-card .pc-emoji { font-size:16px; }
+.preset-card.custom-card.active { border-style:solid; }
+
+/* ── コンパス配置 (rot_y) ── */
+.compass-grid {
+  display:grid; margin:8px 0;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: auto auto auto auto;
+  grid-template-areas:
+    ".   wl  c   wr  ."
+    "l   sl  .   sr  r"
+    "bl  .   bk  .   br"
+    ".   .  cst  .   .";
+  gap:5px; max-width:320px;
+}
+.compass-grid .preset-card { min-height:52px; padding:6px 2px; }
+.compass-grid .preset-card .pc-emoji { font-size:20px; }
+.compass-grid .preset-card.center-card {
+  background:rgba(212,168,55,.08); border-color:rgba(212,168,55,.3);
+}
+.compass-grid .preset-card.center-card .pc-emoji { font-size:26px; }
+
+/* ── 縦ストリップ (head_x) ── */
+.vstrip-grid {
+  display:grid; margin:8px 0;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(7, auto);
+  gap:5px; max-width:220px;
+}
+.vstrip-grid .preset-card { min-height:40px; padding:6px 4px; flex-direction:row; gap:6px; }
+.vstrip-grid .preset-card .pc-emoji { font-size:18px; flex-shrink:0; }
+.vstrip-grid .preset-card .pc-label { font-size:10px; text-align:left; }
+.vstrip-grid .vstrip-center {
+  grid-column:1 / -1;
+  background:rgba(212,168,55,.08); border-color:rgba(212,168,55,.3);
+  flex-direction:column;
+}
+.vstrip-grid .vstrip-center .pc-emoji { font-size:22px; }
+
+/* ── モーションカード ── */
+.preset-grid {
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));
+  gap:6px; margin:8px 0;
+}
+.preset-grid.motion-grid { grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); }
+.preset-card.motion-card {
+  flex-direction:row; gap:8px; padding:10px 12px;
+  min-height:48px; justify-content:flex-start;
+}
+.preset-card.motion-card .pc-emoji { font-size:20px; flex-shrink:0; }
+.preset-card.motion-card .pc-label { font-size:11px; text-align:left; white-space:normal; }
+
+/* ── カスタム入力 ── */
+.preset-custom-input { margin-top:6px; display:none; }
+.preset-custom-input.show { display:flex; align-items:center; gap:6px; }
+.preset-custom-input input {
+  width:90px; padding:6px 8px; background:rgba(0,0,0,.35);
+  border:1.5px solid var(--pv-inner); border-radius:8px;
+  color:var(--pv-tx0); font-size:12px; font-family:'Consolas',monospace;
+}
+.preset-custom-input input:focus { border-color:var(--pv-accent); outline:none; box-shadow:0 0 0 3px rgba(212,168,55,.1); }
+.preset-custom-input span { font-size:10px; color:var(--pv-tx2); }
+.preset-section-label {
+  font-size:10px; color:var(--pv-tx2); letter-spacing:.12em;
+  margin:8px 0 4px; text-transform:uppercase; font-weight:600;
+}
+/* モーションカード — 横長 */
+.preset-grid.motion-grid { grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); }
+.preset-card.motion-card {
+  flex-direction:row; gap:8px; padding:10px 12px;
+  min-height:48px; justify-content:flex-start;
+}
+.preset-card.motion-card .pc-emoji { font-size:20px; flex-shrink:0; }
+.preset-card.motion-card .pc-label { font-size:11px; text-align:left; white-space:normal; }
+body.light .preset-card { background:rgba(235,238,248,.7); border-color:#c0c8dd; color:#555; }
+body.light .preset-card:hover { background:rgba(215,220,240,.9); color:#333; box-shadow:0 4px 12px rgba(0,0,0,.08); }
+body.light .preset-card.active { background:rgba(212,168,55,.12); border-color:rgba(180,140,40,.5); color:#8a6a10; }
+body.light .preset-custom-input input { background:rgba(255,255,255,.85); border-color:#b0b8cc; color:#333; }
+
 </style>
 </head>
 <body>
@@ -259,54 +1207,57 @@ body.light .speech-bubble { background:rgba(255,255,255,.92); color:#222; border
 <div id="sidebar">
   <h1>EVENT PATH VIEWER</h1>
   <div id="controls">
-    <label>マップ</label>
-    <select id="map-select">
-      <option value="stage_iriguchi">CP1: 廃村入口</option>
-      <option value="stage_naibu">CP2/CP4: 廃村内部</option>
-      <option value="stage_souko">CP3: 廃倉庫</option>
-      <option value="stage_escape">CP5: 脱出路</option>
-      <option value="stage_yashiki">テスト: 廃屋敷</option>
-      <option value="public_toilet">テスト: 公衆トイレ</option>
-      <option value="empty">空のグリッド</option>
-    </select>
-    <label>対話JSON</label>
     <select id="dialogue-select">
-      <option value="">-- ファイルから選択 --</option>
+      <option value="">-- チャプター選択 --</option>
       <option value="ch01_entrance">CP1: 廃村入口</option>
+      <option value="ch02_yashiki">CP2: 廃屋敷</option>
       <option value="ch01_haison_souko">CP3: 廃倉庫</option>
-      <option value="ch02_haison_naibu">CP2: 廃村内部</option>
-      <option value="ch04_haison_naibu_event">CP4: 廃村内部イベント</option>
+      <option value="ch04_kirihara_jinja">CP4: 桐原神社</option>
       <option value="ch05_haison_dasshutsu">CP5: 脱出</option>
       <option value="ch_test_toilet">テスト: 公衆トイレ</option>
       <option value="opening">オープニング</option>
     </select>
-    <input type="file" id="json-file" accept=".json">
-    <button id="btn-open" title="ファイルを開いて変更を自動監視">開く（自動監視）</button>
-    <span id="data-source"></span>
+    <select id="section-select" style="display:none;"></select>
+    <select id="map-select">
+      <option value="stage_iriguchi">マップ: 廃村入口</option>
+      <option value="stage_naibu">マップ: 廃村内部</option>
+      <option value="stage_souko">マップ: 廃倉庫</option>
+      <option value="stage_escape">マップ: 脱出路</option>
+      <option value="stage_yashiki">マップ: 廃屋敷</option>
+      <option value="public_toilet">マップ: 公衆トイレ</option>
+      <option value="empty">マップ: 空</option>
+    </select>
     <div class="btn-row">
-      <button id="btn-save">JSON保存</button>
       <button id="btn-play">再生</button>
-      <button id="btn-reset">表示リセット</button>
+      <button id="btn-speed">x1</button>
+      <button id="btn-save" title="開いたJSONに直接上書き保存">JSON保存</button>
+      <button id="director-toggle">Director</button>
+      <button id="btn-reset">リセット</button>
+    </div>
+    <div class="btn-row">
+      <button id="btn-undo" disabled>戻す</button>
+      <button id="btn-redo" disabled>やり直す</button>
+      <button id="btn-open" title="dialogue/のJSONファイルを開いて編集・保存">ファイルを開く</button>
       <button id="theme-btn">Light</button>
     </div>
-    <div class="undo-row">
-      <button id="btn-undo" disabled>← 元に戻す</button>
-      <button id="btn-redo" disabled>やり直す →</button>
+    <div id="file-info" style="font-size:10px;color:var(--pv-tx2);padding:2px 0;display:none;">
+      <span id="file-name" style="color:var(--green);"></span>
     </div>
+    <input type="file" id="json-file" accept=".json" style="font-size:10px;">
+    <span id="data-source"></span>
     <div class="filter-row">
-      <label><input type="checkbox" id="filter-movement"> 移動系のみ</label>
+      <label><input type="checkbox" id="filter-movement"> 移動のみ</label>
       <label><input type="checkbox" id="show-bubbles"> セリフ表示</label>
     </div>
-    <label style="font-size:10px;color:#555;">クリック=地点選択 / ドラッグ=パン / ホイール=ズーム / 赤丸ドラッグ=位置変更 / Shift+クリック=複数選択</label>
   </div>
 
   <div id="pick-panel" class="hidden">
     <h3>選択した地点</h3>
     <div id="pick-coords">X: 0.00, Z: 0.00</div>
     <div id="pick-actions">
-      <button onclick="actionWalkHere()">ここに歩かせる</button>
-      <button onclick="actionFaceHere()">ここを向かせる</button>
-      <button onclick="actionSetSpawn()">スタート地点にする</button>
+      <button onclick="actionWalkHere()">ここに歩く</button>
+      <button onclick="actionFaceHere()">ここを向く</button>
+      <button onclick="actionSetSpawn()">開始地点</button>
       <button onclick="actionCopyCoords()">座標コピー</button>
     </div>
     <div id="pick-dist"></div>
@@ -317,26 +1268,253 @@ body.light .speech-bubble { background:rgba(255,255,255,.92); color:#222; border
 </div>
 
 <div id="canvas-area">
+  <button id="sidebar-toggle" onclick="toggleSidebar()">☰</button>
   <canvas id="cv"></canvas>
   <div id="coords">X: 0.00, Z: 0.00</div>
-  <div id="legend">
-    <span class="legend-dot" style="background:#ff6b6b; box-shadow:0 0 6px #ff6b6b;"></span>位置移動<br>
-    <span class="legend-dot" style="background:#ffd93d; box-shadow:0 0 6px #ffd93d;"></span>回転<br>
-    <span class="legend-dot" style="background:#6bcb77; box-shadow:0 0 6px #6bcb77;"></span>歩行ON/OFF<br>
-    <span class="legend-dot" style="background:#4d96ff; box-shadow:0 0 6px #4d96ff;"></span>マップ切替<br>
-    <span class="legend-dot" style="background:#fff; box-shadow:0 0 6px #fff;"></span>初期位置<br>
-    <span style="color:rgba(100,180,255,0.5); font-size:14px;">&#9698;</span> 視野コーン
-  </div>
+  <div id="legend" style="display:none;"></div>
   <div id="save-status"></div>
   <div id="crosshair-info"></div>
   <canvas id="minimap" width="170" height="130"></canvas>
   <div id="bubbles-container"></div>
+  <div id="drag-tooltip"></div>
+
+  <!-- Director Mode Insert Indicator -->
+  <div id="dir-insert-indicator">DIRECTOR MODE — #<span id="dir-insert-at">0</span> の後に挿入 / 操作して「保存」で反映 / Esc=終了</div>
+
+  <!-- Director Mode HUD -->
+  <div id="director-hud">
+    <!-- キャラ状態 + キュー -->
+    <div id="dir-status">
+      <h4>CHARACTER STATE</h4>
+      <div class="ds-row"><span class="ds-label">位置</span><span class="ds-val" id="ds-pos">0.0, 0.0</span></div>
+      <div class="ds-row"><span class="ds-label">向き</span><span class="ds-val" id="ds-rot">0°</span></div>
+      <div class="ds-row"><span class="ds-label">頭</span><span class="ds-val" id="ds-head">0°</span></div>
+      <div class="ds-row"><span class="ds-label">歩行</span><span class="ds-val" id="ds-walk">OFF</span></div>
+      <div id="dir-step-row">
+        <span>歩幅:</span>
+        <input type="range" id="dir-step" min="0.5" max="10" step="0.5" value="2">
+        <span id="dir-step-val">2.0m</span>
+      </div>
+      <div style="border-top:1px solid rgba(130,160,210,.2); margin-top:8px; padding-top:8px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+          <h4 style="margin:0;">QUEUE <span id="dir-queue-count" style="color:#ffd93d;">0</span></h4>
+          <div style="display:flex; gap:4px;">
+            <button class="dir-queue-btn" onclick="dirUndoLast()" title="最後の操作を取消 (Backspace)">↩取消</button>
+            <button class="dir-queue-btn" onclick="dirClearQueue()" title="全操作を取消">全消去</button>
+          </div>
+        </div>
+        <div id="dir-queue-list"></div>
+        <button class="dir-commit-btn" onclick="dirCommitQueue()" title="キューをJSONに反映 (Enter)">保存してJSONに反映</button>
+      </div>
+    </div>
+
+    <!-- 方向パッド -->
+    <div id="dir-pad">
+      <div class="dir-btn" data-dir="head-up" title="見上げる (R)">
+        <span>👁↑</span><span class="dir-label">R</span>
+      </div>
+      <div class="dir-btn" data-dir="forward" title="前進 (W)">
+        <span>▲</span><span class="dir-label">W</span>
+      </div>
+      <div class="dir-btn" data-dir="head-down" title="見下ろす (F)">
+        <span>👁↓</span><span class="dir-label">F</span>
+      </div>
+      <div class="dir-btn" data-dir="left" title="左を向く (A)">
+        <span>◀</span><span class="dir-label">A</span>
+      </div>
+      <div class="dir-btn center-btn" data-dir="here" title="現在地を確認">
+        <span>◎</span>
+      </div>
+      <div class="dir-btn" data-dir="right" title="右を向く (D)">
+        <span>▶</span><span class="dir-label">D</span>
+      </div>
+      <div class="dir-btn" data-dir="turn-180" title="振り向く (X)">
+        <span>↩</span><span class="dir-label">X</span>
+      </div>
+      <div class="dir-btn" data-dir="backward" title="後退 (S)">
+        <span>▼</span><span class="dir-label">S</span>
+      </div>
+      <div class="dir-btn" data-dir="face-click" title="クリック地点を向く (Q)">
+        <span>⊕</span><span class="dir-label">Q</span>
+      </div>
+    </div>
+
+    <!-- アクションボタン -->
+    <div id="dir-actions">
+      <div class="dir-act-btn" data-act="walk-toggle">
+        <span class="act-icon">🚶</span>歩行 ON/OFF<span class="act-key">Space</span>
+      </div>
+      <div class="dir-act-btn" data-act="say">
+        <span class="act-icon">💬</span>セリフ挿入<span class="act-key">T</span>
+      </div>
+      <div class="dir-act-btn" data-act="wait">
+        <span class="act-icon">⏱</span>待機挿入<span class="act-key">1</span>
+      </div>
+      <div class="dir-act-btn" data-act="sfx">
+        <span class="act-icon">🔊</span>効果音<span class="act-key">2</span>
+      </div>
+      <div class="dir-act-btn" data-act="flashlight">
+        <span class="act-icon">🔦</span>ライトON<span class="act-key">3</span>
+      </div>
+      <div class="dir-act-btn" data-act="horror">
+        <span class="act-icon">👻</span>ホラー演出<span class="act-key">4</span>
+      </div>
+      <div class="dir-act-btn" data-act="viewers">
+        <span class="act-icon">👥</span>視聴者数<span class="act-key">5</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="ctx-menu">
+    <div class="ctx-item" data-action="walk"><span class="ctx-icon">🚶</span>ここに歩かせる<span class="ctx-key">W</span></div>
+    <div class="ctx-item" data-action="face"><span class="ctx-icon">👁</span>ここを向かせる<span class="ctx-key">F</span></div>
+    <div class="ctx-item" data-action="spawn"><span class="ctx-icon">⚑</span>スタート地点にする<span class="ctx-key">S</span></div>
+    <div class="ctx-item" data-action="copy"><span class="ctx-icon">📋</span>座標コピー<span class="ctx-key">C</span></div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" data-action="insert-posx"><span class="ctx-icon">↔</span>X移動イベント挿入</div>
+    <div class="ctx-item" data-action="insert-posz"><span class="ctx-icon">↕</span>Z移動イベント挿入</div>
+    <div class="ctx-item" data-action="insert-rot"><span class="ctx-icon">↻</span>回転イベント挿入</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item ctx-danger" data-action="delete" style="color:#ff6b6b;"><span class="ctx-icon">✕</span>選択イベント削除<span class="ctx-key">Del</span></div>
+  </div>
+
+  <!-- NLEモニターバー -->
+  <div id="ce-monitor-bar">
+    <span class="cem-title">MAP</span>
+    <select id="ce-section-select" onchange="onCeSectionChange(this.value)"></select>
+    <select id="ce-map-select" onchange="document.getElementById('map-select').value=this.value;onMapChange();"></select>
+    <button onclick="resetView()" class="cem-btn">全体</button>
+    <button onclick="toggleTheme()" id="ce-theme-btn" class="cem-btn">Light</button>
+    <span class="cem-coords" id="cem-coords"></span>
+  </div>
+
+  <div id="ce-play-marker"></div>
+  <!-- MAP内再生コントロール -->
+  <div id="ce-play-controls">
+    <button id="ce-play-btn2" class="ce-btn-play" onclick="onPlay()">▶ 再生</button>
+    <button onclick="cycleSpeed()" id="ce-speed-btn2">x1</button>
+    <span id="ce-play-time" style="font-size:12px;color:var(--pv-tx2);font-family:monospace;"></span>
+  </div>
+</div>
+
+<!-- 左: イベント挿入パネル -->
+<div id="ce-insert-panel">
+  <div class="cip-header">イベント追加</div>
+  <div class="cip-pos" id="cip-pos">選択中: なし</div>
+  <div class="cip-list" id="cip-list"></div>
+</div>
+
+<!-- プロパティパネル -->
+<div id="ce-edit-panel"></div>
+
+<!-- タイムライン -->
+<div id="card-editor">
+  <div id="ce-toolbar">
+    <span style="font-size:15px;font-weight:800;color:#ffd93d;letter-spacing:.08em;">PATH VIEWER</span>
+    <select id="ce-chapter-select" onchange="onChapterSwitch(this.value)" style="padding:4px 8px;font-size:13px;background:rgba(0,0,0,.4);border:1px solid rgba(130,160,210,.25);border-radius:5px;color:var(--pv-tx1);cursor:pointer;"></select>
+    <div id="ce-filters"></div>
+    <button class="ce-btn-save" onclick="onSave()">💾 保存</button>
+    <button onclick="undo()">↩ 戻す</button>
+    <button onclick="redo()">↪ やり直す</button>
+    <span id="ce-count"></span>
+  </div>
+  <div id="ce-seekbar" onmousedown="seekStart(event)" onmousemove="seekMove(event)" onmouseup="seekEnd(event)">
+    <div id="ce-progress" style="width:0"></div>
+    <div id="ce-seek-chibi"></div>
+  </div>
+  <div id="ce-lane"></div>
+  <div id="ce-lane-footer">
+    <span>🖱 クリック: 選択</span>
+    <span>⌨ ←→: 移動</span>
+    <span>Del: 削除</span>
+    <span>Ctrl+Z: 戻す</span>
+  </div>
+</div>
+<div id="ce-insert-menu"></div>
+
+<!-- イベント挿入モーダル -->
+<div id="cip-modal-overlay" onclick="cipModalClose()">
+  <div id="cip-modal" onclick="event.stopPropagation()">
+    <div id="cip-modal-header">
+      <span id="cip-modal-icon"></span>
+      <span id="cip-modal-title"></span>
+      <button onclick="cipModalClose()" class="cip-modal-close">✕</button>
+    </div>
+    <div id="cip-modal-fields"></div>
+    <div id="cip-modal-footer">
+      <button onclick="cipModalClose()" class="cip-modal-cancel">キャンセル</button>
+      <button onclick="cipModalConfirm()" class="cip-modal-ok">追加</button>
+    </div>
+  </div>
+</div>
+
+<!-- 適用確認モーダル -->
+<div id="apply-modal-overlay" onclick="applyModalClose()">
+  <div id="apply-modal" onclick="event.stopPropagation()">
+    <div id="apply-modal-header">
+      <span id="apply-modal-icon">✅</span>
+      <span id="apply-modal-title">変更を確認</span>
+      <button onclick="applyModalClose()" class="cip-modal-close">✕</button>
+    </div>
+    <div id="apply-modal-body"></div>
+    <div id="apply-modal-footer">
+      <button onclick="applyModalClose()" class="cip-modal-cancel">キャンセル</button>
+      <button onclick="applyModalExec()" class="cip-modal-ok">✓ 適用する</button>
+    </div>
+  </div>
+</div>
+
+<!-- 挿入プレビュー確認バー -->
+<div id="ce-preview-bar">
+  <span class="preview-label">📍 ここに配置</span>
+  <span id="preview-info"></span>
+  <button class="preview-ok" onclick="previewConfirm()">✓ 確定</button>
+  <button class="preview-cancel" onclick="previewCancel()">✕ やめる</button>
 </div>
 
 <script>
 // ═══════════════════════════════════════════════════
 // マッププリセット
 // ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// イベントカテゴリ（アイコン・色）
+// ═══════════════════════════════════════════════════
+const EVENT_CAT = {
+  pos_z:       { icon:"🚶", color:"#ff6b6b", cat:"移動" },
+  pos_x:       { icon:"🚶", color:"#ff6b6b", cat:"移動" },
+  pos_z_await: { icon:"🚶", color:"#ff9b5b", cat:"移動" },
+  pos_x_await: { icon:"🚶", color:"#ff9b5b", cat:"移動" },
+  rot_y:       { icon:"🔄", color:"#ffd93d", cat:"回転" },
+  head_x:      { icon:"👁", color:"#ffd93d", cat:"回転" },
+  motion:      { icon:"🎭", color:"#ffd93d", cat:"回転" },
+  say:         { icon:"💬", color:"#4d96ff", cat:"セリフ" },
+  say_clear:   { icon:"💬", color:"#4d96ff", cat:"セリフ" },
+  chat:        { icon:"📱", color:"#3db8b8", cat:"チャット" },
+  superchat:   { icon:"💰", color:"#f97316", cat:"チャット" },
+  walk_set:    { icon:"👟", color:"#6bcb77", cat:"演出" },
+  stage_swap:  { icon:"🗺", color:"#4d96ff", cat:"演出" },
+  flashlight_on:     { icon:"🔦", color:"#ffd93d", cat:"演出" },
+  flashlight_flicker:{ icon:"🔦", color:"#ffd93d", cat:"演出" },
+  polaroid_video:    { icon:"📹", color:"#c084fc", cat:"演出" },
+  fade_black:  { icon:"⬛", color:"#6b7a99", cat:"演出" },
+  horror_glitch:     { icon:"👻", color:"#ff4444", cat:"ホラー" },
+  horror_tint:       { icon:"🩸", color:"#ff4444", cat:"ホラー" },
+  horror_tint_clear: { icon:"🩸", color:"#ff4444", cat:"ホラー" },
+  horror_flash:      { icon:"⚡", color:"#ff4444", cat:"ホラー" },
+  scare_flash:       { icon:"😱", color:"#ff4444", cat:"ホラー" },
+  wait:        { icon:"⏳", color:"#6b7a99", cat:"待機" },
+  sleep:       { icon:"⏳", color:"#6b7a99", cat:"待機" },
+  sfx:         { icon:"🔊", color:"#6bcb77", cat:"音声" },
+  set_viewers: { icon:"👥", color:"#f97316", cat:"視聴者" },
+  choice:      { icon:"🔀", color:"#f0d060", cat:"分岐" },
+  label:       { icon:"🏷", color:"#f0d060", cat:"分岐" },
+  goto:        { icon:"➡", color:"#f0d060", cat:"分岐" },
+  goto_route:  { icon:"➡", color:"#f0d060", cat:"分岐" },
+  set_route:   { icon:"🛤", color:"#f0d060", cat:"分岐" },
+  use_ofuda:   { icon:"📿", color:"#f0d060", cat:"分岐" },
+};
+const DEFAULT_CAT = { icon:"📎", color:"#6b7a99", cat:"他" };
+
 const MAPS = {
   public_toilet: {
     name: "公衆トイレ",
@@ -534,9 +1712,13 @@ const MAPS = {
 // ═══════════════════════════════════════════════════
 // 状態
 // ═══════════════════════════════════════════════════
-let events = [], jsonData = null, currentMap = MAPS.stage_iriguchi;
+let events = [], allEvents = [], jsonData = null, currentMap = MAPS.stage_iriguchi;
 let selectedIdx = -1, playerPath = [];
 let pickedPoint = null; // {x, z} クリックで選んだ地点
+
+// セクション分割（stage_swap境界）
+let sections = []; // [{label, mapKey, startIdx, endIdx, spawnX, spawnZ}]
+let currentSection = 0;
 
 // A2: フィルター
 let filterMovementOnly = false;
@@ -564,32 +1746,74 @@ function init() {
   cv.addEventListener("mousemove", onMouseMove);
   cv.addEventListener("mouseup", onMouseUp);
   cv.addEventListener("mouseleave", onMouseUp);
+  cv.addEventListener("auxclick", e => e.preventDefault());
+  cv.addEventListener("contextmenu", e => { if(e.button===1) e.preventDefault(); });
   document.getElementById("map-select").addEventListener("change", onMapChange);
   document.getElementById("json-file").addEventListener("change", onFileLoad);
   document.getElementById("btn-save").addEventListener("click", onSave);
   document.getElementById("btn-open").addEventListener("click", onOpenAndWatch);
   document.getElementById("btn-play").addEventListener("click", onPlay);
   document.getElementById("btn-reset").addEventListener("click", resetView);
-  // A1: 対話JSON選択
   document.getElementById("dialogue-select").addEventListener("change", onDialogueSelect);
-  // A2: フィルター
   document.getElementById("filter-movement").addEventListener("change", e => { filterMovementOnly = e.target.checked; buildEventList(); });
-  // A3: Undo/Redo
   document.getElementById("btn-undo").addEventListener("click", undo);
   document.getElementById("btn-redo").addEventListener("click", redo);
   document.addEventListener("keydown", e => {
     if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
     if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
+
   });
-  // B5: セリフ表示トグル
   document.getElementById("show-bubbles").addEventListener("change", e => { showBubbles = e.target.checked; draw(); });
-  // B8: テーマ
   document.getElementById("theme-btn").addEventListener("click", toggleTheme);
+  document.getElementById("btn-speed").addEventListener("click", cycleSpeed);
+  document.getElementById("section-select").addEventListener("change", e => {
+    applySection(parseInt(e.target.value) || 0);
+  });
+
   resetView(); draw();
+  initDialogueList().then(() => {
+    // デフォルトで廃村入口を読み込み → カード編集モードで開始
+    const sel = document.getElementById("dialogue-select");
+    sel.value = "ch01_entrance";
+    onDialogueSelect().then(() => {
+      ceOpen();
+      populateChapterSelect();
+    });
+  });
+}
+// サーバーからJSON一覧を取得してドロップダウンを更新
+async function initDialogueList() {
+  try {
+    const res = await fetch("/api/list");
+    if (!res.ok) return;
+    const { files } = await res.json();
+    const sel = document.getElementById("dialogue-select");
+    const prev = sel.value;
+    sel.innerHTML = '<option value="">-- チャプター選択 --</option>';
+    const LABELS = {
+      ch01_entrance:"CP1: 廃村入口", ch02_yashiki:"CP2: 廃屋敷",
+      ch01_haison_souko:"CP3: 廃倉庫", ch04_kirihara_jinja:"CP4: 桐原神社",
+      ch05_haison_dasshutsu:"CP5: 脱出", ch_test_toilet:"テスト: 公衆トイレ",
+      opening:"オープニング",
+    };
+    for (const f of files) {
+      const name = f.replace(/\.json$/, "");
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = LABELS[name] || name;
+      sel.appendChild(opt);
+    }
+    if (prev) sel.value = prev;
+    showStatus("サーバー接続OK — " + files.length + "ファイル");
+  } catch (e) {
+    // サーバー未起動 — ハードコード版をそのまま使用
+  }
 }
 function resize() {
   const a = document.getElementById("canvas-area");
-  cv.width = a.clientWidth; cv.height = a.clientHeight; draw();
+  cv.width = a.clientWidth;
+  cv.height = a.clientHeight;
+  draw();
 }
 function resetView() {
   const b = currentMap.bounds;
@@ -604,19 +1828,149 @@ function w2s(wx, wz) { return [cv.width/2 + (wx-camX)*zoom, cv.height/2 + (wz-ca
 function s2w(sx, sy) { return [(sx - cv.width/2)/zoom + camX, (sy - cv.height/2)/zoom + camZ]; }
 
 // ═══════════════════════════════════════════════════
-// パス抽出
+// セクション分割 + パス抽出
 // ═══════════════════════════════════════════════════
-function extractPath() {
+let eventPositions = [];
+let pathClusters = [];
+
+const SCENE_TO_MAP = {
+  "PublicToilet": "public_toilet",
+  "Stage_Village": "stage_iriguchi",
+  "Stage_Yashiki": "stage_yashiki",
+  "Stage_Shrine": "stage_naibu",
+  "StageEscape": "stage_escape",
+};
+function sceneToMapKey(scenePath) {
+  if (!scenePath) return null;
+  for (const [frag, key] of Object.entries(SCENE_TO_MAP)) {
+    if (scenePath.includes(frag)) return key;
+  }
+  return null;
+}
+
+// allEventsからstage_swap境界でセクション分割
+function buildSections() {
+  const initMapKey = document.getElementById("map-select").value;
+  sections = [];
+  let secStart = 0;
+  let mapKey = initMapKey;
+  let spawnX = currentMap.spawn.x, spawnZ = currentMap.spawn.z;
+  let counter = {}; // mapKey → 出現回数
+
+  for (let i = 0; i < allEvents.length; i++) {
+    if (allEvents[i].type === "stage_swap") {
+      // 現セクションを確定
+      counter[mapKey] = (counter[mapKey] || 0) + 1;
+      const mapName = MAPS[mapKey] ? MAPS[mapKey].name : mapKey;
+      sections.push({ mapKey, mapName, startIdx: secStart, endIdx: i, spawnX, spawnZ, num: counter[mapKey] });
+      // 新セクション開始
+      const ev = allEvents[i];
+      const newMap = sceneToMapKey(ev.scene);
+      if (newMap) mapKey = newMap;
+      if (ev.spawn && ev.spawn.length >= 3) {
+        spawnX = parseFloat(ev.spawn[0]) || 0;
+        spawnZ = parseFloat(ev.spawn[2]) || 0;
+      }
+      secStart = i + 1;
+    }
+  }
+  // 最後のセクション
+  counter[mapKey] = (counter[mapKey] || 0) + 1;
+  const mapName = MAPS[mapKey] ? MAPS[mapKey].name : mapKey;
+  sections.push({ mapKey, mapName, startIdx: secStart, endIdx: allEvents.length, spawnX, spawnZ, num: counter[mapKey] });
+
+  // ラベル生成（同じマップが複数回あればナンバリング）
+  const mapCounts = {};
+  for (const s of sections) { mapCounts[s.mapKey] = (mapCounts[s.mapKey] || 0) + 1; }
+  const mapSeq = {};
+  for (const s of sections) {
+    mapSeq[s.mapKey] = (mapSeq[s.mapKey] || 0) + 1;
+    if (mapCounts[s.mapKey] > 1) {
+      s.label = `${s.mapName} (${mapSeq[s.mapKey]})`;
+    } else {
+      s.label = s.mapName;
+    }
+  }
+
+  // セクション選択UI更新
+  const sel = document.getElementById("section-select");
+  sel.innerHTML = "";
+  if (sections.length <= 1) {
+    sel.style.display = "none";
+  } else {
+    sel.style.display = "";
+    sections.forEach((s, i) => {
+      const evCount = s.endIdx - s.startIdx;
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = `${i+1}/${sections.length}: ${s.label} (${evCount}件)`;
+      sel.appendChild(opt);
+    });
+    sel.value = currentSection < sections.length ? currentSection : 0;
+  }
+}
+
+// 現在のセクションを適用（events/map切替 + パス抽出）
+function applySection(secIdx) {
+  if (secIdx < 0 || secIdx >= sections.length) secIdx = 0;
+  currentSection = secIdx;
+  const sec = sections[secIdx];
+
+  // イベントを該当範囲に絞る
+  events = allEvents.slice(sec.startIdx, sec.endIdx);
+
+  // マップ切替
+  if (MAPS[sec.mapKey]) {
+    currentMap = MAPS[sec.mapKey];
+    document.getElementById("map-select").value = sec.mapKey;
+  }
+
+  extractPath(sec.spawnX, sec.spawnZ);
+  buildEventList();
+  selectedIdx = -1;
+  multiSelected.clear();
+  pickedPoint = null;
+  updatePickPanel();
+  ceSelectedIdx = -1; ceRenderEditPanel();
+  resetView();
+  draw();
+}
+
+function extractPath(spawnX, spawnZ) {
   playerPath = [];
-  let px = currentMap.spawn.x, pz = currentMap.spawn.z, rot = 0;
-  playerPath.push({ x: px, z: pz, rot, eventIdx: -1, type: "spawn" });
+  eventPositions = [];
+  pathClusters = [];
+
+  const mapKey = document.getElementById("map-select").value;
+  let px = (spawnX !== undefined) ? spawnX : currentMap.spawn.x;
+  let pz = (spawnZ !== undefined) ? spawnZ : currentMap.spawn.z;
+  let rot = 0;
+  playerPath.push({ x: px, z: pz, rot, eventIdx: -1, type: "spawn", mapKey });
   for (let i = 0; i < events.length; i++) {
     const ev = events[i], t = ev.type;
-    if (t === "rot_y") { rot = parseFloat(ev.target)||0; playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"rot_y"}); }
-    else if (t === "pos_z") { pz = parseFloat(ev.target)||0; playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"pos_z"}); }
-    else if (t === "pos_x") { px = parseFloat(ev.target)||0; playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"pos_x"}); }
-    else if (t === "walk_set") { playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"walk_set"}); }
-    else if (t === "stage_swap") { playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"stage_swap"}); }
+    if (t === "rot_y") { rot = parseFloat(ev.target)||0; playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"rot_y",mapKey}); }
+    else if (t === "pos_z") { pz = parseFloat(ev.target)||0; playerPath.push({x:px,z:pz,rot,eventIdx:i,type:t,mapKey}); }
+    else if (t === "pos_x") { px = parseFloat(ev.target)||0; playerPath.push({x:px,z:pz,rot,eventIdx:i,type:t,mapKey}); }
+    else if (t === "pos_z_await" || t === "pos_x_await") { playerPath.push({x:px,z:pz,rot,eventIdx:i,type:t,mapKey}); }
+    else if (t === "walk_set") { playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"walk_set",mapKey}); }
+    eventPositions[i] = { x: px, z: pz, rot };
+  }
+  // クラスター計算
+  for (let w = 0; w < playerPath.length; w++) {
+    const wp = playerPath[w];
+    const startEv = wp.eventIdx + 1;
+    const nextWp = playerPath[w + 1];
+    const endEv = nextWp ? nextWp.eventIdx : events.length;
+    let says = 0, chats = 0, sfx = 0, horrors = 0;
+    for (let e = startEv; e < endEv; e++) {
+      if (e < 0) continue;
+      const t = events[e].type;
+      if (t === "say") says++;
+      else if (t === "chat") chats++;
+      else if (t === "sfx") sfx++;
+      else if (t === "horror_glitch" || t === "scare_flash") horrors++;
+    }
+    pathClusters[w] = { says, chats, sfx, horrors, total: says+chats+sfx+horrors, range:[startEv, endEv] };
   }
 }
 
@@ -630,9 +1984,8 @@ function draw() {
   if (lightMode) { bgGrad.addColorStop(0,"#e8eaf4"); bgGrad.addColorStop(1,"#d0d4e0"); }
   else { bgGrad.addColorStop(0,"#0e1428"); bgGrad.addColorStop(1,"#060a14"); }
   ctx.fillStyle = bgGrad; ctx.fillRect(0,0,cv.width,cv.height);
-  drawGrid(); drawMap(); drawPathGlow(); drawPath(); drawSegmentLabels(); drawFOV(); drawWaypoints(); drawPickedPoint();
-  drawMinimap();
-  if (showBubbles) drawSpeechBubbles();
+  drawGrid(); drawMap(); drawPathGlow(); drawPath(); drawFOV(); drawWaypoints(); drawStartGoal(); drawPickedPoint(); drawDirectorCharacter();
+  // drawLegend / drawMinimap / 吹き出しは常時カード編集モードのため廃止
 }
 
 function drawGrid() {
@@ -681,70 +2034,118 @@ function drawMap() {
     ctx.beginPath(); ctx.roundRect(sx, sy, w, h, Math.min(3, w/6)); ctx.stroke();
     // Label
     if (r.label) {
-      ctx.font = "bold 10px 'Segoe UI',sans-serif";
-      ctx.fillStyle = lightMode ? "rgba(80,90,120,.6)" : "rgba(160,180,220,.5)";
-      ctx.fillText(r.label, sx+5, sy+14);
+      const fontSize = Math.max(10, Math.min(14, w / 6));
+      ctx.font = `bold ${fontSize}px 'Segoe UI',sans-serif`;
+      ctx.fillStyle = lightMode ? "rgba(80,90,120,.7)" : "rgba(180,200,240,.6)";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(r.label, sx + w/2, sy + h/2);
+      ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
     }
   }
   for (const lb of (currentMap.labels||[])) {
     const [sx,sy] = w2s(lb.x, lb.z);
-    ctx.font = `bold ${lb.size||10}px 'Segoe UI',sans-serif`;
-    // Text with glow
-    ctx.shadowColor = lightMode ? "rgba(58,90,138,.3)" : "rgba(80,120,200,.4)";
-    ctx.shadowBlur = 8;
-    ctx.fillStyle = lightMode ? "#6a7a9a" : "#5a7aaa";
+    const sz = Math.max(lb.size||10, 12);
+    ctx.font = `bold ${sz}px 'Segoe UI',sans-serif`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    // ピル背景
+    const m = ctx.measureText(lb.text);
+    ctx.fillStyle = lightMode ? "rgba(230,235,245,.7)" : "rgba(8,12,26,.6)";
+    ctx.beginPath(); ctx.roundRect(sx - m.width/2 - 8, sy - sz/2 - 4, m.width + 16, sz + 8, 6); ctx.fill();
+    // テキスト
+    ctx.shadowColor = lightMode ? "rgba(58,90,138,.3)" : "rgba(80,120,200,.5)";
+    ctx.shadowBlur = 6;
+    ctx.fillStyle = lightMode ? "#4a5a7a" : "#8ab0e0";
     ctx.fillText(lb.text, sx, sy);
     ctx.shadowBlur = 0;
+    ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
   }
   ctx.restore();
 }
 
 // Glow layer under path
 function drawPathGlow() {
-  if (playerPath.length < 2) return;
+  const segs = getVisibleSegments();
+  if (segs.length === 0) return;
   ctx.save();
-  ctx.strokeStyle = "rgba(255,80,80,.08)"; ctx.lineWidth = 12; ctx.lineCap = "round"; ctx.lineJoin = "round";
-  ctx.filter = "blur(6px)";
-  ctx.beginPath();
-  const [gx0,gy0] = w2s(playerPath[0].x, playerPath[0].z); ctx.moveTo(gx0,gy0);
-  for (let i=1;i<playerPath.length;i++){const [gx,gy]=w2s(playerPath[i].x,playerPath[i].z);ctx.lineTo(gx,gy);}
-  ctx.stroke();
+  ctx.strokeStyle = lightMode ? "rgba(200,120,60,.06)" : "rgba(255,120,60,.06)";
+  ctx.lineWidth = 18; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  ctx.filter = "blur(8px)";
+  for (const pts of segs) {
+    if (pts.length < 2) continue;
+    ctx.beginPath();
+    const [gx0,gy0] = w2s(pts[0].x, pts[0].z); ctx.moveTo(gx0,gy0);
+    for (let i=1;i<pts.length;i++){const [gx,gy]=w2s(pts[i].x,pts[i].z);ctx.lineTo(gx,gy);}
+    ctx.stroke();
+  }
   ctx.filter = "none";
   ctx.restore();
 }
 
+// セクション内は全て同じマップなので全ウェイポイントを1セグメントで返す
+function getVisibleSegments() {
+  return playerPath.length > 0 ? [playerPath] : [];
+}
+
 function drawPath() {
-  if (playerPath.length < 2) return;
-  // Gradient path line
-  ctx.lineWidth = 2.5; ctx.lineCap = "round"; ctx.lineJoin = "round";
-  for (let i=1;i<playerPath.length;i++){
-    const p0=playerPath[i-1],p1=playerPath[i];
-    const [x0,y0]=w2s(p0.x,p0.z),[x1,y1]=w2s(p1.x,p1.z);
-    const grad = ctx.createLinearGradient(x0,y0,x1,y1);
-    const t = i / playerPath.length;
-    grad.addColorStop(0, `rgba(255,${Math.floor(80+80*t)},${Math.floor(80+40*t)},0.7)`);
-    grad.addColorStop(1, `rgba(255,${Math.floor(80+80*(t+0.05))},${Math.floor(80+40*(t+0.05))},0.7)`);
-    ctx.strokeStyle = grad;
-    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+  const segs = getVisibleSegments();
+  if (segs.length === 0) return;
+
+  for (const pts of segs) {
+    if (pts.length < 2) continue;
+
+    // 移動セグメント（矢印用）
+    const moveIdxs = [];
+    for (let i = 1; i < pts.length; i++) {
+      const dx = pts[i].x - pts[i-1].x, dz = pts[i].z - pts[i-1].z;
+      if (Math.sqrt(dx*dx + dz*dz) > 0.01) moveIdxs.push(i);
+    }
+
+    // 太い道路ライン
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.strokeStyle = lightMode ? "rgba(180,140,100,.15)" : "rgba(255,180,120,.1)";
+    ctx.lineWidth = 12;
+    ctx.beginPath();
+    const [sx0,sy0] = w2s(pts[0].x, pts[0].z); ctx.moveTo(sx0,sy0);
+    for (let i = 1; i < pts.length; i++) {
+      const [sx,sy] = w2s(pts[i].x, pts[i].z); ctx.lineTo(sx,sy);
+    }
+    ctx.stroke();
+
+    // メインのパスライン
+    ctx.lineWidth = 4;
+    for (let i = 1; i < pts.length; i++) {
+      const p0 = pts[i-1], p1 = pts[i];
+      const [x0,y0] = w2s(p0.x,p0.z), [x1,y1] = w2s(p1.x,p1.z);
+      const t = i / pts.length;
+      ctx.strokeStyle = `rgba(255,${Math.floor(120+80*t)},${Math.floor(80+60*t)},0.8)`;
+      ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+    }
+
+    // 矢印
+    for (const i of moveIdxs) {
+      const p0 = pts[i-1], p1 = pts[i];
+      const [a,b] = w2s(p0.x,p0.z), [c,d] = w2s(p1.x,p1.z);
+      const mx = (a+c)/2, my = (b+d)/2, ang = Math.atan2(d-b,c-a);
+      ctx.fillStyle = "rgba(255,180,120,0.8)";
+      ctx.beginPath();
+      ctx.moveTo(mx+Math.cos(ang)*10, my+Math.sin(ang)*10);
+      ctx.lineTo(mx+Math.cos(ang+2.5)*7, my+Math.sin(ang+2.5)*7);
+      ctx.lineTo(mx+Math.cos(ang-2.5)*7, my+Math.sin(ang-2.5)*7);
+      ctx.closePath(); ctx.fill();
+    }
+
+    // アニメーション点線
+    ctx.strokeStyle = "rgba(255,255,255,.1)"; ctx.lineWidth = 1.5;
+    const dashOffset = (performance.now() / 40) % 20;
+    ctx.setLineDash([4,8]); ctx.lineDashOffset = -dashOffset;
+    ctx.beginPath(); ctx.moveTo(sx0,sy0);
+    for (let i = 1; i < pts.length; i++) {
+      const [sx,sy] = w2s(pts[i].x, pts[i].z); ctx.lineTo(sx,sy);
+    }
+    ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset = 0;
   }
-  // Animated dash overlay
-  ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 1.5;
-  const dashOffset = (performance.now() / 40) % 20;
-  ctx.setLineDash([4,8]); ctx.lineDashOffset = -dashOffset;
-  ctx.beginPath(); const [sx0,sy0] = w2s(playerPath[0].x, playerPath[0].z); ctx.moveTo(sx0,sy0);
-  for (let i=1;i<playerPath.length;i++){const [sx,sy]=w2s(playerPath[i].x,playerPath[i].z);ctx.lineTo(sx,sy);}
-  ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset = 0;
-  // Arrows
-  for (let i=1;i<playerPath.length;i++){
-    const p0=playerPath[i-1],p1=playerPath[i],dx=p1.x-p0.x,dz=p1.z-p0.z;
-    if(Math.sqrt(dx*dx+dz*dz)<0.01)continue;
-    const [a,b]=w2s(p0.x,p0.z),[c,d]=w2s(p1.x,p1.z),mx=(a+c)/2,my=(b+d)/2,ang=Math.atan2(d-b,c-a);
-    ctx.fillStyle="rgba(255,160,120,0.7)";ctx.beginPath();
-    ctx.moveTo(mx+Math.cos(ang)*9,my+Math.sin(ang)*9);
-    ctx.lineTo(mx+Math.cos(ang+2.5)*7,my+Math.sin(ang+2.5)*7);
-    ctx.lineTo(mx+Math.cos(ang-2.5)*7,my+Math.sin(ang-2.5)*7);ctx.closePath();ctx.fill();
-  }
-  // Animated dashes: schedule next frame only if path has segments and no play animation
+
+  // 破線アニメーション: rAFで再描画
   if (!playAnim && playerPath.length > 1 && !window._dashRaf) {
     window._dashRaf = requestAnimationFrame(() => { window._dashRaf = null; if (!playAnim) draw(); });
   }
@@ -752,97 +2153,312 @@ function drawPath() {
 
 // 視野コーン描画 with gradient
 function drawFOV() {
-  for (let i=0;i<playerPath.length;i++){
-    const wp = playerPath[i];
-    if (wp.rot === undefined) continue;
-    const [sx,sy] = w2s(wp.x, wp.z);
-    const isSelected = (wp.eventIdx === selectedIdx);
-    const fovAngle = Math.PI / 3;
-    const fovLen = isSelected ? 55 : 28;
-    const dir = -(wp.rot) - Math.PI/2;
-    // Gradient cone
-    const grad = ctx.createRadialGradient(sx,sy,0,sx,sy,fovLen);
-    if (isSelected) {
-      grad.addColorStop(0, "rgba(100,180,255,0.18)");
-      grad.addColorStop(0.7, "rgba(100,180,255,0.06)");
-      grad.addColorStop(1, "rgba(100,180,255,0)");
-    } else {
-      grad.addColorStop(0, "rgba(100,180,255,0.08)");
-      grad.addColorStop(1, "rgba(100,180,255,0)");
-    }
-    ctx.fillStyle = grad;
+  // 選択中のイベントの位置にキャラクター＋視野コーンを描画
+  if (selectedIdx < 0 || selectedIdx >= eventPositions.length) return;
+  const pos = eventPositions[selectedIdx];
+  if (!pos) return;
+  const [sx, sy] = w2s(pos.x, pos.z);
+  const rot = pos.rot || 0;
+
+  // キャラクターマーカー（光る丸）
+  ctx.save();
+  ctx.shadowColor = "#4d96ff"; ctx.shadowBlur = 15;
+  const charGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, 14);
+  charGrad.addColorStop(0, "rgba(77,150,255,.8)");
+  charGrad.addColorStop(0.6, "rgba(77,150,255,.3)");
+  charGrad.addColorStop(1, "rgba(77,150,255,0)");
+  ctx.fillStyle = charGrad;
+  ctx.beginPath(); ctx.arc(sx, sy, 14, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#4d96ff";
+  ctx.beginPath(); ctx.arc(sx, sy, 5, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+
+  // 視野コーン
+  const fovAngle = Math.PI / 3;
+  const fovLen = 55;
+  const dir = -rot - Math.PI / 2;
+  const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, fovLen);
+  grad.addColorStop(0, "rgba(100,180,255,0.18)");
+  grad.addColorStop(0.7, "rgba(100,180,255,0.06)");
+  grad.addColorStop(1, "rgba(100,180,255,0)");
+  ctx.fillStyle = grad;
+  ctx.beginPath(); ctx.moveTo(sx, sy);
+  ctx.arc(sx, sy, fovLen, dir - fovAngle / 2, dir + fovAngle / 2);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "rgba(100,180,255,.2)"; ctx.lineWidth = 1;
+  for (const off of [-fovAngle / 2, fovAngle / 2]) {
     ctx.beginPath(); ctx.moveTo(sx, sy);
-    ctx.arc(sx, sy, fovLen, dir - fovAngle/2, dir + fovAngle/2);
-    ctx.closePath(); ctx.fill();
-    // Edge lines
-    if (isSelected) {
-      ctx.strokeStyle = "rgba(100,180,255,.2)"; ctx.lineWidth = 1;
-      for (const off of [-fovAngle/2, fovAngle/2]) {
-        ctx.beginPath(); ctx.moveTo(sx,sy);
-        ctx.lineTo(sx+Math.cos(dir+off)*fovLen, sy+Math.sin(dir+off)*fovLen);
-        ctx.stroke();
-      }
-    }
+    ctx.lineTo(sx + Math.cos(dir + off) * fovLen, sy + Math.sin(dir + off) * fovLen);
+    ctx.stroke();
   }
 }
 
-const WP_COLORS = { spawn:"#ffffff", pos_z:"#ff6b6b", pos_x:"#ff6b6b", rot_y:"#ffd93d", walk_set:"#6bcb77", stage_swap:"#4d96ff" };
-const WP_ICONS = { spawn:"\u2302", pos_z:"\u2195", pos_x:"\u2194", rot_y:"\u21BB", walk_set:"\u2B50", stage_swap:"\u21C4" };
+const WP_COLORS = { spawn:"#ffffff", pos_z:"#ff6b6b", pos_x:"#ff6b6b", pos_z_await:"#ff9b5b", pos_x_await:"#ff9b5b", rot_y:"#ffd93d", walk_set:"#6bcb77", stage_swap:"#4d96ff" };
+const WP_ICONS = { spawn:"\u2302", pos_z:"\u2195", pos_x:"\u2194", pos_z_await:"\u2195", pos_x_await:"\u2194", rot_y:"\u21BB", walk_set:"\u2B50", stage_swap:"\u21C4" };
+
+const WP_NAMES = {spawn:"開始",pos_z:"前後",pos_x:"左右",pos_z_await:"前後(待)",pos_x_await:"左右(待)",rot_y:"向き",walk_set:"速度",stage_swap:"切替"};
 
 function drawWaypoints() {
-  for (let i=0;i<playerPath.length;i++){
-    const wp=playerPath[i],[sx,sy]=w2s(wp.x,wp.z);
-    const color=WP_COLORS[wp.type]||"#aaa", isSel=(wp.eventIdx===selectedIdx), r=isSel?9:6;
-    // Glow
-    ctx.save();
-    ctx.shadowColor = color; ctx.shadowBlur = isSel ? 16 : 8;
-    // Outer ring for selected
-    if(isSel){
-      ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(sx,sy,r+4,0,Math.PI*2); ctx.stroke();
-      ctx.strokeStyle = color; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.arc(sx,sy,r+4,0,Math.PI*2); ctx.stroke();
-    }
-    // Filled circle with gradient
-    const wpGrad = ctx.createRadialGradient(sx-r*.3, sy-r*.3, 0, sx, sy, r);
-    wpGrad.addColorStop(0, "#fff");
-    wpGrad.addColorStop(0.4, color);
-    wpGrad.addColorStop(1, color);
-    ctx.fillStyle = wpGrad;
-    ctx.beginPath(); ctx.arc(sx,sy,r,0,Math.PI*2); ctx.fill();
-    ctx.restore();
-    // Number
-    ctx.fillStyle = "#000"; ctx.font = `bold ${isSel?10:8}px 'Segoe UI',sans-serif`;
-    ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText(i, sx, sy+0.5);
-    // Direction arrow
-    if(wp.rot!==undefined){
-      const ang=-(wp.rot)-Math.PI/2,al=isSel?20:14;
-      const ax=sx+Math.cos(ang)*al,ay=sy+Math.sin(ang)*al;
-      // Arrow line with glow
-      ctx.save(); ctx.shadowColor=color; ctx.shadowBlur=4;
-      ctx.strokeStyle=color;ctx.lineWidth=isSel?2:1.5;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ax,ay);ctx.stroke();
-      ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(ax,ay);
-      ctx.lineTo(ax+Math.cos(ang+2.6)*6,ay+Math.sin(ang+2.6)*6);
-      ctx.lineTo(ax+Math.cos(ang-2.6)*6,ay+Math.sin(ang-2.6)*6);ctx.closePath();ctx.fill();
+  const MOVE_SET = new Set(["pos_z","pos_x","pos_z_await","pos_x_await"]);
+
+  for (let i = 0; i < playerPath.length; i++) {
+    const wp = playerPath[i];
+    const [sx, sy] = w2s(wp.x, wp.z);
+    const color = WP_COLORS[wp.type] || "#aaa";
+    const isSel = (wp.eventIdx === selectedIdx);
+
+    // ── 移動系: ドット ──
+    if (MOVE_SET.has(wp.type) || wp.type === "spawn") {
+      const r = isSel ? 12 : 6;
+      ctx.save();
+      if (isSel) {
+        ctx.shadowColor = color; ctx.shadowBlur = 18;
+        ctx.strokeStyle = "rgba(255,255,255,.5)"; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(sx,sy,r+4,0,Math.PI*2); ctx.stroke();
+      }
+      ctx.fillStyle = color;
+      ctx.beginPath(); ctx.arc(sx,sy,r,0,Math.PI*2); ctx.fill();
       ctx.restore();
+
+    // ── rot_y: 向きの矢印 ──
+    } else if (wp.type === "rot_y") {
+      if (isSel || wp.rot !== undefined) {
+        const ang = -(wp.rot) - Math.PI/2, al = isSel ? 30 : 18;
+        const ax = sx + Math.cos(ang)*al, ay = sy + Math.sin(ang)*al;
+        ctx.save();
+        ctx.strokeStyle = isSel ? color : "rgba(255,217,61,.5)";
+        ctx.lineWidth = isSel ? 3 : 2;
+        ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ax,ay); ctx.stroke();
+        ctx.fillStyle = isSel ? color : "rgba(255,217,61,.6)";
+        ctx.beginPath(); ctx.moveTo(ax,ay);
+        ctx.lineTo(ax+Math.cos(ang+2.6)*8, ay+Math.sin(ang+2.6)*8);
+        ctx.lineTo(ax+Math.cos(ang-2.6)*8, ay+Math.sin(ang-2.6)*8);
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+      }
+
+    // ── walk_set / stage_swap ──
+    } else {
+      const r = isSel ? 10 : 6;
+      ctx.fillStyle = color; ctx.globalAlpha = isSel ? 1 : 0.7;
+      ctx.beginPath(); ctx.arc(sx,sy,r,0,Math.PI*2); ctx.fill();
+      ctx.globalAlpha = 1;
     }
-    // Coordinate label with pill background
-    ctx.textAlign="left";ctx.textBaseline="top";
-    let label = "";
-    if(wp.type==="pos_z"||wp.type==="pos_x"||wp.type==="spawn") label = `(${wp.x.toFixed(1)}, ${wp.z.toFixed(1)})`;
-    if(wp.type==="rot_y") label = `${(wp.rot*180/Math.PI).toFixed(0)}°`;
-    if (label) {
-      ctx.font = "10px 'Consolas',monospace";
-      const m = ctx.measureText(label);
-      const lx = sx+12, ly = sy-6;
-      ctx.fillStyle = lightMode ? "rgba(230,235,245,.8)" : "rgba(8,12,26,.7)";
-      ctx.beginPath(); ctx.roundRect(lx-3, ly-2, m.width+6, 14, 3); ctx.fill();
-      ctx.fillStyle = lightMode ? "#4a5a7a" : "#8a9aba";
-      ctx.fillText(label, lx, ly);
+
+    // ── 選択中のラベル ──
+    if (isSel) {
+      ctx.textAlign = "left"; ctx.textBaseline = "top";
+      let label = "";
+      if (DRAGGABLE_POS_TYPES.has(wp.type)) label = `${WP_NAMES[wp.type]||wp.type} (${wp.x.toFixed(1)}, ${wp.z.toFixed(1)})`;
+      else if (wp.type === "rot_y") label = `向き ${(wp.rot*180/Math.PI).toFixed(0)}°`;
+      else label = WP_NAMES[wp.type] || wp.type;
+      if (label) {
+        ctx.font = "bold 13px 'Segoe UI',sans-serif";
+        const m = ctx.measureText(label);
+        const lx = sx + 18, ly = sy - 10;
+        ctx.fillStyle = lightMode ? "rgba(240,242,250,.9)" : "rgba(8,12,26,.88)";
+        ctx.strokeStyle = lightMode ? "rgba(120,140,180,.3)" : "rgba(100,140,220,.3)";
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.roundRect(lx-6, ly-4, m.width+12, 22, 5); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = lightMode ? "#333" : "#ddeeff";
+        ctx.fillText(label, lx, ly);
+      }
+    }
+
+  }
+  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
+}
+
+// ═══════════════════════════════════════════════════
+// マップ上のイベントマーカー（セリフ・効果音・ホラー等をアイコンで表示）
+// ═══════════════════════════════════════════════════
+const MARKER_SKIP = new Set(["_comment","pos_z","pos_x","pos_z_await","pos_x_await","rot_y","walk_set","wait","sleep"]);
+
+function drawEventMarkers() {
+  if (events.length === 0 || eventPositions.length === 0) return;
+  ctx.save();
+
+  // 同じ位置にあるマーカーをグループ化（重ならないようオフセット）
+  const posGroups = {};
+  for (let i = 0; i < events.length; i++) {
+    const ev = events[i], t = ev.type;
+    if (MARKER_SKIP.has(t)) continue;
+    const cat = EVENT_CAT[t];
+    if (!cat) continue;
+    const pos = eventPositions[i];
+    if (!pos) continue;
+    const key = `${pos.x.toFixed(1)}_${pos.z.toFixed(1)}`;
+    if (!posGroups[key]) posGroups[key] = [];
+    posGroups[key].push({ idx: i, ev, cat, pos });
+  }
+
+  const markerSize = 11;
+  for (const key in posGroups) {
+    const group = posGroups[key];
+    const pos = group[0].pos;
+    const [cx, cy] = w2s(pos.x, pos.z);
+
+    // 画面外は描画しない
+    if (cx < -50 || cx > cv.width + 50 || cy < -50 || cy > cv.height + 50) continue;
+
+    // ズームが小さいときは数だけ表示
+    if (zoom < 10 && group.length > 2) {
+      ctx.font = "bold 9px sans-serif";
+      ctx.fillStyle = group[0].cat.color;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(`+${group.length}`, cx, cy - 16);
+      ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
+      continue;
+    }
+
+    // マーカーを横に並べる
+    const totalW = group.length * (markerSize * 2 + 2);
+    const startX = cx - totalW / 2 + markerSize;
+    const baseY = cy - 20; // パスの上に表示
+
+    for (let j = 0; j < group.length; j++) {
+      const { idx, ev, cat } = group[j];
+      const mx = startX + j * (markerSize * 2 + 2);
+      const my = baseY;
+      const isSel = (idx === selectedIdx);
+
+      // 背景丸
+      ctx.fillStyle = isSel ? cat.color + "55" : cat.color + "22";
+      ctx.beginPath(); ctx.arc(mx, my, markerSize, 0, Math.PI * 2); ctx.fill();
+      if (isSel) {
+        ctx.strokeStyle = cat.color; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(mx, my, markerSize + 2, 0, Math.PI * 2); ctx.stroke();
+      }
+
+      // アイコン
+      ctx.font = `${isSel ? 14 : 12}px sans-serif`;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillStyle = cat.color;
+      ctx.fillText(cat.icon, mx, my + 1);
+
+      // セリフの場合、テキストをツールチップ表示
+      if (isSel && ev.type === "say" && ev.text) {
+        ctx.font = "10px 'Segoe UI',sans-serif";
+        const txt = ev.text.replace(/\[.*?\]/g, "").substring(0, 35);
+        const tm = ctx.measureText(txt);
+        ctx.fillStyle = lightMode ? "rgba(230,235,245,.9)" : "rgba(8,12,26,.9)";
+        ctx.beginPath(); ctx.roundRect(mx - tm.width/2 - 8, my - 30, tm.width + 16, 18, 4); ctx.fill();
+        ctx.fillStyle = lightMode ? "#333" : "#ddd";
+        ctx.fillText(txt, mx, my - 21);
+      }
+      // SFXの場合、音名を表示
+      if (isSel && ev.type === "sfx" && ev.sound) {
+        ctx.font = "9px 'Consolas',monospace";
+        ctx.fillStyle = lightMode ? "#333" : "#6bcb77";
+        ctx.fillText(ev.sound, mx, my - 16);
+      }
     }
   }
-  ctx.textAlign="start";ctx.textBaseline="alphabetic";
+  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════════
+// MAP上ミニカード（全イベントを常時表示）
+// ═══════════════════════════════════════════════════
+const CARD_SKIP = new Set(["_comment","pos_z_await","pos_x_await","walk_set"]);
+const CARD_ICON_MINI = {
+  say:"💬", say_clear:"✕", chat:"📱", wait:"⏱", sleep:"⏱",
+  rot_y:"🔄", head_x:"↕", motion:"🎭", pos_z:"↕", pos_x:"↔",
+  sfx:"🔊", set_viewers:"👥", flashlight_on:"🔦",
+  horror_glitch:"👻", horror_tint:"🔴", scare_flash:"⚡",
+  stage_swap:"🗺", choice:"🗳", use_ofuda:"📜",
+  fade_black:"🌑", polaroid_video:"📹", superchat:"💰",
+  label:"🏷", goto:"➡", goto_route:"➡", set_route:"🔀",
+};
+
+
+function getEventSummary(ev) {
+  const t = ev.type;
+  if (t === "say") return (ev.text || "").substring(0, 20);
+  if (t === "chat") return (ev.text || "").substring(0, 16);
+  if (t === "pos_x") return `x=${ev.target}  ${ev.dur||0}秒`;
+  if (t === "pos_z") return `z=${ev.target}  ${ev.dur||0}秒`;
+  if (t === "rot_y") { const p=PV_ROT_Y.find(p=>Math.abs(p.v-(ev.target||0))<0.01); return p ? `${p.e} ${p.l}` : `${((ev.target||0)*180/Math.PI).toFixed(0)}°`; }
+  if (t === "wait" || t === "sleep") return `${ev.dur || ev.sec || 0}秒`;
+  if (t === "sfx") return ev.file || ev.src || "";
+  if (t === "set_viewers") return `${ev.count || ev.viewers || 0}人`;
+  if (t === "head_x") { const p=PV_HEAD_X.find(p=>Math.abs(p.v-(ev.target||0))<0.01); return p ? `${p.e} ${p.l}` : `${((ev.target||0)*180/Math.PI).toFixed(0)}°`; }
+  if (t === "motion") { const m=PV_MOTION.find(p=>p.v===ev.name); return m ? `${m.e} ${m.l}` : (ev.name||""); }
+  return "";
+}
+
+// ═══════════════════════════════════════════════════
+// START / GOAL マーカー
+// ═══════════════════════════════════════════════════
+function drawStartGoal() {
+  const visible = playerPath;
+  if (visible.length === 0) return;
+  ctx.save();
+  ctx.font = "bold 16px 'Segoe UI',sans-serif";
+  ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+
+  // START
+  const sp = visible[0];
+  const [sx, sy] = w2s(sp.x, sp.z);
+  const stText = "▶ START";
+  const stm = ctx.measureText(stText);
+  ctx.fillStyle = "rgba(107,203,119,.2)";
+  ctx.strokeStyle = "rgba(107,203,119,.5)"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.roundRect(sx - stm.width/2 - 10, sy + 14, stm.width + 20, 22, 6);
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#6bcb77";
+  ctx.fillText(stText, sx, sy + 33);
+
+  // GOAL
+  const ep = visible[visible.length - 1];
+  const [ex, ey] = w2s(ep.x, ep.z);
+  if (Math.abs(ex - sx) > 30 || Math.abs(ey - sy) > 30) {
+    const glText = "■ GOAL";
+    const glm = ctx.measureText(glText);
+    ctx.fillStyle = "rgba(255,107,107,.2)";
+    ctx.strokeStyle = "rgba(255,107,107,.5)"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(ex - glm.width/2 - 10, ey + 14, glm.width + 20, 22, 6);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#ff6b6b";
+    ctx.fillText(glText, ex, ey + 33);
+  }
+
+  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
+  ctx.restore();
+}
+
+// 凡例（右下に表示）
+function drawLegend() {
+  if (playerPath.length === 0) return;
+  ctx.save();
+  const items = [
+    { icon:"●", color:"#ff6b6b", label:"停止点(移動先)" },
+    { icon:"→", color:"#ffd93d", label:"向き変更" },
+    { icon:"💬", color:"#ffd93d", label:"セリフ" },
+    { icon:"📱", color:"#4d96ff", label:"コメント" },
+    { icon:"⚡", color:"#ff6b6b", label:"ホラー演出" },
+    { icon:"🔊", color:"#6bcb77", label:"効果音" },
+  ];
+  const pad = 10, lineH = 18;
+  const maxW = 110;
+  const bx = cv.width - maxW - pad, by = cv.height - items.length * lineH - pad - 8;
+  ctx.fillStyle = lightMode ? "rgba(230,235,245,.8)" : "rgba(8,12,26,.75)";
+  ctx.strokeStyle = lightMode ? "rgba(120,140,180,.2)" : "rgba(100,140,220,.15)";
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.roundRect(bx - 8, by - 6, maxW + 16, items.length * lineH + 12, 6); ctx.fill(); ctx.stroke();
+  for (let i = 0; i < items.length; i++) {
+    const y = by + i * lineH + lineH / 2;
+    ctx.font = "11px sans-serif";
+    ctx.textAlign = "left"; ctx.textBaseline = "middle";
+    ctx.fillStyle = items[i].color;
+    ctx.fillText(items[i].icon, bx, y);
+    ctx.font = "11px 'Segoe UI',sans-serif";
+    ctx.fillStyle = lightMode ? "#4a5a7a" : "#b0c0dd";
+    ctx.fillText(items[i].label, bx + 18, y);
+  }
+  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
+  ctx.restore();
 }
 
 // 選択地点のクロスヘア
@@ -890,9 +2506,137 @@ function drawPickedPoint() {
 // イベント一覧
 // ═══════════════════════════════════════════════════
 const MOVEMENT_TYPES = new Set(["pos_z","pos_x","pos_z_await","pos_x_await","rot_y","walk_set","stage_swap","head_x"]);
+
+// ── 回転プリセット ──
+const PV_ROT_Y = [
+  {v:0,    e:'🎯', l:'正面'},
+  {v:0.39, e:'↗️', l:'わずかに右'},
+  {v:0.79, e:'👉', l:'少し右 45°'},
+  {v:1.57, e:'➡️', l:'右を見る 90°'},
+  {v:2.36, e:'↘️', l:'右後ろ 135°'},
+  {v:3.14, e:'🔄', l:'真後ろ 180°'},
+  {v:-0.39,e:'↖️', l:'わずかに左'},
+  {v:-0.79,e:'👈', l:'少し左 45°'},
+  {v:-1.57,e:'⬅️', l:'左を見る 90°'},
+  {v:-2.36,e:'↙️', l:'左後ろ 135°'},
+];
+const PV_HEAD_X = [
+  {v:0,    e:'😐', l:'正面'},
+  {v:-0.15,e:'🙂', l:'わずかに上'},
+  {v:-0.3, e:'😊', l:'少し上 17°'},
+  {v:-0.52,e:'🔭', l:'上を向く 30°'},
+  {v:-0.79,e:'🌙', l:'大きく上 45°'},
+  {v:-1.22,e:'🌟', l:'ほぼ真上 70°'},
+  {v:-1.57,e:'☀️', l:'真上 90°'},
+  {v:0.15, e:'🙃', l:'わずかに下'},
+  {v:0.3,  e:'👟', l:'少し下 17°'},
+  {v:0.52, e:'🔍', l:'下を向く 30°'},
+  {v:0.79, e:'⬇️', l:'大きく下 45°'},
+  {v:1.2,  e:'🕳️', l:'真下近く 69°'},
+];
+const PV_MOTION = [
+  {v:'look_around',      e:'👀', l:'見回す'},
+  {v:'nod',              e:'😌', l:'うなずく'},
+  {v:'shake_head',       e:'🙅', l:'首を横に振る'},
+  {v:'look_behind_slow', e:'😨', l:'ゆっくり振り返る'},
+  {v:'startle_up',       e:'😱', l:'びくっと上を見る'},
+  {v:'peek_left',        e:'👁️', l:'左をチラ見'},
+  {v:'peek_right',       e:'👁️', l:'右をチラ見'},
+  {v:'look_down_up',     e:'🔎', l:'下を見てから上'},
+  {v:'tremble',          e:'😰', l:'ガタガタ震える'},
+];
+function pvPresetMatch(val, presets) {
+  return presets.some(p => Math.abs(Number(p.v) - Number(val)) < 0.01);
+}
+// rot_y コンパス配置
+function pvRotYCompass(cur, inputId) {
+  let matched = false;
+  function c(p, area, extra) {
+    const sel = Math.abs(Number(p.v) - Number(cur)) < 0.01;
+    if (sel) matched = true;
+    return `<div class="preset-card${sel?' active':''}${extra||''}" style="grid-area:${area}" data-v="${p.v}" onclick="pvCardClick(this)"><span class="pc-emoji">${p.e}</span><span class="pc-label">${p.l}</span></div>`;
+  }
+  const R = PV_ROT_Y;
+  // R: 0=正面, 1=わずか右, 2=少し右, 3=右, 4=右後ろ, 5=真後ろ, 6=わずか左, 7=少し左, 8=左, 9=左後ろ
+  let h = `<div class="preset-grid compass-grid" data-input="${inputId}">`;
+  h += c(R[9], 'bl', '');          // 左後ろ
+  h += c(R[5], 'bk', '');          // 真後ろ
+  h += c(R[4], 'br', '');          // 右後ろ
+  h += c(R[8], 'l',  '');          // 左を見る
+  h += c(R[7], 'sl', '');          // 少し左
+  h += c(R[2], 'sr', '');          // 少し右
+  h += c(R[3], 'r',  '');          // 右を見る
+  h += c(R[6], 'wl', '');          // わずか左
+  h += c(R[0], 'c',  ' center-card'); // 正面（中心）
+  h += c(R[1], 'wr', '');          // わずか右
+  // カスタム
+  h += `<div class="preset-card custom-card${!matched?' active':''}" style="grid-area:cst" data-v="__custom" onclick="pvCardClick(this)"><span class="pc-emoji">✏️</span><span class="pc-label">カスタム</span></div>`;
+  h += `</div>`;
+  h += `<div class="preset-custom-input${!matched?' show':''}" id="${inputId}-wrap"><input type="number" step="0.01" id="${inputId}" value="${cur}"><span>rad</span></div>`;
+  return h;
+}
+// head_x 縦ストリップ — 上側が左列、正面が中央、下側が右列
+function pvHeadXStrip(cur, inputId) {
+  let matched = false;
+  const X = PV_HEAD_X;
+  // X: 0=正面, 1-6=上方向(わずか→真上), 7-11=下方向(わずか→真下)
+  const ups   = [X[6], X[5], X[4], X[3], X[2], X[1]]; // 真上→わずか上
+  const downs = [X[7], X[8], X[9], X[10], X[11]];       // わずか下→真下
+  let h = `<div class="preset-grid vstrip-grid" data-input="${inputId}">`;
+  // 上方向（左列に上から）
+  ups.forEach((p, i) => {
+    const sel = Math.abs(Number(p.v) - Number(cur)) < 0.01;
+    if (sel) matched = true;
+    const col = i < 3 ? 1 : 2;
+    h += `<div class="preset-card${sel?' active':''}" style="grid-column:${col}" data-v="${p.v}" onclick="pvCardClick(this)"><span class="pc-emoji">${p.e}</span><span class="pc-label">${p.l}</span></div>`;
+  });
+  // 正面（中央、全幅）
+  const cSel = Math.abs(Number(X[0].v) - Number(cur)) < 0.01;
+  if (cSel) matched = true;
+  h += `<div class="preset-card vstrip-center${cSel?' active':''}" data-v="${X[0].v}" onclick="pvCardClick(this)"><span class="pc-emoji">${X[0].e}</span><span class="pc-label">${X[0].l}</span></div>`;
+  // 下方向
+  downs.forEach((p, i) => {
+    const sel = Math.abs(Number(p.v) - Number(cur)) < 0.01;
+    if (sel) matched = true;
+    const col = i < 3 ? 1 : 2;
+    h += `<div class="preset-card${sel?' active':''}" style="grid-column:${col}" data-v="${p.v}" onclick="pvCardClick(this)"><span class="pc-emoji">${p.e}</span><span class="pc-label">${p.l}</span></div>`;
+  });
+  // カスタム（全幅）
+  h += `<div class="preset-card custom-card${!matched?' active':''}" style="grid-column:1/-1" data-v="__custom" onclick="pvCardClick(this)"><span class="pc-emoji">✏️</span><span class="pc-label">カスタム</span></div>`;
+  h += `</div>`;
+  h += `<div class="preset-custom-input${!matched?' show':''}" id="${inputId}-wrap"><input type="number" step="0.01" id="${inputId}" value="${cur}"><span>rad</span></div>`;
+  return h;
+}
+// 文字列プリセットのカードグリッドHTML（motion 用）
+function pvStrCards(presets, cur, inputId) {
+  let h = `<div class="preset-grid motion-grid" data-input="${inputId}">`;
+  presets.forEach(p => {
+    h += `<div class="preset-card motion-card${p.v===cur?' active':''}" data-v="${p.v}" onclick="pvCardClick(this)"><span class="pc-emoji">${p.e}</span><span class="pc-label">${p.l}</span></div>`;
+  });
+  h += `</div>`;
+  h += `<input type="hidden" id="${inputId}" value="${cur}">`;
+  return h;
+}
+window.pvCardClick = function(card) {
+  const grid = card.closest('.preset-grid');
+  const inputId = grid.dataset.input;
+  const inp = document.getElementById(inputId);
+  // 全カードからactiveを外す
+  grid.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  const val = card.dataset.v;
+  if (val === '__custom') {
+    const wrap = document.getElementById(inputId + '-wrap');
+    if (wrap) { wrap.classList.add('show'); wrap.querySelector('input')?.focus(); }
+  } else {
+    const wrap = document.getElementById(inputId + '-wrap');
+    if (wrap) wrap.classList.remove('show');
+    if (inp) inp.value = val;
+  }
+};
 const TYPE_JA = {
   say:"セリフ",say_clear:"セリフ消去",chat:"チャット",wait:"待機",sleep:"固定待機",
-  rot_y:"回転",head_x:"頭上下",pos_z:"Z移動",pos_x:"X移動",
+  rot_y:"回転",head_x:"頭上下",motion:"モーション",pos_z:"Z移動",pos_x:"X移動",
   pos_z_await:"Z移動待ち",pos_x_await:"X移動待ち",
   walk_set:"歩行",stage_swap:"マップ切替",flashlight_on:"ライトON",
   flashlight_flicker:"ライト明滅",sfx:"効果音",set_viewers:"視聴者数",
@@ -902,7 +2646,8 @@ const TYPE_JA = {
 };
 
 function buildEventList() {
-  const el = document.getElementById("event-list"); el.innerHTML = "";
+  const el = document.getElementById("event-list"); if (!el) return; el.innerHTML = "";
+  const frag = document.createDocumentFragment();
   for (let i=0;i<events.length;i++){
     const ev=events[i],t=ev.type||""; if(t==="_comment")continue;
     const isMovement = MOVEMENT_TYPES.has(t);
@@ -912,18 +2657,22 @@ function buildEventList() {
     if (multiSelected.has(i)) cls += " multi-selected";
     if (filterMovementOnly && !isMovement) cls += " filtered";
     div.className = cls;
+    const cat = EVENT_CAT[t] || DEFAULT_CAT;
     const ja=TYPE_JA[t]||t; let det="";
     if(t==="say")det=ev.text?ev.text.substring(0,25):"";
-    else if(t==="pos_z")det=`z=${ev.target}`; else if(t==="pos_x")det=`x=${ev.target}`;
-    else if(t==="rot_y")det=`${(ev.target*180/Math.PI).toFixed(0)}°`;
+    else if(t==="pos_z"||t==="pos_z_await")det=`z=${ev.target}`;
+    else if(t==="pos_x"||t==="pos_x_await")det=`x=${ev.target}`;
+    else if(t==="rot_y")det=`${(ev.target*180/Math.PI).toFixed(0)}\u00B0`;
     else if(t==="wait"||t==="sleep")det=`${ev.sec}秒`;
     else if(t==="walk_set")det=ev.on?"開始":"停止";
     else if(t==="chat")det=ev.msg?ev.msg.substring(0,20):"";
-    else if(t==="set_viewers")det=`${ev.count}人`; else if(t==="sfx")det=ev.sound||"";
-    div.innerHTML=`<span class="ev-idx">${i}</span><span class="ev-type">${ja}</span><span class="ev-detail">${det}</span>`;
+    else if(t==="set_viewers")det=`${ev.count}人`;
+    else if(t==="sfx")det=ev.sound||"";
+    div.innerHTML=`<span class="ev-dot" style="background:${cat.color}"></span><span class="ev-idx">${i}</span><span class="ev-type">${ja}</span><span class="ev-detail">${det}</span>`;
     div.addEventListener("click",(e)=>{ if(e.shiftKey){toggleMultiSelect(i);}else{multiSelected.clear();selectEvent(i);} });
-    el.appendChild(div);
+    frag.appendChild(div);
   }
+  el.appendChild(frag);
 }
 
 // A4: 複数選択トグル
@@ -933,28 +2682,28 @@ function toggleMultiSelect(idx) {
 }
 
 function selectEvent(idx) {
-  selectedIdx = idx; buildEventList(); showDetail(idx);
-  const a=document.querySelector(".ev-item.active"); if(a)a.scrollIntoView({block:"nearest"});
-  const wp=playerPath.find(w=>w.eventIdx===idx);
-  if(wp){camX=wp.x;camZ=wp.z;}
-  updatePickPanel(); draw();
+  ceSelect(idx);
 }
 
 function showDetail(idx) {
   const panel=document.getElementById("detail-panel");
+  if(!panel)return; // サイドバー非表示時はスキップ
   if(idx<0||idx>=events.length){panel.innerHTML="";return;}
   const ev=events[idx],t=ev.type,ja=TYPE_JA[t]||t;
   let h=`<h3>#${idx} ${ja}</h3>`;
-  if(t==="pos_z"||t==="pos_x"){
-    const ax=t==="pos_z"?"Z":"X";
+  if(t==="pos_z"||t==="pos_x"||t==="pos_z_await"||t==="pos_x_await"){
+    const ax=(t==="pos_z"||t==="pos_z_await")?"Z":"X";
     h+=`<div class="detail-row"><label>${ax}目標:</label><input type="number" step="0.1" id="edit-target" value="${ev.target||0}"><button class="apply-btn" onclick="applyEdit(${idx},'target')">適用</button></div>`;
     h+=`<div class="detail-row"><label>秒数:</label><input type="number" step="0.1" id="edit-dur" value="${ev.dur||5}"><button class="apply-btn" onclick="applyEdit(${idx},'dur')">適用</button></div>`;
   } else if(t==="rot_y"){
-    h+=`<div class="detail-row"><label>回転値:</label><input type="number" step="0.01" id="edit-target" value="${ev.target||0}"><button class="apply-btn" onclick="applyEdit(${idx},'target')">適用</button></div>`;
-    h+=`<div class="detail-row"><label>角度:</label><span>${((ev.target||0)*180/Math.PI).toFixed(1)}°</span></div>`;
-    h+=`<div class="detail-row"><label>秒数:</label><input type="number" step="0.1" id="edit-dur" value="${ev.dur||1}"><button class="apply-btn" onclick="applyEdit(${idx},'dur')">適用</button></div>`;
+    h+=`<div class="preset-section-label">向き</div>${pvRotYCompass( ev.target||0, 'edit-target')}`;
+    h+=`<div class="detail-row"><label>秒数:</label><input type="number" step="0.1" id="edit-dur" value="${ev.dur||1}"><button class="apply-btn" onclick="applyEdit(${idx},'target');applyEdit(${idx},'dur')">適用</button></div>`;
   } else if(t==="head_x"){
-    h+=`<div class="detail-row"><label>上下角:</label><input type="number" step="0.01" id="edit-target" value="${ev.target||0}"><button class="apply-btn" onclick="applyEdit(${idx},'target')">適用</button></div>`;
+    h+=`<div class="preset-section-label">向き</div>${pvHeadXStrip( ev.target||0, 'edit-target')}`;
+    h+=`<button class="apply-btn" style="margin-top:4px" onclick="applyEdit(${idx},'target')">適用</button>`;
+  } else if(t==="motion"){
+    h+=`<div class="preset-section-label">動作</div>${pvStrCards(PV_MOTION, ev.name||'look_around', 'edit-name')}`;
+    h+=`<div class="detail-row"><label>秒数:</label><input type="number" step="0.1" id="edit-dur" value="${ev.dur||2}"><button class="apply-btn" onclick="applyEditStr(${idx},'name');applyEdit(${idx},'dur')">適用</button></div>`;
   } else if(t==="say"){
     h+=`<div class="detail-row"><label>テキスト:</label><span style="font-size:11px;">${(ev.text||"").substring(0,60)}</span></div>`;
     if(ev.voice) h+=`<div class="detail-row"><label>ボイス:</label><span>${ev.voice}</span></div>`;
@@ -968,8 +2717,16 @@ window.applyEdit = function(idx, field) {
   const inp=document.getElementById("edit-"+field); if(!inp)return;
   const val=parseFloat(inp.value); if(isNaN(val))return;
   pushUndo();
-  events[idx][field]=val; extractPath(); buildEventList(); showDetail(idx); draw();
+  events[idx][field]=val; extractPath(); ceRenderEditPanel(); draw();
 };
+window.applyEditStr = function(idx, field) {
+  const inp=document.getElementById("edit-"+field); if(!inp)return;
+  pushUndo();
+  events[idx][field]=inp.value; extractPath(); ceRenderEditPanel(); draw();
+};
+
+
+
 
 // ═══════════════════════════════════════════════════
 // 選択地点パネル + アクション
@@ -1060,38 +2817,114 @@ window.actionCopyCoords = function() {
   navigator.clipboard.writeText(text).then(() => showStatus("座標をコピーしました"));
 };
 
-function showStatus(msg) {
+function showStatus(msg, dur) {
   const s = document.getElementById("save-status");
   s.className = "ok"; s.textContent = msg; s.style.display = "block";
-  setTimeout(() => { s.style.display = "none"; }, 2000);
+  s.style.whiteSpace = "pre-line";
+  setTimeout(() => { s.style.display = "none"; }, dur || 2000);
 }
 
 // ═══════════════════════════════════════════════════
 // マウス操作
 // ═══════════════════════════════════════════════════
 let mouseDownPos = null;
-function onWheel(e) { e.preventDefault(); zoom *= e.deltaY>0?0.9:1.1; zoom=Math.max(3,Math.min(200,zoom)); draw(); }
+let dragRotWP = -1; // 回転ハンドルドラッグ中のwaypoint index
+function onWheel(e) { e.preventDefault(); hideContextMenu(); zoom *= e.deltaY>0?0.9:1.1; zoom=Math.max(3,Math.min(200,zoom)); draw(); }
+
+const DRAGGABLE_POS_TYPES = new Set(["pos_z","pos_x","pos_z_await","pos_x_await","spawn"]);
 
 function findNearestWP(sx,sy,maxDist) {
   let best=-1,bestD=maxDist*maxDist;
   for(let i=0;i<playerPath.length;i++){
-    const wp=playerPath[i]; if(wp.type!=="pos_z"&&wp.type!=="pos_x"&&wp.type!=="spawn")continue;
+    const wp=playerPath[i];
+    if(!DRAGGABLE_POS_TYPES.has(wp.type))continue;
     const [wx,wy]=w2s(wp.x,wp.z),d=(sx-wx)**2+(sy-wy)**2; if(d<bestD){bestD=d;best=i;}
   } return best;
 }
 
+// 最も近いイベントマーカー（セリフ等の非移動系）を検出
+function findNearestEventMarker(sx, sy, maxDist) {
+  let best = -1, bestD = maxDist * maxDist;
+  for (let i = 0; i < events.length; i++) {
+    const pos = eventPositions[i];
+    if (!pos) continue;
+    const [ex, ey] = w2s(pos.x, pos.z);
+    const d = (sx - ex) ** 2 + (sy - ey) ** 2;
+    if (d < bestD) { bestD = d; best = i; }
+  }
+  return best;
+}
+
+// 回転ハンドル（矢印先端）の検出
+function findNearestRotHandle(sx, sy, maxDist) {
+  let best = -1, bestD = maxDist * maxDist;
+  for (let i = 0; i < playerPath.length; i++) {
+    const wp = playerPath[i];
+    if (wp.type !== "rot_y") continue;
+    const [cx, cy] = w2s(wp.x, wp.z);
+    const isSel = (wp.eventIdx === selectedIdx);
+    const al = isSel ? 20 : 14;
+    const ang = -(wp.rot) - Math.PI / 2;
+    const ax = cx + Math.cos(ang) * al, ay = cy + Math.sin(ang) * al;
+    const d = (sx - ax) ** 2 + (sy - ay) ** 2;
+    if (d < bestD) { bestD = d; best = i; }
+  }
+  return best;
+}
+
 function onMouseDown(e) {
+  hideContextMenu();
   const rect=cv.getBoundingClientRect(), mx=e.clientX-rect.left, my=e.clientY-rect.top;
+
+  // 右クリック → コンテキストメニュー
+  if (e.button === 2) {
+    e.preventDefault();
+    const [wx, wz] = s2w(mx, my);
+    pickedPoint = { x: Math.round(wx*4)/4, z: Math.round(wz*4)/4 };
+    updatePickPanel(); draw();
+    showContextMenu(e.clientX, e.clientY);
+    return;
+  }
+
   mouseDownPos = { x: mx, y: my };
-  const wpIdx=findNearestWP(mx,my,12);
-  if(wpIdx>=0&&e.button===0){pushUndo();dragWP=wpIdx;const wp=playerPath[wpIdx];if(wp.eventIdx>=0)selectEvent(wp.eventIdx);return;}
-  if(e.button===0||e.button===1){panStart={x:mx,y:my,cx:camX,cz:camZ};}
+
+  // 位置ウェイポイントのドラッグ検出（awaitはドラッグ不可）
+  const wpIdx = findNearestWP(mx, my, 12);
+  if (wpIdx >= 0 && e.button === 0) {
+    const wp = playerPath[wpIdx];
+    if (wp.type === "pos_x_await" || wp.type === "pos_z_await") {
+      // awaitは位置を持たないのでドラッグ不可、選択のみ
+      if (wp.eventIdx >= 0) selectEvent(wp.eventIdx);
+    } else {
+      pushUndo(); dragWP = wpIdx;
+      if (wp.eventIdx >= 0) selectEvent(wp.eventIdx);
+      cv.style.cursor = "grabbing";
+    }
+    return;
+  }
+
+  // 回転ハンドルのドラッグ
+  const rotIdx = findNearestRotHandle(mx, my, 14);
+  if (rotIdx >= 0 && e.button === 0) {
+    pushUndo(); dragRotWP = rotIdx;
+    const wp = playerPath[rotIdx];
+    if (wp.eventIdx >= 0) selectEvent(wp.eventIdx);
+    cv.style.cursor = "grabbing";
+    return;
+  }
+
+  // 左クリック or 中ボタン でパン開始
+  panStart = {x:mx, y:my, cx:camX, cz:camZ, moved:false};
+  if (e.button === 0) cv.style.cursor = "grabbing";
+  if (e.button === 1) { cv.style.cursor = "grabbing"; e.preventDefault(); }
 }
 
 function onMouseMove(e) {
-  const rect=cv.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  const rect=cv.getBoundingClientRect(), mx=e.clientX-rect.left, my=e.clientY-rect.top;
   const [wx,wz]=s2w(mx,my);
   document.getElementById("coords").textContent=`X: ${wx.toFixed(2)}, Z: ${wz.toFixed(2)}`;
+  const cemC = document.getElementById("cem-coords");
+  if (cemC) cemC.textContent = `X:${wx.toFixed(1)} Z:${wz.toFixed(1)}`;
   // クロスヘア情報
   const chi = document.getElementById("crosshair-info");
   const pp = getPlayerPosAtSelected();
@@ -1100,45 +2933,141 @@ function onMouseMove(e) {
     chi.textContent = `距離: ${d.toFixed(2)}m`;
   } else { chi.textContent = ""; }
 
-  if(dragWP>=0){
-    const wp=playerPath[dragWP]; wp.x=Math.round(wx*4)/4; wp.z=Math.round(wz*4)/4;
-    if(wp.eventIdx>=0){const ev=events[wp.eventIdx];if(ev.type==="pos_z")ev.target=wp.z;if(ev.type==="pos_x")ev.target=wp.x;}
-    extractPath(); showDetail(wp.eventIdx); draw(); return;
+  // panStart.moved を追跡
+  if (panStart && mouseDownPos) {
+    if (Math.sqrt((mx-mouseDownPos.x)**2+(my-mouseDownPos.y)**2) > 5) panStart.moved = true;
   }
-  if(panStart){camX=panStart.cx-(mx-panStart.x)/zoom;camZ=panStart.cz+(my-panStart.y)/zoom;draw();}
+
+  // 回転ハンドルドラッグ中
+  if (dragRotWP >= 0) {
+    const wp = playerPath[dragRotWP];
+    const [cx, cy] = w2s(wp.x, wp.z);
+    const screenAng = Math.atan2(my - cy, mx - cx);
+    const rot = -(screenAng + Math.PI / 2);
+    const rounded = Math.round(rot * 100) / 100;
+    wp.rot = rounded;
+    if (wp.eventIdx >= 0) events[wp.eventIdx].target = rounded;
+    extractPath(); ceRenderEditPanel(); draw();
+    showDragTooltip(mx, my, `${(rounded * 180 / Math.PI).toFixed(1)}\u00B0`);
+    return;
+  }
+
+  // 位置ウェイポイントドラッグ中
+  if (dragWP >= 0) {
+    const wp = playerPath[dragWP];
+    const snappedX = Math.round(wx*4)/4, snappedZ = Math.round(wz*4)/4;
+    wp.x = snappedX; wp.z = snappedZ;
+
+    if (wp.type === "spawn") {
+      currentMap.spawn.x = snappedX;
+      currentMap.spawn.z = snappedZ;
+    } else if (wp.eventIdx >= 0) {
+      const ev = events[wp.eventIdx], t = ev.type;
+      if (t === "pos_z") ev.target = snappedZ;
+      if (t === "pos_x") ev.target = snappedX;
+      autoRecalcDur(wp, ev);
+    }
+    extractPath(); ceRenderEditPanel(); draw();
+    showDragTooltip(mx, my, `X:${snappedX.toFixed(2)} Z:${snappedZ.toFixed(2)}`);
+    return;
+  }
+
+  // カーソル形状の更新（awaitポイントはドラッグ不可なのでgrab表示しない）
+  if (!panStart) {
+    const nearWP = findNearestWP(mx, my, 12);
+    const nearRot = findNearestRotHandle(mx, my, 14);
+    let cursor = "crosshair";
+    if (nearRot >= 0) cursor = "grab";
+    else if (nearWP >= 0) {
+      const wp = playerPath[nearWP];
+      cursor = (wp.type === "pos_x_await" || wp.type === "pos_z_await") ? "pointer" : "grab";
+    }
+    cv.style.cursor = cursor;
+  }
+
+  if (panStart) { camX=panStart.cx-(mx-panStart.x)/zoom; camZ=panStart.cz-(my-panStart.y)/zoom; cv.style.cursor="grabbing"; draw(); }
 }
 
 function onMouseUp(e) {
-  // クリック判定（ドラッグしなかった場合のみ地点選択）
-  if (mouseDownPos && dragWP < 0 && !panStart?.moved) {
+  hideDragTooltip();
+  cv.style.cursor = "crosshair";
+  if (mouseDownPos && dragWP < 0 && dragRotWP < 0 && !panStart?.moved && e.button === 0) {
     const rect=cv.getBoundingClientRect(), mx=e.clientX-rect.left, my=e.clientY-rect.top;
     const dx = mx - mouseDownPos.x, dy = my - mouseDownPos.y;
     if (Math.sqrt(dx*dx+dy*dy) < 5) {
-      // クリック → 地点選択
-      const [wx,wz] = s2w(mx, my);
-      pickedPoint = { x: Math.round(wx*4)/4, z: Math.round(wz*4)/4 };
-      updatePickPanel(); draw();
+      // ウェイポイントの近くなら選択+カード表示
+      const nearWP = findNearestWP(mx, my, 18);
+      if (nearWP >= 0 && playerPath[nearWP].eventIdx >= 0) {
+        selectEvent(playerPath[nearWP].eventIdx);
+      } else {
+        // 近くのイベントマーカーを検索
+        const nearEvt = findNearestEventMarker(mx, my, 20);
+        if (nearEvt >= 0) {
+          selectEvent(nearEvt);
+        } else {
+          const [wx,wz] = s2w(mx, my);
+          pickedPoint = { x: Math.round(wx*4)/4, z: Math.round(wz*4)/4 };
+          updatePickPanel(); draw();
+        }
+      }
     }
   }
-  dragWP=-1; panStart=null; mouseDownPos=null;
+  // ドラッグで値が変わった場合は自動保存
+  if (dragWP >= 0 || dragRotWP >= 0) {
+    onSave().then(() => showStatus("✓ ドラッグ変更を保存"));
+  }
+  dragWP=-1; dragRotWP=-1; panStart=null; mouseDownPos=null;
 }
 
-// panStart.moved を追跡
-const origOnMouseMove = onMouseMove;
-onMouseMove = function(e) {
-  if (panStart && mouseDownPos) {
-    const rect=cv.getBoundingClientRect(), mx=e.clientX-rect.left, my=e.clientY-rect.top;
-    if (Math.sqrt((mx-mouseDownPos.x)**2+(my-mouseDownPos.y)**2) > 5) panStart.moved = true;
-  }
-  origOnMouseMove(e);
-};
+// dur自動再計算（ドラッグ時、前のウェイポイントからの距離で更新）
+function autoRecalcDur(wp, ev) {
+  if (!ev.dur) return;
+  const wpIdx = playerPath.indexOf(wp);
+  if (wpIdx <= 0) return;
+  const prev = playerPath[wpIdx - 1];
+  const dx = wp.x - prev.x, dz = wp.z - prev.z;
+  const dist = Math.sqrt(dx*dx + dz*dz);
+  if (dist < 0.01) return;
+  ev.dur = Math.round(dist / 1.5 * 10) / 10;
+}
+
+// ドラッグツールチップ
+function showDragTooltip(mx, my, text) {
+  const tip = document.getElementById("drag-tooltip");
+  tip.textContent = text; tip.style.display = "block";
+  tip.style.left = (mx + 16) + "px"; tip.style.top = (my - 28) + "px";
+}
+function hideDragTooltip() { document.getElementById("drag-tooltip").style.display = "none"; }
+
+// 右クリックコンテキストメニュー
+function showContextMenu(clientX, clientY) {
+  const menu = document.getElementById("ctx-menu");
+  const area = document.getElementById("canvas-area").getBoundingClientRect();
+  menu.style.display = "block";
+  menu.style.left = (clientX - area.left) + "px";
+  menu.style.top = (clientY - area.top) + "px";
+  // 削除ボタンの有効/無効
+  const delItem = menu.querySelector('[data-action="delete"]');
+  delItem.style.display = (selectedIdx >= 0) ? "" : "none";
+  requestAnimationFrame(() => {
+    const mr = menu.getBoundingClientRect();
+    if (mr.right > area.right) menu.style.left = (clientX - area.left - mr.width) + "px";
+    if (mr.bottom > area.bottom) menu.style.top = (clientY - area.top - mr.height) + "px";
+  });
+}
+function hideContextMenu() { document.getElementById("ctx-menu").style.display = "none"; }
+cv.addEventListener("contextmenu", (e) => e.preventDefault());
 
 // ═══════════════════════════════════════════════════
 // ファイル入出力
 // ═══════════════════════════════════════════════════
 function onMapChange() {
   currentMap = MAPS[document.getElementById("map-select").value] || MAPS.empty;
-  extractPath(); resetView(); draw();
+  // セクション分割をリセットして全イベント表示
+  events = allEvents;
+  sections = [];
+  document.getElementById("section-select").style.display = "none";
+  extractPath(); buildEventList(); resetView(); draw();
 }
 
 function onFileLoad(e) {
@@ -1147,13 +3076,13 @@ function onFileLoad(e) {
   const reader=new FileReader();
   reader.onload=function(ev){
     try{
-      jsonData=JSON.parse(ev.target.result);events=jsonData.events||[];
+      jsonData=JSON.parse(ev.target.result);allEvents=jsonData.events||[];
       const name = file.name.replace(/\.json$/,"");
       if (typeof DIALOGUE_CACHE !== "undefined") {
         DIALOGUE_CACHE[name] = JSON.parse(ev.target.result);
       }
       undoStack=[]; redoStack=[]; updateUndoButtons();
-      extractPath();buildEventList();resetView();draw();
+      currentSection = 0; buildSections(); applySection(0);
       setDataSource("file", file.name);
     }
     catch(err){alert("JSON解析エラー: "+err.message);}
@@ -1179,6 +3108,8 @@ async function onOpenAndWatch() {
     stopWatch();
     watchHandle = handle;
     await loadFromHandle(handle, true);
+    const openedFile = await handle.getFile();
+    updateFileInfo(openedFile.name);
     startWatch();
   } catch (err) {
     if (err.name !== "AbortError") showStatus("エラー: " + err.message);
@@ -1191,19 +3122,19 @@ async function loadFromHandle(handle, isFirst) {
   if (!isFirst && text === watchLastText) return false;
   watchLastText = text;
   try {
-    jsonData = JSON.parse(text); events = jsonData.events || [];
+    jsonData = JSON.parse(text); allEvents = jsonData.events || [];
     const name = file.name.replace(/\.json$/, "");
     if (typeof DIALOGUE_CACHE !== "undefined") {
       DIALOGUE_CACHE[name] = JSON.parse(text);
     }
     if (isFirst) {
       undoStack = []; redoStack = []; updateUndoButtons();
-      extractPath(); buildEventList(); resetView(); draw();
+      currentSection = 0; buildSections(); applySection(0);
     } else {
-      const prevSel = selectedIdx;
-      extractPath(); buildEventList(); draw();
-      selectedIdx = Math.min(prevSel, events.length - 1);
-      showDetail(selectedIdx);
+      const prevSec = currentSection;
+      buildSections(); applySection(prevSec);
+      selectedIdx = Math.min(selectedIdx, events.length - 1);
+      ceSelect(selectedIdx);
       showStatus("ファイル変更を検知 — 自動リロード");
     }
     setDataSource("watch", file.name);
@@ -1229,71 +3160,337 @@ function stopWatch() {
 
 async function onSave() {
   if(!jsonData){alert("JSONが読み込まれていません");return;}
-  jsonData.events=events;
+  // 保存中は監視を一時停止
+  const wasWatching = !!watchTimer;
+  if (watchTimer) { clearInterval(watchTimer); watchTimer = null; }
+
+  // セクション分割されている場合、編集済みeventsをallEventsに戻す
+  if (sections.length > 0 && currentSection < sections.length) {
+    const sec = sections[currentSection];
+    allEvents.splice(sec.startIdx, sec.endIdx - sec.startIdx, ...events);
+  }
+  jsonData.events = allEvents;
   const text=JSON.stringify(jsonData,null,"\t")+"\n";
-  try{
-    if(window.showSaveFilePicker){
-      const h=await window.showSaveFilePicker({suggestedName:(jsonData.chapter||"events")+".json",types:[{description:"JSON",accept:{"application/json":[".json"]}}]});
-      const w=await h.createWritable();await w.write(text);await w.close();showStatus("保存しました");
-    }else{
-      const b=new Blob([text],{type:"application/json"}),a=document.createElement("a");
-      a.href=URL.createObjectURL(b);a.download=(jsonData.chapter||"events")+".json";a.click();showStatus("ダウンロードしました");
+  const fileName = getCurrentFileName();
+
+  // サーバー経由で保存（localhost:8090）
+  try {
+    const res = await fetch("/api/save", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ filename: fileName, content: text })
+    });
+    if (res.ok) {
+      showStatus(`✓ 保存完了 → dialogue/${fileName}`, 3000);
+      watchLastText = text;
+      // 監視を再開（2秒後、ファイル書き込み完了を待つ）
+      if (wasWatching) setTimeout(() => startWatch(), 2000);
+      return;
     }
-  }catch(err){if(err.name!=="AbortError")showStatus("エラー: "+err.message);}
+    const err = await res.json();
+    showStatus("保存エラー: " + (err.error || res.status));
+  } catch(e) {
+    showStatus("サーバー未起動です。先に起動してください:\npython tools/server.py", 8000);
+  }
+  // エラー時も監視再開
+  if (wasWatching) setTimeout(() => startWatch(), 2000);
+}
+
+function updateFileInfo(name) {
+  const info = document.getElementById("file-info");
+  const span = document.getElementById("file-name");
+  if (info && span) {
+    span.textContent = "📄 " + name + " (接続中 — 保存ワンクリック)";
+    info.style.display = "block";
+  }
+}
+
+function getCurrentFileName() {
+  // watchHandle/data-sourceからファイル名を取得、なければチャプター名から推測
+  const ds = document.getElementById("data-source");
+  if (ds && ds.textContent) {
+    const m = ds.textContent.match(/:\s*(.+\.json)/);
+    if (m) return m[1];
+  }
+  return "dialogue.json";
 }
 
 // ═══════════════════════════════════════════════════
 // 実速度アニメーション再生
 // ═══════════════════════════════════════════════════
 let playAnim = null;
-function onPlay() {
-  if (playAnim) { cancelAnimationFrame(playAnim.raf); playAnim = null; document.getElementById("btn-play").textContent = "再生"; return; }
-  if (playerPath.length < 2) return;
-  document.getElementById("btn-play").textContent = "停止";
+const PLAY_SPEEDS = [1, 2, 4, 8, 16];
+let playSpeedIdx = 0;
+let playSpeed = 1;
 
-  const segments = [];
-  for (let i = 1; i < playerPath.length; i++) {
-    const p0 = playerPath[i-1], p1 = playerPath[i];
-    const dx = p1.x - p0.x, dz = p1.z - p0.z, dist = Math.sqrt(dx*dx+dz*dz);
-    // durをイベントから取得、なければ距離/1.5で推定
-    let dur = 0.5;
-    if (p1.eventIdx >= 0) {
-      const ev = events[p1.eventIdx];
-      if (ev.dur) dur = ev.dur;
-      else if (dist > 0.01) dur = dist / 1.5;
+// ── シークバー操作 ──
+let _seeking = false;
+function seekTo(e) {
+  const bar = document.getElementById("ce-seekbar");
+  const rect = bar.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  const idx = Math.round(pct * (events.length - 1));
+  if (idx >= 0 && idx < events.length) {
+    // 再生中なら停止
+    if (playAnim) { cancelAnimationFrame(playAnim.raf); playAnim = null; }
+    document.getElementById("btn-play").textContent = "再生";
+    const ceBtn = document.getElementById("ce-play-btn2");
+    if (ceBtn) { ceBtn.textContent = "▶ 再生"; ceBtn.classList.remove("playing"); }
+    document.getElementById("ce-seek-chibi").classList.remove("running");
+    selectedIdx = idx;
+    ceHighlightPlayingCard(idx);
+    ceSelect(idx);
+    updateChibi(pct * 100);
+  }
+}
+function seekStart(e) { _seeking = true; seekTo(e); }
+function seekMove(e) { if (_seeking) seekTo(e); }
+function seekEnd(e) { _seeking = false; }
+document.addEventListener("mouseup", () => { _seeking = false; });
+
+function updateChibi(pct) {
+  const chibi = document.getElementById("ce-seek-chibi");
+  const prog = document.getElementById("ce-progress");
+  if (chibi) { chibi.style.left = pct + "%"; }
+  if (prog) { prog.style.width = pct + "%"; }
+}
+
+// イベントの位置を取得するヘルパー
+function getEventPos(ev, idx) {
+  for (let i = idx; i >= 0; i--) {
+    const e = events[i];
+    if (e.type === "pos_x" || e.type === "pos_x_await") return { x: parseFloat(e.target)||0, z: null };
+    if (e.type === "pos_z" || e.type === "pos_z_await") return { x: null, z: parseFloat(e.target)||0 };
+  }
+  return null;
+}
+
+function cycleSpeed() {
+  playSpeedIdx = (playSpeedIdx + 1) % PLAY_SPEEDS.length;
+  playSpeed = PLAY_SPEEDS[playSpeedIdx];
+  document.getElementById("btn-speed").textContent = `x${playSpeed}`;
+  const ceSpd = document.getElementById("ce-speed-btn2");
+  if (ceSpd) ceSpd.textContent = `x${playSpeed}`;
+}
+
+function onPlay() {
+  if (playAnim) {
+    cancelAnimationFrame(playAnim.raf); playAnim = null;
+    document.getElementById("btn-play").textContent = "再生";
+    const ceBtn = document.getElementById("ce-play-btn2");
+    if (ceBtn) { ceBtn.textContent = "▶ 再生"; ceBtn.classList.remove("playing"); }
+    // 再生中→一時停止: 現在位置を保持してカード選択状態にする
+    document.querySelectorAll("#ce-lane .ce-card").forEach(c => c.classList.remove("ce-playing","ce-played"));
+    document.getElementById("ce-seek-chibi").classList.remove("running");
+    document.getElementById("ce-play-marker").style.display = "none";
+    // 現在位置のカードを選択状態にする
+    if (selectedIdx >= 0) {
+      ceSelectedIdx = selectedIdx;
+      ceSelect(selectedIdx);
     }
-    segments.push({ from: p0, to: p1, dur: Math.max(dur, 0.1) });
+    return;
+  }
+  const visPts = playerPath;
+  if (visPts.length < 2) return;
+  document.getElementById("btn-play").textContent = "停止";
+  const ceBtn = document.getElementById("ce-play-btn2");
+  if (ceBtn) { ceBtn.textContent = "⏹ 停止"; ceBtn.classList.add("playing"); }
+  document.getElementById("ce-seek-chibi").classList.add("running");
+
+  // === タイムライン構築：async移動中はイベントと移動を並行 ===
+  const timeline = [];
+  let tlX = visPts[0].x, tlZ = visPts[0].z, tlRot = visPts[0].rot || 0;
+  const secStart = sections[currentSection] ? sections[currentSection].startIdx : 0;
+  const secEnd = sections[currentSection] ? sections[currentSection].endIdx : allEvents.length - 1;
+
+  // アクティブな非同期移動
+  let asyncMove = null; // { fromX, fromZ, toX, toZ, dur }
+  let asyncElapsed = 0;
+
+  function asyncLerp(el) {
+    if (!asyncMove) return { x: tlX, z: tlZ };
+    const p = Math.min(el / Math.max(asyncMove.dur, 0.01), 1);
+    return {
+      x: asyncMove.fromX + (asyncMove.toX - asyncMove.fromX) * p,
+      z: asyncMove.fromZ + (asyncMove.toZ - asyncMove.fromZ) * p,
+    };
   }
 
-  let segIdx = 0, segT = 0, lastTime = performance.now();
+  // async移動中のステップに fromX/toX を付与（tick で補間移動する）
+  function withMove(base) {
+    if (asyncMove) {
+      const p0 = asyncLerp(asyncElapsed);
+      const p1 = asyncLerp(asyncElapsed + base.dur);
+      base.fromX = p0.x; base.fromZ = p0.z;
+      base.toX = p1.x; base.toZ = p1.z;
+      base.moving = true;
+    }
+    return base;
+  }
+
+  for (let i = secStart; i < secEnd; i++) {
+    const ev = allEvents[i];
+    if (!ev) continue;
+    const et = ev.type;
+    if (et === "_comment") continue;
+
+    if (et === "pos_x" || et === "pos_z") {
+      const target = parseFloat(ev.target) || 0;
+      const isX = et === "pos_x";
+      const from = isX ? tlX : tlZ;
+      const dist = Math.abs(target - from);
+      const dur = Math.max((ev.dur && ev.dur > 0) ? ev.dur : dist / 1.5, 0.5);
+
+      if (ev.id) {
+        // async移動開始
+        asyncMove = { fromX: tlX, fromZ: tlZ, toX: isX ? target : tlX, toZ: isX ? tlZ : target, dur };
+        asyncElapsed = 0;
+        if (isX) tlX = target; else tlZ = target;
+      } else {
+        const fX = tlX, fZ = tlZ;
+        if (isX) tlX = target; else tlZ = target;
+        timeline.push({ type:"move", fromX:fX, fromZ:fZ, toX:tlX, toZ:tlZ, fromRot:tlRot, toRot:tlRot, dur, eventIdx:i });
+      }
+    } else if (et === "pos_x_await" || et === "pos_z_await") {
+      if (asyncMove) {
+        const remain = Math.max(asyncMove.dur - asyncElapsed, 0.1);
+        const p0 = asyncLerp(asyncElapsed);
+        timeline.push({ type:"move", fromX:p0.x, fromZ:p0.z, toX:asyncMove.toX, toZ:asyncMove.toZ, fromRot:tlRot, toRot:tlRot, dur:remain, eventIdx:i });
+        tlX = asyncMove.toX; tlZ = asyncMove.toZ;
+        asyncMove = null; asyncElapsed = 0;
+      }
+    } else if (et === "rot_y") {
+      const target = parseFloat(ev.target) || 0;
+      const dur = (ev.dur && ev.dur > 0) ? ev.dur : 0.8;
+      const pos = asyncLerp(asyncElapsed);
+      const step = withMove({ type:"rot", fromX:pos.x, fromZ:pos.z, toX:pos.x, toZ:pos.z, fromRot:tlRot, toRot:target, dur, eventIdx:i });
+      timeline.push(step);
+      if (asyncMove) asyncElapsed += dur;
+      tlRot = target;
+    } else if (et === "say") {
+      const dur = Math.max(0.8, ev.wait || 0);
+      const pos = asyncLerp(asyncElapsed);
+      const step = withMove({ type:"say", x:pos.x, z:pos.z, rot:tlRot, dur, eventIdx:i, text:ev.text||"" });
+      timeline.push(step);
+      if (asyncMove) asyncElapsed += dur;
+    } else if (et === "chat") {
+      const pos = asyncLerp(asyncElapsed);
+      const step = withMove({ type:"chat", x:pos.x, z:pos.z, rot:tlRot, dur:0.6, eventIdx:i, msg:ev.msg||"", user:ev.user||"" });
+      timeline.push(step);
+      if (asyncMove) asyncElapsed += 0.6;
+    } else if (et === "wait" || et === "sleep") {
+      const dur = parseFloat(ev.sec) || 0.5;
+      const pos = asyncLerp(asyncElapsed);
+      const step = withMove({ type:"wait", x:pos.x, z:pos.z, rot:tlRot, dur, eventIdx:i });
+      timeline.push(step);
+      if (asyncMove) asyncElapsed += dur;
+    } else if (et === "head_x") {
+      const dur = (ev.dur && ev.dur > 0) ? ev.dur : 0.5;
+      const pos = asyncLerp(asyncElapsed);
+      const step = withMove({ type:"head", x:pos.x, z:pos.z, rot:tlRot, dur, eventIdx:i, headTarget:ev.target||0 });
+      timeline.push(step);
+      if (asyncMove) asyncElapsed += dur;
+    } else if (et === "say_clear") {
+      const pos = asyncLerp(asyncElapsed);
+      const step = withMove({ type:"say_clear", x:pos.x, z:pos.z, rot:tlRot, dur:0.15, eventIdx:i });
+      timeline.push(step);
+      if (asyncMove) asyncElapsed += 0.15;
+    } else if (et === "stage_swap") {
+      break;
+    } else {
+      const dur = (et === "sfx" || et === "horror_glitch" || et === "scare_flash") ? 0.4
+        : (et === "set_viewers" || et === "flashlight_on") ? 0.15 : 0.15;
+      const pos = asyncLerp(asyncElapsed);
+      const step = withMove({ type:"event", x:pos.x, z:pos.z, rot:tlRot, dur, eventIdx:i });
+      timeline.push(step);
+      if (asyncMove) asyncElapsed += dur;
+    }
+  }
+
+  // 選択中のカードがあればそこから再生開始
+  let tlIdx = 0;
+  if (selectedIdx >= 0) {
+    for (let i = 0; i < timeline.length; i++) {
+      if (timeline[i].eventIdx >= selectedIdx) { tlIdx = i; break; }
+    }
+  }
+  let tlT = 0, lastTime = performance.now();
+  let playSayText = "", playChatText = "";
+
   function tick(now) {
-    if (segIdx >= segments.length) { playAnim = null; document.getElementById("btn-play").textContent = "再生"; return; }
-    const dt = (now - lastTime) / 1000; lastTime = now;
-    segT += dt;
-    const seg = segments[segIdx];
-    const t = Math.min(segT / seg.dur, 1);
-    const cx = seg.from.x + (seg.to.x - seg.from.x) * t;
-    const cz = seg.from.z + (seg.to.z - seg.from.z) * t;
+    if (tlIdx >= timeline.length) {
+      playAnim = null;
+      document.getElementById("btn-play").textContent = "再生";
+      const ceBtn2 = document.getElementById("ce-play-btn2");
+      if (ceBtn2) { ceBtn2.textContent = "▶ 再生"; ceBtn2.classList.remove("playing"); }
+      document.querySelectorAll("#ce-lane .ce-card").forEach(c => c.classList.remove("ce-playing","ce-played"));
+      document.getElementById("ce-seek-chibi").classList.remove("running");
+      document.getElementById("ce-play-marker").style.display = "none";
+      // 最後のイベント位置で停止（最初に戻さない）
+      updateChibi(100);
+      if (selectedIdx >= 0) {
+        ceSelectedIdx = selectedIdx;
+        ceSelect(selectedIdx);
+      }
+      return;
+    }
+    const rawDt = (now - lastTime) / 1000; lastTime = now;
+    const step = timeline[tlIdx];
+    // 移動は速度倍率を適用、非移動は倍率を弱める（カードが見える程度に）
+    const speedMul = (step.type === "move" || step.type === "rot") ? playSpeed : Math.min(playSpeed, 4);
+    tlT += rawDt * speedMul;
+    const t = Math.min(tlT / Math.max(step.dur, 0.01), 1);
+
+    // 位置・回転を補間
+    let cx, cz, curRot;
+    if (step.type === "move" || step.type === "rot") {
+      cx = step.fromX + (step.toX - step.fromX) * t;
+      cz = step.fromZ + (step.toZ - step.fromZ) * t;
+      curRot = step.fromRot + (step.toRot - step.fromRot) * t;
+    } else if (step.moving) {
+      // 非同期移動中（会話しながら歩行など）— 位置を補間
+      cx = step.fromX + (step.toX - step.fromX) * t;
+      cz = step.fromZ + (step.toZ - step.fromZ) * t;
+      curRot = step.rot;
+    } else {
+      cx = step.x; cz = step.z; curRot = step.rot;
+    }
+
+    // セリフ・チャット追跡
+    if (step.type === "say" && t >= 1) playSayText = step.text.replace(/\[.*?\]/g, "").substring(0, 50);
+    if (step.type === "chat" && t >= 1) playChatText = step.user + ": " + step.msg;
+    if (step.type === "say" && step.text === "") playSayText = "";
+    if (step.type === "say_clear" && t >= 1) { playSayText = ""; playChatText = ""; }
+
     camX = cx; camZ = cz;
-    if (seg.to.eventIdx >= 0) selectedIdx = seg.to.eventIdx;
+    if (step.eventIdx >= 0) {
+      const evIdx = step.eventIdx - secStart;
+      selectedIdx = evIdx;
+      // カードエディタ連携
+      {
+        ceHighlightPlayingCard(evIdx);
+        const pct = ((evIdx + 1) / events.length * 100).toFixed(1);
+        updateChibi(parseFloat(pct));
+      }
+    }
     draw();
-    // プレイヤーハイライト with glow
+
+    // プレイヤーハイライト
     const [sx,sy] = w2s(cx, cz);
     ctx.save();
     ctx.shadowColor = "#ffd93d"; ctx.shadowBlur = 20;
     const pulse = Math.sin(now/200)*0.15 + 0.85;
-    const plGrad = ctx.createRadialGradient(sx,sy,0,sx,sy,14*pulse);
+    const plGrad = ctx.createRadialGradient(sx,sy,0,sx,sy,22*pulse);
     plGrad.addColorStop(0, "rgba(255,217,61,.6)");
     plGrad.addColorStop(0.5, "rgba(255,200,50,.2)");
     plGrad.addColorStop(1, "rgba(255,200,50,0)");
     ctx.fillStyle = plGrad;
-    ctx.beginPath(); ctx.arc(sx,sy,14*pulse,0,Math.PI*2); ctx.fill();
-    // Core dot
-    ctx.fillStyle = "#ffd93d"; ctx.beginPath(); ctx.arc(sx,sy,4,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(sx,sy,22*pulse,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = "#ffd93d"; ctx.beginPath(); ctx.arc(sx,sy,7,0,Math.PI*2); ctx.fill();
     ctx.restore();
-    // 視野コーン（アニメ中）with gradient
-    const rot = seg.from.rot + (seg.to.rot - seg.from.rot) * t;
-    const dir = -rot - Math.PI/2;
+
+    // 視野コーン
+    const dir = -curRot - Math.PI/2;
     const fovGrad = ctx.createRadialGradient(sx,sy,0,sx,sy,70);
     fovGrad.addColorStop(0, "rgba(255,255,100,.18)");
     fovGrad.addColorStop(0.6, "rgba(255,255,100,.05)");
@@ -1301,7 +3498,36 @@ function onPlay() {
     ctx.fillStyle = fovGrad; ctx.beginPath(); ctx.moveTo(sx,sy);
     ctx.arc(sx,sy,70,dir-Math.PI/6,dir+Math.PI/6); ctx.closePath(); ctx.fill();
 
-    if (t >= 1) { segIdx++; segT = 0; }
+    // セリフ・チャット表示（画面中央）
+    if (playSayText || playChatText) {
+      ctx.save();
+      ctx.textAlign = "center";
+      const cx2 = cv.width / 2;
+      const boxW = Math.min(cv.width - 40, 600);
+      const boxH = (playSayText && playChatText) ? 64 : 38;
+      const boxY = cv.height - boxH - 90;
+      ctx.fillStyle = "rgba(0,0,0,0.8)";
+      ctx.beginPath();
+      const r = 10;
+      ctx.roundRect(cx2 - boxW/2, boxY, boxW, boxH, r);
+      ctx.fill();
+      ctx.font = "bold 15px 'Segoe UI', sans-serif";
+      if (playSayText && playChatText) {
+        ctx.fillStyle = "#4d96ff";
+        ctx.fillText("💬 " + playSayText, cx2, boxY + 24);
+        ctx.fillStyle = "#3db8b8";
+        ctx.fillText("📱 " + playChatText, cx2, boxY + 50);
+      } else if (playSayText) {
+        ctx.fillStyle = "#4d96ff";
+        ctx.fillText("💬 " + playSayText, cx2, boxY + 24);
+      } else {
+        ctx.fillStyle = "#3db8b8";
+        ctx.fillText("📱 " + playChatText, cx2, boxY + 24);
+      }
+      ctx.restore();
+    }
+
+    if (t >= 1) { tlIdx++; tlT = 0; }
     playAnim.raf = requestAnimationFrame(tick);
   }
   playAnim = { raf: requestAnimationFrame(tick) };
@@ -1310,21 +3536,33 @@ function onPlay() {
 // ═══════════════════════════════════════════════════
 // A1: 対話JSON選択（dialogue/ フォルダから）
 // ═══════════════════════════════════════════════════
-function onDialogueSelect() {
+async function onDialogueSelect() {
   const val = document.getElementById("dialogue-select").value;
   if (!val) return;
-  // DIALOGUE_CACHE から読み込み（dialogue_cache.js で定義）
-  const data = typeof DIALOGUE_CACHE !== "undefined" && DIALOGUE_CACHE[val];
-  if (!data) {
-    showStatus("キャッシュにありません: " + val);
-    return;
+  const fname = val + ".json";
+  // サーバー API から直接読み込み
+  try {
+    const res = await fetch("/api/load?name=" + encodeURIComponent(fname));
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    jsonData = data;
+    allEvents = jsonData.events || [];
+    DIALOGUE_CACHE[val] = JSON.parse(JSON.stringify(data));
+  } catch (e) {
+    // フォールバック: DIALOGUE_CACHE から読み込み
+    const cached = DIALOGUE_CACHE[val];
+    if (!cached) {
+      showStatus("読み込み失敗: " + e.message + "（サーバー未起動？ python tools/server.py）");
+      return;
+    }
+    jsonData = JSON.parse(JSON.stringify(cached));
+    allEvents = jsonData.events || [];
   }
-  jsonData = JSON.parse(JSON.stringify(data)); // deep copy
-  events = jsonData.events || [];
   // マップ自動選択
   const autoMap = {
     ch01_entrance: "stage_iriguchi", ch01_haison_souko: "stage_souko",
-    ch02_haison_naibu: "stage_naibu", ch04_haison_naibu_event: "stage_naibu",
+    ch02_yashiki: "stage_yashiki", ch02_haison_naibu: "stage_naibu",
+    ch04_kirihara_jinja: "stage_naibu", ch04_haison_naibu_event: "stage_naibu",
     ch05_haison_dasshutsu: "stage_escape", ch_test_toilet: "public_toilet",
     opening: "stage_iriguchi",
   };
@@ -1333,14 +3571,50 @@ function onDialogueSelect() {
     document.getElementById("map-select").value = autoMap[val];
   }
   undoStack = []; redoStack = []; updateUndoButtons();
-  extractPath(); buildEventList(); resetView(); draw();
-  setDataSource("cache", val + ".json");
-  showStatus(val + ".json を読み込みました");
+  currentSection = 0;
+  buildSections();
+  applySection(0);
+  setDataSource("api", fname);
+  showStatus(fname + " を読み込みました");
+}
+
+// ── メインツールバーのチャプター切り替え ──
+const CHAPTER_LABELS = {
+  ch01_entrance:"CP1: 廃村入口", ch02_yashiki:"CP2: 廃屋敷",
+  ch01_haison_souko:"CP3: 廃倉庫", ch04_kirihara_jinja:"CP4: 桐原神社",
+  ch05_haison_dasshutsu:"CP5: 脱出", ch_test_toilet:"テスト: 公衆トイレ",
+  opening:"オープニング",
+};
+function populateChapterSelect() {
+  const ceSel = document.getElementById("ce-chapter-select");
+  const origSel = document.getElementById("dialogue-select");
+  ceSel.innerHTML = "";
+  for (const opt of origSel.options) {
+    if (!opt.value) continue;
+    const o = document.createElement("option");
+    o.value = opt.value;
+    o.textContent = CHAPTER_LABELS[opt.value] || opt.value;
+    ceSel.appendChild(o);
+  }
+  ceSel.value = origSel.value;
+}
+async function onChapterSwitch(val) {
+  if (!val) return;
+  if (playAnim) onPlay(); // 再生停止
+  document.getElementById("dialogue-select").value = val;
+  await onDialogueSelect();
+  ceSyncMonitorSelects();
+  ceRender();
+  setTimeout(() => { resize(); resetView(); }, 60);
 }
 
 function setDataSource(type, name) {
   const el = document.getElementById("data-source");
-  if (type === "cache") {
+  if (type === "api") {
+    el.className = "src-watch";
+    el.textContent = "API: " + name;
+    el.title = "サーバーから直接読み込み（最新）";
+  } else if (type === "cache") {
     el.className = "src-cache";
     el.textContent = "CACHE: " + name;
     el.title = "dialogue_cache.js から読み込み。最新でない可能性あり";
@@ -1369,16 +3643,18 @@ function undo() {
   redoStack.push(JSON.stringify(events));
   events = JSON.parse(undoStack.pop());
   if (jsonData) jsonData.events = events;
-  extractPath(); buildEventList(); showDetail(selectedIdx); draw();
+  extractPath(); draw();
   updateUndoButtons();
+  ceRender(); cipUpdatePos();
 }
 function redo() {
   if (redoStack.length === 0) return;
   undoStack.push(JSON.stringify(events));
   events = JSON.parse(redoStack.pop());
   if (jsonData) jsonData.events = events;
-  extractPath(); buildEventList(); showDetail(selectedIdx); draw();
+  extractPath(); draw();
   updateUndoButtons();
+  ceRender(); cipUpdatePos();
 }
 function updateUndoButtons() {
   document.getElementById("btn-undo").disabled = undoStack.length === 0;
@@ -1386,62 +3662,6 @@ function updateUndoButtons() {
 }
 
 // ═══════════════════════════════════════════════════
-// B5: セリフ吹き出し描画
-// ═══════════════════════════════════════════════════
-function drawSpeechBubbles() {
-  const container = document.getElementById("bubbles-container");
-  container.innerHTML = "";
-  // sayイベントの位置を計算
-  let px = currentMap.spawn.x, pz = currentMap.spawn.z;
-  for (let i = 0; i < events.length; i++) {
-    const ev = events[i], t = ev.type;
-    if (t === "pos_z") pz = parseFloat(ev.target) || 0;
-    else if (t === "pos_x") px = parseFloat(ev.target) || 0;
-    else if (t === "say" && ev.text) {
-      const [sx, sy] = w2s(px, pz);
-      // 画面内のみ
-      if (sx > -100 && sx < cv.width + 100 && sy > -100 && sy < cv.height + 100) {
-        const bubble = document.createElement("div");
-        bubble.className = "speech-bubble";
-        const clean = ev.text.replace(/\[.*?\]/g, "").substring(0, 40);
-        bubble.innerHTML = `<div class="sb-speaker">#${i}</div>${clean}${ev.text.length > 40 ? "..." : ""}`;
-        bubble.style.left = (sx + document.getElementById("sidebar").offsetWidth - 20) + "px";
-        bubble.style.top = (sy + document.getElementById("header")?.offsetHeight || 0) - 50 + "px";
-        // canvas-area内の位置
-        const area = document.getElementById("canvas-area").getBoundingClientRect();
-        bubble.style.left = (sx + 10) + "px";
-        bubble.style.top = (sy - 50) + "px";
-        container.appendChild(bubble);
-      }
-    }
-  }
-}
-
-// ═══════════════════════════════════════════════════
-// B6: 区間タイムライン（パスセグメント上に秒数表示）
-// ═══════════════════════════════════════════════════
-function drawSegmentLabels() {
-  if (playerPath.length < 2) return;
-  ctx.font = "bold 9px sans-serif";
-  ctx.textAlign = "center"; ctx.textBaseline = "bottom";
-  for (let i = 1; i < playerPath.length; i++) {
-    const p0 = playerPath[i-1], p1 = playerPath[i];
-    const dx = p1.x - p0.x, dz = p1.z - p0.z, dist = Math.sqrt(dx*dx + dz*dz);
-    if (dist < 0.1) continue;
-    let dur = 0;
-    if (p1.eventIdx >= 0) {
-      const ev = events[p1.eventIdx];
-      dur = ev.dur || (dist / 1.5);
-    }
-    const [sx0, sy0] = w2s(p0.x, p0.z);
-    const [sx1, sy1] = w2s(p1.x, p1.z);
-    const mx = (sx0 + sx1) / 2, my = (sy0 + sy1) / 2;
-    ctx.fillStyle = lightMode ? "rgba(180,80,80,.8)" : "rgba(255,150,150,.7)";
-    ctx.fillText(`${dur.toFixed(1)}s / ${dist.toFixed(1)}m`, mx, my - 6);
-  }
-  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
-}
-
 // ═══════════════════════════════════════════════════
 // B7: ミニマップ
 // ═══════════════════════════════════════════════════
@@ -1505,9 +3725,1280 @@ function drawMinimap() {
 function toggleTheme() {
   lightMode = !lightMode;
   document.body.classList.toggle("light", lightMode);
-  document.getElementById("theme-btn").textContent = lightMode ? "Dark" : "Light";
+  document.getElementById("theme-btn").textContent = lightMode ? "Light" : "Dark";
+  const ceTheme = document.getElementById("ce-theme-btn");
+  if (ceTheme) ceTheme.textContent = lightMode ? "Dark" : "Light";
   draw();
 }
+
+window.toggleSidebar = function() {
+  const sb = document.getElementById("sidebar");
+  sb.classList.toggle("collapsed");
+  setTimeout(resize, 220); // transition完了後にcanvasリサイズ
+};
+
+// ═══════════════════════════════════════════════════
+// コンテキストメニューアクション + キーボードショートカット
+// ═══════════════════════════════════════════════════
+document.addEventListener("click", (e) => {
+  const item = e.target.closest(".ctx-item");
+  if (!item) { if (!e.target.closest("#ctx-menu")) hideContextMenu(); return; }
+  const action = item.dataset.action;
+  hideContextMenu();
+  switch (action) {
+    case "walk": actionWalkHere(); break;
+    case "face": actionFaceHere(); break;
+    case "spawn": actionSetSpawn(); break;
+    case "copy": actionCopyCoords(); break;
+    case "insert-posx": actionInsertPosX(); break;
+    case "insert-posz": actionInsertPosZ(); break;
+    case "insert-rot": actionInsertRot(); break;
+    case "delete": actionDeleteSelected(); break;
+  }
+});
+
+// 単独X移動イベント挿入
+window.actionInsertPosX = function() {
+  if (!pickedPoint || !jsonData) return;
+  pushUndo();
+  const insertAt = selectedIdx >= 0 ? selectedIdx + 1 : events.length;
+  const pp = getPlayerPosAtSelected();
+  const dist = pp ? Math.abs(pickedPoint.x - pp.x) : 5;
+  const dur = Math.max(0.5, Math.round(dist / 1.5 * 10) / 10);
+  events.splice(insertAt, 0, { type: "pos_x", target: Math.round(pickedPoint.x*4)/4, dur, id: "" });
+  extractPath(); buildEventList(); selectEvent(insertAt);
+  showStatus("X移動イベントを挿入しました");
+};
+
+// 単独Z移動イベント挿入
+window.actionInsertPosZ = function() {
+  if (!pickedPoint || !jsonData) return;
+  pushUndo();
+  const insertAt = selectedIdx >= 0 ? selectedIdx + 1 : events.length;
+  const pp = getPlayerPosAtSelected();
+  const dist = pp ? Math.abs(pickedPoint.z - pp.z) : 5;
+  const dur = Math.max(0.5, Math.round(dist / 1.5 * 10) / 10);
+  events.splice(insertAt, 0, { type: "pos_z", target: Math.round(pickedPoint.z*4)/4, dur, id: "" });
+  extractPath(); buildEventList(); selectEvent(insertAt);
+  showStatus("Z移動イベントを挿入しました");
+};
+
+// 単独回転イベント挿入
+window.actionInsertRot = function() {
+  if (!pickedPoint || !jsonData) return;
+  pushUndo();
+  const pp = getPlayerPosAtSelected();
+  if (!pp) return;
+  const dx = pickedPoint.x - pp.x, dz = pickedPoint.z - pp.z;
+  const rot = Math.round(Math.atan2(dx, -dz) * 100) / 100;
+  const insertAt = selectedIdx >= 0 ? selectedIdx + 1 : events.length;
+  events.splice(insertAt, 0, { type: "rot_y", target: rot, dur: 0.8 });
+  extractPath(); buildEventList(); selectEvent(insertAt);
+  showStatus(`回転イベントを挿入 (${(rot*180/Math.PI).toFixed(0)}\u00B0)`);
+};
+
+// 選択イベント削除
+window.actionDeleteSelected = function() {
+  if (selectedIdx < 0 || !jsonData) return;
+  // 複数選択がある場合はまとめて削除
+  const toDelete = multiSelected.size > 0 ? [...multiSelected].sort((a,b)=>b-a) : [selectedIdx];
+  pushUndo();
+  for (const idx of toDelete) {
+    if (idx >= 0 && idx < events.length) events.splice(idx, 1);
+  }
+  multiSelected.clear();
+  selectedIdx = Math.min(selectedIdx, events.length - 1);
+  extractPath(); draw();
+  ceRender(); cipUpdatePos();
+  showStatus(`${toDelete.length}件のイベントを削除しました`);
+};
+
+// キーボードショートカット
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+
+  // Director Mode中のキー操作
+  if (directorMode) {
+    if (e.key === "Escape") { toggleDirectorMode(); return; }
+    e.preventDefault();
+    directorKeyDown(e.key.toLowerCase());
+    return;
+  }
+
+  if (e.key === "Delete" || e.key === "Backspace") {
+    e.preventDefault(); actionDeleteSelected();
+  }
+  if (e.key === "Escape") {
+    hideContextMenu();
+    pickedPoint = null; updatePickPanel(); draw();
+  }
+  if (e.key === "ArrowUp" && selectedIdx > 0) {
+    e.preventDefault();
+    let next = selectedIdx - 1;
+    while (next > 0 && events[next]?.type === "_comment") next--;
+    selectEvent(next);
+  }
+  if (e.key === "ArrowDown" && selectedIdx < events.length - 1) {
+    e.preventDefault();
+    let next = selectedIdx + 1;
+    while (next < events.length - 1 && events[next]?.type === "_comment") next++;
+    selectEvent(next);
+  }
+});
+
+// ═══════════════════════════════════════════════════
+// DIRECTOR MODE — ゲーム感覚キャラ操作
+// ═══════════════════════════════════════════════════
+let directorMode = false;
+let dirChar = { x: 0, z: 0, rot: 0, headX: 0, walking: false };
+let dirQueue = []; // 操作キュー（保存するまでJSONに反映しない）
+
+function toggleDirectorMode() {
+  directorMode = !directorMode;
+  const btn = document.getElementById("director-toggle");
+  const hud = document.getElementById("director-hud");
+  const indicator = document.getElementById("dir-insert-indicator");
+  btn.classList.toggle("active", directorMode);
+  hud.classList.toggle("visible", directorMode);
+  indicator.classList.toggle("visible", directorMode);
+
+  if (directorMode) {
+    const pp = getPlayerPosAtSelected();
+    if (pp) {
+      dirChar.x = pp.x; dirChar.z = pp.z; dirChar.rot = pp.rot || 0;
+    } else {
+      dirChar.x = currentMap.spawn.x; dirChar.z = currentMap.spawn.z; dirChar.rot = 0;
+    }
+    dirChar.headX = 0; dirChar.walking = false;
+    dirQueue = [];
+    updateDirStatus(); updateDirQueueUI(); updateDirInsertIndicator();
+    camX = dirChar.x; camZ = dirChar.z;
+    draw();
+  } else {
+    if (dirQueue.length > 0 && !confirm(`${dirQueue.length}件の未保存操作があります。破棄しますか？`)) {
+      directorMode = true;
+      btn.classList.add("active"); hud.classList.add("visible"); indicator.classList.add("visible");
+      return;
+    }
+    dirQueue = [];
+    draw();
+  }
+}
+
+// キューに追加（JSONには書き込まない）
+function dirEnqueue(ev) {
+  dirQueue.push(ev);
+  updateDirQueueUI();
+}
+
+// キュー一括→JSON同期
+function dirCommitQueue() {
+  if (!jsonData) { showStatus("JSONを先に読み込んでください"); return; }
+  if (dirQueue.length === 0) { showStatus("操作がありません"); return; }
+  pushUndo();
+  const insertAt = selectedIdx >= 0 ? selectedIdx + 1 : events.length;
+  events.splice(insertAt, 0, ...dirQueue);
+  const commitCount = dirQueue.length;
+  dirQueue = [];
+  extractPath(); buildEventList();
+  selectEvent(insertAt + commitCount - 1);
+  updateDirQueueUI(); updateDirInsertIndicator();
+  showStatus(`${commitCount}件のイベントを挿入しました`);
+  draw();
+}
+
+// キュー末尾を取消
+function dirUndoLast() {
+  if (dirQueue.length === 0) return;
+  const removed = dirQueue.pop();
+  // キャラ状態を再計算（先頭から再構築）
+  dirRebuildCharFromQueue();
+  updateDirStatus(); updateDirQueueUI(); draw();
+  showStatus(`取消: ${TYPE_JA[removed.type] || removed.type}`);
+}
+
+// キュー全消去
+function dirClearQueue() {
+  if (dirQueue.length === 0) return;
+  dirQueue = [];
+  dirRebuildCharFromQueue();
+  updateDirStatus(); updateDirQueueUI(); draw();
+  showStatus("操作をすべて取り消しました");
+}
+
+// キューからキャラ状態を再構築
+function dirRebuildCharFromQueue() {
+  const pp = getPlayerPosAtSelected();
+  if (pp) { dirChar.x = pp.x; dirChar.z = pp.z; dirChar.rot = pp.rot || 0; }
+  else { dirChar.x = currentMap.spawn.x; dirChar.z = currentMap.spawn.z; dirChar.rot = 0; }
+  dirChar.headX = 0; dirChar.walking = false;
+  for (const ev of dirQueue) {
+    if (ev.type === "pos_x" || ev.type === "pos_x_await") dirChar.x = ev.target;
+    if (ev.type === "pos_z" || ev.type === "pos_z_await") dirChar.z = ev.target;
+    if (ev.type === "rot_y") dirChar.rot = ev.target;
+    if (ev.type === "head_x") dirChar.headX = ev.target;
+    if (ev.type === "walk_set") dirChar.walking = ev.on;
+  }
+  camX = dirChar.x; camZ = dirChar.z;
+}
+
+function updateDirInsertIndicator() {
+  const el = document.getElementById("dir-insert-at");
+  el.textContent = selectedIdx >= 0 ? selectedIdx : "末尾";
+}
+
+function updateDirStatus() {
+  document.getElementById("ds-pos").textContent = `${dirChar.x.toFixed(1)}, ${dirChar.z.toFixed(1)}`;
+  document.getElementById("ds-rot").textContent = `${(dirChar.rot * 180 / Math.PI).toFixed(0)}\u00B0`;
+  document.getElementById("ds-head").textContent = `${(dirChar.headX * 180 / Math.PI).toFixed(0)}\u00B0`;
+  document.getElementById("ds-walk").textContent = dirChar.walking ? "ON" : "OFF";
+  document.getElementById("ds-walk").style.color = dirChar.walking ? "#6bcb77" : "#ff6b6b";
+}
+
+function updateDirQueueUI() {
+  const list = document.getElementById("dir-queue-list");
+  const count = document.getElementById("dir-queue-count");
+  count.textContent = dirQueue.length;
+  list.innerHTML = "";
+  // 直近8件を表示（古い順）
+  const start = Math.max(0, dirQueue.length - 8);
+  if (start > 0) {
+    const more = document.createElement("div");
+    more.className = "dq-item dq-more";
+    more.textContent = `... +${start}件`;
+    list.appendChild(more);
+  }
+  for (let i = start; i < dirQueue.length; i++) {
+    const ev = dirQueue[i];
+    const div = document.createElement("div");
+    div.className = "dq-item";
+    const ja = TYPE_JA[ev.type] || ev.type;
+    let detail = "";
+    if (ev.type === "pos_x" || ev.type === "pos_x_await") detail = `x=${ev.target}`;
+    else if (ev.type === "pos_z" || ev.type === "pos_z_await") detail = `z=${ev.target}`;
+    else if (ev.type === "rot_y") detail = `${(ev.target * 180 / Math.PI).toFixed(0)}\u00B0`;
+    else if (ev.type === "head_x") detail = `${(ev.target * 180 / Math.PI).toFixed(0)}\u00B0`;
+    else if (ev.type === "walk_set") detail = ev.on ? "ON" : "OFF";
+    else if (ev.type === "say") detail = (ev.text || "").substring(0, 15);
+    else if (ev.type === "wait") detail = `${ev.sec}s`;
+    else if (ev.type === "sfx") detail = ev.sound || "";
+    div.innerHTML = `<span class="dq-idx">${i + 1}</span><span class="dq-type">${ja}</span><span class="dq-detail">${detail}</span>`;
+    list.appendChild(div);
+  }
+  list.scrollTop = list.scrollHeight;
+}
+
+function getDirStep() {
+  return parseFloat(document.getElementById("dir-step").value) || 2;
+}
+
+// 方向パッドアクション（キューに溜めるだけ）
+function dirAction(dir) {
+  const step = getDirStep();
+  const rotStep = Math.PI / 4;
+  const headStep = 0.15;
+
+  switch (dir) {
+    case "forward": case "backward": {
+      const sign = dir === "forward" ? 1 : -1;
+      const dx = sign * Math.sin(dirChar.rot) * step;
+      const dz = sign * -Math.cos(dirChar.rot) * step;
+      const newX = Math.round((dirChar.x + dx) * 4) / 4;
+      const newZ = Math.round((dirChar.z + dz) * 4) / 4;
+      if (Math.abs(dx) > 0.01) {
+        const dur = Math.max(0.3, Math.round(Math.abs(newX - dirChar.x) / 1.5 * 10) / 10);
+        dirEnqueue({ type: "pos_x", target: newX, dur, id: "" });
+        dirChar.x = newX;
+      }
+      if (Math.abs(dz) > 0.01) {
+        const dur = Math.max(0.3, Math.round(Math.abs(newZ - dirChar.z) / 1.5 * 10) / 10);
+        dirEnqueue({ type: "pos_z", target: newZ, dur, id: "" });
+        dirChar.z = newZ;
+      }
+      camX = dirChar.x; camZ = dirChar.z;
+      break;
+    }
+    case "left": {
+      dirChar.rot = Math.round((dirChar.rot - rotStep) * 100) / 100;
+      dirEnqueue({ type: "rot_y", target: dirChar.rot, dur: 0.6 });
+      break;
+    }
+    case "right": {
+      dirChar.rot = Math.round((dirChar.rot + rotStep) * 100) / 100;
+      dirEnqueue({ type: "rot_y", target: dirChar.rot, dur: 0.6 });
+      break;
+    }
+    case "turn-180": {
+      dirChar.rot = Math.round((dirChar.rot + Math.PI) * 100) / 100;
+      dirEnqueue({ type: "rot_y", target: dirChar.rot, dur: 1.0 });
+      break;
+    }
+    case "head-up": {
+      dirChar.headX = Math.round(Math.max(dirChar.headX - headStep, -0.5) * 100) / 100;
+      dirEnqueue({ type: "head_x", target: dirChar.headX, dur: 0.5 });
+      break;
+    }
+    case "head-down": {
+      dirChar.headX = Math.round(Math.min(dirChar.headX + headStep, 0.5) * 100) / 100;
+      dirEnqueue({ type: "head_x", target: dirChar.headX, dur: 0.5 });
+      break;
+    }
+    case "face-click": {
+      if (!pickedPoint) { showStatus("先にマップをクリックして地点を選択"); return; }
+      const fdx = pickedPoint.x - dirChar.x, fdz = pickedPoint.z - dirChar.z;
+      dirChar.rot = Math.round(Math.atan2(fdx, -fdz) * 100) / 100;
+      dirEnqueue({ type: "rot_y", target: dirChar.rot, dur: 0.8 });
+      break;
+    }
+    case "here": {
+      camX = dirChar.x; camZ = dirChar.z;
+      break;
+    }
+  }
+  updateDirStatus(); draw();
+  const btn = document.querySelector(`[data-dir="${dir}"]`);
+  if (btn) { btn.classList.add("pressed"); setTimeout(() => btn.classList.remove("pressed"), 150); }
+}
+
+// アクションボタン（キューに溜めるだけ）
+function dirActionBtn(act) {
+  switch (act) {
+    case "walk-toggle": {
+      dirChar.walking = !dirChar.walking;
+      dirEnqueue({ type: "walk_set", on: dirChar.walking });
+      document.querySelector('[data-act="walk-toggle"]').classList.toggle("toggled", dirChar.walking);
+      break;
+    }
+    case "say": {
+      const text = prompt("セリフを入力:");
+      if (text) dirEnqueue({ type: "say", text });
+      else return;
+      break;
+    }
+    case "wait": {
+      const sec = parseFloat(prompt("待機秒数:", "1.0"));
+      if (!isNaN(sec) && sec > 0) dirEnqueue({ type: "wait", sec });
+      else return;
+      break;
+    }
+    case "sfx": {
+      const sfxList = ["ambient_wind","door_creak","footstep","thunder","glass_break","whisper","static_noise","heartbeat"];
+      const sound = prompt("効果音名:\n候補: " + sfxList.join(", "), sfxList[0]);
+      if (sound) dirEnqueue({ type: "sfx", sound });
+      else return;
+      break;
+    }
+    case "flashlight": {
+      dirEnqueue({ type: "flashlight_on" });
+      break;
+    }
+    case "horror": {
+      const horrorTypes = ["horror_glitch","scare_flash","horror_tint","fade_black"];
+      const choice = prompt("ホラー演出タイプ:\n1: horror_glitch\n2: scare_flash\n3: horror_tint\n4: fade_black", "1");
+      const idx = parseInt(choice) - 1;
+      if (idx < 0 || idx >= horrorTypes.length) return;
+      const t = horrorTypes[idx];
+      if (t === "horror_glitch") dirEnqueue({ type: t, intensity: 5, count: 1 });
+      else if (t === "scare_flash") dirEnqueue({ type: t, color: "white" });
+      else if (t === "horror_tint") dirEnqueue({ type: t });
+      else if (t === "fade_black") dirEnqueue({ type: t, dur: 1.0 });
+      break;
+    }
+    case "viewers": {
+      const count = parseInt(prompt("視聴者数:", "100"));
+      if (!isNaN(count) && count >= 0) dirEnqueue({ type: "set_viewers", count });
+      else return;
+      break;
+    }
+  }
+  updateDirStatus(); draw();
+}
+
+// キーボードでDirectorを操作
+function directorKeyDown(key) {
+  switch (key) {
+    case "w": dirAction("forward"); break;
+    case "s": dirAction("backward"); break;
+    case "a": dirAction("left"); break;
+    case "d": dirAction("right"); break;
+    case "r": dirAction("head-up"); break;
+    case "f": dirAction("head-down"); break;
+    case "x": dirAction("turn-180"); break;
+    case "q": dirAction("face-click"); break;
+    case " ": dirActionBtn("walk-toggle"); break;
+    case "t": dirActionBtn("say"); break;
+    case "1": dirActionBtn("wait"); break;
+    case "2": dirActionBtn("sfx"); break;
+    case "3": dirActionBtn("flashlight"); break;
+    case "4": dirActionBtn("horror"); break;
+    case "5": dirActionBtn("viewers"); break;
+    case "backspace": dirUndoLast(); break;
+    case "enter": dirCommitQueue(); break;
+  }
+}
+
+// Director Mode中のキャラ＋キュープレビュー描画
+function drawDirectorCharacter() {
+  if (!directorMode) return;
+  ctx.save();
+
+  // ── キュー操作のプレビューパス（点線） ──
+  if (dirQueue.length > 0) {
+    const pp = getPlayerPosAtSelected();
+    let px = pp ? pp.x : currentMap.spawn.x;
+    let pz = pp ? pp.z : currentMap.spawn.z;
+    const pts = [{ x: px, z: pz }];
+    for (const ev of dirQueue) {
+      if (ev.type === "pos_x" || ev.type === "pos_x_await") px = ev.target;
+      if (ev.type === "pos_z" || ev.type === "pos_z_await") pz = ev.target;
+      if (ev.type === "pos_x" || ev.type === "pos_z" || ev.type === "pos_x_await" || ev.type === "pos_z_await") {
+        pts.push({ x: px, z: pz });
+      }
+    }
+    if (pts.length > 1) {
+      // グロー
+      ctx.strokeStyle = "rgba(255,200,60,.15)"; ctx.lineWidth = 8; ctx.lineCap = "round";
+      ctx.filter = "blur(4px)";
+      ctx.beginPath();
+      const [g0x, g0y] = w2s(pts[0].x, pts[0].z); ctx.moveTo(g0x, g0y);
+      for (let i = 1; i < pts.length; i++) { const [gx, gy] = w2s(pts[i].x, pts[i].z); ctx.lineTo(gx, gy); }
+      ctx.stroke(); ctx.filter = "none";
+      // 点線パス
+      ctx.strokeStyle = "#ffd93d"; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+      ctx.beginPath(); ctx.moveTo(g0x, g0y);
+      for (let i = 1; i < pts.length; i++) { const [gx, gy] = w2s(pts[i].x, pts[i].z); ctx.lineTo(gx, gy); }
+      ctx.stroke(); ctx.setLineDash([]);
+      // 中間点マーカー
+      for (let i = 1; i < pts.length; i++) {
+        const [mx, my] = w2s(pts[i].x, pts[i].z);
+        ctx.fillStyle = "rgba(255,217,61,.5)";
+        ctx.beginPath(); ctx.arc(mx, my, 4, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  }
+
+  // ── キャラ本体 ──
+  const [sx, sy] = w2s(dirChar.x, dirChar.z);
+  const dir = -(dirChar.rot) - Math.PI / 2;
+
+  // 視野コーン
+  const fovGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, 80);
+  fovGrad.addColorStop(0, "rgba(255,100,100,.2)");
+  fovGrad.addColorStop(0.5, "rgba(255,100,100,.06)");
+  fovGrad.addColorStop(1, "rgba(255,100,100,0)");
+  ctx.fillStyle = fovGrad; ctx.beginPath(); ctx.moveTo(sx, sy);
+  ctx.arc(sx, sy, 80, dir - Math.PI / 5, dir + Math.PI / 5); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "rgba(255,100,100,.25)"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(sx, sy);
+  ctx.lineTo(sx + Math.cos(dir - Math.PI / 5) * 80, sy + Math.sin(dir - Math.PI / 5) * 80); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(sx, sy);
+  ctx.lineTo(sx + Math.cos(dir + Math.PI / 5) * 80, sy + Math.sin(dir + Math.PI / 5) * 80); ctx.stroke();
+
+  // パルスリング
+  const pulse = Math.sin(performance.now() / 300) * 0.3 + 0.7;
+  ctx.strokeStyle = `rgba(255,107,107,${0.3 * pulse})`; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(sx, sy, 18 + pulse * 6, 0, Math.PI * 2); ctx.stroke();
+
+  // 三角キャラ
+  ctx.shadowColor = "#ff6b6b"; ctx.shadowBlur = 20;
+  const size = 14;
+  const bodyGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, size * 1.5);
+  bodyGrad.addColorStop(0, "#ff8080"); bodyGrad.addColorStop(1, "#cc3333");
+  ctx.fillStyle = bodyGrad;
+  ctx.beginPath();
+  ctx.moveTo(sx + Math.cos(dir) * size * 1.5, sy + Math.sin(dir) * size * 1.5);
+  ctx.lineTo(sx + Math.cos(dir + 2.4) * size, sy + Math.sin(dir + 2.4) * size);
+  ctx.lineTo(sx + Math.cos(dir - 2.4) * size, sy + Math.sin(dir - 2.4) * size);
+  ctx.closePath(); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(sx, sy, 3, 0, Math.PI * 2); ctx.fill();
+
+  // 座標ラベル
+  ctx.font = "bold 11px 'Consolas',monospace";
+  const label = `(${dirChar.x.toFixed(1)}, ${dirChar.z.toFixed(1)}) ${(dirChar.rot * 180 / Math.PI).toFixed(0)}\u00B0`;
+  const lm = ctx.measureText(label);
+  ctx.fillStyle = "rgba(8,12,26,.85)";
+  ctx.beginPath(); ctx.roundRect(sx - lm.width / 2 - 6, sy - 34, lm.width + 12, 18, 4); ctx.fill();
+  ctx.fillStyle = "#ff8080"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText(label, sx, sy - 25);
+  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
+
+  ctx.restore();
+
+  if (!playAnim && !window._dirRaf) {
+    window._dirRaf = requestAnimationFrame(() => { window._dirRaf = null; draw(); });
+  }
+}
+
+// Director Mode HUD イベントリスナー
+document.getElementById("director-toggle").addEventListener("click", toggleDirectorMode);
+
+document.getElementById("dir-pad").addEventListener("click", (e) => {
+  const btn = e.target.closest(".dir-btn");
+  if (!btn) return;
+  dirAction(btn.dataset.dir);
+});
+
+document.getElementById("dir-actions").addEventListener("click", (e) => {
+  const btn = e.target.closest(".dir-act-btn");
+  if (!btn) return;
+  dirActionBtn(btn.dataset.act);
+});
+
+document.getElementById("dir-step").addEventListener("input", (e) => {
+  document.getElementById("dir-step-val").textContent = parseFloat(e.target.value).toFixed(1) + "m";
+});
+
+// ═══════════════════════════════════════════════════
+// カードエディタ
+// ═══════════════════════════════════════════════════
+const CE_TYPE_COLORS = {
+  pos_z:"ce-move", pos_x:"ce-move", pos_z_await:"ce-move", pos_x_await:"ce-move", walk_set:"ce-move",
+  rot_y:"ce-rotate", head_x:"ce-rotate",
+  say:"ce-say", say_clear:"ce-say",
+  chat:"ce-chat", superchat:"ce-chat",
+  sfx:"ce-sfx",
+  horror_glitch:"ce-horror", horror_tint:"ce-horror", horror_tint_clear:"ce-horror", horror_flash:"ce-horror", scare_flash:"ce-horror",
+  fade_black:"ce-horror",
+  wait:"ce-wait", sleep:"ce-wait",
+  set_viewers:"ce-system", flashlight_on:"ce-system",
+  stage_swap:"ce-system", choice:"ce-system", label:"ce-system", goto:"ce-system",
+  goto_route:"ce-system", set_route:"ce-system", use_ofuda:"ce-system",
+  polaroid_video:"ce-system",
+};
+
+const CE_ICONS = CARD_ICON_MINI; // 既存のアイコンマップを共有
+
+let ceSelectedIdx = -1;
+let ceInsertAt = -1; // 挿入メニュー用
+let ceActiveFilters = new Set(["say", "move", "system"]); // デフォルト: セリフ+移動+制御
+
+// カテゴリ定義
+const CE_FILTER_CATS = [
+  { key:"all",    label:"ALL",     icon:"" },
+  { key:"move",   label:"移動",    icon:"🚶" },
+  { key:"rotate", label:"回転",    icon:"🔄" },
+  { key:"say",    label:"セリフ",  icon:"💬" },
+  { key:"chat",   label:"チャット",icon:"📱" },
+  { key:"sfx",    label:"効果音",  icon:"🔊" },
+  { key:"horror", label:"ホラー",  icon:"👻" },
+  { key:"wait",   label:"待機",    icon:"⏱" },
+  { key:"system", label:"制御",    icon:"⚙" },
+];
+
+function ceGetCardCat(type) {
+  const cls = CE_TYPE_COLORS[type] || "ce-system";
+  return cls.replace("ce-", "");
+}
+
+function ceBuildFilters() {
+  const counts = {};
+  for (const cat of CE_FILTER_CATS) counts[cat.key] = 0;
+  counts["all"] = 0;
+  for (const ev of events) {
+    if (ev.type === "_comment") continue;
+    counts["all"]++;
+    const cat = ceGetCardCat(ev.type);
+    if (counts[cat] !== undefined) counts[cat]++;
+  }
+  const container = document.getElementById("ce-filters");
+  const isAll = ceActiveFilters.size === 0;
+  let h = "";
+  for (const cat of CE_FILTER_CATS) {
+    if (cat.key !== "all" && counts[cat.key] === 0) continue;
+    const active = (cat.key === "all" && isAll) || ceActiveFilters.has(cat.key) ? " active" : "";
+    h += `<button class="ce-filter-btn${active}" data-cat="${cat.key}" onclick="ceToggleFilter('${cat.key}')">`;
+    h += cat.icon ? `${cat.icon}` : "";
+    h += `${cat.label}<span class="ce-filter-count">${counts[cat.key]}</span></button>`;
+  }
+  container.innerHTML = h;
+}
+
+window.ceToggleFilter = function(cat) {
+  if (cat === "all") {
+    // ALL: 全フィルター解除
+    ceActiveFilters.clear();
+  } else {
+    // トグル
+    if (ceActiveFilters.has(cat)) ceActiveFilters.delete(cat);
+    else ceActiveFilters.add(cat);
+  }
+  ceApplyFilters();
+};
+
+function ceApplyFilters() {
+  const isAll = ceActiveFilters.size === 0;
+  // ボタン状態
+  document.querySelectorAll(".ce-filter-btn").forEach(btn => {
+    const k = btn.dataset.cat;
+    btn.classList.toggle("active", (k === "all" && isAll) || ceActiveFilters.has(k));
+  });
+  // カード表示/非表示
+  document.querySelectorAll("#ce-lane .ce-card").forEach(card => {
+    const idx = parseInt(card.dataset.idx);
+    if (isNaN(idx) || idx >= events.length) return;
+    const cardCat = ceGetCardCat(events[idx].type);
+    const show = isAll || ceActiveFilters.has(cardCat);
+    card.classList.toggle("ce-filtered", !show);
+  });
+  // 件数
+  const visible = document.querySelectorAll("#ce-lane .ce-card:not(.ce-filtered)").length;
+  const labels = [...ceActiveFilters].map(k => {
+    const c = CE_FILTER_CATS.find(f => f.key === k);
+    return c ? c.label : k;
+  });
+  document.getElementById("ce-count").textContent = isAll
+    ? `${events.length} イベント`
+    : `${visible}/${events.length} [${labels.join("+")}]`;
+}
+
+function ceOpen() {
+  if (!jsonData || events.length === 0) return;
+  ceSelectedIdx = selectedIdx >= 0 ? selectedIdx : -1;
+  ceSyncMonitorSelects();
+  ceRender();
+  cipBuild();
+  setTimeout(() => { resize(); resetView(); }, 60);
+}
+
+// ── 左パネル: イベント挿入リスト ──
+function cipBuild() {
+  const list = document.getElementById("cip-list");
+  let h = "";
+  for (const it of CE_INSERT_TYPES) {
+    h += `<div class="cip-item" onclick="cipInsert('${it.type}')">`;
+    h += `<span class="cip-icon">${it.icon}</span>`;
+    h += `<span class="cip-label">${it.label}</span>`;
+    h += `</div>`;
+  }
+  list.innerHTML = h;
+  cipUpdatePos();
+}
+
+function cipGetInsertPos() {
+  if (ceSelectedIdx >= 0 && ceSelectedIdx < events.length) return ceSelectedIdx;
+  if (selectedIdx >= 0 && selectedIdx < events.length) return selectedIdx;
+  return events.length > 0 ? events.length - 1 : 0;
+}
+
+function cipUpdatePos() {
+  const el = document.getElementById("cip-pos");
+  if (!el) return;
+  const pos = cipGetInsertPos();
+  if (events.length === 0) {
+    el.textContent = "先頭に追加";
+  } else if (pos >= 0 && pos < events.length) {
+    const ev = events[pos];
+    const ja = TYPE_JA[ev.type] || ev.type;
+    el.textContent = `#${pos} ${ja} の後に挿入`;
+  }
+}
+
+let _cipModalType = null;
+
+window.cipInsert = function(type) {
+  const tpl = CE_INSERT_TYPES.find(t => t.type === type);
+  if (!tpl) return;
+  _cipModalType = type;
+  // ヘッダー
+  document.getElementById("cip-modal-icon").textContent = tpl.icon;
+  document.getElementById("cip-modal-title").textContent = tpl.label + " を追加";
+  // フィールド生成
+  const fields = document.getElementById("cip-modal-fields");
+  fields.innerHTML = cipBuildModalFields(type, tpl.defaults);
+  // モーダル表示
+  document.getElementById("cip-modal-overlay").classList.add("open");
+  // 最初の入力にフォーカス
+  const firstInput = fields.querySelector("input,textarea");
+  if (firstInput) setTimeout(() => firstInput.focus(), 60);
+};
+
+function cipBuildModalFields(type, defaults) {
+  let h = "";
+  if (type === "say") {
+    h += `<div class="cip-field"><span class="cip-field-label">テキスト</span><textarea id="cip-m-text" placeholder="セリフを入力...">${defaults.text || ""}</textarea></div>`;
+    h += `<div class="cip-field"><span class="cip-field-label">ボイスファイル</span><input type="text" id="cip-m-voice" value="${defaults.voice || ""}" placeholder="例: v001"><span class="cip-field-hint">空欄なら無音</span></div>`;
+    h += `<div class="cip-field"><span class="cip-field-label">待機（秒）</span><input type="number" id="cip-m-wait" step="0.1" value="${defaults.wait || 2}"></div>`;
+  } else if (type === "chat") {
+    h += `<div class="cip-field"><span class="cip-field-label">テキスト</span><textarea id="cip-m-text" placeholder="コメント内容...">${defaults.text || ""}</textarea></div>`;
+    h += `<div class="cip-field"><span class="cip-field-label">ユーザー名</span><input type="text" id="cip-m-user" value="${defaults.user || "視聴者"}" placeholder="視聴者名"></div>`;
+  } else if (type === "pos_x" || type === "pos_z") {
+    const ax = type === "pos_z" ? "Z" : "X";
+    h += `<div class="cip-field"><span class="cip-field-label">${ax} 目標座標</span><input type="number" id="cip-m-target" step="0.1" value="${defaults.target || 0}"></div>`;
+    h += `<div class="cip-field"><span class="cip-field-label">移動時間（秒）</span><input type="number" id="cip-m-dur" step="0.1" value="${defaults.dur || 5}"></div>`;
+  } else if (type === "rot_y") {
+    h += `<div class="cip-field"><span class="cip-field-label">向き</span>${pvRotYCompass( defaults.target||0, 'cip-m-target')}</div>`;
+    h += `<div class="cip-field"><span class="cip-field-label">回転時間（秒）</span><input type="number" id="cip-m-dur" step="0.1" value="${defaults.dur || 0.8}"></div>`;
+  } else if (type === "head_x") {
+    h += `<div class="cip-field"><span class="cip-field-label">向き</span>${pvHeadXStrip( defaults.target||0, 'cip-m-target')}</div>`;
+  } else if (type === "motion") {
+    h += `<div class="cip-field"><span class="cip-field-label">動作</span>${pvStrCards(PV_MOTION, defaults.name||'look_around', 'cip-m-name')}</div>`;
+    h += `<div class="cip-field"><span class="cip-field-label">時間（秒）</span><input type="number" id="cip-m-dur" step="0.1" value="${defaults.dur || 2}"></div>`;
+  } else if (type === "wait") {
+    h += `<div class="cip-field"><span class="cip-field-label">待機時間（秒）</span><input type="number" id="cip-m-dur" step="0.1" value="${defaults.dur || 2}"></div>`;
+  } else if (type === "sfx") {
+    h += `<div class="cip-field"><span class="cip-field-label">ファイル名</span><input type="text" id="cip-m-file" value="${defaults.file || ""}" placeholder="例: door_creak"><span class="cip-field-hint">assets/audio/sfx/ 内のファイル</span></div>`;
+  } else if (type === "set_viewers") {
+    h += `<div class="cip-field"><span class="cip-field-label">視聴者数</span><input type="number" id="cip-m-count" value="${defaults.count || 0}" min="0"></div>`;
+  } else if (type === "walk_set") {
+    h += `<div class="cip-field"><span class="cip-field-label">歩行</span><select id="cip-m-on"><option value="true" ${defaults.on !== false ? "selected" : ""}>ON</option><option value="false" ${defaults.on === false ? "selected" : ""}>OFF</option></select></div>`;
+  } else {
+    // horror_glitch, scare_flash, flashlight_on — パラメータ無し
+    h += `<div style="padding:12px 0;color:var(--pv-tx2);font-size:13px;">パラメータはありません。そのまま追加できます。</div>`;
+  }
+  return h;
+}
+
+function cipReadModalValues(type) {
+  const ev = { type };
+  if (type === "say") {
+    ev.text = (document.getElementById("cip-m-text")?.value || "").trim();
+    ev.voice = (document.getElementById("cip-m-voice")?.value || "").trim();
+    ev.wait = parseFloat(document.getElementById("cip-m-wait")?.value) || 2;
+  } else if (type === "chat") {
+    ev.text = (document.getElementById("cip-m-text")?.value || "").trim();
+    ev.user = (document.getElementById("cip-m-user")?.value || "視聴者").trim();
+  } else if (type === "pos_x" || type === "pos_z") {
+    ev.target = parseFloat(document.getElementById("cip-m-target")?.value) || 0;
+    ev.dur = parseFloat(document.getElementById("cip-m-dur")?.value) || 5;
+  } else if (type === "rot_y") {
+    ev.target = parseFloat(document.getElementById("cip-m-target")?.value) || 0;
+    ev.dur = parseFloat(document.getElementById("cip-m-dur")?.value) || 0.8;
+  } else if (type === "head_x") {
+    ev.target = parseFloat(document.getElementById("cip-m-target")?.value) || 0;
+  } else if (type === "motion") {
+    ev.name = document.getElementById("cip-m-name")?.value || "look_around";
+    ev.dur = parseFloat(document.getElementById("cip-m-dur")?.value) || 2;
+  } else if (type === "wait") {
+    ev.dur = parseFloat(document.getElementById("cip-m-dur")?.value) || 2;
+  } else if (type === "sfx") {
+    ev.file = (document.getElementById("cip-m-file")?.value || "").trim();
+  } else if (type === "set_viewers") {
+    ev.count = parseInt(document.getElementById("cip-m-count")?.value) || 0;
+  } else if (type === "walk_set") {
+    ev.on = document.getElementById("cip-m-on")?.value === "true";
+  }
+  return ev;
+}
+
+window.cipModalClose = function() {
+  document.getElementById("cip-modal-overlay").classList.remove("open");
+  _cipModalType = null;
+};
+
+// ── 挿入プレビュー ──
+let _previewEv = null;   // プレビュー中のイベントデータ
+let _previewAt = -1;     // 挿入先インデックス
+let _previewTpl = null;
+
+window.cipModalConfirm = function() {
+  if (!_cipModalType) return;
+  _previewTpl = CE_INSERT_TYPES.find(t => t.type === _cipModalType);
+  _previewEv = cipReadModalValues(_cipModalType);
+  _previewAt = cipGetInsertPos() + 1;
+  cipModalClose();
+  // ゴーストカードをタイムラインに表示
+  _showPreviewGhost();
+};
+
+function _showPreviewGhost() {
+  const lane = document.getElementById("ce-lane");
+  const cards = lane.querySelectorAll(".ce-card, .ce-lane-insert");
+  const icon = CE_ICONS[_previewEv.type] || "📌";
+  const ja = TYPE_JA[_previewEv.type] || _previewEv.type;
+  const colorCls = CE_TYPE_COLORS[_previewEv.type] || "ce-system";
+  const summary = getEventSummary(_previewEv);
+
+  // ゴーストカード要素を作成
+  const ghost = document.createElement("div");
+  ghost.className = `ce-card ${colorCls} ce-ghost`;
+  ghost.id = "ce-ghost-card";
+  ghost.innerHTML = `<span class="ce-idx">NEW</span><div class="ce-icon">${icon}</div><div class="ce-type">${ja}</div>${summary ? `<div class="ce-summary">${summary}</div>` : ""}`;
+
+  // 挿入位置に配置
+  const refCard = lane.querySelector(`.ce-card[data-idx="${_previewAt}"]`);
+  if (refCard) {
+    lane.insertBefore(ghost, refCard);
+  } else {
+    // 末尾の+ボタンの前に挿入
+    const addBtn = lane.querySelector(".ce-lane-insert");
+    if (addBtn) lane.insertBefore(ghost, addBtn);
+    else lane.appendChild(ghost);
+  }
+
+  // ゴーストカードにスクロール
+  ghost.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+
+  // 確認バー表示
+  const info = document.getElementById("preview-info");
+  info.textContent = `#${_previewAt} に「${_previewTpl ? _previewTpl.label : ja}」`;
+  document.getElementById("ce-preview-bar").classList.add("open");
+}
+
+window.previewConfirm = function() {
+  if (!_previewEv) return;
+  pushUndo();
+  events.splice(_previewAt, 0, _previewEv);
+  ceSelectedIdx = _previewAt;
+  selectedIdx = _previewAt;
+  const label = _previewTpl ? _previewTpl.label : _previewEv.type;
+  _previewEv = null; _previewAt = -1; _previewTpl = null;
+  document.getElementById("ce-preview-bar").classList.remove("open");
+  ceRender();
+  cipUpdatePos();
+  showStatus(`✓ #${ceSelectedIdx} に${label}を配置`);
+};
+
+window.previewCancel = function() {
+  _previewEv = null; _previewAt = -1; _previewTpl = null;
+  document.getElementById("ce-preview-bar").classList.remove("open");
+  // ゴーストカードを除去
+  const ghost = document.getElementById("ce-ghost-card");
+  if (ghost) ghost.remove();
+  showStatus("挿入をキャンセル");
+};
+
+// ceClose は廃止（常時カード編集モード）
+
+function ceSyncMonitorSelects() {
+  // セクションセレクト同期
+  const ceSec = document.getElementById("ce-section-select");
+  const origSec = document.getElementById("section-select");
+  ceSec.innerHTML = origSec.innerHTML;
+  ceSec.value = origSec.value;
+  // マップセレクト同期
+  const ceMap = document.getElementById("ce-map-select");
+  const origMap = document.getElementById("map-select");
+  ceMap.innerHTML = origMap.innerHTML;
+  ceMap.value = origMap.value;
+}
+
+window.onCeSectionChange = function(val) {
+  document.getElementById("section-select").value = val;
+  document.getElementById("section-select").dispatchEvent(new Event("change"));
+  setTimeout(() => { ceSyncMonitorSelects(); ceRender(); resize(); }, 50);
+};
+
+function ceRender() {
+  const lane = document.getElementById("ce-lane");
+  const secLabel = sections.length > 0 ? sections[currentSection].label : "";
+  const ceTitle = document.getElementById("ce-title");
+  if (ceTitle) ceTitle.textContent = secLabel || "イベント編集";
+  document.getElementById("ce-count").textContent = `${events.length} イベント`;
+
+  let html = "";
+  for (let i = 0; i < events.length; i++) {
+    const ev = events[i], t = ev.type;
+    if (t === "_comment") continue;
+    const icon = CE_ICONS[t] || "📌";
+    const ja = TYPE_JA[t] || t;
+    const colorCls = CE_TYPE_COLORS[t] || "ce-system";
+    const selCls = (i === ceSelectedIdx) ? " ce-selected" : "";
+    const summary = getEventSummary(ev);
+
+    html += `<div class="ce-card ${colorCls}${selCls}" data-idx="${i}" onclick="ceSelect(${i})" ondblclick="ceShowInsert(event,${i+1})">`;
+    html += `<span class="ce-idx">#${i}</span>`;
+    html += `<div class="ce-icon">${icon}</div>`;
+    html += `<div class="ce-type">${ja}</div>`;
+    if (summary) html += `<div class="ce-summary" title="${summary}">${summary}</div>`;
+    html += `</div>`;
+  }
+  // 末尾に追加ボタン
+  html += `<div class="ce-lane-insert" onclick="ceShowInsert(event,${events.length})" title="イベントを追加">+</div>`;
+
+  lane.innerHTML = html;
+  ceBuildFilters();
+  ceRenderEditPanel();
+
+  // フィルター適用
+  if (ceActiveFilters.size > 0) ceApplyFilters();
+
+  // 選択カードをスクロール
+  if (ceSelectedIdx >= 0) {
+    const sel = lane.querySelector(".ce-selected");
+    if (sel) sel.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }
+}
+
+window.ceSelect = function(idx) {
+  if (playAnim) onPlay(); // 再生中なら停止
+  ceSelectedIdx = idx;
+  selectedIdx = idx;
+
+  // カードのハイライト更新 + 選択アニメーション
+  const lane = document.getElementById("ce-lane");
+  lane.querySelectorAll(".ce-card").forEach(c => {
+    const isTarget = parseInt(c.dataset.idx) === idx;
+    c.classList.toggle("ce-selected", isTarget);
+    c.classList.remove("ce-select-pop");
+    if (isTarget) {
+      // popアニメーション（再トリガー用にreflow）
+      void c.offsetWidth;
+      c.classList.add("ce-select-pop");
+      // 中央にスムーズスクロール
+      c.scrollIntoView({ behavior:"smooth", block:"nearest", inline:"center" });
+    }
+  });
+
+  ceRenderEditPanel();
+  cipUpdatePos();
+
+  // MAP: 選択イベントの位置にカメラをスムーズパン
+  if (idx >= 0 && idx < eventPositions.length) {
+    const pos = eventPositions[idx];
+    if (pos) _panTo(pos.x, pos.z);
+    draw();
+  }
+
+  // シークバーのちびキャラ位置も更新
+  if (events.length > 0) {
+    const pct = ((idx + 1) / events.length * 100).toFixed(1);
+    updateChibi(parseFloat(pct));
+  }
+};
+
+// MAP上のスムーズパン
+let _panAnim = null;
+function _panTo(tx, tz) {
+  if (_panAnim) cancelAnimationFrame(_panAnim);
+  const sx = camX, sz = camZ;
+  const dist = Math.sqrt((tx-sx)**2 + (tz-sz)**2);
+  if (dist < 0.1) { camX = tx; camZ = tz; draw(); return; }
+  const dur = Math.min(400, Math.max(150, dist * 20)); // 距離に応じた時間
+  const t0 = performance.now();
+  function tick(now) {
+    const p = Math.min((now - t0) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 3); // easeOutCubic
+    camX = sx + (tx - sx) * ease;
+    camZ = sz + (tz - sz) * ease;
+    draw();
+    if (p < 1) _panAnim = requestAnimationFrame(tick);
+    else _panAnim = null;
+  }
+  _panAnim = requestAnimationFrame(tick);
+}
+
+let _editSnapshot = null; // 編集開始時のイベントデータのスナップショット
+
+function ceRenderEditPanel() {
+  const panel = document.getElementById("ce-edit-panel");
+  if (ceSelectedIdx < 0 || ceSelectedIdx >= events.length) {
+    panel.innerHTML = `<div class="ce-panel-empty"><span class="ce-empty-icon">🎬</span>カードを選択</div>`;
+    _editSnapshot = null;
+    return;
+  }
+  // 編集開始時のスナップショットを保存（差分比較用）
+  _editSnapshot = JSON.parse(JSON.stringify(events[ceSelectedIdx]));
+  const ev = events[ceSelectedIdx], t = ev.type;
+  const ja = TYPE_JA[t] || t;
+  const icon = CE_ICONS[t] || "📌";
+
+  let h = "";
+  // ヘッダー
+  h += `<div class="ce-panel-header">`;
+  h += `<span class="ce-ph-icon">${icon}</span>`;
+  h += `<div class="ce-ph-info"><div class="ce-ph-type">${ja}</div><div class="ce-ph-idx">#${ceSelectedIdx} / ${events.length}</div></div>`;
+  h += `<button onclick="ceSelectedIdx=-1;ceRenderEditPanel();document.querySelectorAll('.ce-card').forEach(c=>c.classList.remove('ce-selected'))" style="background:none;border:none;color:var(--pv-tx2);cursor:pointer;font-size:16px;padding:2px 6px;">✕</button>`;
+  h += `</div>`;
+
+  // ナビ
+  h += `<div class="ce-panel-nav">`;
+  h += `<button onclick="ceSelect(${ceSelectedIdx - 1})" ${ceSelectedIdx <= 0 ? "disabled" : ""}>◀ 前</button>`;
+  h += `<button onclick="ceSelect(${ceSelectedIdx + 1})" ${ceSelectedIdx >= events.length - 1 ? "disabled" : ""}>次 ▶</button>`;
+  h += `</div>`;
+
+  // フィールド
+  h += `<div class="ce-fields">`;
+  if (t === "say") {
+    h += `<div class="ce-field"><span class="ce-field-label">テキスト</span><textarea id="ce-text">${ev.text || ""}</textarea></div>`;
+    h += `<div class="ce-field"><span class="ce-field-label">ボイスファイル</span><input type="text" id="ce-voice" value="${ev.voice || ""}"></div>`;
+    h += `<div class="ce-field"><span class="ce-field-label">待機（秒）</span><input type="number" id="ce-wait" step="0.1" value="${ev.wait || 0}"></div>`;
+  } else if (t === "chat") {
+    h += `<div class="ce-field"><span class="ce-field-label">テキスト</span><textarea id="ce-text">${ev.text || ""}</textarea></div>`;
+    h += `<div class="ce-field"><span class="ce-field-label">ユーザー名</span><input type="text" id="ce-user" value="${ev.user || ""}"></div>`;
+  } else if (t === "pos_x" || t === "pos_z") {
+    const ax = t === "pos_z" ? "Z" : "X";
+    h += `<div class="ce-field"><span class="ce-field-label">${ax} 目標座標</span><input type="number" id="ce-target" step="0.1" value="${ev.target || 0}"></div>`;
+    h += `<div class="ce-field"><span class="ce-field-label">移動時間（秒）</span><input type="number" id="ce-dur" step="0.1" value="${ev.dur || 5}"></div>`;
+    if (ev.id !== undefined) h += `<div class="ce-field"><span class="ce-field-label">ID</span><input type="text" id="ce-id" value="${ev.id || ""}"></div>`;
+  } else if (t === "rot_y") {
+    h += `<div class="ce-field"><span class="ce-field-label">向き</span>${pvRotYCompass( ev.target||0, 'ce-target')}</div>`;
+    h += `<div class="ce-field"><span class="ce-field-label">回転時間（秒）</span><input type="number" id="ce-dur" step="0.1" value="${ev.dur || 1}"></div>`;
+  } else if (t === "head_x") {
+    h += `<div class="ce-field"><span class="ce-field-label">向き</span>${pvHeadXStrip( ev.target||0, 'ce-target')}</div>`;
+  } else if (t === "motion") {
+    h += `<div class="ce-field"><span class="ce-field-label">動作</span>${pvStrCards(PV_MOTION, ev.name||'look_around', 'ce-name')}</div>`;
+    h += `<div class="ce-field"><span class="ce-field-label">時間（秒）</span><input type="number" id="ce-dur" step="0.1" value="${ev.dur || 2}"></div>`;
+  } else if (t === "wait" || t === "sleep") {
+    h += `<div class="ce-field"><span class="ce-field-label">待機時間（秒）</span><input type="number" id="ce-dur" step="0.1" value="${ev.dur || ev.sec || 1}"></div>`;
+  } else if (t === "sfx") {
+    h += `<div class="ce-field"><span class="ce-field-label">ファイル名</span><input type="text" id="ce-file" value="${ev.file || ev.src || ""}"></div>`;
+  } else if (t === "set_viewers") {
+    h += `<div class="ce-field"><span class="ce-field-label">視聴者数</span><input type="number" id="ce-count" value="${ev.count || ev.viewers || 0}"></div>`;
+  } else if (t === "choice") {
+    if (ev.choices) {
+      ev.choices.forEach((c, ci) => {
+        const txt = typeof c === "string" ? c : (c.text || "");
+        h += `<div class="ce-field"><span class="ce-field-label">選択肢 ${ci+1}</span><div style="font-size:13px;padding:6px 0;">${txt}</div></div>`;
+      });
+    }
+  } else {
+    for (const [k, v] of Object.entries(ev)) {
+      if (k === "type") continue;
+      const vs = typeof v === "string" ? v : JSON.stringify(v);
+      h += `<div class="ce-field"><span class="ce-field-label">${k}</span><div style="font-size:12px;word-break:break-all;padding:4px 0;">${vs.substring(0, 120)}</div></div>`;
+    }
+  }
+  h += `</div>`; // ce-fields
+
+  // アクションボタン
+  h += `<div class="ce-panel-actions">`;
+  h += `<button class="ce-act-apply" onclick="ceApply()">✓ 適用</button>`;
+  h += `<div class="ce-act-row">`;
+  h += `<button onclick="ceInsertBefore()">↑ 前に挿入</button>`;
+  h += `<button onclick="ceInsertAfter()">↓ 後に挿入</button>`;
+  h += `</div>`;
+  h += `<div class="ce-act-row">`;
+  h += `<button onclick="ceDuplicate()">📋 複製</button>`;
+  h += `<button class="ce-act-delete" onclick="ceDelete()">✕ 削除</button>`;
+  h += `</div>`;
+  h += `</div>`;
+
+  panel.innerHTML = h;
+}
+
+// ── 適用: スナップショットとinput値を比較して差分表示 ──
+function _readFormValues() {
+  if (ceSelectedIdx < 0) return null;
+  const t = events[ceSelectedIdx].type;
+  const pf = v => parseFloat(v) || 0;
+  const vals = {};
+  function rd(key, elId, parse) {
+    const el = document.getElementById(elId); if (!el) return;
+    vals[key] = parse ? parse(el.value) : el.value;
+  }
+  if (t === "say") { rd("text","ce-text"); rd("voice","ce-voice"); rd("wait","ce-wait",pf); }
+  else if (t === "chat") { rd("text","ce-text"); rd("user","ce-user"); }
+  else if (t === "pos_x" || t === "pos_z") { rd("target","ce-target",pf); rd("dur","ce-dur",pf); rd("id","ce-id"); }
+  else if (t === "rot_y") { rd("target","ce-target",pf); rd("dur","ce-dur",pf); }
+  else if (t === "head_x") { rd("target","ce-target",pf); }
+  else if (t === "motion") { rd("name","ce-name"); rd("dur","ce-dur",pf); }
+  else if (t === "wait" || t === "sleep") { rd("dur","ce-dur",pf); }
+  else if (t === "sfx") { rd("file","ce-file"); }
+  else if (t === "set_viewers") { rd("count","ce-count", v => parseInt(v)||0); }
+  return vals;
+}
+
+const FIELD_JA = {text:"テキスト",voice:"ボイス",wait:"待機(秒)",user:"ユーザー",target:"目標値",dur:"時間(秒)",id:"ID",name:"動作",file:"ファイル",count:"視聴者数"};
+
+window.ceApply = function() {
+  if (ceSelectedIdx < 0 || !_editSnapshot) return;
+  const formVals = _readFormValues();
+  if (!formVals) return;
+
+  const ev = events[ceSelectedIdx];
+  const ja = TYPE_JA[ev.type] || ev.type;
+  const icon = CE_ICONS[ev.type] || "📌";
+
+  // スナップショット（パネル表示時の値）と現在のinput値を比較
+  const diffs = [];
+  for (const [key, newVal] of Object.entries(formVals)) {
+    const oldVal = _editSnapshot[key];
+    const isNum = typeof newVal === "number";
+    const same = isNum
+      ? Math.abs(Number(oldVal || 0) - newVal) < 0.001
+      : String(oldVal || "") === String(newVal || "");
+    if (!same) diffs.push({ key, old: oldVal, val: newVal });
+  }
+
+  const body = document.getElementById("apply-modal-body");
+  let h = `<div style="font-size:14px;font-weight:700;color:var(--pv-tx0);margin-bottom:4px;">${icon} #${ceSelectedIdx} ${ja}</div>`;
+  if (diffs.length === 0) {
+    h += `<div class="apply-no-change">変更はありません</div>`;
+  } else {
+    for (const d of diffs) {
+      const label = FIELD_JA[d.key] || d.key;
+      const oldStr = String(d.old ?? "").substring(0, 80) || "(空)";
+      const newStr = String(d.val ?? "").substring(0, 80) || "(空)";
+      h += `<div class="apply-diff"><span class="apply-diff-label">${label}</span><span class="apply-diff-old">${oldStr}</span><span class="apply-diff-arrow">→</span><span class="apply-diff-new">${newStr}</span></div>`;
+    }
+  }
+  body.innerHTML = h;
+  document.getElementById("apply-modal-overlay").classList.add("open");
+};
+
+window.applyModalClose = function() {
+  document.getElementById("apply-modal-overlay").classList.remove("open");
+};
+
+window.applyModalExec = function() {
+  if (ceSelectedIdx < 0) { applyModalClose(); return; }
+  const formVals = _readFormValues();
+  if (!formVals) { applyModalClose(); return; }
+  pushUndo();
+  const ev = events[ceSelectedIdx], t = ev.type;
+
+  // フォームの値をイベントに反映
+  for (const [key, val] of Object.entries(formVals)) {
+    ev[key] = val;
+  }
+  // 特殊フィールドの同期
+  if (t === "wait" || t === "sleep") { ev.sec = ev.dur; }
+  if (t === "sfx") { ev.src = ev.file; }
+  if (t === "set_viewers") { ev.viewers = ev.count; }
+
+  applyModalClose();
+  extractPath(); ceRender(); draw();
+  onSave().then(() => showStatus("✓ 適用＋保存しました"));
+};
+
+window.ceDelete = function() {
+  if (ceSelectedIdx < 0) return;
+  pushUndo();
+  events.splice(ceSelectedIdx, 1);
+  if (ceSelectedIdx >= events.length) ceSelectedIdx = events.length - 1;
+  ceRender();
+  showStatus("✓ 削除しました");
+};
+
+window.ceDuplicate = function() {
+  if (ceSelectedIdx < 0) return;
+  pushUndo();
+  const copy = JSON.parse(JSON.stringify(events[ceSelectedIdx]));
+  events.splice(ceSelectedIdx + 1, 0, copy);
+  ceSelectedIdx++;
+  ceRender();
+  showStatus("✓ 複製しました");
+};
+
+// 挿入メニュー
+const CE_INSERT_TYPES = [
+  { type:"say", icon:"💬", label:"セリフ", defaults:{ text:"", voice:"", wait:2 } },
+  { type:"chat", icon:"📱", label:"チャット", defaults:{ text:"", user:"視聴者" } },
+  { type:"pos_z", icon:"↕", label:"Z移動", defaults:{ target:0, dur:5 } },
+  { type:"pos_x", icon:"↔", label:"X移動", defaults:{ target:0, dur:5 } },
+  { type:"rot_y", icon:"🔄", label:"回転", defaults:{ target:0, dur:0.8 } },
+  { type:"head_x", icon:"↕", label:"頭上下", defaults:{ target:0 } },
+  { type:"motion", icon:"🎭", label:"モーション", defaults:{ name:"look_around", dur:2.0 } },
+  { type:"wait", icon:"⏱", label:"待機", defaults:{ dur:2 } },
+  { type:"sfx", icon:"🔊", label:"効果音", defaults:{ file:"" } },
+  { type:"set_viewers", icon:"👥", label:"視聴者数", defaults:{ count:0 } },
+  { type:"horror_glitch", icon:"👻", label:"グリッチ", defaults:{} },
+  { type:"scare_flash", icon:"⚡", label:"恐怖フラッシュ", defaults:{} },
+  { type:"flashlight_on", icon:"🔦", label:"ライトON", defaults:{} },
+  { type:"walk_set", icon:"🚶", label:"歩行ON/OFF", defaults:{ on:true } },
+];
+
+window.ceShowInsert = function(e, atIdx) {
+  e.stopPropagation();
+  ceInsertAt = atIdx;
+  const menu = document.getElementById("ce-insert-menu");
+  let h = "";
+  for (const it of CE_INSERT_TYPES) {
+    h += `<div class="ce-ins-item" onclick="ceDoInsert('${it.type}')">${it.icon} ${it.label}</div>`;
+  }
+  menu.innerHTML = h;
+  menu.style.display = "block";
+  menu.style.left = e.clientX + "px";
+  menu.style.top = e.clientY + "px";
+  // 画面外補正
+  setTimeout(() => {
+    const r = menu.getBoundingClientRect();
+    if (r.bottom > window.innerHeight) menu.style.top = (window.innerHeight - r.height - 8) + "px";
+    if (r.right > window.innerWidth) menu.style.left = (window.innerWidth - r.width - 8) + "px";
+  }, 0);
+};
+
+window.ceDoInsert = function(type) {
+  const tpl = CE_INSERT_TYPES.find(t => t.type === type);
+  if (!tpl) return;
+  pushUndo();
+  const newEv = { type, ...JSON.parse(JSON.stringify(tpl.defaults)) };
+  events.splice(ceInsertAt, 0, newEv);
+  ceSelectedIdx = ceInsertAt;
+  document.getElementById("ce-insert-menu").style.display = "none";
+  ceRender();
+  showStatus(`✓ ${tpl.label}を挿入しました`);
+};
+
+window.ceInsertBefore = function() {
+  if (ceSelectedIdx < 0) return;
+  ceShowInsertAt(ceSelectedIdx);
+};
+window.ceInsertAfter = function() {
+  if (ceSelectedIdx < 0) return;
+  ceShowInsertAt(ceSelectedIdx + 1);
+};
+function ceShowInsertAt(atIdx) {
+  ceInsertAt = atIdx;
+  const menu = document.getElementById("ce-insert-menu");
+  let h = "";
+  for (const it of CE_INSERT_TYPES) {
+    h += `<div class="ce-ins-item" onclick="ceDoInsert('${it.type}')">${it.icon} ${it.label}</div>`;
+  }
+  menu.innerHTML = h;
+  menu.style.display = "block";
+  // カードバーの上あたりに表示
+  const ceBar = document.getElementById("card-editor");
+  const r = ceBar.getBoundingClientRect();
+  menu.style.left = (r.left + 60) + "px";
+  menu.style.top = (r.top - 10) + "px";
+}
+
+// カード再生ハイライト（onPlayから呼ばれる）
+function ceHighlightPlayingCard(idx) {
+  const lane = document.getElementById("ce-lane");
+  lane.querySelectorAll(".ce-card").forEach(c => {
+    const ci = parseInt(c.dataset.idx);
+    c.classList.remove("ce-playing", "ce-played", "ce-selected");
+    if (ci === idx) c.classList.add("ce-playing");
+    else if (ci < idx) c.classList.add("ce-played");
+  });
+  // 再生中カードをスクロール追従（即座に中央へ）
+  const playingCard = lane.querySelector(".ce-playing");
+  if (playingCard) {
+    const laneRect = lane.getBoundingClientRect();
+    const cardRect = playingCard.getBoundingClientRect();
+    const cardCenter = cardRect.left + cardRect.width / 2;
+    const laneCenter = laneRect.left + laneRect.width / 2;
+    const offset = cardCenter - laneCenter;
+    lane.scrollLeft += offset;
+  }
+  ceSelectedIdx = idx;
+  ceRenderEditPanel();
+}
+
+// クリックで挿入メニューを閉じる
+document.addEventListener("click", e => {
+  const menu = document.getElementById("ce-insert-menu");
+  if (menu.style.display === "block" && !menu.contains(e.target)) {
+    menu.style.display = "none";
+  }
+});
+
+// キーボード操作（カードエディタ内）
+document.addEventListener("keydown", e => {
+  // 常時カード編集モード
+  // モーダル内のEnterで追加
+  if (document.getElementById("cip-modal-overlay").classList.contains("open")) {
+    if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") { cipModalConfirm(); e.preventDefault(); }
+    if (e.key === "Escape") { cipModalClose(); e.preventDefault(); }
+    return;
+  }
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+  if (e.key === " ") { onPlay(); e.preventDefault(); return; }
+  if (playAnim) return; // 再生中は他のキー操作を無効化
+  if (e.key === "ArrowLeft" && ceSelectedIdx > 0) { ceSelect(ceSelectedIdx - 1); e.preventDefault(); }
+  if (e.key === "ArrowRight" && ceSelectedIdx < events.length - 1) { ceSelect(ceSelectedIdx + 1); e.preventDefault(); }
+  if (e.key === "Delete" && ceSelectedIdx >= 0) { ceDelete(); e.preventDefault(); }
+  if (e.key === "Escape") {
+    if (document.getElementById("cip-modal-overlay").classList.contains("open")) { cipModalClose(); e.preventDefault(); }
+    else if (_previewEv) { previewCancel(); e.preventDefault(); }
+  }
+  if (e.key === "Enter" && _previewEv && !document.getElementById("cip-modal-overlay").classList.contains("open")) {
+    previewConfirm(); e.preventDefault();
+  }
+});
 
 // ═══════════════════════════════════════════════════
 init();

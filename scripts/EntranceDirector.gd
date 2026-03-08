@@ -20,12 +20,13 @@ var _fade_rect         : ColorRect = null
 var _skip_to_next_say  := false
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton \
-			and event.pressed \
-			and event.button_index == MOUSE_BUTTON_LEFT:
-		_skip_to_next_say = true
-		SoundManager.stop_voice()
+func _unhandled_input(_event: InputEvent) -> void:
+	pass
+	#if event is InputEventMouseButton \
+	#		and event.pressed \
+	#		and event.button_index == MOUSE_BUTTON_LEFT:
+	#	_skip_to_next_say = true
+	#	SoundManager.stop_voice()
 
 
 func _process(delta: float) -> void:
@@ -140,6 +141,10 @@ func run_from_path(json_path: String) -> void:
 			"head_x":
 				if not GameManager.debug_free_move:
 					_head_x(float(ev.get("target", 0.0)), float(ev.get("dur", 1.0)))
+
+			"motion":
+				if not GameManager.debug_free_move:
+					await _motion(ev.get("name", "look_around"), float(ev.get("dur", 2.0)))
 
 			"pos_z":
 				if not GameManager.debug_free_move:
@@ -419,6 +424,71 @@ func _head_x(target: float, dur: float) -> Tween:
 	var tw := create_tween()
 	tw.tween_property(player.head, "rotation:x", target, dur).set_trans(Tween.TRANS_SINE)
 	return tw
+
+
+func _motion(motion_name: String, dur: float) -> void:
+	if not is_inside_tree():
+		return
+	var base_y : float = player.rotation.y
+	var base_x : float = player.head.rotation.x
+	var step : float = dur / 4.0  # 各ステップの基本時間
+	match motion_name:
+		"look_around":
+			# 左→右→正面
+			await _rot_y(base_y - 0.8, step).finished
+			await _rot_y(base_y + 0.8, step * 2.0).finished
+			_rot_y(base_y, step)
+		"nod":
+			# 下→上→正面
+			await _head_x(base_x + 0.25, step * 0.5).finished
+			await _head_x(base_x - 0.1, step * 0.5).finished
+			_head_x(base_x, step * 0.3)
+		"shake_head":
+			# 左→右→左→正面
+			var s : float = dur / 5.0
+			await _rot_y(base_y - 0.4, s).finished
+			await _rot_y(base_y + 0.4, s).finished
+			await _rot_y(base_y - 0.3, s).finished
+			await _rot_y(base_y + 0.2, s).finished
+			_rot_y(base_y, s)
+		"look_behind_slow":
+			# ゆっくり真後ろ→戻る
+			await _rot_y(base_y + 3.14, dur * 0.6).finished
+			await get_tree().create_timer(dur * 0.1).timeout
+			_rot_y(base_y, dur * 0.3)
+		"startle_up":
+			# びくっと上→戻る
+			await _head_x(base_x - 0.6, step * 0.3).finished
+			await get_tree().create_timer(step * 0.5).timeout
+			_head_x(base_x, step * 0.5)
+		"peek_left":
+			# 少し左→戻る
+			await _rot_y(base_y - 0.5, step * 0.7).finished
+			await get_tree().create_timer(step * 0.5).timeout
+			_rot_y(base_y, step * 0.5)
+		"peek_right":
+			# 少し右→戻る
+			await _rot_y(base_y + 0.5, step * 0.7).finished
+			await get_tree().create_timer(step * 0.5).timeout
+			_rot_y(base_y, step * 0.5)
+		"look_down_up":
+			# 下→上→正面
+			await _head_x(base_x + 0.5, step).finished
+			await get_tree().create_timer(step * 0.3).timeout
+			await _head_x(base_x - 0.4, step).finished
+			_head_x(base_x, step * 0.5)
+		"tremble":
+			# 小刻みに震える
+			var s : float = dur / 8.0
+			for i in range(4):
+				if not is_inside_tree():
+					return
+				var off_y : float = randf_range(-0.08, 0.08)
+				var off_x : float = randf_range(-0.05, 0.05)
+				_rot_y(base_y + off_y, s)
+				await _head_x(base_x + off_x, s).finished
+			_rot_y(base_y, s)
+			_head_x(base_x, s)
 
 
 var _tw_pos_z : Tween = null

@@ -266,8 +266,8 @@
 		},
 		{
 			"type": "pos_x",
-			"target": 25,
-			"dur": 50,
+			"target": 21.75,
+			"dur": 13.8,
 			"id": "walk_to_arch"
 		},
 		{
@@ -592,7 +592,7 @@
 		{
 			"type": "pos_x",
 			"target": 38,
-			"dur": 9,
+			"dur": 8.7,
 			"id": "walk_to_shopping"
 		},
 		{
