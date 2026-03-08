@@ -267,7 +267,6 @@
 		{
 			"type": "pos_x",
 			"target": 21.75,
-			"dur": 13.8,
 			"id": "walk_to_arch"
 		},
 		{
@@ -526,7 +525,7 @@
 		},
 		{
 			"type": "head_x",
-			"target": -0.5,
+			"target": 0.5,
 			"dur": 1.5
 		},
 		{
@@ -592,7 +591,6 @@
 		{
 			"type": "pos_x",
 			"target": 38,
-			"dur": 8.7,
 			"id": "walk_to_shopping"
 		},
 		{
@@ -663,6 +661,10 @@
 		{
 			"type": "_comment",
 			"_": "── 暗転→トイレマップへ切替 ──"
+		},
+		{
+			"type": "fade_black",
+			"dur": 1
 		},
 		{
 			"type": "fade_black",
@@ -769,7 +771,6 @@
 		{
 			"type": "pos_z",
 			"target": -1,
-			"dur": 8,
 			"id": "walk_inside"
 		},
 		{
@@ -2162,6 +2163,15 @@
 			"type": "say_clear"
 		},
 		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 1.5
+		},
+		{
+			"type": "wait",
+			"sec": 1.5
+		},
+		{
 			"type": "choice",
 			"prompt": "同接3410人……スパチャ6万超え……\nみんなが見てる。このまま奥へ進む？",
 			"choices": [
@@ -2374,7 +2384,6 @@
 		{
 			"type": "pos_x",
 			"target": 30,
-			"dur": 10,
 			"id": "walk_road2"
 		},
 		{
@@ -2483,13 +2492,11 @@
 		{
 			"type": "pos_x",
 			"target": 37,
-			"dur": 8,
 			"id": "walk_to_shop"
 		},
 		{
 			"type": "pos_z",
 			"target": -3.5,
-			"dur": 8,
 			"id": "walk_to_shop_z"
 		},
 		{

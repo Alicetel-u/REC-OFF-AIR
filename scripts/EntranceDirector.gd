@@ -115,7 +115,8 @@ func run_from_path(json_path: String) -> void:
 			"sleep":
 				## スキップ・ボイス待機を無視する固定待機（横見演出など）
 				if is_inside_tree():
-					await get_tree().create_timer(float(ev.get("sec", 1.0))).timeout
+					var _sleep_sec : float = float(ev.get("sec", 1.0)) / GameManager.playback_speed
+					await get_tree().create_timer(_sleep_sec).timeout
 
 			"wait":
 				if not _skip_to_next_say:
@@ -130,9 +131,9 @@ func run_from_path(json_path: String) -> void:
 						await SoundManager.await_voice(_sec + 5.0)
 						if not _skip_to_next_say:
 							_sec = max(_sec - (Time.get_ticks_msec() - _t0) / 1000.0, 0.0)
-							await _skippable_wait(_sec)
+							await _skippable_wait(_sec)  # playback_speed は _skippable_wait 内で適用
 					else:
-						await _skippable_wait(_sec)
+						await _skippable_wait(_sec)  # playback_speed は _skippable_wait 内で適用
 
 			"rot_y":
 				if not GameManager.debug_free_move:
@@ -388,11 +389,12 @@ func _await_tween_safe(tw: Tween, max_sec: float) -> void:
 			break
 
 
-## クリックでキャンセル可能な待機
+## クリックでキャンセル可能な待機（playback_speed で短縮）
 func _skippable_wait(sec: float) -> void:
 	if sec <= 0.0 or _skip_to_next_say:
 		return
-	var t_end := Time.get_ticks_msec() + int(sec * 1000)
+	var actual_sec : float = sec / GameManager.playback_speed
+	var t_end := Time.get_ticks_msec() + int(actual_sec * 1000)
 	while Time.get_ticks_msec() < t_end and not _skip_to_next_say:
 		if not is_inside_tree():
 			return
@@ -493,7 +495,7 @@ func _motion(motion_name: String, dur: float) -> void:
 
 var _tw_pos_z : Tween = null
 var _tw_pos_x : Tween = null
-const _WALK_SPEED := 1.8  # 自動演出の歩行速度 (units/s)
+const _WALK_SPEED := 0.45  # 自動演出の歩行速度 (units/s) — セリフ尺に合わせた定速
 
 func _pos_z(target_z: float, dur: float) -> Tween:
 	if _tw_pos_z and _tw_pos_z.is_valid():

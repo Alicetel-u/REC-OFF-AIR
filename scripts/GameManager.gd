@@ -12,6 +12,9 @@ var hit_count  : int   = 0
 ## デバッグ: シナリオ中自由移動フラグ（F9 でトグル）
 var debug_free_move: bool = false
 
+## 演出早送り倍率（移動Tweenには影響しない、wait/sleepのみ短縮）
+var playback_speed: float = 1.0
+
 var _hit_invincible : bool = false
 const HIT_MAX       : int  = 3
 

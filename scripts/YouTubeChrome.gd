@@ -58,6 +58,9 @@ var _elapsed          : float = 0.0
 var _last_display_sec : int   = -1
 var _chat_panel_ref   : Control = null  # チャットパネル本体
 var _horror_overlay   : ColorRect = null  # ホラー演出用オーバーレイ
+var _speed_btn        : Button   = null  # 倍速トグルボタン
+var _speed_idx        : int      = 0     # 現在の速度インデックス
+const SPEED_OPTIONS   = [1.0, 2.0, 4.0]
 
 const SUPERCHAT_NAMES = ["ゆきんこ77","幽霊ガチ勢","ホラー好き太郎","配信民99","ゴーストハンター"]
 const SUPERCHAT_MSGS  = [
@@ -470,7 +473,8 @@ func _build_video_controls() -> void:
 	_pad(btn_row, 10)
 	_ctrl_btn(btn_row, "⏮", 14)
 	_ctrl_btn(btn_row, "⏸", 18)
-	_ctrl_btn(btn_row, "⏭", 14)
+	_speed_btn = _ctrl_button(btn_row, "▶▶", 12)
+	_speed_btn.pressed.connect(_toggle_speed)
 	_pad(btn_row, 4)
 	_ctrl_btn(btn_row, "🔊", 14)
 	_pad(btn_row, 6)
@@ -940,6 +944,31 @@ func _ctrl_btn(parent: Node, icon: String, size: int) -> void:
 	var l := _lbl(parent, icon, size, C_TEXT2)
 	l.custom_minimum_size = Vector2(30, 0)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+
+func _ctrl_button(parent: Node, text: String, size: int) -> Button:
+	var btn := Button.new()
+	btn.text = text
+	btn.flat = true
+	btn.custom_minimum_size = Vector2(36, 0)
+	btn.add_theme_font_size_override("font_size", size)
+	btn.add_theme_color_override("font_color", C_TEXT2)
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	parent.add_child(btn)
+	return btn
+
+
+func _toggle_speed() -> void:
+	_speed_idx = (_speed_idx + 1) % SPEED_OPTIONS.size()
+	var spd : float = SPEED_OPTIONS[_speed_idx]
+	GameManager.playback_speed = spd
+	if is_instance_valid(_speed_btn):
+		if spd == 1.0:
+			_speed_btn.text = "▶▶"
+			_speed_btn.add_theme_color_override("font_color", C_TEXT2)
+		else:
+			_speed_btn.text = "x%d" % int(spd)
+			_speed_btn.add_theme_color_override("font_color", C_RED)
 
 
 func _hbox(parent: Node, sep: int) -> HBoxContainer:

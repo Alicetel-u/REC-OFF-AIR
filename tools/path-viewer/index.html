@@ -126,31 +126,6 @@ body.light #sidebar-toggle { background:rgba(240,242,250,.9); border-color:#b0b8
 .ev-item .ev-type { color:var(--cyan); font-weight:600; }
 .ev-item .ev-detail { color:var(--pv-tx2); margin-left:6px; font-size:10px; }
 
-/* Detail panel */
-#detail-panel {
-  padding:10px 12px; background:rgba(0,0,0,.2);
-  border-top:1px solid var(--pv-border);
-  max-height:50vh; overflow-y:auto; flex-shrink:0;
-  box-shadow:inset 0 1px 0 rgba(130,160,210,.07);
-}
-#detail-panel:empty { display:none; }
-#detail-panel h3 {
-  font-size:10px; margin-bottom:6px; color:var(--pv-accent);
-  letter-spacing:.15em; text-transform:uppercase;
-}
-.detail-row { display:flex; align-items:center; gap:6px; margin:3px 0; font-size:11px; }
-.detail-row label { width:65px; color:var(--pv-tx2); text-align:right; flex-shrink:0; font-size:10px; }
-.detail-row input {
-  width:72px; padding:4px 6px; background:rgba(0,0,0,.3); border:1px solid var(--pv-inner);
-  border-radius:3px; color:var(--pv-tx0); font-size:11px; font-family:'Consolas',monospace;
-}
-.detail-row input:focus { border-color:var(--pv-accent); outline:none; }
-.detail-row .apply-btn {
-  padding:3px 8px; background:rgba(61,174,110,.15); border:1px solid rgba(61,174,110,.4);
-  border-radius:3px; color:#6bcb77; cursor:pointer; font-size:10px; transition:all .15s;
-}
-.detail-row .apply-btn:hover { background:rgba(61,174,110,.3); }
-
 /* Canvas area */
 #canvas-area { flex:1; position:relative; overflow:hidden; background:var(--pv-bg); }
 #bubbles-container { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
@@ -580,67 +555,7 @@ body.light .ce-card.ce-selected {
 /* 再生マーカー (未使用だが互換) */
 #ce-play-marker { display:none; }
 
-/* === プロパティパネル内部 === */
-#ce-edit-panel .ce-panel-empty {
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  height:100%; color:var(--pv-tx2); font-size:14px; gap:8px;
-}
-#ce-edit-panel .ce-panel-empty .ce-empty-icon { font-size:40px; opacity:.3; }
-
-#ce-edit-panel .ce-panel-header {
-  padding:14px 14px 10px; border-bottom:1px solid rgba(130,160,210,.1);
-  display:flex; align-items:center; gap:10px; flex-shrink:0;
-}
-#ce-edit-panel .ce-panel-header .ce-ph-icon { font-size:28px; }
-#ce-edit-panel .ce-panel-header .ce-ph-info { flex:1; }
-#ce-edit-panel .ce-panel-header .ce-ph-type { font-size:15px; font-weight:700; color:var(--pv-tx0); }
-#ce-edit-panel .ce-panel-header .ce-ph-idx { font-size:12px; color:var(--pv-tx2); font-family:monospace; }
-
-#ce-edit-panel .ce-panel-nav {
-  display:flex; gap:4px; padding:8px 14px 6px;
-  border-bottom:1px solid rgba(130,160,210,.06); flex-shrink:0;
-}
-#ce-edit-panel .ce-panel-nav button {
-  flex:1; padding:6px 0; font-size:13px; border:1px solid rgba(130,160,210,.15);
-  border-radius:5px; background:rgba(255,255,255,.03); color:var(--pv-tx1); cursor:pointer;
-}
-#ce-edit-panel .ce-panel-nav button:hover { background:rgba(130,160,210,.1); }
-#ce-edit-panel .ce-panel-nav button:disabled { opacity:.25; cursor:default; }
-
-#ce-edit-panel .ce-fields { padding:12px 14px; display:flex; flex-direction:column; gap:12px; flex:1; overflow-y:auto; }
-#ce-edit-panel .ce-field { display:flex; flex-direction:column; gap:4px; }
-#ce-edit-panel .ce-field-label {
-  font-size:11px; font-weight:600; color:var(--pv-tx2); letter-spacing:.06em; text-transform:uppercase;
-}
-#ce-edit-panel input, #ce-edit-panel textarea, #ce-edit-panel select {
-  padding:7px 10px; background:rgba(0,0,0,.3); border:1px solid rgba(130,160,210,.15);
-  border-radius:5px; color:var(--pv-tx0); font-size:14px; font-family:'Consolas','SF Mono',monospace;
-}
-body.light #ce-edit-panel input, body.light #ce-edit-panel textarea { background:rgba(255,255,255,.7); color:#333; }
-#ce-edit-panel input:focus, #ce-edit-panel textarea:focus {
-  border-color:var(--pv-accent); outline:none; box-shadow:0 0 0 2px rgba(212,168,55,.08);
-}
-#ce-edit-panel textarea { width:100%; min-height:80px; max-height:200px; resize:vertical; line-height:1.5; }
-#ce-edit-panel input[type=number] { width:100%; }
-
-#ce-edit-panel .ce-panel-actions {
-  padding:10px 14px; border-top:1px solid rgba(130,160,210,.08);
-  display:flex; flex-direction:column; gap:4px; flex-shrink:0;
-}
-#ce-edit-panel .ce-panel-actions button {
-  padding:8px 12px; font-size:13px; border-radius:5px; cursor:pointer;
-  border:1px solid rgba(130,160,210,.15); background:rgba(255,255,255,.03);
-  color:var(--pv-tx1); transition:all .12s; text-align:center;
-}
-#ce-edit-panel .ce-panel-actions button:hover { background:rgba(130,160,210,.1); color:var(--pv-tx0); }
-#ce-edit-panel .ce-act-apply {
-  background:rgba(61,174,110,.12)!important; border-color:rgba(61,174,110,.3)!important; color:#6bcb77!important; font-weight:600!important;
-}
-#ce-edit-panel .ce-act-delete {
-  background:rgba(255,107,107,.06)!important; border-color:rgba(255,107,107,.2)!important; color:#ff6b6b!important;
-}
-.ce-act-row { display:flex; gap:4px; }
-.ce-act-row button { flex:1; }
+/* === プロパティパネル内部 === (旧定義を削除、770行台に統合済み) */
 
 /* 挿入メニュー */
 #ce-insert-menu {
@@ -776,7 +691,7 @@ body.light #ce-insert-menu { background:rgba(245,247,255,.97); }
 /* パネルヘッダー */
 #ce-edit-panel .ce-panel-header {
   padding:16px 18px 12px; border-bottom:1px solid rgba(130,160,210,.1);
-  display:flex; align-items:center; gap:10px;
+  display:flex; align-items:center; gap:10px; flex-shrink:0;
 }
 #ce-edit-panel .ce-panel-header .ce-ph-icon { font-size:28px; }
 #ce-edit-panel .ce-panel-header .ce-ph-info { flex:1; }
@@ -789,7 +704,7 @@ body.light #ce-insert-menu { background:rgba(245,247,255,.97); }
 /* パネルナビ */
 #ce-edit-panel .ce-panel-nav {
   display:flex; gap:4px; padding:10px 18px 6px;
-  border-bottom:1px solid rgba(130,160,210,.08);
+  border-bottom:1px solid rgba(130,160,210,.08); flex-shrink:0;
 }
 #ce-edit-panel .ce-panel-nav button {
   flex:1; padding:6px 0; font-size:12px; border:1px solid rgba(130,160,210,.2);
@@ -800,7 +715,7 @@ body.light #ce-insert-menu { background:rgba(245,247,255,.97); }
 #ce-edit-panel .ce-panel-nav button:disabled { opacity:.3; cursor:default; }
 
 /* パネルフィールド */
-#ce-edit-panel .ce-fields { padding:14px 18px; display:flex; flex-direction:column; gap:12px; }
+#ce-edit-panel .ce-fields { padding:14px 18px; display:flex; flex-direction:column; gap:12px; flex:1; overflow-y:auto; overflow-x:hidden; min-height:0; }
 #ce-edit-panel .ce-field { display:flex; flex-direction:column; gap:4px; }
 #ce-edit-panel .ce-field-label {
   font-size:10px; font-weight:600; color:var(--pv-tx2); letter-spacing:.08em; text-transform:uppercase;
@@ -823,7 +738,7 @@ body.light #ce-edit-panel input, body.light #ce-edit-panel textarea {
 /* パネルアクション */
 #ce-edit-panel .ce-panel-actions {
   padding:14px 18px; border-top:1px solid rgba(130,160,210,.1);
-  display:flex; flex-direction:column; gap:6px; margin-top:auto;
+  display:flex; flex-direction:column; gap:6px; margin-top:auto; flex-shrink:0;
 }
 #ce-edit-panel .ce-panel-actions button {
   padding:8px 14px; font-size:12px; border-radius:6px; cursor:pointer;
@@ -926,10 +841,6 @@ body.light .ev-item .ev-idx { color:#999; }
 body.light .ev-item .ev-type { color:#2a6ab8; }
 body.light .ev-item .ev-detail { color:#6a7a9a; }
 body.light #pick-panel { background:rgba(255,255,255,.3); }
-body.light #detail-panel { background:rgba(255,255,255,.3); }
-body.light #detail-panel h3 { color:#3a5a8a; }
-body.light .detail-row label { color:#6a7a9a; }
-body.light .detail-row input { background:rgba(255,255,255,.6); color:#222; border-color:#b0b8cc; }
 body.light #legend { background:rgba(255,255,255,.88); color:#333; border-color:#b0b8cc; }
 body.light #coords { background:rgba(255,255,255,.85); color:#444; border-color:#b0b8cc; }
 body.light #minimap { background:rgba(255,255,255,.7); border-color:#b0b8cc; }
@@ -1125,23 +1036,24 @@ body.light .dir-act-btn { background:rgba(220,225,240,.8); color:#333; border-co
 .preset-card.custom-card.active { border-style:solid; }
 
 /* ── コンパス配置 (rot_y) ── */
-.compass-grid {
+.preset-grid.compass-grid {
   display:grid; margin:8px 0;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: auto auto auto auto;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(4, 52px);
   grid-template-areas:
-    ".   wl  c   wr  ."
-    "l   sl  .   sr  r"
-    "bl  .   bk  .   br"
-    ".   .  cst  .   .";
-  gap:5px; max-width:320px;
+    "wl  c   wr"
+    "l   .   r"
+    "sl  bk  sr"
+    "bl cst  br";
+  gap:4px; width:100%; box-sizing:border-box;
 }
-.compass-grid .preset-card { min-height:52px; padding:6px 2px; }
-.compass-grid .preset-card .pc-emoji { font-size:20px; }
+.preset-grid.compass-grid .preset-card { min-width:0; padding:5px 2px; overflow:hidden; box-sizing:border-box; }
+.preset-grid.compass-grid .pc-emoji { font-size:18px; }
+.preset-grid.compass-grid .pc-label { font-size:9px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .compass-grid .preset-card.center-card {
   background:rgba(212,168,55,.08); border-color:rgba(212,168,55,.3);
 }
-.compass-grid .preset-card.center-card .pc-emoji { font-size:26px; }
+.compass-grid .preset-card.center-card .pc-emoji { font-size:20px; }
 
 /* ── 縦ストリップ (head_x) ── */
 .vstrip-grid {
@@ -1187,14 +1099,6 @@ body.light .dir-act-btn { background:rgba(220,225,240,.8); color:#333; border-co
   font-size:10px; color:var(--pv-tx2); letter-spacing:.12em;
   margin:8px 0 4px; text-transform:uppercase; font-weight:600;
 }
-/* モーションカード — 横長 */
-.preset-grid.motion-grid { grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); }
-.preset-card.motion-card {
-  flex-direction:row; gap:8px; padding:10px 12px;
-  min-height:48px; justify-content:flex-start;
-}
-.preset-card.motion-card .pc-emoji { font-size:20px; flex-shrink:0; }
-.preset-card.motion-card .pc-label { font-size:11px; text-align:left; white-space:normal; }
 body.light .preset-card { background:rgba(235,238,248,.7); border-color:#c0c8dd; color:#555; }
 body.light .preset-card:hover { background:rgba(215,220,240,.9); color:#333; box-shadow:0 4px 12px rgba(0,0,0,.08); }
 body.light .preset-card.active { background:rgba(212,168,55,.12); border-color:rgba(180,140,40,.5); color:#8a6a10; }
@@ -1264,7 +1168,6 @@ body.light .preset-custom-input input { background:rgba(255,255,255,.85); border
   </div>
 
   <div id="event-list"></div>
-  <div id="detail-panel"></div>
 </div>
 
 <div id="canvas-area">
@@ -1953,6 +1856,8 @@ function extractPath(spawnX, spawnZ) {
     else if (t === "pos_x") { px = parseFloat(ev.target)||0; playerPath.push({x:px,z:pz,rot,eventIdx:i,type:t,mapKey}); }
     else if (t === "pos_z_await" || t === "pos_x_await") { playerPath.push({x:px,z:pz,rot,eventIdx:i,type:t,mapKey}); }
     else if (t === "walk_set") { playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"walk_set",mapKey}); }
+    else if (t === "head_x") { playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"head_x",mapKey}); }
+    else if (t === "motion") { playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"motion",mapKey}); }
     eventPositions[i] = { x: px, z: pz, rot };
   }
   // クラスター計算
@@ -2193,10 +2098,10 @@ function drawFOV() {
   }
 }
 
-const WP_COLORS = { spawn:"#ffffff", pos_z:"#ff6b6b", pos_x:"#ff6b6b", pos_z_await:"#ff9b5b", pos_x_await:"#ff9b5b", rot_y:"#ffd93d", walk_set:"#6bcb77", stage_swap:"#4d96ff" };
-const WP_ICONS = { spawn:"\u2302", pos_z:"\u2195", pos_x:"\u2194", pos_z_await:"\u2195", pos_x_await:"\u2194", rot_y:"\u21BB", walk_set:"\u2B50", stage_swap:"\u21C4" };
+const WP_COLORS = { spawn:"#ffffff", pos_z:"#ff6b6b", pos_x:"#ff6b6b", pos_z_await:"#ff9b5b", pos_x_await:"#ff9b5b", rot_y:"#ffd93d", walk_set:"#6bcb77", stage_swap:"#4d96ff", head_x:"#c084fc", motion:"#f97316" };
+const WP_ICONS = { spawn:"\u2302", pos_z:"\u2195", pos_x:"\u2194", pos_z_await:"\u2195", pos_x_await:"\u2194", rot_y:"\u21BB", walk_set:"\u2B50", stage_swap:"\u21C4", head_x:"\u25CE", motion:"\u25C9" };
 
-const WP_NAMES = {spawn:"開始",pos_z:"前後",pos_x:"左右",pos_z_await:"前後(待)",pos_x_await:"左右(待)",rot_y:"向き",walk_set:"速度",stage_swap:"切替"};
+const WP_NAMES = {spawn:"開始",pos_z:"前後",pos_x:"左右",pos_z_await:"前後(待)",pos_x_await:"左右(待)",rot_y:"向き",walk_set:"速度",stage_swap:"切替",head_x:"視線",motion:"モーション"};
 
 function drawWaypoints() {
   const MOVE_SET = new Set(["pos_z","pos_x","pos_z_await","pos_x_await"]);
@@ -2237,6 +2142,35 @@ function drawWaypoints() {
         ctx.restore();
       }
 
+    // ── head_x: 視線マーカー ──
+    } else if (wp.type === "head_x") {
+      const r = isSel ? 9 : 5;
+      ctx.save();
+      if (isSel) { ctx.shadowColor = color; ctx.shadowBlur = 12; }
+      ctx.strokeStyle = color; ctx.lineWidth = isSel ? 2.5 : 1.5;
+      ctx.globalAlpha = isSel ? 1 : 0.6;
+      ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = color + "44";
+      ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.restore();
+
+    // ── motion: モーションマーカー ──
+    } else if (wp.type === "motion") {
+      const r = isSel ? 9 : 5;
+      ctx.save();
+      if (isSel) { ctx.shadowColor = color; ctx.shadowBlur = 12; }
+      ctx.strokeStyle = color; ctx.lineWidth = isSel ? 2.5 : 1.5;
+      ctx.globalAlpha = isSel ? 1 : 0.6;
+      // ダイヤ型
+      ctx.beginPath();
+      ctx.moveTo(sx, sy - r); ctx.lineTo(sx + r, sy); ctx.lineTo(sx, sy + r); ctx.lineTo(sx - r, sy);
+      ctx.closePath(); ctx.stroke();
+      ctx.fillStyle = color + "44";
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.restore();
+
     // ── walk_set / stage_swap ──
     } else {
       const r = isSel ? 10 : 6;
@@ -2251,6 +2185,15 @@ function drawWaypoints() {
       let label = "";
       if (DRAGGABLE_POS_TYPES.has(wp.type)) label = `${WP_NAMES[wp.type]||wp.type} (${wp.x.toFixed(1)}, ${wp.z.toFixed(1)})`;
       else if (wp.type === "rot_y") label = `向き ${(wp.rot*180/Math.PI).toFixed(0)}°`;
+      else if (wp.type === "head_x") {
+        const ev = events[wp.eventIdx];
+        const deg = ev ? ((ev.target||0)*180/Math.PI).toFixed(0) : "?";
+        label = `視線 ${deg}°`;
+      }
+      else if (wp.type === "motion") {
+        const ev = events[wp.eventIdx];
+        label = `モーション ${ev ? (ev.name||"") : ""}`;
+      }
       else label = WP_NAMES[wp.type] || wp.type;
       if (label) {
         ctx.font = "bold 13px 'Segoe UI',sans-serif";
@@ -2269,94 +2212,6 @@ function drawWaypoints() {
   ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
 }
 
-// ═══════════════════════════════════════════════════
-// マップ上のイベントマーカー（セリフ・効果音・ホラー等をアイコンで表示）
-// ═══════════════════════════════════════════════════
-const MARKER_SKIP = new Set(["_comment","pos_z","pos_x","pos_z_await","pos_x_await","rot_y","walk_set","wait","sleep"]);
-
-function drawEventMarkers() {
-  if (events.length === 0 || eventPositions.length === 0) return;
-  ctx.save();
-
-  // 同じ位置にあるマーカーをグループ化（重ならないようオフセット）
-  const posGroups = {};
-  for (let i = 0; i < events.length; i++) {
-    const ev = events[i], t = ev.type;
-    if (MARKER_SKIP.has(t)) continue;
-    const cat = EVENT_CAT[t];
-    if (!cat) continue;
-    const pos = eventPositions[i];
-    if (!pos) continue;
-    const key = `${pos.x.toFixed(1)}_${pos.z.toFixed(1)}`;
-    if (!posGroups[key]) posGroups[key] = [];
-    posGroups[key].push({ idx: i, ev, cat, pos });
-  }
-
-  const markerSize = 11;
-  for (const key in posGroups) {
-    const group = posGroups[key];
-    const pos = group[0].pos;
-    const [cx, cy] = w2s(pos.x, pos.z);
-
-    // 画面外は描画しない
-    if (cx < -50 || cx > cv.width + 50 || cy < -50 || cy > cv.height + 50) continue;
-
-    // ズームが小さいときは数だけ表示
-    if (zoom < 10 && group.length > 2) {
-      ctx.font = "bold 9px sans-serif";
-      ctx.fillStyle = group[0].cat.color;
-      ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      ctx.fillText(`+${group.length}`, cx, cy - 16);
-      ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
-      continue;
-    }
-
-    // マーカーを横に並べる
-    const totalW = group.length * (markerSize * 2 + 2);
-    const startX = cx - totalW / 2 + markerSize;
-    const baseY = cy - 20; // パスの上に表示
-
-    for (let j = 0; j < group.length; j++) {
-      const { idx, ev, cat } = group[j];
-      const mx = startX + j * (markerSize * 2 + 2);
-      const my = baseY;
-      const isSel = (idx === selectedIdx);
-
-      // 背景丸
-      ctx.fillStyle = isSel ? cat.color + "55" : cat.color + "22";
-      ctx.beginPath(); ctx.arc(mx, my, markerSize, 0, Math.PI * 2); ctx.fill();
-      if (isSel) {
-        ctx.strokeStyle = cat.color; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(mx, my, markerSize + 2, 0, Math.PI * 2); ctx.stroke();
-      }
-
-      // アイコン
-      ctx.font = `${isSel ? 14 : 12}px sans-serif`;
-      ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      ctx.fillStyle = cat.color;
-      ctx.fillText(cat.icon, mx, my + 1);
-
-      // セリフの場合、テキストをツールチップ表示
-      if (isSel && ev.type === "say" && ev.text) {
-        ctx.font = "10px 'Segoe UI',sans-serif";
-        const txt = ev.text.replace(/\[.*?\]/g, "").substring(0, 35);
-        const tm = ctx.measureText(txt);
-        ctx.fillStyle = lightMode ? "rgba(230,235,245,.9)" : "rgba(8,12,26,.9)";
-        ctx.beginPath(); ctx.roundRect(mx - tm.width/2 - 8, my - 30, tm.width + 16, 18, 4); ctx.fill();
-        ctx.fillStyle = lightMode ? "#333" : "#ddd";
-        ctx.fillText(txt, mx, my - 21);
-      }
-      // SFXの場合、音名を表示
-      if (isSel && ev.type === "sfx" && ev.sound) {
-        ctx.font = "9px 'Consolas',monospace";
-        ctx.fillStyle = lightMode ? "#333" : "#6bcb77";
-        ctx.fillText(ev.sound, mx, my - 16);
-      }
-    }
-  }
-  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
-  ctx.restore();
-}
 
 // ═══════════════════════════════════════════════════
 // MAP上ミニカード（全イベントを常時表示）
@@ -2429,38 +2284,6 @@ function drawStartGoal() {
 }
 
 // 凡例（右下に表示）
-function drawLegend() {
-  if (playerPath.length === 0) return;
-  ctx.save();
-  const items = [
-    { icon:"●", color:"#ff6b6b", label:"停止点(移動先)" },
-    { icon:"→", color:"#ffd93d", label:"向き変更" },
-    { icon:"💬", color:"#ffd93d", label:"セリフ" },
-    { icon:"📱", color:"#4d96ff", label:"コメント" },
-    { icon:"⚡", color:"#ff6b6b", label:"ホラー演出" },
-    { icon:"🔊", color:"#6bcb77", label:"効果音" },
-  ];
-  const pad = 10, lineH = 18;
-  const maxW = 110;
-  const bx = cv.width - maxW - pad, by = cv.height - items.length * lineH - pad - 8;
-  ctx.fillStyle = lightMode ? "rgba(230,235,245,.8)" : "rgba(8,12,26,.75)";
-  ctx.strokeStyle = lightMode ? "rgba(120,140,180,.2)" : "rgba(100,140,220,.15)";
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.roundRect(bx - 8, by - 6, maxW + 16, items.length * lineH + 12, 6); ctx.fill(); ctx.stroke();
-  for (let i = 0; i < items.length; i++) {
-    const y = by + i * lineH + lineH / 2;
-    ctx.font = "11px sans-serif";
-    ctx.textAlign = "left"; ctx.textBaseline = "middle";
-    ctx.fillStyle = items[i].color;
-    ctx.fillText(items[i].icon, bx, y);
-    ctx.font = "11px 'Segoe UI',sans-serif";
-    ctx.fillStyle = lightMode ? "#4a5a7a" : "#b0c0dd";
-    ctx.fillText(items[i].label, bx + 18, y);
-  }
-  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
-  ctx.restore();
-}
-
 // 選択地点のクロスヘア
 function drawPickedPoint() {
   if (!pickedPoint) return;
@@ -2510,15 +2333,15 @@ const MOVEMENT_TYPES = new Set(["pos_z","pos_x","pos_z_await","pos_x_await","rot
 // ── 回転プリセット ──
 const PV_ROT_Y = [
   {v:0,    e:'🎯', l:'正面'},
-  {v:0.39, e:'↗️', l:'わずかに右'},
-  {v:0.79, e:'👉', l:'少し右 45°'},
-  {v:1.57, e:'➡️', l:'右を見る 90°'},
-  {v:2.36, e:'↘️', l:'右後ろ 135°'},
-  {v:3.14, e:'🔄', l:'真後ろ 180°'},
-  {v:-0.39,e:'↖️', l:'わずかに左'},
-  {v:-0.79,e:'👈', l:'少し左 45°'},
-  {v:-1.57,e:'⬅️', l:'左を見る 90°'},
-  {v:-2.36,e:'↙️', l:'左後ろ 135°'},
+  {v:0.39, e:'↗️', l:'やや右'},
+  {v:0.79, e:'👉', l:'右45°'},
+  {v:1.57, e:'➡️', l:'右90°'},
+  {v:2.36, e:'↘️', l:'右後ろ'},
+  {v:3.14, e:'🔄', l:'真後ろ'},
+  {v:-0.39,e:'↖️', l:'やや左'},
+  {v:-0.79,e:'👈', l:'左45°'},
+  {v:-1.57,e:'⬅️', l:'左90°'},
+  {v:-2.36,e:'↙️', l:'左後ろ'},
 ];
 const PV_HEAD_X = [
   {v:0,    e:'😐', l:'正面'},
@@ -2559,18 +2382,17 @@ function pvRotYCompass(cur, inputId) {
   const R = PV_ROT_Y;
   // R: 0=正面, 1=わずか右, 2=少し右, 3=右, 4=右後ろ, 5=真後ろ, 6=わずか左, 7=少し左, 8=左, 9=左後ろ
   let h = `<div class="preset-grid compass-grid" data-input="${inputId}">`;
-  h += c(R[9], 'bl', '');          // 左後ろ
-  h += c(R[5], 'bk', '');          // 真後ろ
-  h += c(R[4], 'br', '');          // 右後ろ
-  h += c(R[8], 'l',  '');          // 左を見る
-  h += c(R[7], 'sl', '');          // 少し左
-  h += c(R[2], 'sr', '');          // 少し右
-  h += c(R[3], 'r',  '');          // 右を見る
   h += c(R[6], 'wl', '');          // わずか左
   h += c(R[0], 'c',  ' center-card'); // 正面（中心）
   h += c(R[1], 'wr', '');          // わずか右
-  // カスタム
+  h += c(R[8], 'l',  '');          // 左を見る 90°
+  h += c(R[3], 'r',  '');          // 右を見る 90°
+  h += c(R[7], 'sl', '');          // 少し左 45°
+  h += c(R[5], 'bk', '');          // 真後ろ
+  h += c(R[2], 'sr', '');          // 少し右 45°
+  h += c(R[9], 'bl', '');          // 左後ろ 135°
   h += `<div class="preset-card custom-card${!matched?' active':''}" style="grid-area:cst" data-v="__custom" onclick="pvCardClick(this)"><span class="pc-emoji">✏️</span><span class="pc-label">カスタム</span></div>`;
+  h += c(R[4], 'br', '');          // 右後ろ 135°
   h += `</div>`;
   h += `<div class="preset-custom-input${!matched?' show':''}" id="${inputId}-wrap"><input type="number" step="0.01" id="${inputId}" value="${cur}"><span>rad</span></div>`;
   return h;
@@ -2685,45 +2507,6 @@ function selectEvent(idx) {
   ceSelect(idx);
 }
 
-function showDetail(idx) {
-  const panel=document.getElementById("detail-panel");
-  if(!panel)return; // サイドバー非表示時はスキップ
-  if(idx<0||idx>=events.length){panel.innerHTML="";return;}
-  const ev=events[idx],t=ev.type,ja=TYPE_JA[t]||t;
-  let h=`<h3>#${idx} ${ja}</h3>`;
-  if(t==="pos_z"||t==="pos_x"||t==="pos_z_await"||t==="pos_x_await"){
-    const ax=(t==="pos_z"||t==="pos_z_await")?"Z":"X";
-    h+=`<div class="detail-row"><label>${ax}目標:</label><input type="number" step="0.1" id="edit-target" value="${ev.target||0}"><button class="apply-btn" onclick="applyEdit(${idx},'target')">適用</button></div>`;
-    h+=`<div class="detail-row"><label>秒数:</label><input type="number" step="0.1" id="edit-dur" value="${ev.dur||5}"><button class="apply-btn" onclick="applyEdit(${idx},'dur')">適用</button></div>`;
-  } else if(t==="rot_y"){
-    h+=`<div class="preset-section-label">向き</div>${pvRotYCompass( ev.target||0, 'edit-target')}`;
-    h+=`<div class="detail-row"><label>秒数:</label><input type="number" step="0.1" id="edit-dur" value="${ev.dur||1}"><button class="apply-btn" onclick="applyEdit(${idx},'target');applyEdit(${idx},'dur')">適用</button></div>`;
-  } else if(t==="head_x"){
-    h+=`<div class="preset-section-label">向き</div>${pvHeadXStrip( ev.target||0, 'edit-target')}`;
-    h+=`<button class="apply-btn" style="margin-top:4px" onclick="applyEdit(${idx},'target')">適用</button>`;
-  } else if(t==="motion"){
-    h+=`<div class="preset-section-label">動作</div>${pvStrCards(PV_MOTION, ev.name||'look_around', 'edit-name')}`;
-    h+=`<div class="detail-row"><label>秒数:</label><input type="number" step="0.1" id="edit-dur" value="${ev.dur||2}"><button class="apply-btn" onclick="applyEditStr(${idx},'name');applyEdit(${idx},'dur')">適用</button></div>`;
-  } else if(t==="say"){
-    h+=`<div class="detail-row"><label>テキスト:</label><span style="font-size:11px;">${(ev.text||"").substring(0,60)}</span></div>`;
-    if(ev.voice) h+=`<div class="detail-row"><label>ボイス:</label><span>${ev.voice}</span></div>`;
-  } else {
-    for(const[k,v]of Object.entries(ev)){if(k==="type")continue; h+=`<div class="detail-row"><label>${k}:</label><span>${JSON.stringify(v)}</span></div>`;}
-  }
-  panel.innerHTML=h;
-}
-
-window.applyEdit = function(idx, field) {
-  const inp=document.getElementById("edit-"+field); if(!inp)return;
-  const val=parseFloat(inp.value); if(isNaN(val))return;
-  pushUndo();
-  events[idx][field]=val; extractPath(); ceRenderEditPanel(); draw();
-};
-window.applyEditStr = function(idx, field) {
-  const inp=document.getElementById("edit-"+field); if(!inp)return;
-  pushUndo();
-  events[idx][field]=inp.value; extractPath(); ceRenderEditPanel(); draw();
-};
 
 
 
@@ -2840,6 +2623,20 @@ function findNearestWP(sx,sy,maxDist) {
     if(!DRAGGABLE_POS_TYPES.has(wp.type))continue;
     const [wx,wy]=w2s(wp.x,wp.z),d=(sx-wx)**2+(sy-wy)**2; if(d<bestD){bestD=d;best=i;}
   } return best;
+}
+
+// モーション系ウェイポイント（rot_y, head_x, motion）の検出
+const MOTION_WP_TYPES = new Set(["rot_y","head_x","motion"]);
+function findNearestMotionWP(sx, sy, maxDist) {
+  let best = -1, bestD = maxDist * maxDist;
+  for (let i = 0; i < playerPath.length; i++) {
+    const wp = playerPath[i];
+    if (!MOTION_WP_TYPES.has(wp.type)) continue;
+    const [wx, wy] = w2s(wp.x, wp.z);
+    const d = (sx - wx) ** 2 + (sy - wy) ** 2;
+    if (d < bestD) { bestD = d; best = i; }
+  }
+  return best;
 }
 
 // 最も近いイベントマーカー（セリフ等の非移動系）を検出
@@ -2976,12 +2773,14 @@ function onMouseMove(e) {
   if (!panStart) {
     const nearWP = findNearestWP(mx, my, 12);
     const nearRot = findNearestRotHandle(mx, my, 14);
+    const nearMot = findNearestMotionWP(mx, my, 12);
     let cursor = "crosshair";
     if (nearRot >= 0) cursor = "grab";
     else if (nearWP >= 0) {
       const wp = playerPath[nearWP];
       cursor = (wp.type === "pos_x_await" || wp.type === "pos_z_await") ? "pointer" : "grab";
     }
+    else if (nearMot >= 0) cursor = "pointer";
     cv.style.cursor = cursor;
   }
 
@@ -3000,14 +2799,20 @@ function onMouseUp(e) {
       if (nearWP >= 0 && playerPath[nearWP].eventIdx >= 0) {
         selectEvent(playerPath[nearWP].eventIdx);
       } else {
-        // 近くのイベントマーカーを検索
-        const nearEvt = findNearestEventMarker(mx, my, 20);
-        if (nearEvt >= 0) {
-          selectEvent(nearEvt);
+        // モーション系ウェイポイント（rot_y, head_x, motion）の検出
+        const nearMot = findNearestMotionWP(mx, my, 16);
+        if (nearMot >= 0 && playerPath[nearMot].eventIdx >= 0) {
+          selectEvent(playerPath[nearMot].eventIdx);
         } else {
-          const [wx,wz] = s2w(mx, my);
-          pickedPoint = { x: Math.round(wx*4)/4, z: Math.round(wz*4)/4 };
-          updatePickPanel(); draw();
+          // 近くのイベントマーカーを検索
+          const nearEvt = findNearestEventMarker(mx, my, 20);
+          if (nearEvt >= 0) {
+            selectEvent(nearEvt);
+          } else {
+            const [wx,wz] = s2w(mx, my);
+            pickedPoint = { x: Math.round(wx*4)/4, z: Math.round(wz*4)/4 };
+            updatePickPanel(); draw();
+          }
         }
       }
     }
@@ -3665,60 +3470,6 @@ function updateUndoButtons() {
 // ═══════════════════════════════════════════════════
 // B7: ミニマップ
 // ═══════════════════════════════════════════════════
-function drawMinimap() {
-  const mc = document.getElementById("minimap");
-  const mctx = mc.getContext("2d");
-  const mw = mc.width, mh = mc.height;
-  mctx.clearRect(0, 0, mw, mh);
-
-  const b = currentMap.bounds;
-  const bw = b.xMax - b.xMin, bh = b.zMax - b.zMin;
-  const scale = Math.min((mw - 12) / bw, (mh - 12) / bh);
-  const ox = (mw - bw * scale) / 2, oy = (mh - bh * scale) / 2;
-
-  function mm(wx, wz) { return [ox + (wx - b.xMin) * scale, oy + (wz - b.zMin) * scale]; }
-
-  // 矩形
-  for (const r of currentMap.rects) {
-    const [rx, ry] = mm(r.x, r.z);
-    mctx.fillStyle = r.color; mctx.globalAlpha = 0.5;
-    mctx.fillRect(rx, ry, r.w * scale, r.h * scale);
-  }
-  mctx.globalAlpha = 1;
-
-  // パス with glow
-  if (playerPath.length > 1) {
-    // Glow
-    mctx.save();
-    mctx.strokeStyle = "rgba(255,80,80,.3)"; mctx.lineWidth = 4; mctx.lineCap = "round";
-    mctx.filter = "blur(2px)";
-    mctx.beginPath();
-    const [gx0, gy0] = mm(playerPath[0].x, playerPath[0].z); mctx.moveTo(gx0, gy0);
-    for (let i = 1; i < playerPath.length; i++) { const [gx, gy] = mm(playerPath[i].x, playerPath[i].z); mctx.lineTo(gx, gy); }
-    mctx.stroke(); mctx.filter = "none"; mctx.restore();
-    // Line
-    mctx.strokeStyle = "#ff6b6b"; mctx.lineWidth = 1.5; mctx.lineCap = "round";
-    mctx.beginPath();
-    const [sx0, sy0] = mm(playerPath[0].x, playerPath[0].z); mctx.moveTo(sx0, sy0);
-    for (let i = 1; i < playerPath.length; i++) { const [sx, sy] = mm(playerPath[i].x, playerPath[i].z); mctx.lineTo(sx, sy); }
-    mctx.stroke();
-    // Spawn dot
-    const [spx, spy] = mm(playerPath[0].x, playerPath[0].z);
-    mctx.fillStyle = "#fff"; mctx.beginPath(); mctx.arc(spx, spy, 2.5, 0, Math.PI*2); mctx.fill();
-  }
-
-  // 現在のビュー範囲
-  const [vx0, vz0] = s2w(0, 0);
-  const [vx1, vz1] = s2w(cv.width, cv.height);
-  const [rx0, ry0] = mm(vx0, vz0);
-  const [rx1, ry1] = mm(vx1, vz1);
-  mctx.strokeStyle = "rgba(212,168,55,.7)"; mctx.lineWidth = 1.5;
-  mctx.strokeRect(rx0, ry0, rx1 - rx0, ry1 - ry0);
-  // Fill viewport area
-  mctx.fillStyle = "rgba(212,168,55,.06)";
-  mctx.fillRect(rx0, ry0, rx1 - rx0, ry1 - ry0);
-}
-
 // ═══════════════════════════════════════════════════
 // B8: テーマ切替
 // ═══════════════════════════════════════════════════

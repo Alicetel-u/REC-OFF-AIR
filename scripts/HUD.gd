@@ -114,18 +114,7 @@ func _build_debug_panel() -> void:
 	title.add_theme_color_override("font_color", Color(0.0, 1.0, 0.0))
 	vbox.add_child(title)
 
-	var speeds := [1.0, 2.0, 4.0, 8.0]
-	for spd in speeds:
-		var btn := Button.new()
-		btn.text = "x%s" % str(spd)
-		btn.custom_minimum_size = Vector2(80, 30)
-		btn.add_theme_font_size_override("font_size", 14)
-		btn.pressed.connect(_set_game_speed.bind(spd))
-		vbox.add_child(btn)
-
-
-func _set_game_speed(spd: float) -> void:
-	Engine.time_scale = spd
+	pass  # 倍速ボタンは YouTubeChrome の ⏭ ボタンに移動
 
 
 func _process(delta: float) -> void:
