@@ -143,7 +143,7 @@ func run_from_path(json_path: String) -> void:
 
 			"pos_z":
 				if not GameManager.debug_free_move:
-					var tw := _pos_z(float(ev.get("target", 0.0)), float(ev.get("dur", 5.0)))
+					var tw := _pos_z(float(ev.get("target", 0.0)), float(ev.get("dur", 0.0)))
 					var tw_id : String = ev.get("id", "")
 					if not tw_id.is_empty():
 						active_tweens[tw_id] = tw
@@ -159,7 +159,7 @@ func run_from_path(json_path: String) -> void:
 
 			"pos_x":
 				if not GameManager.debug_free_move:
-					var tw := _pos_x(float(ev.get("target", 0.0)), float(ev.get("dur", 5.0)))
+					var tw := _pos_x(float(ev.get("target", 0.0)), float(ev.get("dur", 0.0)))
 					var tw_id : String = ev.get("id", "")
 					if not tw_id.is_empty():
 						active_tweens[tw_id] = tw
@@ -273,6 +273,52 @@ func run_from_path(json_path: String) -> void:
 			"stage_swap":
 				await _stage_swap(ev.get("scene", ""), ev.get("spawn", [0, 1, 0]))
 
+			# ── 新ホラー演出コマンド ──
+
+			"camera_shake":
+				if is_instance_valid(player):
+					player.start_camera_shake(
+						float(ev.get("intensity", 0.05)),
+						float(ev.get("dur", 0.5)))
+
+			"vhs_glitch":
+				await _vhs_glitch(
+					float(ev.get("intensity", 0.8)),
+					float(ev.get("dur", 1.0)))
+
+			"light_flicker":
+				await _light_flicker(
+					int(ev.get("count", 5)),
+					float(ev.get("dur", 1.5)))
+
+			"desaturate":
+				_desaturate(
+					float(ev.get("amount", 0.8)),
+					float(ev.get("dur", 0.5)))
+
+			"slow_motion":
+				await _slow_motion(
+					float(ev.get("scale", 0.3)),
+					float(ev.get("dur", 2.0)))
+
+			"fog_change":
+				_fog_change(ev)
+
+			"distortion":
+				_distortion(
+					float(ev.get("amount", 0.03)),
+					float(ev.get("dur", 1.0)))
+
+			"vignette":
+				_vignette(
+					float(ev.get("amount", 0.3)),
+					float(ev.get("dur", 0.5)))
+
+			"garbled_text":
+				_garbled_text(
+					ev.get("text", ""),
+					float(ev.get("dur", 0.3)))
+
 			_:
 				pass  # 未知タイプは無視
 
@@ -375,18 +421,32 @@ func _head_x(target: float, dur: float) -> Tween:
 	return tw
 
 
+var _tw_pos_z : Tween = null
+var _tw_pos_x : Tween = null
+const _WALK_SPEED := 1.8  # 自動演出の歩行速度 (units/s)
+
 func _pos_z(target_z: float, dur: float) -> Tween:
-	var tw := create_tween()
-	tw.tween_property(player, "position:z", target_z, dur) \
-			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	return tw
+	if _tw_pos_z and _tw_pos_z.is_valid():
+		_tw_pos_z.kill()
+	# dur <= 0 なら距離と一定速度から自動算出
+	var dist : float = abs(target_z - player.position.z)
+	var actual_dur : float = dur if dur > 0.0 else max(dist / _WALK_SPEED, 0.1)
+	_tw_pos_z = create_tween()
+	_tw_pos_z.tween_property(player, "position:z", target_z, actual_dur) \
+			.set_trans(Tween.TRANS_LINEAR)
+	return _tw_pos_z
 
 
 func _pos_x(target_x: float, dur: float) -> Tween:
-	var tw := create_tween()
-	tw.tween_property(player, "position:x", target_x, dur) \
-			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	return tw
+	if _tw_pos_x and _tw_pos_x.is_valid():
+		_tw_pos_x.kill()
+	# dur <= 0 なら距離と一定速度から自動算出
+	var dist : float = abs(target_x - player.position.x)
+	var actual_dur : float = dur if dur > 0.0 else max(dist / _WALK_SPEED, 0.1)
+	_tw_pos_x = create_tween()
+	_tw_pos_x.tween_property(player, "position:x", target_x, actual_dur) \
+			.set_trans(Tween.TRANS_LINEAR)
+	return _tw_pos_x
 
 
 func _set_viewers(count: int) -> void:
@@ -596,7 +656,7 @@ func _ensure_fade_layer() -> void:
 	if is_instance_valid(_fade_layer):
 		return
 	_fade_layer = CanvasLayer.new()
-	_fade_layer.layer = 19  # YouTubeChrome(20) の直下、ポラロイド(18) より上
+	_fade_layer.layer = 1  # HUD(2)・YouTubeChrome(20) より下 → 暗転中もセリフ・チャット表示
 	get_tree().root.add_child(_fade_layer)
 	_fade_rect = ColorRect.new()
 	_fade_rect.anchor_right  = 1.0
@@ -675,3 +735,155 @@ func _stage_swap(scene_path: String, spawn: Array) -> void:
 	var sy : float = float(spawn[1]) if spawn.size() > 1 else 1.0
 	var sz : float = float(spawn[2]) if spawn.size() > 2 else 0.0
 	player.position = Vector3(sx, sy, sz)
+
+
+# ════════════════════════════════════════════════════════════════════
+# 新ホラー演出ヘルパー
+# ════════════════════════════════════════════════════════════════════
+
+func _get_main() -> Node:
+	return get_tree().current_scene
+
+
+## VHSグリッチ一時強化 — ノイズ・色収差・グリッチバーを一時的に上げて戻す
+func _vhs_glitch(intensity: float, dur: float) -> void:
+	var main := _get_main()
+	if not main or not main.has_method("set_vhs_param"):
+		return
+	main.set_vhs_param("glitch_strength", intensity)
+	main.set_vhs_param("chroma_boost", intensity * 0.03)
+	main.set_vhs_param("noise_intensity", 0.08 + intensity * 0.3)
+	main.set_vhs_param("shake_intensity", 0.005 + intensity * 0.02)
+	if is_inside_tree():
+		await get_tree().create_timer(dur).timeout
+	# 元に戻す（Tweenで滑らかに）
+	if main.has_method("tween_vhs_param"):
+		main.tween_vhs_param("glitch_strength", 0.0, 0.3)
+		main.tween_vhs_param("chroma_boost", 0.0, 0.3)
+		main.tween_vhs_param("noise_intensity", 0.08, 0.3)
+		main.tween_vhs_param("shake_intensity", 0.005, 0.3)
+
+
+## シーン内の全ライトをフリッカー
+func _light_flicker(count: int, dur: float) -> void:
+	var main := _get_main()
+	if not main:
+		return
+	# シーン内の全ライトを収集
+	var lights : Array[Light3D] = []
+	_collect_lights(main, lights)
+	if lights.is_empty():
+		return
+
+	# 元のエネルギーを保存
+	var orig_energies : Array[float] = []
+	for light in lights:
+		orig_energies.append(light.light_energy)
+
+	var interval : float = dur / max(count * 2, 1)
+	for i in count:
+		if not is_inside_tree():
+			break
+		# 消灯
+		for light in lights:
+			if is_instance_valid(light):
+				light.light_energy = 0.0
+		await get_tree().create_timer(interval * randf_range(0.3, 0.8)).timeout
+		# 点灯
+		for j in lights.size():
+			if is_instance_valid(lights[j]):
+				lights[j].light_energy = orig_energies[j] * randf_range(0.4, 1.2)
+		await get_tree().create_timer(interval * randf_range(0.5, 1.0)).timeout
+
+	# 元に戻す
+	for j in lights.size():
+		if is_instance_valid(lights[j]):
+			lights[j].light_energy = orig_energies[j]
+
+
+func _collect_lights(node: Node, result: Array[Light3D]) -> void:
+	if node is Light3D and node != player.flashlight:
+		result.append(node as Light3D)
+	for child in node.get_children():
+		_collect_lights(child, result)
+
+
+## 彩度変化（amount=0で通常、1でモノクロ）
+func _desaturate(amount: float, dur: float) -> void:
+	var main := _get_main()
+	if main and main.has_method("tween_vhs_param"):
+		main.tween_vhs_param("desaturation", amount, dur)
+
+
+## スローモーション
+func _slow_motion(scale: float, dur: float) -> void:
+	var orig_scale := Engine.time_scale
+	Engine.time_scale = scale
+	if is_inside_tree():
+		# 実時間で待機（time_scaleの影響を受けないように）
+		await get_tree().create_timer(dur * scale).timeout
+	Engine.time_scale = orig_scale
+
+
+## フォグ動的変化
+func _fog_change(ev: Dictionary) -> void:
+	var main := _get_main()
+	if not main or not main.has_method("tween_fog"):
+		return
+	var density : float = float(ev.get("density", 0.05))
+	var dur     : float = float(ev.get("dur", 2.0))
+	var col_arr : Array = ev.get("color", [])
+	var col := Color(-1, 0, 0)  # -1 = 色変更なし
+	if col_arr.size() >= 3:
+		col = Color(float(col_arr[0]), float(col_arr[1]), float(col_arr[2]))
+	main.tween_fog(density, dur, col)
+
+
+## 画面歪み（水波エフェクト）
+func _distortion(amount: float, dur: float) -> void:
+	var main := _get_main()
+	if main and main.has_method("tween_vhs_param"):
+		main.tween_vhs_param("distortion", amount, dur)
+
+
+## ビネット強化（画面端を暗く）
+func _vignette(amount: float, dur: float) -> void:
+	var main := _get_main()
+	if main and main.has_method("tween_vhs_param"):
+		main.tween_vhs_param("vignette_boost", amount, dur)
+
+
+## 文字化けテキスト — セリフを一瞬壊してから正しく表示
+const GARBLE_CHARS := "ア̷̢イ̶ウ̸エ̴オ̷カ̸キ̶ク̴ケ̷コ̸■▓░█▒▌▐◈◆●◼ᚠᛗᛁᚾᛟᚳ"
+
+func _garbled_text(text: String, dur: float) -> void:
+	if not is_instance_valid(hud) or text.is_empty():
+		return
+	# まず文字化け版を表示
+	var garbled := ""
+	for i in text.length():
+		if randf() < 0.7:
+			garbled += GARBLE_CHARS[randi() % GARBLE_CHARS.length()]
+		else:
+			garbled += text[i]
+	hud.show_monologue(garbled)
+
+	# 短い間隔で数回文字化けを変えてから正しいテキストに
+	var steps := 3
+	var step_dur : float = dur / (steps + 1)
+	for _s in steps:
+		if not is_inside_tree():
+			return
+		await get_tree().create_timer(step_dur).timeout
+		garbled = ""
+		var correct_ratio : float = float(_s + 1) / float(steps + 1)
+		for i in text.length():
+			if randf() < correct_ratio:
+				garbled += text[i]
+			else:
+				garbled += GARBLE_CHARS[randi() % GARBLE_CHARS.length()]
+		hud.show_monologue(garbled)
+
+	if is_inside_tree():
+		await get_tree().create_timer(step_dur).timeout
+	hud.show_monologue(text)

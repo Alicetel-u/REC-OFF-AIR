@@ -17,6 +17,11 @@ var _chat_next  : float = 0.0
 var _chrome: CanvasLayer = null
 var danmaku_func: Callable = Callable()
 
+# ── デバッグパネル ──
+var _dbg_click_count : int   = 0
+var _dbg_click_timer : float = 0.0
+var _dbg_panel       : PanelContainer = null
+
 var _mono_panel  : PanelContainer = null
 var _mono_text   : RichTextLabel  = null
 var _exit_guide  : Control        = null
@@ -66,7 +71,70 @@ func set_chrome(chrome: CanvasLayer) -> void:
 	_add_chat("今日も来たよ！", "幽霊ガチ勢")
 
 
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		var vp_size := get_viewport().get_visible_rect().size
+		# 左下 120x120 の範囲
+		if event.position.x < 120 and event.position.y > vp_size.y - 120:
+			_dbg_click_count += 1
+			_dbg_click_timer = 1.0  # 1秒以内に3回
+			if _dbg_click_count >= 3:
+				_dbg_click_count = 0
+				_toggle_debug_panel()
+
+
+func _toggle_debug_panel() -> void:
+	if is_instance_valid(_dbg_panel):
+		_dbg_panel.visible = not _dbg_panel.visible
+		return
+	_build_debug_panel()
+
+
+func _build_debug_panel() -> void:
+	_dbg_panel = PanelContainer.new()
+	_dbg_panel.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	_dbg_panel.position = Vector2(10, -260)
+
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.0, 0.0, 0.0, 0.85)
+	style.border_color = Color(0.0, 1.0, 0.0, 0.6)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(8)
+	_dbg_panel.add_theme_stylebox_override("panel", style)
+	add_child(_dbg_panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	_dbg_panel.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "DEBUG"
+	title.add_theme_font_size_override("font_size", 12)
+	title.add_theme_color_override("font_color", Color(0.0, 1.0, 0.0))
+	vbox.add_child(title)
+
+	var speeds := [1.0, 2.0, 4.0, 8.0]
+	for spd in speeds:
+		var btn := Button.new()
+		btn.text = "x%s" % str(spd)
+		btn.custom_minimum_size = Vector2(80, 30)
+		btn.add_theme_font_size_override("font_size", 14)
+		btn.pressed.connect(_set_game_speed.bind(spd))
+		vbox.add_child(btn)
+
+
+func _set_game_speed(spd: float) -> void:
+	Engine.time_scale = spd
+
+
 func _process(delta: float) -> void:
+	# デバッグクリックのタイムアウト
+	if _dbg_click_timer > 0.0:
+		_dbg_click_timer -= delta
+		if _dbg_click_timer <= 0.0:
+			_dbg_click_count = 0
+
 	record_time += delta
 
 	# ── REC 点滅 ──

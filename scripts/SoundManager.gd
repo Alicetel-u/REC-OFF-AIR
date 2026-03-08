@@ -39,6 +39,11 @@ func _ready() -> void:
 	_scan_all()
 
 
+func _process(delta: float) -> void:
+	if _step_cooldown > 0.0:
+		_step_cooldown -= delta
+
+
 func _make_player(vol_db: float) -> AudioStreamPlayer:
 	var p := AudioStreamPlayer.new()
 	p.volume_db = vol_db
@@ -149,21 +154,23 @@ func start_ambient(chapter_index: int) -> void:
 	_ambient.play()
 
 
-## 足音を再生（直前の足音が再生中なら無視）
+## 足音を再生（クールダウンで連打防止）
+var _step_cooldown : float = 0.0
 func play_footstep(chapter_index: int, is_dash: bool) -> void:
-	if _step.playing:
+	if _step_cooldown > 0.0:
 		return
 	var cat  : String = STEP_CATS[clamp(chapter_index, 0, STEP_CATS.size() - 1)]
 	var list : Array  = _step_cats.get(cat, [])
 	if list.is_empty():
 		return
-	var s := _load_audio(list[0])
+	var s := _load_audio(list[randi() % list.size()])
 	if not s:
 		return
 	_step.stream      = s
 	_step.volume_db   = -4.0 if is_dash else -8.0
 	_step.pitch_scale = randf_range(0.92, 1.08)
 	_step.play()
+	_step_cooldown = 0.25 if is_dash else 0.38
 
 
 ## ゴーストの唸り声を再生（ファイルを順番に使い回す）

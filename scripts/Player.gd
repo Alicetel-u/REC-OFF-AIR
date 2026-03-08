@@ -27,6 +27,10 @@ var _prev_moving : bool  = false
 var battery      : float = 1.0   # 0.0 〜 1.0
 var _sway_t      : float = 0.0   # 手ブレ用タイマー
 
+# ── カメラシェイク ──
+var _shake_intensity : float = 0.0   # 現在のシェイク強度
+var _shake_decay     : float = 0.0   # 減衰速度
+
 # ── デバッグ ──
 const _DEBUG_LOGGING : bool = false  # デバッグログ出力（リリース時はfalse）
 var _auto_walk    : bool  = false    # デバッグ時は true に
@@ -139,18 +143,16 @@ func _physics_process(delta: float) -> void:
 		player_moved.emit()
 	_prev_moving = now_moving
 
-	# 足音 — ボブの着地タイミング（bob_t が π の倍数を通過）で再生
+	# カメラボブを先に更新し、着地タイミング（bob_t が π を跨ぐ瞬間）で足音1回
 	var dashing := Input.is_action_pressed("dash") if now_moving else false
-	if now_moving and is_on_floor():
-		var rate := 1.8 if dashing else 1.0
-		var prev_bob := bob_t
-		var next_bob := bob_t + delta * BOB_FREQ * rate
-		# prev と next の間で floor(t/π) が変わったら着地
-		if int(next_bob / PI) != int(prev_bob / PI) and prev_bob > 0.0:
-			SoundManager.play_footstep(GameManager.chapter_index, dashing)
-
+	var prev_bob := bob_t
 	_do_camera_bob(delta, now_moving)
+	# bob_t が π の倍数を跨いだら着地 → 足音1回
+	if now_moving and is_on_floor() and prev_bob > 0.0:
+		if int(bob_t / PI) != int(prev_bob / PI):
+			SoundManager.play_footstep(GameManager.chapter_index, dashing)
 	_do_flashlight_sway(delta, now_moving)
+	_do_camera_shake(delta)
 
 
 
@@ -168,6 +170,24 @@ func _do_camera_bob(delta: float, moving: bool) -> void:
 	else:
 		bob_t = 0.0
 		camera.position = camera.position.lerp(Vector3.ZERO, delta * 6.0)
+
+
+## カメラシェイク開始（intensity: 強さ、duration: 秒）
+func start_camera_shake(intensity: float = 0.05, duration: float = 0.5) -> void:
+	_shake_intensity = intensity
+	_shake_decay = intensity / max(duration, 0.05)
+
+
+func _do_camera_shake(delta: float) -> void:
+	if _shake_intensity <= 0.0:
+		return
+	var offset := Vector3(
+		randf_range(-1.0, 1.0) * _shake_intensity,
+		randf_range(-1.0, 1.0) * _shake_intensity,
+		0.0
+	)
+	camera.position += offset
+	_shake_intensity = max(_shake_intensity - _shake_decay * delta, 0.0)
 
 
 func _do_flashlight_sway(delta: float, moving: bool) -> void:

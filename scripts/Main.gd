@@ -280,6 +280,7 @@ func _apply_environment(chapter: Resource) -> void:
 # ──────────────────────────────────────────────
 
 var _vhs_layer : CanvasLayer = null
+var _vhs_rect  : ColorRect   = null   # シェーダーパラメータ制御用
 
 func _setup_vhs_overlay() -> void:
 	if _vhs_layer:
@@ -290,15 +291,55 @@ func _setup_vhs_overlay() -> void:
 	_vhs_layer = CanvasLayer.new()
 	_vhs_layer.layer = 1   # 3Dビューの上、HUD(2)の下
 	add_child(_vhs_layer)
-	var rect := ColorRect.new()
-	rect.anchor_right  = 1.0
-	rect.anchor_bottom = 1.0
+	_vhs_rect = ColorRect.new()
+	_vhs_rect.anchor_right  = 1.0
+	_vhs_rect.anchor_bottom = 1.0
 	var mat := ShaderMaterial.new()
 	mat.shader = shader
 	mat.set_shader_parameter("shake_intensity", 0.005)
 	mat.set_shader_parameter("noise_intensity", 0.08)
-	rect.material = mat
-	_vhs_layer.add_child(rect)
+	_vhs_rect.material = mat
+	_vhs_layer.add_child(_vhs_rect)
+
+
+## VHSシェーダーパラメータを動的に設定（EntranceDirectorから呼ぶ）
+func set_vhs_param(param_name: String, value: float) -> void:
+	_ensure_vhs_overlay()
+	if is_instance_valid(_vhs_rect) and _vhs_rect.material:
+		(_vhs_rect.material as ShaderMaterial).set_shader_parameter(param_name, value)
+
+
+## VHSシェーダーパラメータをTweenでアニメーション
+func tween_vhs_param(param_name: String, target: float, dur: float) -> Tween:
+	_ensure_vhs_overlay()
+	if not is_instance_valid(_vhs_rect) or not _vhs_rect.material:
+		return null
+	var mat := _vhs_rect.material as ShaderMaterial
+	var tw := create_tween()
+	tw.tween_method(func(v: float) -> void: mat.set_shader_parameter(param_name, v),
+		float(mat.get_shader_parameter(param_name)), target, dur)
+	return tw
+
+
+func _ensure_vhs_overlay() -> void:
+	if not _vhs_layer:
+		_setup_vhs_overlay()
+
+
+## フォグ密度を動的変更
+func tween_fog(density: float, dur: float, color: Color = Color(-1, 0, 0)) -> Tween:
+	var we := $WorldEnvironment as WorldEnvironment
+	if not we or not we.environment:
+		return null
+	var env := we.environment
+	env.fog_enabled = true
+	var tw := create_tween().set_parallel(true)
+	tw.tween_method(func(v: float) -> void: env.fog_density = v,
+		env.fog_density, density, dur)
+	if color.r >= 0.0:
+		tw.tween_method(func(c: Color) -> void: env.fog_light_color = c,
+			env.fog_light_color, color, dur)
+	return tw
 
 
 # ──────────────────────────────────────────────
