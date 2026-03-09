@@ -85,6 +85,39 @@ func run_from_path(json_path: String) -> void:
 	# 並行 Tween を id で管理（pos_z の非同期歩行用）
 	var active_tweens : Dictionary = {}
 
+	# セクションスキップ: start_section 回目の stage_swap まで飛ばす
+	var skip_section : int = GameManager.start_section
+	GameManager.start_section = 0  # リセット（先にクリアして再リロード時のループ防止）
+	if skip_section > 0 and is_inside_tree():
+		var swap_count := 0
+		var skip_idx := 0
+		while skip_idx < events.size():
+			var skip_ev : Dictionary = events[skip_idx]
+			if skip_ev.get("type", "") == "stage_swap":
+				swap_count += 1
+				if swap_count >= skip_section:
+					# この stage_swap を実行してから、次のイベントから開始
+					if is_inside_tree():
+						await _stage_swap(
+							skip_ev.get("scene", ""),
+							skip_ev.get("spawn", [0, 1, 0]))
+					# 懐中電灯ON（スキップ先でも見えるように）
+					if is_instance_valid(player):
+						player.flashlight.visible = true
+						player.flashlight_on = true
+						player.flashlight.light_energy = _flash_orig_energy
+					break
+			skip_idx += 1
+		# stage_swap の次から再開（見つからなかった場合は最初から）
+		if swap_count >= skip_section:
+			events = events.slice(skip_idx + 1)
+			# ラベルマップを再構築
+			label_map.clear()
+			for i2 in range(events.size()):
+				var ev2 : Dictionary = events[i2]
+				if ev2.get("type", "") == "label":
+					label_map[ev2.get("name", "")] = i2
+
 	var idx := 0
 	while idx < events.size():
 		if not is_inside_tree():
@@ -179,12 +212,29 @@ func run_from_path(json_path: String) -> void:
 							await _await_tween_safe(tw_ref, 60.0)
 						active_tweens.erase(tw_id)
 
+			"pos_y":
+				if not GameManager.debug_free_move:
+					var tw := _pos_y(float(ev.get("target", 1.0)), float(ev.get("dur", 2.0)))
+					var tw_id : String = ev.get("id", "")
+					if not tw_id.is_empty():
+						active_tweens[tw_id] = tw
+
+			"pos_y_await":
+				if not GameManager.debug_free_move:
+					var tw_id : String = ev.get("id", "")
+					if tw_id in active_tweens:
+						var tw_ref = active_tweens[tw_id]
+						if tw_ref and tw_ref.is_valid():
+							await _await_tween_safe(tw_ref, 60.0)
+						active_tweens.erase(tw_id)
+
 			"set_viewers":
 				_set_viewers(int(ev.get("count", 0)))
 
 			"walk_set":
 				if not GameManager.debug_free_move:
 					_walking = ev.get("on", false)
+					player.forced_moving = _walking
 
 			"flashlight_on":
 				await _flashlight_on()
@@ -252,6 +302,24 @@ func run_from_path(json_path: String) -> void:
 				if is_instance_valid(hud):
 					hud._do_scare_flash(sf_col)
 
+			"horror_red":
+				if is_instance_valid(hud):
+					hud.start_horror_red(float(ev.get("dur", 8.0)))
+
+			"horror_red_clear":
+				if is_instance_valid(hud):
+					hud.stop_horror_red()
+
+			"chat_horror_mode":
+				var chrome := _get_chrome()
+				if chrome and chrome.has_method("chat_horror_mode"):
+					chrome.chat_horror_mode(float(ev.get("dur", 10.0)))
+
+			"chat_horror_clear":
+				var chrome := _get_chrome()
+				if chrome and chrome.has_method("chat_horror_clear"):
+					chrome.chat_horror_clear()
+
 			"superchat":
 				_story_superchat(ev.get("name", ""), ev.get("msg", ""), int(ev.get("amount", 500)))
 
@@ -260,12 +328,16 @@ func run_from_path(json_path: String) -> void:
 
 			"sfx":
 				var sound : String = ev.get("sound", "")
+				var sfile : String = ev.get("file", "")
 				var vol   : float  = float(ev.get("vol", -6.0))
-				match sound:
-					"ambient_wind":  SoundManager.start_ambient(0)
-					"door_creak":    SoundManager.play_door_creak()
-					"monster_growl": SoundManager.play_monster_growl(vol)
-					"wooden_floor":  SoundManager.play_footstep(GameManager.chapter_index, false)
+				if not sfile.is_empty():
+					SoundManager.play_sfx_file(sfile, vol)
+				else:
+					match sound:
+						"ambient_wind":  SoundManager.start_ambient(0)
+						"door_creak":    SoundManager.play_door_creak()
+						"monster_growl": SoundManager.play_monster_growl(vol)
+						"wooden_floor":  SoundManager.play_footstep(GameManager.chapter_index, false)
 
 			"flashlight_off":
 				_flashlight_off()
@@ -291,6 +363,18 @@ func run_from_path(json_path: String) -> void:
 				await _vhs_glitch(
 					float(ev.get("intensity", 0.8)),
 					float(ev.get("dur", 1.0)))
+
+			"vhs_reset":
+				_vhs_reset()
+
+			"fisheye":
+				_fisheye_on(
+					float(ev.get("distortion", 0.5)),
+					float(ev.get("breath", 0.08)),
+					float(ev.get("dur", 1.5)))
+
+			"fisheye_off":
+				_fisheye_off(float(ev.get("dur", 1.0)))
 
 			"light_flicker":
 				await _light_flicker(
@@ -418,13 +502,15 @@ func _chat(msg: String, user: String = "", utype: String = "") -> void:
 
 func _rot_y(target: float, dur: float) -> Tween:
 	var tw := create_tween()
-	tw.tween_property(player, "rotation:y", target, dur).set_trans(Tween.TRANS_SINE)
+	var actual_dur : float = dur / GameManager.playback_speed
+	tw.tween_property(player, "rotation:y", target, actual_dur).set_trans(Tween.TRANS_SINE)
 	return tw
 
 
 func _head_x(target: float, dur: float) -> Tween:
 	var tw := create_tween()
-	tw.tween_property(player.head, "rotation:x", target, dur).set_trans(Tween.TRANS_SINE)
+	var actual_dur : float = dur / GameManager.playback_speed
+	tw.tween_property(player.head, "rotation:x", target, actual_dur).set_trans(Tween.TRANS_SINE)
 	return tw
 
 
@@ -456,27 +542,27 @@ func _motion(motion_name: String, dur: float) -> void:
 		"look_behind_slow":
 			# ゆっくり真後ろ→戻る
 			await _rot_y(base_y + 3.14, dur * 0.6).finished
-			await get_tree().create_timer(dur * 0.1).timeout
+			await get_tree().create_timer(dur * 0.1 / GameManager.playback_speed).timeout
 			_rot_y(base_y, dur * 0.3)
 		"startle_up":
 			# びくっと上→戻る
 			await _head_x(base_x - 0.6, step * 0.3).finished
-			await get_tree().create_timer(step * 0.5).timeout
+			await get_tree().create_timer(step * 0.5 / GameManager.playback_speed).timeout
 			_head_x(base_x, step * 0.5)
 		"peek_left":
 			# 少し左→戻る
 			await _rot_y(base_y - 0.5, step * 0.7).finished
-			await get_tree().create_timer(step * 0.5).timeout
+			await get_tree().create_timer(step * 0.5 / GameManager.playback_speed).timeout
 			_rot_y(base_y, step * 0.5)
 		"peek_right":
 			# 少し右→戻る
 			await _rot_y(base_y + 0.5, step * 0.7).finished
-			await get_tree().create_timer(step * 0.5).timeout
+			await get_tree().create_timer(step * 0.5 / GameManager.playback_speed).timeout
 			_rot_y(base_y, step * 0.5)
 		"look_down_up":
 			# 下→上→正面
 			await _head_x(base_x + 0.5, step).finished
-			await get_tree().create_timer(step * 0.3).timeout
+			await get_tree().create_timer(step * 0.3 / GameManager.playback_speed).timeout
 			await _head_x(base_x - 0.4, step).finished
 			_head_x(base_x, step * 0.5)
 		"tremble":
@@ -495,6 +581,7 @@ func _motion(motion_name: String, dur: float) -> void:
 
 var _tw_pos_z : Tween = null
 var _tw_pos_x : Tween = null
+var _tw_pos_y : Tween = null
 const _WALK_SPEED := 1.8  # 自動演出の歩行速度 (units/s)
 
 func _pos_z(target_z: float, dur: float) -> Tween:
@@ -502,11 +589,23 @@ func _pos_z(target_z: float, dur: float) -> Tween:
 		_tw_pos_z.kill()
 	# dur <= 0 なら距離と一定速度から自動算出
 	var dist : float = abs(target_z - player.position.z)
-	var actual_dur : float = dur if dur > 0.0 else max(dist / _WALK_SPEED, 0.1)
+	var base_dur : float = dur if dur > 0.0 else max(dist / _WALK_SPEED, 0.1)
+	var actual_dur : float = base_dur / GameManager.playback_speed
 	_tw_pos_z = create_tween()
 	_tw_pos_z.tween_property(player, "position:z", target_z, actual_dur) \
 			.set_trans(Tween.TRANS_LINEAR)
 	return _tw_pos_z
+
+
+func _pos_y(target_y: float, dur: float) -> Tween:
+	if _tw_pos_y and _tw_pos_y.is_valid():
+		_tw_pos_y.kill()
+	var base_dur : float = dur if dur > 0.0 else 2.0
+	var actual_dur : float = base_dur / GameManager.playback_speed
+	_tw_pos_y = create_tween()
+	_tw_pos_y.tween_property(player, "position:y", target_y, actual_dur) \
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	return _tw_pos_y
 
 
 func _pos_x(target_x: float, dur: float) -> Tween:
@@ -514,7 +613,8 @@ func _pos_x(target_x: float, dur: float) -> Tween:
 		_tw_pos_x.kill()
 	# dur <= 0 なら距離と一定速度から自動算出
 	var dist : float = abs(target_x - player.position.x)
-	var actual_dur : float = dur if dur > 0.0 else max(dist / _WALK_SPEED, 0.1)
+	var base_dur : float = dur if dur > 0.0 else max(dist / _WALK_SPEED, 0.1)
+	var actual_dur : float = base_dur / GameManager.playback_speed
 	_tw_pos_x = create_tween()
 	_tw_pos_x.tween_property(player, "position:x", target_x, actual_dur) \
 			.set_trans(Tween.TRANS_LINEAR)
@@ -740,16 +840,15 @@ func _ensure_fade_layer() -> void:
 
 func _fade_black(dur: float = 0.8) -> void:
 	_ensure_fade_layer()
-	_fade_rect.color = Color(0, 0, 0, 0)
 	var tw := create_tween()
-	tw.tween_property(_fade_rect, "color:a", 1.0, dur)
+	tw.tween_property(_fade_rect, "color:a", 1.0, dur / GameManager.playback_speed)
 	await tw.finished
 
 
 func _fade_clear(dur: float = 0.8) -> void:
 	_ensure_fade_layer()
 	var tw := create_tween()
-	tw.tween_property(_fade_rect, "color:a", 0.0, dur)
+	tw.tween_property(_fade_rect, "color:a", 0.0, dur / GameManager.playback_speed)
 	await tw.finished
 
 
@@ -758,7 +857,11 @@ func _fade_clear(dur: float = 0.8) -> void:
 # ════════════════════════════════════════════════════════════════════
 
 func _stage_swap(scene_path: String, spawn: Array) -> void:
+	if not is_inside_tree():
+		return
 	var main := get_tree().current_scene
+	if not main:
+		return
 
 	# 現在のステージ系ノードを削除（Player/HUD/UI/カメラ等は残す）
 	var keep_names : Array = ["Player", "HUD", "WorldEnvironment",
@@ -794,11 +897,11 @@ func _stage_swap(scene_path: String, spawn: Array) -> void:
 	ground_mesh.material_override = mat
 	main.add_child(ground_mesh)
 
-	# 薄暗い環境光
+	# 薄暗い環境光（ホラー用：懐中電灯メインで暗めに）
 	var env_light := OmniLight3D.new()
 	env_light.position = Vector3(0, 4, 0)
-	env_light.light_color = Color(0.5, 0.55, 0.6)
-	env_light.light_energy = 0.4
+	env_light.light_color = Color(0.3, 0.35, 0.4)
+	env_light.light_energy = 0.15
 	env_light.omni_range = 20.0
 	main.add_child(env_light)
 
@@ -827,13 +930,57 @@ func _vhs_glitch(intensity: float, dur: float) -> void:
 	main.set_vhs_param("noise_intensity", 0.08 + intensity * 0.3)
 	main.set_vhs_param("shake_intensity", 0.005 + intensity * 0.02)
 	if is_inside_tree():
-		await get_tree().create_timer(dur).timeout
+		await get_tree().create_timer(dur / GameManager.playback_speed).timeout
 	# 元に戻す（Tweenで滑らかに）
 	if main.has_method("tween_vhs_param"):
 		main.tween_vhs_param("glitch_strength", 0.0, 0.3)
 		main.tween_vhs_param("chroma_boost", 0.0, 0.3)
 		main.tween_vhs_param("noise_intensity", 0.08, 0.3)
 		main.tween_vhs_param("shake_intensity", 0.005, 0.3)
+
+
+## VHSパラメータを即座にデフォルトへリセット
+func _vhs_reset() -> void:
+	var main := _get_main()
+	if not main or not main.has_method("set_vhs_param"):
+		return
+	main.set_vhs_param("glitch_strength", 0.0)
+	main.set_vhs_param("chroma_boost", 0.0)
+	main.set_vhs_param("noise_intensity", 0.08)
+	main.set_vhs_param("shake_intensity", 0.005)
+
+
+## 魚眼レンズON — distortionとbreathをTweenで立ち上げ
+func _fisheye_on(distortion: float, breath: float, dur: float) -> void:
+	var main := _get_main()
+	if not main or not main.has_method("set_fisheye_param"):
+		return
+	main.set_fisheye_param("distortion", 0.0)
+	main.set_fisheye_param("breath", 0.0)
+	main.set_fisheye_param("chromatic", 0.003)
+	main.set_fisheye_param("vignette_strength", 0.8)
+	main.set_fisheye_param("grain", 0.04)
+	if main.has_method("tween_fisheye_param"):
+		main.tween_fisheye_param("distortion", distortion, dur)
+		main.tween_fisheye_param("breath", breath, dur * 0.8)
+		main.tween_fisheye_param("vignette_strength", 1.2, dur)
+		main.tween_fisheye_param("chromatic", 0.006, dur)
+
+
+## 魚眼レンズOFF — 全パラメータを0へTween→オーバーレイ除去
+func _fisheye_off(dur: float) -> void:
+	var main := _get_main()
+	if not main or not main.has_method("tween_fisheye_param"):
+		return
+	main.tween_fisheye_param("distortion", 0.0, dur)
+	main.tween_fisheye_param("breath", 0.0, dur)
+	main.tween_fisheye_param("vignette_strength", 0.0, dur)
+	main.tween_fisheye_param("chromatic", 0.0, dur)
+	main.tween_fisheye_param("grain", 0.0, dur)
+	if is_inside_tree():
+		await get_tree().create_timer(dur + 0.1).timeout
+	if main.has_method("remove_fisheye_overlay"):
+		main.remove_fisheye_overlay()
 
 
 ## シーン内の全ライトをフリッカー
@@ -852,7 +999,7 @@ func _light_flicker(count: int, dur: float) -> void:
 	for light in lights:
 		orig_energies.append(light.light_energy)
 
-	var interval : float = dur / max(count * 2, 1)
+	var interval : float = dur / max(count * 2, 1) / GameManager.playback_speed
 	for i in count:
 		if not is_inside_tree():
 			break
@@ -893,7 +1040,7 @@ func _slow_motion(scale: float, dur: float) -> void:
 	Engine.time_scale = scale
 	if is_inside_tree():
 		# 実時間で待機（time_scaleの影響を受けないように）
-		await get_tree().create_timer(dur * scale).timeout
+		await get_tree().create_timer(dur * scale / GameManager.playback_speed).timeout
 	Engine.time_scale = orig_scale
 
 
@@ -942,7 +1089,7 @@ func _garbled_text(text: String, dur: float) -> void:
 
 	# 短い間隔で数回文字化けを変えてから正しいテキストに
 	var steps := 3
-	var step_dur : float = dur / (steps + 1)
+	var step_dur : float = dur / (steps + 1) / GameManager.playback_speed
 	for _s in steps:
 		if not is_inside_tree():
 			return

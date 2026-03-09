@@ -68,9 +68,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-; VHSシェーダーオーバーレイ（一時的に無効化）
+; VHSシェーダーオーバーレイ
 [node name="VHSOverlay" type="ColorRect" parent="HUDLayer/HUDRoot"]
-visible = false
+visible = true
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
@@ -88,62 +88,34 @@ anchor_bottom = 1.0
 color = Color(1, 1, 1, 0)
 mouse_filter = 2
 
-; 上部バー: REC / タイムコード / バッテリー
+; 上部バー（動的生成に移行、ダミーコンテナのみ残す）
 [node name="TopBar" type="HBoxContainer" parent="HUDLayer/HUDRoot"]
-anchor_right = 0.75
-offset_left = 10.0
+visible = false
+anchor_right = 0.7
+offset_left = 14.0
 offset_top = 52.0
 offset_bottom = 88.0
-theme_override_constants/separation = 14
 
 [node name="RecLabel" type="Label" parent="HUDLayer/HUDRoot/TopBar"]
-text = "● REC"
-theme_override_colors/font_color = Color(1, 0.15, 0.15, 1)
-theme_override_font_sizes/font_size = 16
-
-[node name="TopSpacer" type="Control" parent="HUDLayer/HUDRoot/TopBar"]
-size_flags_horizontal = 3
+text = ""
 
 [node name="TimecodeLabel" type="Label" parent="HUDLayer/HUDRoot/TopBar"]
-text = "00:00:00"
-theme_override_colors/font_color = Color(1, 1, 1, 0.9)
-theme_override_font_sizes/font_size = 15
+text = ""
 
 [node name="BatteryLabel" type="Label" parent="HUDLayer/HUDRoot/TopBar"]
-text = " BAT [IIIII] "
-theme_override_colors/font_color = Color(0.3, 1, 0.3, 0.9)
-theme_override_font_sizes/font_size = 14
+text = ""
 
-; 下部バー: CAM / アイテム数 / 日時
+; 下部バー（動的生成に移行、ダミーコンテナのみ残す）
 [node name="BottomBar" type="HBoxContainer" parent="HUDLayer/HUDRoot"]
+visible = false
 anchor_top = 1.0
-anchor_right = 0.75
+anchor_right = 0.7
 anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = -108.0
-offset_right = -10.0
-theme_override_constants/separation = 12
-
-[node name="CamLabel" type="Label" parent="HUDLayer/HUDRoot/BottomBar"]
-text = "CAM 1"
-theme_override_colors/font_color = Color(1, 1, 1, 0.8)
-theme_override_font_sizes/font_size = 13
-
-[node name="BottomSpacer" type="Control" parent="HUDLayer/HUDRoot/BottomBar"]
-size_flags_horizontal = 3
+offset_left = 14.0
+offset_top = -78.0
 
 [node name="ItemLabel" type="Label" parent="HUDLayer/HUDRoot/BottomBar"]
-text = "VHS  0 / 5"
-theme_override_colors/font_color = Color(0.7, 0.85, 1, 0.9)
-theme_override_font_sizes/font_size = 14
-
-[node name="BottomSpacer2" type="Control" parent="HUDLayer/HUDRoot/BottomBar"]
-size_flags_horizontal = 3
-
-[node name="DateLabel" type="Label" parent="HUDLayer/HUDRoot/BottomBar"]
-text = "2026/02/24  23:48"
-theme_override_colors/font_color = Color(1, 1, 1, 0.7)
-theme_override_font_sizes/font_size = 13
+text = ""
 
 ; チャットウィンドウ
 [node name="ChatWindow" type="Control" parent="HUDLayer/HUDRoot"]

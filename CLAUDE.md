@@ -7,6 +7,13 @@
 - `globalize_path()` はエクスポートビルド（.pck）で動作しない
 - 音声・画像・JSON 等すべてのリソース読み込みに適用
 
+## 効果音（SFX）のルール（重要）
+
+- **高音のピコピコ系SFXは使用禁止**
+- 禁止カテゴリ: `impactMetal_light_*`, `impactGlass_light_*`, `horror_static/computerNoise_*`
+- 代わりに低く重い音を使う: `impactMetal_heavy_*`, `impactMetal_medium_*`, `impactGlass_heavy_*`, `bell/impactBell_heavy_*`, `door/creak*`
+- ホラー作品の雰囲気に合う鈍い金属音・軋み音・鐘の音を優先すること
+
 ## アセット追加時のルール（重要）
 
 - 音声・画像・モデル等を追加したら、Godotエディタで一度開いて生成される **`.import` ファイルも必ずコミット**すること

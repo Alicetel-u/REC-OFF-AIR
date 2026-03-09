@@ -1,204 +1,158 @@
 extends Control
 
-## ─────────────────────────────────────────
-## オープニング演出 — 霧原村シナリオ ver.2
-## リッチUI + ホラー演出 + 大きい文字
-## ─────────────────────────────────────────
-
-# ── ノード参照（.tscn） ──
-@onready var glitch_overlay  : ColorRect     = $GlitchOverlay
-@onready var panel_title     : Control       = $PanelTitle
-@onready var panel_profile   : Control       = $PanelProfile
-@onready var panel_dm        : Control       = $PanelDM
-@onready var panel_monologue : Control       = $PanelMonologue
-@onready var panel_caption   : Control       = $PanelCaption
-@onready var panel_map_select: Control       = $PanelMapSelect
-@onready var panel_start     : Control       = $PanelStart
-@onready var profile_text    : RichTextLabel = $PanelProfile/ProfileText
-@onready var dm_text         : RichTextLabel = $PanelDM/DMText
-@onready var monologue_text  : RichTextLabel = $PanelMonologue/MonologueText
-@onready var caption_text    : Label         = $PanelCaption/CaptionText
+## ─────────────────────────────────────────────────────────
+## シネマティック・プロローグ — REC:OFF-AIR
+## フルスクリーン映画的演出。スマホUI廃止。
+## 静寂と衝撃のコントラスト + RGB分離 + フィルムグレイン。
+## 全UI動的生成。Opening.tscn はルートControlのみ。
+## ─────────────────────────────────────────────────────────
 
 enum Phase { TITLE, VIDEO, PROLOGUE, DONE }
 
-var _phase         : Phase = Phase.TITLE
-var _title_ready   : bool  = false
-var _skipped       : bool  = false
-var _video_player  : VideoStreamPlayer = null
-var _video_started : bool  = false
-var _video_wait    : float = 0.0    # 動画開始待ちタイマー（フリーズ防止）
-var _skip_btn      : Button = null
-var _od            : Dictionary = {}   # opening.json データ
+# ── 状態 ──────────────────────────────────────────────────
+var _phase       : Phase = Phase.TITLE
+var _skipped     : bool  = false
+var _title_ready : bool  = false
+var _elapsed     : float = 0.0
+var _od          : Dictionary = {}
 
-# ── タイトル画面アニメーション用 ──
-var _title_elapsed   : float = 0.0
-var _rec_label       : Label = null
-var _time_label      : Label = null
-var _viewer_label    : Label = null
-var _prompt_label    : Label = null
+# ── 動的ノード ────────────────────────────────────────────
+var _shake_root   : Control
+var _title_bg     : TextureRect
+var _title_dark   : ColorRect
+var _overlay      : ColorRect      # 汎用フラッシュ
+var _skip_btn     : Button
+var _settings_btn     : Button
+var _settings_panel   : Control
+var _settings_content : VBoxContainer
+var _settings_title   : Label
+var _settings_back    : Button
+
+# タイトルHUD
+var _prompt_label : Label
+
+# ビデオ
+var _video_player  : VideoStreamPlayer
+var _video_started : bool  = false
+var _video_wait    : float = 0.0
+
+# シェイク
+var _shake_intensity : float = 0.0
+var _shake_timer     : float = 0.0
+
+# フィルムグレイン
+var _grain_mat : ShaderMaterial
 
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	_hide_all_panels()
-	glitch_overlay.color = Color(1, 1, 1, 0)
-	const _DEBUG_SKIP_INTRO := false
-	if _DEBUG_SKIP_INTRO:
+	const _DEBUG_SKIP := false
+	if _DEBUG_SKIP:
 		_go_to_game()
 		return
+	_load_data()
+	_build_ui()
+	_build_settings_button()
 	_phase = Phase.TITLE
 	_run_title()
 
 
 func _process(delta: float) -> void:
-	# ── 動画再生監視 ──
-	if _phase == Phase.VIDEO and _video_player and is_instance_valid(_video_player):
-		if not _video_started and _video_player.is_playing():
-			_video_started = true
-		elif _video_started and not _video_player.is_playing():
-			_phase = Phase.PROLOGUE
-			_on_video_finished()
-		elif not _video_started:
-			# 動画が開始しない場合のタイムアウト（Web環境でデコード失敗時のフリーズ防止）
-			_video_wait += delta
-			if _video_wait >= 3.0:
-				push_warning("Opening: video failed to start — skipping")
-				_skip_video()
-		return
-	# ── タイトル画面アニメーション ──
-	if _phase == Phase.TITLE:
-		_title_elapsed += delta
-		_update_title_anim()
-
-
-func _update_title_anim() -> void:
-	# REC ● 点滅（0.7秒表示 / 0.3秒暗め）
-	if is_instance_valid(_rec_label):
-		_rec_label.modulate.a = 1.0 if fmod(_title_elapsed, 1.0) < 0.7 else 0.2
-
-	# タイマー表示
-	if is_instance_valid(_time_label):
-		var t := int(_title_elapsed)
-		var frames := int(fmod(_title_elapsed, 1.0) * 30)
-		_time_label.text = "%02d:%02d:%02d" % [t / 60, t % 60, frames]
-
-	# 視聴者数（じわじわ増加）
-	if is_instance_valid(_viewer_label):
-		var v := 0
-		if _title_elapsed > 2.5:
-			v = int(clampf((_title_elapsed - 2.5) * 2.8, 0, 18))
-		_viewer_label.text = "👁 %d" % v
-
-	# プロンプトの明滅
-	if is_instance_valid(_prompt_label) and _title_ready:
-		_prompt_label.modulate.a = 0.4 + sin(_title_elapsed * 2.5) * 0.4
-
-	# ランダムグリッチ（低確率）
-	if randf() < 0.004:
-		glitch_overlay.color = Color(randf_range(0.3, 0.7), 0.0, 0.0, randf_range(0.04, 0.12))
-		get_tree().create_timer(randf_range(0.03, 0.06)).timeout.connect(
-			func(): glitch_overlay.color = Color(1, 1, 1, 0)
-		)
+	_elapsed += delta
+	if _shake_timer > 0.0:
+		_shake_timer -= delta
+		if is_instance_valid(_shake_root):
+			_shake_root.position = Vector2(
+				randf_range(-_shake_intensity, _shake_intensity),
+				randf_range(-_shake_intensity, _shake_intensity))
+		if _shake_timer <= 0.0 and is_instance_valid(_shake_root):
+			_shake_root.position = Vector2.ZERO
+	if _grain_mat:
+		_grain_mat.set_shader_parameter("time_val", _elapsed)
+	match _phase:
+		Phase.TITLE: _update_title_anim()
+		Phase.VIDEO: _update_video(delta)
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	var is_key   : bool = event is InputEventKey         and event.pressed and not event.echo
-	var is_click : bool = event is InputEventMouseButton and event.pressed
-	if not (is_key or is_click):
+	if not ((event is InputEventKey and event.pressed and not event.echo) or
+			(event is InputEventMouseButton and event.pressed)):
 		return
-	match _phase:
-		Phase.VIDEO:
-			return
-		Phase.TITLE:
-			if _title_ready:
-				_advance_from_title()
-		Phase.PROLOGUE:
-			return
+	if _phase == Phase.TITLE and _title_ready and not is_instance_valid(_settings_panel):
+		_advance_from_title()
 
 
-func _hide_all_panels() -> void:
-	panel_title.visible      = false
-	panel_profile.visible    = false
-	panel_dm.visible         = false
-	panel_monologue.visible  = false
-	panel_caption.visible    = false
-	panel_map_select.visible = false
-	panel_start.visible      = false
+# ════════════════════════════════════════════════════════════
+# UI 構築
+# ════════════════════════════════════════════════════════════
+
+func _build_ui() -> void:
+	var bg := ColorRect.new()
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bg.color = Color(0.008, 0.005, 0.012, 1.0)
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(bg)
+
+	_shake_root = Control.new()
+	_shake_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_shake_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_shake_root)
+
+	_title_bg = TextureRect.new()
+	_title_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var tex := ResourceLoader.load("res://assets/textures/title_bg.jpg", "Texture2D")
+	if tex:
+		_title_bg.texture = tex as Texture2D
+	_title_bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_title_bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	_title_bg.modulate = Color(1.0, 1.0, 1.0, 0.0)
+	_title_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_title_bg.visible = false
+	_shake_root.add_child(_title_bg)
+
+	_title_dark = ColorRect.new()
+	_title_dark.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_title_dark.color = Color(0, 0, 0, 0.0)
+	_title_dark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_title_dark.visible = false
+	_shake_root.add_child(_title_dark)
+
+	_overlay = ColorRect.new()
+	_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_overlay.color = Color(0, 0, 0, 0)
+	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_overlay)
+
+	# フィルムグレイン・ビネットはタイトルでは無効化
+	#_add_film_grain()
+	#_add_vignette()
 
 
-# ──────────────────────────────────────────────
-# タイトル画面（REC / LIVE / 視聴者数 / タイマー）
-# ──────────────────────────────────────────────
+# ════════════════════════════════════════════════════════════
+# タイトル画面
+# ════════════════════════════════════════════════════════════
 
 func _run_title() -> void:
 	SoundManager.play_bgm("res://assets/audio/bgm/山あいのわらべ歌.mp3", -10.0)
-	panel_title.visible    = true
-	panel_title.modulate.a = 0.0
+	_title_bg.visible = true
+	_title_dark.visible = true
+	_title_dark.color = Color(0, 0, 0, 0.0)
+	_title_bg.modulate = Color(1.0, 1.0, 1.0, 0.0)
 	_build_title_hud()
 	await get_tree().create_timer(0.3).timeout
-	await _fade(panel_title, 1.0, 1.8)
+	if _skipped: return
+	var tw := create_tween()
+	tw.tween_property(_title_bg, "modulate:a", 1.0, 1.8)
+	await tw.finished
+	if _skipped: return
 	await get_tree().create_timer(1.2).timeout
+	if _skipped: return
 	if is_instance_valid(_prompt_label):
 		_prompt_label.visible = true
 	_title_ready = true
 
 
 func _build_title_hud() -> void:
-	# ── 暗めオーバーレイ（コントラスト向上） ──
-	var dark := ColorRect.new()
-	dark.set_anchors_preset(Control.PRESET_FULL_RECT)
-	dark.color = Color(0, 0, 0, 0.25)
-	dark.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel_title.add_child(dark)
-
-	# ── REC ● ──
-	_rec_label = Label.new()
-	_rec_label.text = "●  REC"
-	_rec_label.add_theme_font_size_override("font_size", 26)
-	_rec_label.add_theme_color_override("font_color", Color(1.0, 0.12, 0.12, 1.0))
-	_rec_label.position = Vector2(30, 22)
-	_rec_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel_title.add_child(_rec_label)
-
-	# ── タイマー ──
-	_time_label = Label.new()
-	_time_label.text = "00:00:00"
-	_time_label.add_theme_font_size_override("font_size", 20)
-	_time_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.6))
-	_time_label.position = Vector2(155, 26)
-	_time_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel_title.add_child(_time_label)
-
-	# ── LIVE バッジ（赤背景 + 白文字） ──
-	var live_bg := ColorRect.new()
-	live_bg.color = Color(0.88, 0.08, 0.08, 0.92)
-	live_bg.size = Vector2(76, 30)
-	live_bg.position = Vector2(280, 20)
-	live_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel_title.add_child(live_bg)
-
-	var live_lbl := Label.new()
-	live_lbl.text = "  LIVE"
-	live_lbl.add_theme_font_size_override("font_size", 18)
-	live_lbl.add_theme_color_override("font_color", Color.WHITE)
-	live_lbl.position = Vector2(283, 23)
-	live_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel_title.add_child(live_lbl)
-
-	# ── 視聴者数（右上） ──
-	_viewer_label = Label.new()
-	_viewer_label.text = "👁 0"
-	_viewer_label.add_theme_font_size_override("font_size", 22)
-	_viewer_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.75))
-	_viewer_label.anchor_left = 1.0
-	_viewer_label.anchor_right = 1.0
-	_viewer_label.offset_left = -120
-	_viewer_label.offset_right = -20
-	_viewer_label.offset_top = 24
-	_viewer_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel_title.add_child(_viewer_label)
-
-	# ── スタートプロンプト（画面下部） ──
 	_prompt_label = Label.new()
 	_prompt_label.text = "─── 画面をクリック / キーを押して開始 ───"
 	_prompt_label.add_theme_font_size_override("font_size", 22)
@@ -209,28 +163,37 @@ func _build_title_hud() -> void:
 	_prompt_label.offset_bottom = -25
 	_prompt_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_prompt_label.visible = false
-	panel_title.add_child(_prompt_label)
+	_shake_root.add_child(_prompt_label)
+
+
+func _update_title_anim() -> void:
+	if is_instance_valid(_prompt_label) and _title_ready:
+		_prompt_label.modulate.a = 0.4 + sin(_elapsed * 2.5) * 0.4
 
 
 func _advance_from_title() -> void:
 	_title_ready = false
-	_phase       = Phase.VIDEO
+	_phase = Phase.VIDEO
 	SoundManager.stop_bgm(1.1)
-	await _fade(panel_title, 0.0, 1.1)
-	panel_title.visible = false
+	await _fade(_title_bg, 0.0, 1.1)
+	_title_bg.visible = false
+	_title_dark.visible = false
+	if is_instance_valid(_prompt_label):
+		_prompt_label.visible = false
 	await get_tree().create_timer(0.1).timeout
+	if _skipped: return
 	_play_video()
 
 
-# ──────────────────────────────────────────────
-# オープニング動画
-# ──────────────────────────────────────────────
+# ════════════════════════════════════════════════════════════
+# ビデオ再生
+# ════════════════════════════════════════════════════════════
 
 func _play_video() -> void:
 	const VIDEO_PATH := "res://assets/video/opm.ogv"
 	if not ResourceLoader.exists(VIDEO_PATH):
 		_phase = Phase.PROLOGUE
-		_run_sequence()
+		_run_prologue()
 		return
 	_video_player = VideoStreamPlayer.new()
 	_video_player.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -239,16 +202,25 @@ func _play_video() -> void:
 	add_child(_video_player)
 	_video_player.play()
 	_video_started = false
-	_video_wait    = 0.0
+	_video_wait = 0.0
 	_create_skip_button()
 
 
-func _on_video_finished() -> void:
-	_video_started = false
-	_cleanup_video()
-	_phase = Phase.PROLOGUE
-	await get_tree().create_timer(0.3).timeout
-	_run_sequence()
+func _update_video(delta: float) -> void:
+	if not _video_player or not is_instance_valid(_video_player):
+		return
+	if not _video_started and _video_player.is_playing():
+		_video_started = true
+	elif _video_started and not _video_player.is_playing():
+		_phase = Phase.PROLOGUE
+		_cleanup_video()
+		if is_inside_tree():
+			await get_tree().create_timer(0.3).timeout
+		_run_prologue()
+	elif not _video_started:
+		_video_wait += delta
+		if _video_wait >= 3.0:
+			_skip_video()
 
 
 func _skip_video() -> void:
@@ -258,36 +230,7 @@ func _skip_video() -> void:
 	if _video_player and is_instance_valid(_video_player):
 		_video_player.stop()
 	_cleanup_video()
-	_run_sequence()
-
-
-func _create_skip_button() -> void:
-	_remove_skip_button()
-	_skip_btn = Button.new()
-	_skip_btn.text = "スキップ ▶▶"
-	_skip_btn.add_theme_font_size_override("font_size", 20)
-	_skip_btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
-	_skip_btn.flat = true
-	_skip_btn.anchor_left   = 1.0
-	_skip_btn.anchor_top    = 0.0
-	_skip_btn.anchor_right  = 1.0
-	_skip_btn.anchor_bottom = 0.0
-	_skip_btn.offset_left   = -190
-	_skip_btn.offset_top    = 16
-	_skip_btn.offset_right  = -16
-	_skip_btn.offset_bottom = 56
-	_skip_btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	if _phase == Phase.VIDEO:
-		_skip_btn.pressed.connect(_skip_video)
-	else:
-		_skip_btn.pressed.connect(_skip_to_start)
-	add_child(_skip_btn)
-
-
-func _remove_skip_button() -> void:
-	if _skip_btn and is_instance_valid(_skip_btn):
-		_skip_btn.queue_free()
-	_skip_btn = null
+	_run_prologue()
 
 
 func _cleanup_video() -> void:
@@ -297,139 +240,532 @@ func _cleanup_video() -> void:
 	_video_player = null
 
 
-# ──────────────────────────────────────────────
-# プロローグ シーケンス
-# ──────────────────────────────────────────────
+# ════════════════════════════════════════════════════════════
+# プロローグ本編 — シネマティック・ホラー
+# ════════════════════════════════════════════════════════════
 
-func _skip_to_start() -> void:
-	_skipped = true
-	_remove_skip_button()
-	_hide_all_panels()
-	glitch_overlay.color = Color(1, 1, 1, 0)
+func _run_prologue() -> void:
+	_create_skip_button()
+	_play_sfx("ambient_wind/Ambient Wind (1).mp3", -20.0)
+	await get_tree().create_timer(1.0).timeout
+	if _skipped: return
+
+	await _show_profile()
+	if _skipped: return
+
+	await _show_dm()
+	if _skipped: return
+
+	await _scare_moment()
+	if _skipped: return
+
+	await _show_monologue()
+	if _skipped: return
+
+	await _show_caption()
+	if _skipped: return
+
 	_go_to_game()
 
 
-func _run_sequence() -> void:
-	_load_opening_json()
-	_create_skip_button()
-	_add_panel_bg(panel_profile)
-	_add_panel_bg(panel_dm)
-	_add_panel_bg(panel_monologue)
-	var t : Dictionary = _od.get("timing", {})
-	await get_tree().create_timer(t.get("initial_wait", 0.8)).timeout
+# ── 1. プロフィール（フルスクリーン・タイトルカード）─────
 
-	# ━━ Panel 1: SNSプロフィール ━━
+func _show_profile() -> void:
+	var root := Control.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_shake_root.add_child(root)
+
+	var vbox := VBoxContainer.new()
+	vbox.anchor_left = 0.15
+	vbox.anchor_right = 0.85
+	vbox.anchor_top = 0.18
+	vbox.anchor_bottom = 0.82
+	vbox.add_theme_constant_override("separation", 8)
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	root.add_child(vbox)
+
+	# 装飾線
+	var deco := Label.new()
+	deco.text = "━━━━━━━━━━━━━━━━━━━━━━━"
+	deco.add_theme_font_size_override("font_size", 10)
+	deco.add_theme_color_override("font_color", Color(0.30, 0.30, 0.35))
+	deco.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	deco.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	deco.modulate.a = 0.0
+	vbox.add_child(deco)
+
 	var p : Dictionary = _od.get("profile", {})
-	panel_profile.visible    = true
-	panel_profile.modulate.a = 0.0
-	await _fade(panel_profile, 1.0, p.get("fade_in", 0.7))
-	if _skipped: return
-	await _typewrite(profile_text, _build_bbcode("profile"), p.get("speed", 0.018))
-	if _skipped: return
-	await get_tree().create_timer(p.get("wait", 2.5)).timeout
-	if _skipped: return
-	await _fade(panel_profile, 0.0, p.get("fade_out", 0.5))
-	panel_profile.visible = false
-	await get_tree().create_timer(t.get("between_panels", 0.5)).timeout
-	if _skipped: return
+	var lines : Array = p.get("lines", [])
+	var labels : Array[Label] = []
 
-	# ━━ Panel 2: DM ━━
-	var d : Dictionary = _od.get("dm", {})
-	panel_dm.visible    = true
-	panel_dm.modulate.a = 0.0
-	await _fade(panel_dm, 1.0, d.get("fade_in", 0.5))
-	if _skipped: return
-	await _typewrite(dm_text, _build_bbcode("dm"), d.get("speed", 0.022))
-	if _skipped: return
-	await get_tree().create_timer(d.get("wait", 0.6)).timeout
-	if _skipped: return
-	await _do_glitch(int(d.get("glitch_count", 5)))
-	if _skipped: return
-	await get_tree().create_timer(t.get("post_dm_glitch", 1.5)).timeout
-	if _skipped: return
-	await _fade(panel_dm, 0.0, d.get("fade_out", 0.5))
-	panel_dm.visible = false
-	await get_tree().create_timer(t.get("between_panels", 0.3)).timeout
-	if _skipped: return
+	for line_data in lines:
+		var text : String = line_data.get("text", "")
+		var style : String = line_data.get("style", "normal")
+		var lbl := Label.new()
+		lbl.text = text
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lbl.modulate.a = 0.0
+		_apply_profile_style(lbl, style)
+		vbox.add_child(lbl)
+		labels.append(lbl)
 
-	# ━━ 恐怖インサート ━━
+	# 装飾線フェードイン
+	var tw0 := create_tween()
+	tw0.tween_property(deco, "modulate:a", 1.0, 0.8)
+	await tw0.finished
+	if _skipped:
+		root.queue_free()
+		return
+
+	# 各行フェードイン
+	for lbl in labels:
+		if _skipped: break
+		var tw := create_tween()
+		tw.tween_property(lbl, "modulate:a", 1.0, 0.6)
+		await tw.finished
+		if _skipped: break
+		var wait : float = maxf(0.25, lbl.text.length() * 0.025)
+		await get_tree().create_timer(wait).timeout
+
+	if _skipped:
+		root.queue_free()
+		return
+
+	await get_tree().create_timer(2.0).timeout
+	if _skipped:
+		root.queue_free()
+		return
+
+	await _fade(root, 0.0, 1.2)
+	root.queue_free()
+	await get_tree().create_timer(0.5).timeout
+
+
+func _apply_profile_style(lbl: Label, style: String) -> void:
+	match style:
+		"name":
+			lbl.add_theme_font_size_override("font_size", 32)
+			lbl.add_theme_color_override("font_color", Color(0.98, 0.96, 0.93))
+		"handle":
+			lbl.add_theme_font_size_override("font_size", 15)
+			lbl.add_theme_color_override("font_color", Color(0.55, 0.55, 0.60))
+		"bio":
+			lbl.add_theme_font_size_override("font_size", 18)
+			lbl.add_theme_color_override("font_color", Color(0.75, 0.73, 0.70))
+		"stats":
+			lbl.add_theme_font_size_override("font_size", 16)
+			lbl.add_theme_color_override("font_color", Color(0.62, 0.62, 0.66))
+		"video":
+			lbl.add_theme_font_size_override("font_size", 14)
+			lbl.add_theme_color_override("font_color", Color(0.48, 0.48, 0.52))
+		"warning":
+			lbl.add_theme_font_size_override("font_size", 16)
+			lbl.add_theme_color_override("font_color", Color(0.78, 0.20, 0.15))
+
+
+# ── 2. DM（闇の中に浮かぶメッセージ）────────────────────
+
+func _show_dm() -> void:
+	var root := Control.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_shake_root.add_child(root)
+
+	# ヘッダー
+	var header := Label.new()
+	header.text = "ダイレクトメッセージ"
+	header.add_theme_font_size_override("font_size", 14)
+	header.add_theme_color_override("font_color", Color(0.50, 0.50, 0.56))
+	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	header.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	header.offset_top = 80
+	header.offset_left = -200
+	header.offset_right = 200
+	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header.modulate.a = 0.0
+	root.add_child(header)
+
+	var sender := Label.new()
+	sender.text = "from: [アカウント削除済み]"
+	sender.add_theme_font_size_override("font_size", 13)
+	sender.add_theme_color_override("font_color", Color(0.72, 0.18, 0.14))
+	sender.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sender.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	sender.offset_top = 102
+	sender.offset_left = -200
+	sender.offset_right = 200
+	sender.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	sender.modulate.a = 0.0
+	root.add_child(sender)
+
+	_play_sfx("metal/metalClick.ogg", -6.0)
+
+	var tw := create_tween().set_parallel(true)
+	tw.tween_property(header, "modulate:a", 1.0, 0.8)
+	tw.tween_property(sender, "modulate:a", 1.0, 0.8).set_delay(0.4)
+	await tw.finished
+	if _skipped:
+		root.queue_free()
+		return
+
+	await get_tree().create_timer(0.6).timeout
+	if _skipped:
+		root.queue_free()
+		return
+
+	# メッセージ（中央に1つずつクロスフェード）
+	var msg_label := Label.new()
+	msg_label.add_theme_font_size_override("font_size", 24)
+	msg_label.add_theme_color_override("font_color", Color(0.88, 0.86, 0.84))
+	msg_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	msg_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	msg_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	msg_label.anchor_left = 0.1
+	msg_label.anchor_right = 0.9
+	msg_label.anchor_top = 0.3
+	msg_label.anchor_bottom = 0.7
+	msg_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	msg_label.modulate.a = 0.0
+	root.add_child(msg_label)
+
+	var messages : Array = _od.get("dm", {}).get("lines", [])
+	for idx in range(messages.size()):
+		if _skipped: break
+		var msg : Dictionary = messages[idx]
+		var text : String = msg.get("text", "")
+		var style : String = msg.get("style", "normal")
+		if style == "alert":
+			continue
+
+		# フェードアウト
+		if msg_label.modulate.a > 0.0:
+			var tw_out := create_tween()
+			tw_out.tween_property(msg_label, "modulate:a", 0.0, 0.3)
+			await tw_out.finished
+			if _skipped: break
+
+		msg_label.text = text
+		match style:
+			"bold":
+				msg_label.add_theme_color_override("font_color", Color(0.96, 0.94, 0.91))
+				msg_label.add_theme_font_size_override("font_size", 26)
+			"creepy":
+				msg_label.add_theme_color_override("font_color", Color(0.88, 0.18, 0.14))
+				msg_label.add_theme_font_size_override("font_size", 28)
+			_:
+				msg_label.add_theme_color_override("font_color", Color(0.88, 0.86, 0.84))
+				msg_label.add_theme_font_size_override("font_size", 24)
+
+		var tw_in := create_tween()
+		tw_in.tween_property(msg_label, "modulate:a", 1.0, 0.5)
+		await tw_in.finished
+		if _skipped: break
+
+		var hold : float = maxf(1.2, text.length() * 0.07)
+		await get_tree().create_timer(hold).timeout
+		if _skipped: break
+
+		# 後半: 不穏な赤フリッカー
+		if idx >= 5:
+			_overlay.color = Color(0.4, 0.0, 0.0, randf_range(0.03, 0.07))
+			await get_tree().create_timer(0.06).timeout
+			if is_instance_valid(_overlay):
+				_overlay.color.a = 0.0
+
+	if _skipped:
+		root.queue_free()
+		return
+
+	# 最後のメッセージ保持→衝撃
+	await get_tree().create_timer(0.6).timeout
+	if _skipped:
+		root.queue_free()
+		return
+
+	_play_sfx("monster/Monster Growl (5).mp3", -4.0)
+	await _shake(10.0, 0.5)
+	_overlay.color = Color(0.5, 0.0, 0.0, 0.22)
+	await get_tree().create_timer(0.12).timeout
+	if is_instance_valid(_overlay):
+		_overlay.color.a = 0.0
+
+	await _fade(root, 0.0, 0.6)
+	root.queue_free()
+	await get_tree().create_timer(0.8).timeout
+
+
+# ── 3. 恐怖の瞬間（RGB分離テキスト）─────────────────────
+
+func _scare_moment() -> void:
 	var sf : Dictionary = _od.get("scary_flash", {})
-	await _scary_flash(sf.get("text", "見 て い る"))
-	if _skipped: return
-	await get_tree().create_timer(t.get("post_scary", 0.6)).timeout
-	if _skipped: return
+	var text : String = sf.get("text", "見 て い る")
 
-	# ━━ Panel 3: 主人公の独白 ━━
-	var m : Dictionary = _od.get("monologue", {})
-	panel_monologue.visible    = true
-	panel_monologue.modulate.a = 0.0
-	await _fade(panel_monologue, 1.0, m.get("fade_in", 0.5))
-	if _skipped: return
-	await _typewrite(monologue_text, _build_bbcode("monologue"), m.get("speed", 0.036))
-	if _skipped: return
-	await get_tree().create_timer(m.get("wait", 2.0)).timeout
-	if _skipped: return
-	await _fade(panel_monologue, 0.0, m.get("fade_out", 0.5))
-	panel_monologue.visible = false
-	await get_tree().create_timer(t.get("between_panels", 0.5)).timeout
-	if _skipped: return
+	var scare_root := Control.new()
+	scare_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scare_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	scare_root.modulate.a = 0.0
+	_shake_root.add_child(scare_root)
 
-	# ━━ Panel 4: 場所テロップ ━━
+	# 赤チャネル（左オフセット）
+	var scare_r := Label.new()
+	scare_r.text = text
+	scare_r.add_theme_font_size_override("font_size", 90)
+	scare_r.add_theme_color_override("font_color", Color(1.0, 0.0, 0.0, 0.5))
+	scare_r.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	scare_r.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	scare_r.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scare_r.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	scare_root.add_child(scare_r)
+
+	# メインテキスト
+	var scare_main := Label.new()
+	scare_main.text = text
+	scare_main.add_theme_font_size_override("font_size", 90)
+	scare_main.add_theme_color_override("font_color", Color(0.90, 0.04, 0.04, 0.9))
+	scare_main.add_theme_color_override("font_shadow_color", Color(0.3, 0, 0, 0.6))
+	scare_main.add_theme_constant_override("shadow_offset_x", 3)
+	scare_main.add_theme_constant_override("shadow_offset_y", 3)
+	scare_main.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	scare_main.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	scare_main.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scare_main.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	scare_root.add_child(scare_main)
+
+	# 青チャネル（右オフセット）
+	var scare_b := Label.new()
+	scare_b.text = text
+	scare_b.add_theme_font_size_override("font_size", 90)
+	scare_b.add_theme_color_override("font_color", Color(0.0, 0.15, 1.0, 0.4))
+	scare_b.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	scare_b.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	scare_b.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scare_b.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	scare_root.add_child(scare_b)
+
+	# RGB分離フリッカー
+	_play_sfx("bell/impactBell_heavy_000.ogg", -6.0)
+	for burst in range(5):
+		if _skipped: break
+		scare_r.position.x = randf_range(-15, -4)
+		scare_b.position.x = randf_range(4, 15)
+		scare_root.modulate.a = randf_range(0.6, 1.0)
+		_overlay.color = Color(0.5, 0.0, 0.0, randf_range(0.08, 0.20))
+		await _shake(14.0, 0.07)
+		scare_root.modulate.a = 0.0
+		if is_instance_valid(_overlay):
+			_overlay.color.a = 0.0
+		await get_tree().create_timer(randf_range(0.08, 0.18)).timeout
+
+	if _skipped:
+		scare_root.queue_free()
+		return
+
+	# 最終フラッシュ
+	scare_r.position.x = -8
+	scare_b.position.x = 8
+	scare_root.modulate.a = 0.9
+	_overlay.color = Color(0.4, 0.0, 0.0, 0.18)
+	_play_sfx("bell/impactBell_heavy_001.ogg", -4.0)
+	await _shake(6.0, 0.5)
+	await get_tree().create_timer(0.6).timeout
+	if is_instance_valid(_overlay):
+		_overlay.color.a = 0.0
+
+	var tw := create_tween()
+	tw.tween_property(scare_root, "modulate:a", 0.0, 0.5)
+	await tw.finished
+	scare_root.queue_free()
+	await get_tree().create_timer(1.0).timeout
+
+
+# ── 4. 独白（シネマティック字幕）─────────────────────────
+
+func _show_monologue() -> void:
+	var lines : Array = _od.get("monologue", {}).get("lines", [])
+
+	for line_data in lines:
+		if _skipped: return
+		var text : String = line_data.get("text", "")
+		var style : String = line_data.get("style", "dialogue")
+
+		var lbl := Label.new()
+		lbl.text = text
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lbl.modulate.a = 0.0
+		_apply_mono_style(lbl, style)
+
+		if style == "stage_direction":
+			lbl.anchor_left = 0.15
+			lbl.anchor_right = 0.85
+			lbl.anchor_top = 0.32
+			lbl.anchor_bottom = 0.48
+		elif style == "final":
+			lbl.anchor_left = 0.1
+			lbl.anchor_right = 0.9
+			lbl.anchor_top = 0.38
+			lbl.anchor_bottom = 0.62
+		else:
+			lbl.anchor_left = 0.1
+			lbl.anchor_right = 0.9
+			lbl.anchor_top = 0.40
+			lbl.anchor_bottom = 0.60
+
+		_shake_root.add_child(lbl)
+
+		var tw_in := create_tween()
+		tw_in.tween_property(lbl, "modulate:a", 1.0, 0.6)
+		await tw_in.finished
+		if _skipped:
+			lbl.queue_free()
+			return
+
+		var wait : float = maxf(1.0, text.length() * 0.05)
+		await get_tree().create_timer(wait).timeout
+		if _skipped:
+			lbl.queue_free()
+			return
+
+		if style == "final":
+			await get_tree().create_timer(0.8).timeout
+			if _skipped:
+				lbl.queue_free()
+				return
+
+		var tw_out := create_tween()
+		tw_out.tween_property(lbl, "modulate:a", 0.0, 0.5)
+		await tw_out.finished
+		lbl.queue_free()
+		await get_tree().create_timer(0.3).timeout
+
+	await get_tree().create_timer(0.5).timeout
+
+
+func _apply_mono_style(lbl: Label, style: String) -> void:
+	match style:
+		"stage_direction":
+			lbl.add_theme_font_size_override("font_size", 17)
+			lbl.add_theme_color_override("font_color", Color(0.52, 0.50, 0.48, 0.85))
+		"dialogue_strong":
+			lbl.add_theme_font_size_override("font_size", 28)
+			lbl.add_theme_color_override("font_color", Color(0.96, 0.94, 0.91))
+		"dialogue":
+			lbl.add_theme_font_size_override("font_size", 24)
+			lbl.add_theme_color_override("font_color", Color(0.85, 0.83, 0.80))
+		"dialogue_dim":
+			lbl.add_theme_font_size_override("font_size", 22)
+			lbl.add_theme_color_override("font_color", Color(0.68, 0.65, 0.62))
+		"dialogue_faint":
+			lbl.add_theme_font_size_override("font_size", 22)
+			lbl.add_theme_color_override("font_color", Color(0.58, 0.55, 0.52))
+		"final":
+			lbl.add_theme_font_size_override("font_size", 36)
+			lbl.add_theme_color_override("font_color", Color(1.0, 0.98, 0.95))
+			lbl.add_theme_color_override("font_shadow_color", Color(0.5, 0.08, 0.08, 0.5))
+			lbl.add_theme_constant_override("shadow_offset_x", 2)
+			lbl.add_theme_constant_override("shadow_offset_y", 2)
+
+
+# ── 5. ロケーション テロップ ─────────────────────────────
+
+func _show_caption() -> void:
+	var cap_label := Label.new()
+	cap_label.text = ""
+	cap_label.add_theme_font_size_override("font_size", 56)
+	cap_label.add_theme_color_override("font_color", Color(0.92, 0.88, 0.82))
+	cap_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.7))
+	cap_label.add_theme_constant_override("shadow_offset_x", 3)
+	cap_label.add_theme_constant_override("shadow_offset_y", 3)
+	cap_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	cap_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	cap_label.anchor_left  = 0.1
+	cap_label.anchor_right = 0.9
+	cap_label.anchor_top   = 0.28
+	cap_label.anchor_bottom = 0.72
+	cap_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	cap_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cap_label.modulate.a = 0.0
+	_shake_root.add_child(cap_label)
+
+	var tw := create_tween()
+	tw.tween_property(cap_label, "modulate:a", 1.0, 1.0)
+	await tw.finished
+	if _skipped:
+		cap_label.queue_free()
+		return
+
 	var c : Dictionary = _od.get("caption", {})
-	caption_text.text = ""
-	caption_text.add_theme_font_size_override("font_size", 46)
-	panel_caption.visible    = true
-	panel_caption.modulate.a = 0.0
-	await _fade(panel_caption, 1.0, c.get("fade_in", 1.0))
-	if _skipped: return
 	var cap_lines : Array = c.get("lines", ["霧 原 村", "", "深 夜   0 : 0 0"])
 	for line in cap_lines:
-		if line == "":
-			caption_text.text += "\n"
-			await get_tree().create_timer(0.5).timeout
+		if _skipped: break
+		if str(line) == "":
+			cap_label.text += "\n"
+			await get_tree().create_timer(0.6).timeout
 		else:
 			for ch in str(line):
-				if _skipped: return
-				caption_text.text += ch
-				await get_tree().create_timer(c.get("char_speed", 0.07)).timeout
-			caption_text.text += "\n"
-			await get_tree().create_timer(c.get("line_wait", 0.3)).timeout
-	if _skipped: return
+				if _skipped: break
+				cap_label.text += ch
+				await get_tree().create_timer(c.get("char_speed", 0.08)).timeout
+			cap_label.text += "\n"
+			await get_tree().create_timer(c.get("line_wait", 0.4)).timeout
+	if _skipped:
+		cap_label.queue_free()
+		return
+
 	await get_tree().create_timer(c.get("display_wait", 2.5)).timeout
-	if _skipped: return
-	await _caption_warning_glitch()
-	if _skipped: return
-	await get_tree().create_timer(t.get("post_caption_warning", 1.0)).timeout
-	if _skipped: return
-	await _fade(panel_caption, 0.0, c.get("fade_out", 0.8))
-	panel_caption.visible = false
-	await get_tree().create_timer(t.get("between_panels", 0.5)).timeout
-	if _skipped: return
+	if _skipped:
+		cap_label.queue_free()
+		return
 
-	# ━━ ゲームへ ━━
-	_go_to_game()
+	await _caption_warning(cap_label, c)
+	if _skipped:
+		cap_label.queue_free()
+		return
+
+	await get_tree().create_timer(1.0).timeout
+	if _skipped:
+		cap_label.queue_free()
+		return
+	await _fade(cap_label, 0.0, 0.8)
+	cap_label.queue_free()
+	await get_tree().create_timer(0.5).timeout
 
 
-# ──────────────────────────────────────────────
-# ヘルパー
-# ──────────────────────────────────────────────
+func _caption_warning(cap_label: Label, c: Dictionary) -> void:
+	var orig_text := cap_label.text
+	cap_label.text = c.get("warning_text", "  立 入 禁 止  ")
+	cap_label.add_theme_color_override("font_color", Color(1.0, 0.06, 0.06))
+	cap_label.add_theme_font_size_override("font_size", 58)
+	_play_sfx("bell/impactBell_heavy_001.ogg", -4.0)
+	await _shake(5.0, 0.15)
+	_overlay.color = Color(0.4, 0.0, 0.0, 0.18)
+	await get_tree().create_timer(0.15).timeout
+	if is_instance_valid(_overlay):
+		_overlay.color.a = 0.0
+	await get_tree().create_timer(0.06).timeout
+	_overlay.color = Color(0.4, 0.0, 0.0, 0.12)
+	await get_tree().create_timer(0.1).timeout
+	cap_label.text = orig_text
+	cap_label.add_theme_color_override("font_color", Color(0.92, 0.88, 0.82))
+	cap_label.add_theme_font_size_override("font_size", 56)
+	if is_instance_valid(_overlay):
+		_overlay.color.a = 0.0
 
-func _add_panel_bg(panel: Control) -> void:
-	## パネルに暗い背景 + 赤アクセントを追加
-	var bg := ColorRect.new()
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	bg.color = Color(0.03, 0.015, 0.02, 0.94)
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(bg)
-	panel.move_child(bg, 0)
-	# 上部の赤アクセント線
-	var accent := ColorRect.new()
-	accent.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	accent.offset_bottom = 2
-	accent.color = Color(0.7, 0.08, 0.08, 0.6)
-	accent.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(accent)
-	panel.move_child(accent, 1)
+
+# ════════════════════════════════════════════════════════════
+# エフェクト
+# ════════════════════════════════════════════════════════════
+
+func _shake(intensity: float, duration: float) -> void:
+	_shake_intensity = intensity
+	_shake_timer = duration
+	await get_tree().create_timer(duration).timeout
 
 
 func _fade(node: CanvasItem, to: float, duration: float) -> void:
@@ -438,149 +774,715 @@ func _fade(node: CanvasItem, to: float, duration: float) -> void:
 	await tw.finished
 
 
-func _typewrite(label: RichTextLabel, bbcode: String, speed: float) -> void:
-	label.bbcode_enabled     = true
-	label.bbcode_text        = bbcode
-	label.visible_characters = 0
-	var total := label.get_total_character_count()
-	for i in range(1, total + 1):
-		if _skipped:
-			label.visible_characters = -1
-			return
-		label.visible_characters = i
-		await get_tree().create_timer(speed).timeout
+# ════════════════════════════════════════════════════════════
+# シェーダー
+# ════════════════════════════════════════════════════════════
+
+func _add_film_grain() -> void:
+	var shader := Shader.new()
+	shader.code = "shader_type canvas_item;\nuniform float grain : hint_range(0.0, 0.3) = 0.03;\nuniform float time_val = 0.0;\nvoid fragment() {\n\tfloat n = fract(sin(dot(FRAGCOORD.xy + vec2(time_val * 137.3), vec2(12.9898, 78.233))) * 43758.5453);\n\tCOLOR = vec4(vec3(n), grain);\n}"
+	_grain_mat = ShaderMaterial.new()
+	_grain_mat.shader = shader
+	var rect := ColorRect.new()
+	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	rect.material = _grain_mat
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(rect)
 
 
-func _do_glitch(count: int) -> void:
-	for _i in range(count):
-		if _skipped: return
-		glitch_overlay.color = Color(
-			randf_range(0.4, 0.9),
-			randf_range(0.0, 0.12),
-			randf_range(0.0, 0.12),
-			randf_range(0.08, 0.25)
-		)
-		await get_tree().create_timer(randf_range(0.04, 0.09)).timeout
-		glitch_overlay.color = Color(1, 1, 1, 0)
-		await get_tree().create_timer(randf_range(0.03, 0.07)).timeout
+func _add_vignette() -> void:
+	var shader := Shader.new()
+	shader.code = "shader_type canvas_item;\nvoid fragment() {\n\tvec2 uv = UV - 0.5;\n\tfloat v = dot(uv, uv);\n\tCOLOR = vec4(0.0, 0.0, 0.0, smoothstep(0.25, 0.65, v));\n}"
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	var rect := ColorRect.new()
+	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	rect.material = mat
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(rect)
 
 
-func _scary_flash(text: String) -> void:
-	## DM後の「見ている」フラッシュ演出
-	var lbl := Label.new()
-	lbl.text = text
-	lbl.add_theme_font_size_override("font_size", 72)
-	lbl.add_theme_color_override("font_color", Color(0.8, 0.05, 0.05, 0.75))
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.set_anchors_preset(Control.PRESET_FULL_RECT)
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(lbl)
-	# 赤フラッシュ × 2
-	glitch_overlay.color = Color(0.5, 0.0, 0.0, 0.2)
-	await get_tree().create_timer(0.12).timeout
-	if _skipped:
-		lbl.queue_free()
-		return
-	glitch_overlay.color = Color(1, 1, 1, 0)
-	await get_tree().create_timer(0.45).timeout
-	if _skipped:
-		lbl.queue_free()
-		return
-	glitch_overlay.color = Color(0.6, 0.0, 0.0, 0.15)
-	await get_tree().create_timer(0.08).timeout
-	glitch_overlay.color = Color(1, 1, 1, 0)
-	await get_tree().create_timer(0.35).timeout
-	lbl.queue_free()
-
-
-func _caption_warning_glitch() -> void:
-	## 「立入禁止」グリッチ警告
-	var orig_text := caption_text.text
-	var c : Dictionary = _od.get("caption", {})
-	caption_text.text = c.get("warning_text", "⚠  立 入 禁 止  ⚠")
-	caption_text.add_theme_color_override("font_color", Color(1.0, 0.06, 0.06, 1))
-	caption_text.add_theme_font_size_override("font_size", 52)
-	glitch_overlay.color = Color(0.7, 0.0, 0.0, 0.22)
-	await get_tree().create_timer(0.15).timeout
-	if _skipped: return
-	glitch_overlay.color = Color(1, 1, 1, 0)
-	await get_tree().create_timer(0.06).timeout
-	glitch_overlay.color = Color(0.5, 0.0, 0.0, 0.18)
-	await get_tree().create_timer(0.12).timeout
-	caption_text.text = orig_text
-	caption_text.remove_theme_color_override("font_color")
-	caption_text.add_theme_font_size_override("font_size", 46)
-	glitch_overlay.color = Color(1, 1, 1, 0)
-
+# ════════════════════════════════════════════════════════════
+# ヘルパー
+# ════════════════════════════════════════════════════════════
 
 func _go_to_game() -> void:
 	_phase = Phase.DONE
 	_remove_skip_button()
+	_remove_settings()
 	GameManager.load_chapter(0)
-	_hide_all_panels()
 	SoundManager.stop_bgm(0.0)
 	LoadingScreen.show_loading()
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")
 
 
-# ──────────────────────────────────────────────
-# テキストコンテンツ（大きいフォント・リッチ演出）
-# ──────────────────────────────────────────────
-
-## style → BBCode テンプレート（opening.json の style に対応）
-const _STYLE := {
-	# profile
-	"name":      "[color=#f0f0f0][font_size=30][b]%s[/b][/font_size][/color]",
-	"handle":    "   [color=#777777][font_size=20]%s[/font_size][/color]",
-	"bio":       "[color=#cccccc][font_size=22]%s[/font_size][/color]",
-	"stats":     "[color=#888888][font_size=22]%s[/font_size][/color]",
-	"video":     "[color=#555555][font_size=18]　・%s[/font_size][/color]",
-	"warning":   "[color=#993333][font_size=18]　%s[/font_size][/color]",
-	# dm
-	"alert":     "[color=#ff2222][font_size=24][b]%s[/b][/font_size][/color]",
-	"normal":    "[color=#dddddd][font_size=22]%s[/font_size][/color]",
-	"bold":      "[color=#f0f0f0][font_size=26][b]%s[/b][/font_size][/color]",
-	"creepy":    "[color=#993333][font_size=22][i]%s[/i][/font_size][/color]",
-	# monologue
-	"stage_direction":  "[color=#555555][font_size=20][i]%s[/i][/font_size][/color]",
-	"dialogue_strong":  "[color=#f0f0f0][font_size=28]%s[/font_size][/color]",
-	"dialogue":         "[color=#cccccc][font_size=26]%s[/font_size][/color]",
-	"dialogue_dim":     "[color=#aaaaaa][font_size=24]%s[/font_size][/color]",
-	"dialogue_faint":   "[color=#999999][font_size=24]%s[/font_size][/color]",
-	"final":            "[color=#ffffff][font_size=34][b]%s[/b][/font_size][/color]",
-}
-
-## profile 用の固定ヘッダー（装飾線 + サイト名）
-const _PROFILE_HEADER := "[center][color=#444444]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/color][/center]\n[center][color=#888888][font_size=20]SnapshotTube[/font_size][/color][/center]\n[center][color=#444444]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/color][/center]\n\n"
-## dm 用の固定ヘッダー
-const _DM_HEADER := "[color=#888888][font_size=22]✉  ダイレクトメッセージ[/font_size][/color]\n\n"
+func _go_to_chapter(index: int) -> void:
+	_phase = Phase.DONE
+	_skipped = true
+	_remove_skip_button()
+	_remove_settings()
+	GameManager.load_chapter(index)
+	SoundManager.stop_bgm(0.0)
+	LoadingScreen.show_loading()
+	get_tree().change_scene_to_file("res://scenes/Main.tscn")
 
 
-func _load_opening_json() -> void:
+func _skip_to_game() -> void:
+	_skipped = true
+	_remove_skip_button()
+	if is_instance_valid(_overlay):
+		_overlay.color = Color(0, 0, 0, 0)
+	_go_to_game()
+
+
+func _create_skip_button() -> void:
+	_remove_skip_button()
+	_skip_btn = Button.new()
+	_skip_btn.text = "SKIP ▸▸"
+	_skip_btn.add_theme_font_size_override("font_size", 18)
+	_skip_btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.65))
+	_skip_btn.flat = true
+	_skip_btn.anchor_left  = 1.0
+	_skip_btn.anchor_top   = 0.0
+	_skip_btn.anchor_right = 1.0
+	_skip_btn.anchor_bottom = 0.0
+	_skip_btn.offset_left   = -150
+	_skip_btn.offset_top    = 14
+	_skip_btn.offset_right  = -14
+	_skip_btn.offset_bottom = 50
+	_skip_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	if _phase == Phase.VIDEO:
+		_skip_btn.pressed.connect(_skip_video)
+	else:
+		_skip_btn.pressed.connect(_skip_to_game)
+	add_child(_skip_btn)
+
+
+func _remove_skip_button() -> void:
+	if _skip_btn and is_instance_valid(_skip_btn):
+		_skip_btn.queue_free()
+	_skip_btn = null
+
+
+func _play_sfx(rel_path: String, vol_db: float = -6.0) -> void:
+	var path := "res://assets/audio/sfx/" + rel_path
+	var stream: AudioStream = null
+	if path.ends_with(".ogg"):
+		stream = load(path) as AudioStream
+	else:
+		var f := FileAccess.open(path, FileAccess.READ)
+		if not f:
+			return
+		var s := AudioStreamMP3.new()
+		s.data = f.get_buffer(f.get_length())
+		stream = s
+	if not stream:
+		return
+	var asp := AudioStreamPlayer.new()
+	asp.stream = stream
+	asp.volume_db = vol_db
+	add_child(asp)
+	asp.play()
+	asp.finished.connect(asp.queue_free)
+
+
+# ════════════════════════════════════════════════════════════
+# 設定パネル（歯車アイコン → ステージ選択ウィンドウ）
+# ════════════════════════════════════════════════════════════
+
+const _PANEL_W := 480
+const _PANEL_H := 420
+const _PANEL_RADIUS := 18
+const _PANEL_BG := Color(0.06, 0.06, 0.08, 0.96)
+const _PANEL_BORDER := Color(0.35, 0.12, 0.12, 0.8)
+const _PANEL_ACCENT := Color(0.85, 0.10, 0.10, 1.0)
+const _BTN_BG := Color(0.10, 0.10, 0.12, 1.0)
+const _BTN_BG_HOVER := Color(0.18, 0.08, 0.08, 1.0)
+const _BTN_BORDER := Color(0.30, 0.12, 0.12, 0.6)
+
+const CHAPTER_INFO : Array[Dictionary] = [
+	{"name": "CP1  廃村入口", "sub": "公衆トイレの首無し少女", "icon": "🏚", "sections": [
+		{"name": "CP1-1  廃村入口", "sub": "配信開始〜商店街", "section": 0},
+		{"name": "CP1-2  公衆トイレ", "sub": "みゆき遭遇〜脱出", "section": 1},
+		{"name": "CP1-3  逃走と反転", "sub": "バス停へ逃走→村の奥へ", "section": 2},
+	]},
+	{"name": "CP2  村長の屋敷", "sub": "Kの日記と鏡の向こう", "icon": "🏛"},
+	{"name": "CP3  廃倉庫", "sub": "VHSテープ回収", "icon": "📼"},
+	{"name": "CP4  桐原神社", "sub": "白い木箱の秘密", "icon": "⛩"},
+	{"name": "CP5  脱出", "sub": "最終分岐・3エンディング", "icon": "🚌"},
+]
+
+
+func _build_settings_button() -> void:
+	_settings_btn = Button.new()
+	_settings_btn.text = "⚙"
+	_settings_btn.add_theme_font_size_override("font_size", 28)
+	_settings_btn.add_theme_color_override("font_color", Color(0.65, 0.60, 0.55, 0.7))
+	_settings_btn.add_theme_color_override("font_hover_color", Color(1.0, 0.3, 0.2, 1.0))
+	_settings_btn.flat = true
+	_settings_btn.anchor_left   = 0.0
+	_settings_btn.anchor_top    = 1.0
+	_settings_btn.anchor_right  = 0.0
+	_settings_btn.anchor_bottom = 1.0
+	_settings_btn.offset_left   = 14
+	_settings_btn.offset_top    = -60
+	_settings_btn.offset_right  = 60
+	_settings_btn.offset_bottom = -14
+	_settings_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	_settings_btn.pressed.connect(_toggle_settings)
+	add_child(_settings_btn)
+
+
+func _toggle_settings() -> void:
+	if is_instance_valid(_settings_panel):
+		_close_settings()
+	else:
+		_open_settings()
+
+
+func _open_settings() -> void:
+	if is_instance_valid(_settings_panel):
+		return
+
+	_settings_panel = Control.new()
+	_settings_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_settings_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(_settings_panel)
+
+	var dimmer := ColorRect.new()
+	dimmer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dimmer.color = Color(0, 0, 0, 0.6)
+	dimmer.mouse_filter = Control.MOUSE_FILTER_STOP
+	var close_bg := Button.new()
+	close_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	close_bg.flat = true
+	close_bg.modulate.a = 0.0
+	close_bg.pressed.connect(_close_settings)
+	_settings_panel.add_child(dimmer)
+	_settings_panel.add_child(close_bg)
+
+	var panel := PanelContainer.new()
+	panel.anchor_left  = 0.5
+	panel.anchor_right = 0.5
+	panel.anchor_top   = 0.5
+	panel.anchor_bottom = 0.5
+	panel.offset_left   = -_PANEL_W / 2.0
+	panel.offset_right  = _PANEL_W / 2.0
+	panel.offset_top    = -_PANEL_H / 2.0
+	panel.offset_bottom = _PANEL_H / 2.0
+
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = _PANEL_BG
+	sb.border_color = _PANEL_BORDER
+	sb.set_border_width_all(2)
+	sb.set_corner_radius_all(_PANEL_RADIUS)
+	sb.shadow_color = Color(0.4, 0.0, 0.0, 0.3)
+	sb.shadow_size = 20
+	sb.set_content_margin_all(0)
+	panel.add_theme_stylebox_override("panel", sb)
+	panel.clip_contents = true
+	_settings_panel.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 0)
+	panel.add_child(vbox)
+
+	var header_ctrl := _settings_header()
+	vbox.add_child(header_ctrl)
+
+	var sep := ColorRect.new()
+	sep.custom_minimum_size = Vector2(0, 1)
+	sep.color = _PANEL_BORDER
+	sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(sep)
+
+	_settings_content = VBoxContainer.new()
+	_settings_content.add_theme_constant_override("separation", 0)
+	_settings_content.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	vbox.add_child(_settings_content)
+
+	_show_settings_top()
+
+	panel.scale = Vector2(0.85, 0.85)
+	panel.pivot_offset = Vector2(_PANEL_W / 2.0, _PANEL_H / 2.0)
+	panel.modulate.a = 0.0
+	dimmer.modulate.a = 0.0
+	var tw := create_tween().set_parallel(true)
+	tw.tween_property(panel, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(panel, "modulate:a", 1.0, 0.2)
+	tw.tween_property(dimmer, "modulate:a", 1.0, 0.2)
+
+
+func _clear_settings_content() -> void:
+	if not is_instance_valid(_settings_content):
+		return
+	for child in _settings_content.get_children():
+		child.queue_free()
+
+
+func _show_settings_top() -> void:
+	_clear_settings_content()
+	if is_instance_valid(_settings_title):
+		_settings_title.text = "SETTINGS"
+	if is_instance_valid(_settings_back):
+		_settings_back.visible = false
+
+	var section := _settings_section_label("メニュー")
+	_settings_content.add_child(section)
+
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_settings_content.add_child(scroll)
+
+	var list := VBoxContainer.new()
+	list.add_theme_constant_override("separation", 6)
+	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(list)
+
+	var top_pad := Control.new()
+	top_pad.custom_minimum_size = Vector2(0, 4)
+	list.add_child(top_pad)
+
+	var menu_items : Array[Dictionary] = [
+		{"name": "ステージ選択", "sub": "チャプターを選んでプレイ", "icon": "🎮", "action": "_show_stage_select"},
+		{"name": "サウンド", "sub": "BGM・SE音量調整", "icon": "🔊", "action": ""},
+		{"name": "グラフィック", "sub": "画質・エフェクト設定", "icon": "🖥", "action": ""},
+	]
+
+	for item in menu_items:
+		var card := _menu_card(item["name"], item["sub"], item["icon"], item["action"])
+		list.add_child(card)
+
+	var bot_pad := Control.new()
+	bot_pad.custom_minimum_size = Vector2(0, 8)
+	list.add_child(bot_pad)
+
+
+func _show_stage_select() -> void:
+	_clear_settings_content()
+	if is_instance_valid(_settings_title):
+		_settings_title.text = "STAGE SELECT"
+	if is_instance_valid(_settings_back):
+		_settings_back.visible = true
+
+	var section := _settings_section_label("チャプター")
+	_settings_content.add_child(section)
+
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_settings_content.add_child(scroll)
+
+	var list := VBoxContainer.new()
+	list.add_theme_constant_override("separation", 6)
+	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(list)
+
+	var top_pad := Control.new()
+	top_pad.custom_minimum_size = Vector2(0, 4)
+	list.add_child(top_pad)
+
+	for i in range(CHAPTER_INFO.size()):
+		var card := _chapter_card(i)
+		list.add_child(card)
+		# CP1のサブセクションカードを直下に追加
+		if CHAPTER_INFO[i].has("sections"):
+			for sec_info in CHAPTER_INFO[i]["sections"]:
+				var sec_card := _section_card(i, sec_info)
+				list.add_child(sec_card)
+
+	var bot_pad := Control.new()
+	bot_pad.custom_minimum_size = Vector2(0, 8)
+	list.add_child(bot_pad)
+
+
+func _menu_card(title: String, sub: String, icon: String, action: String) -> Control:
+	var btn := Button.new()
+	btn.flat = true
+	btn.custom_minimum_size = Vector2(0, 60)
+	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	var normal_sb := StyleBoxFlat.new()
+	normal_sb.bg_color = _BTN_BG
+	normal_sb.border_color = _BTN_BORDER
+	normal_sb.set_border_width_all(1)
+	normal_sb.set_corner_radius_all(12)
+	normal_sb.content_margin_left = 14
+	normal_sb.content_margin_right = 14
+	normal_sb.content_margin_top = 8
+	normal_sb.content_margin_bottom = 8
+	btn.add_theme_stylebox_override("normal", normal_sb)
+
+	var hover_sb : StyleBoxFlat = normal_sb.duplicate()
+	hover_sb.bg_color = _BTN_BG_HOVER
+	hover_sb.border_color = _PANEL_ACCENT.darkened(0.2)
+	btn.add_theme_stylebox_override("hover", hover_sb)
+
+	var pressed_sb : StyleBoxFlat = normal_sb.duplicate()
+	pressed_sb.bg_color = Color(0.25, 0.05, 0.05, 1.0)
+	pressed_sb.border_color = _PANEL_ACCENT
+	btn.add_theme_stylebox_override("pressed", pressed_sb)
+
+	var is_disabled := action.is_empty()
+	if is_disabled:
+		btn.disabled = true
+		var disabled_sb : StyleBoxFlat = normal_sb.duplicate()
+		disabled_sb.bg_color = Color(0.07, 0.07, 0.08, 0.6)
+		disabled_sb.border_color = Color(0.15, 0.15, 0.15, 0.4)
+		btn.add_theme_stylebox_override("disabled", disabled_sb)
+
+	var hbox := HBoxContainer.new()
+	hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	hbox.add_theme_constant_override("separation", 14)
+	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(hbox)
+
+	var pad_l := Control.new()
+	pad_l.custom_minimum_size = Vector2(4, 0)
+	hbox.add_child(pad_l)
+
+	var icon_lbl := Label.new()
+	icon_lbl.text = icon
+	icon_lbl.add_theme_font_size_override("font_size", 26)
+	icon_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if is_disabled:
+		icon_lbl.modulate.a = 0.35
+	hbox.add_child(icon_lbl)
+
+	var text_vbox := VBoxContainer.new()
+	text_vbox.add_theme_constant_override("separation", 2)
+	text_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_vbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	text_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(text_vbox)
+
+	var name_lbl := Label.new()
+	name_lbl.text = title
+	name_lbl.add_theme_font_size_override("font_size", 17)
+	name_lbl.add_theme_color_override("font_color", Color(0.95, 0.92, 0.88) if not is_disabled else Color(0.40, 0.38, 0.35))
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text_vbox.add_child(name_lbl)
+
+	var sub_lbl := Label.new()
+	sub_lbl.text = sub + ("" if not is_disabled else "  (coming soon)")
+	sub_lbl.add_theme_font_size_override("font_size", 12)
+	sub_lbl.add_theme_color_override("font_color", Color(0.50, 0.45, 0.42) if not is_disabled else Color(0.30, 0.28, 0.25))
+	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text_vbox.add_child(sub_lbl)
+
+	var arrow := Label.new()
+	arrow.text = "▶"
+	arrow.add_theme_font_size_override("font_size", 14)
+	arrow.add_theme_color_override("font_color", Color(0.45, 0.35, 0.30) if not is_disabled else Color(0.20, 0.18, 0.15))
+	arrow.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(arrow)
+
+	var pad_r := Control.new()
+	pad_r.custom_minimum_size = Vector2(4, 0)
+	hbox.add_child(pad_r)
+
+	var wrapper := MarginContainer.new()
+	wrapper.add_theme_constant_override("margin_left", 12)
+	wrapper.add_theme_constant_override("margin_right", 12)
+	wrapper.add_child(btn)
+
+	if not is_disabled:
+		btn.pressed.connect(Callable(self, action))
+
+	return wrapper
+
+
+func _close_settings() -> void:
+	if not is_instance_valid(_settings_panel):
+		return
+	var tw := create_tween()
+	tw.tween_property(_settings_panel, "modulate:a", 0.0, 0.15)
+	tw.tween_callback(func() -> void:
+		if is_instance_valid(_settings_panel):
+			_settings_panel.queue_free()
+			_settings_panel = null
+	)
+
+
+func _remove_settings() -> void:
+	if is_instance_valid(_settings_panel):
+		_settings_panel.queue_free()
+		_settings_panel = null
+
+
+func _settings_header() -> Control:
+	var hbox := HBoxContainer.new()
+	hbox.custom_minimum_size = Vector2(0, 52)
+	hbox.add_theme_constant_override("separation", 0)
+
+	_settings_back = Button.new()
+	_settings_back.text = "◀"
+	_settings_back.flat = true
+	_settings_back.add_theme_font_size_override("font_size", 18)
+	_settings_back.add_theme_color_override("font_color", Color(0.6, 0.55, 0.5))
+	_settings_back.add_theme_color_override("font_hover_color", Color(1.0, 0.3, 0.2))
+	_settings_back.custom_minimum_size = Vector2(44, 0)
+	_settings_back.visible = false
+	_settings_back.pressed.connect(_show_settings_top)
+	hbox.add_child(_settings_back)
+
+	var pad_l := Control.new()
+	pad_l.custom_minimum_size = Vector2(8, 0)
+	hbox.add_child(pad_l)
+
+	var icon := Label.new()
+	icon.text = "⚙"
+	icon.add_theme_font_size_override("font_size", 22)
+	icon.add_theme_color_override("font_color", _PANEL_ACCENT)
+	icon.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	hbox.add_child(icon)
+
+	var pad_m := Control.new()
+	pad_m.custom_minimum_size = Vector2(10, 0)
+	hbox.add_child(pad_m)
+
+	_settings_title = Label.new()
+	_settings_title.text = "SETTINGS"
+	_settings_title.add_theme_font_size_override("font_size", 20)
+	_settings_title.add_theme_color_override("font_color", Color(0.92, 0.88, 0.84))
+	_settings_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	hbox.add_child(_settings_title)
+
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_child(spacer)
+
+	var close := Button.new()
+	close.text = "✕"
+	close.flat = true
+	close.add_theme_font_size_override("font_size", 20)
+	close.add_theme_color_override("font_color", Color(0.6, 0.55, 0.5))
+	close.add_theme_color_override("font_hover_color", Color(1.0, 0.3, 0.2))
+	close.custom_minimum_size = Vector2(44, 0)
+	close.pressed.connect(_close_settings)
+	hbox.add_child(close)
+
+	return hbox
+
+
+func _settings_section_label(text: String) -> Control:
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 18)
+	margin.add_theme_constant_override("margin_top", 12)
+	margin.add_theme_constant_override("margin_bottom", 4)
+
+	var lbl := Label.new()
+	lbl.text = text
+	lbl.add_theme_font_size_override("font_size", 13)
+	lbl.add_theme_color_override("font_color", Color(0.55, 0.45, 0.40))
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_child(lbl)
+	return margin
+
+
+func _chapter_card(index: int) -> Control:
+	var info : Dictionary = CHAPTER_INFO[index]
+
+	var btn := Button.new()
+	btn.flat = true
+	btn.custom_minimum_size = Vector2(0, 56)
+	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	var normal_sb := StyleBoxFlat.new()
+	normal_sb.bg_color = _BTN_BG
+	normal_sb.border_color = _BTN_BORDER
+	normal_sb.set_border_width_all(1)
+	normal_sb.set_corner_radius_all(12)
+	normal_sb.content_margin_left = 14
+	normal_sb.content_margin_right = 14
+	normal_sb.content_margin_top = 6
+	normal_sb.content_margin_bottom = 6
+	btn.add_theme_stylebox_override("normal", normal_sb)
+
+	var hover_sb : StyleBoxFlat = normal_sb.duplicate()
+	hover_sb.bg_color = _BTN_BG_HOVER
+	hover_sb.border_color = _PANEL_ACCENT.darkened(0.2)
+	btn.add_theme_stylebox_override("hover", hover_sb)
+
+	var pressed_sb : StyleBoxFlat = normal_sb.duplicate()
+	pressed_sb.bg_color = Color(0.25, 0.05, 0.05, 1.0)
+	pressed_sb.border_color = _PANEL_ACCENT
+	btn.add_theme_stylebox_override("pressed", pressed_sb)
+
+	var hbox := HBoxContainer.new()
+	hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	hbox.add_theme_constant_override("separation", 12)
+	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(hbox)
+
+	var pad_l := Control.new()
+	pad_l.custom_minimum_size = Vector2(4, 0)
+	hbox.add_child(pad_l)
+
+	var icon_lbl := Label.new()
+	icon_lbl.text = info["icon"]
+	icon_lbl.add_theme_font_size_override("font_size", 24)
+	icon_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(icon_lbl)
+
+	var text_vbox := VBoxContainer.new()
+	text_vbox.add_theme_constant_override("separation", 2)
+	text_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_vbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	text_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(text_vbox)
+
+	var name_lbl := Label.new()
+	name_lbl.text = info["name"]
+	name_lbl.add_theme_font_size_override("font_size", 16)
+	name_lbl.add_theme_color_override("font_color", Color(0.95, 0.92, 0.88))
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text_vbox.add_child(name_lbl)
+
+	var sub_lbl := Label.new()
+	sub_lbl.text = info["sub"]
+	sub_lbl.add_theme_font_size_override("font_size", 12)
+	sub_lbl.add_theme_color_override("font_color", Color(0.50, 0.45, 0.42))
+	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text_vbox.add_child(sub_lbl)
+
+	var arrow := Label.new()
+	arrow.text = "▶"
+	arrow.add_theme_font_size_override("font_size", 14)
+	arrow.add_theme_color_override("font_color", Color(0.45, 0.35, 0.30))
+	arrow.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(arrow)
+
+	var pad_r := Control.new()
+	pad_r.custom_minimum_size = Vector2(4, 0)
+	hbox.add_child(pad_r)
+
+	var wrapper := MarginContainer.new()
+	wrapper.add_theme_constant_override("margin_left", 12)
+	wrapper.add_theme_constant_override("margin_right", 12)
+	wrapper.add_child(btn)
+
+	if not info.has("sections"):
+		btn.pressed.connect(func() -> void: _go_to_chapter(index))
+	else:
+		# サブセクションがある場合はボタン無効化（親は見出し扱い）
+		btn.disabled = true
+		var disabled_sb : StyleBoxFlat = normal_sb.duplicate()
+		disabled_sb.bg_color = Color(0.12, 0.08, 0.06, 0.9)
+		disabled_sb.border_color = _PANEL_ACCENT.darkened(0.4)
+		btn.add_theme_stylebox_override("disabled", disabled_sb)
+		arrow.text = "▼"
+
+	return wrapper
+
+
+func _section_card(chapter_index: int, sec_info: Dictionary) -> Control:
+	var btn := Button.new()
+	btn.flat = true
+	btn.custom_minimum_size = Vector2(0, 48)
+	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	var normal_sb := StyleBoxFlat.new()
+	normal_sb.bg_color = Color(0.08, 0.06, 0.05, 0.8)
+	normal_sb.border_color = Color(0.25, 0.18, 0.14, 0.5)
+	normal_sb.set_border_width_all(1)
+	normal_sb.set_corner_radius_all(8)
+	normal_sb.content_margin_left = 14
+	normal_sb.content_margin_right = 14
+	normal_sb.content_margin_top = 4
+	normal_sb.content_margin_bottom = 4
+	btn.add_theme_stylebox_override("normal", normal_sb)
+
+	var hover_sb : StyleBoxFlat = normal_sb.duplicate()
+	hover_sb.bg_color = Color(0.18, 0.08, 0.06, 0.9)
+	hover_sb.border_color = _PANEL_ACCENT.darkened(0.2)
+	btn.add_theme_stylebox_override("hover", hover_sb)
+
+	var pressed_sb : StyleBoxFlat = normal_sb.duplicate()
+	pressed_sb.bg_color = Color(0.25, 0.05, 0.05, 1.0)
+	pressed_sb.border_color = _PANEL_ACCENT
+	btn.add_theme_stylebox_override("pressed", pressed_sb)
+
+	var hbox := HBoxContainer.new()
+	hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	hbox.add_theme_constant_override("separation", 10)
+	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(hbox)
+
+	var indent := Control.new()
+	indent.custom_minimum_size = Vector2(24, 0)
+	hbox.add_child(indent)
+
+	var dot := Label.new()
+	dot.text = "┗"
+	dot.add_theme_font_size_override("font_size", 14)
+	dot.add_theme_color_override("font_color", Color(0.40, 0.30, 0.25))
+	dot.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(dot)
+
+	var text_vbox := VBoxContainer.new()
+	text_vbox.add_theme_constant_override("separation", 1)
+	text_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_vbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	text_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(text_vbox)
+
+	var name_lbl := Label.new()
+	name_lbl.text = sec_info["name"]
+	name_lbl.add_theme_font_size_override("font_size", 14)
+	name_lbl.add_theme_color_override("font_color", Color(0.85, 0.80, 0.75))
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text_vbox.add_child(name_lbl)
+
+	var sub_lbl := Label.new()
+	sub_lbl.text = sec_info["sub"]
+	sub_lbl.add_theme_font_size_override("font_size", 11)
+	sub_lbl.add_theme_color_override("font_color", Color(0.45, 0.40, 0.38))
+	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text_vbox.add_child(sub_lbl)
+
+	var arrow := Label.new()
+	arrow.text = "▶"
+	arrow.add_theme_font_size_override("font_size", 12)
+	arrow.add_theme_color_override("font_color", Color(0.40, 0.30, 0.25))
+	arrow.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(arrow)
+
+	var pad_r := Control.new()
+	pad_r.custom_minimum_size = Vector2(4, 0)
+	hbox.add_child(pad_r)
+
+	var wrapper := MarginContainer.new()
+	wrapper.add_theme_constant_override("margin_left", 24)
+	wrapper.add_theme_constant_override("margin_right", 12)
+	wrapper.add_child(btn)
+
+	var sec_idx : int = sec_info["section"]
+	btn.pressed.connect(func() -> void:
+		GameManager.start_section = sec_idx
+		_go_to_chapter(chapter_index)
+	)
+
+	return wrapper
+
+
+# ════════════════════════════════════════════════════════════
+# データ読み込み
+# ════════════════════════════════════════════════════════════
+
+func _load_data() -> void:
 	var f := FileAccess.open("res://dialogue/opening.json", FileAccess.READ)
 	if f:
 		_od = JSON.parse_string(f.get_as_text())
 	if _od == null:
 		_od = {}
-
-
-func _build_bbcode(section: String) -> String:
-	var sec : Dictionary = _od.get(section, {})
-	var lines : Array = sec.get("lines", [])
-	var s := ""
-	if section == "profile":
-		s += _PROFILE_HEADER
-	elif section == "dm":
-		s += _DM_HEADER
-	elif section == "monologue":
-		s += "\n"  # 上部余白
-	for line in lines:
-		var text : String = line.get("text", "")
-		var style : String = line.get("style", "normal")
-		var tmpl : String = _STYLE.get(style, "%s")
-		s += tmpl % text + "\n"
-		# スタイルに応じた改行調整
-		if style in ["name", "stats", "dialogue_strong", "dialogue", "bio"]:
-			s += "\n"
-	return s

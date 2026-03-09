@@ -1,11 +1,23 @@
 extends Control
 class_name HUD
 
-@onready var rec_label     : Label    = $TopBar/RecLabel
-@onready var timecode_label: Label    = $TopBar/TimecodeLabel
-@onready var battery_label : Label    = $TopBar/BatteryLabel
-@onready var item_label    : Label    = $BottomBar/ItemLabel
 @onready var scare_flash   : ColorRect = $ScareFlash
+
+# ── 動的生成HUD要素 ──
+var rec_label      : Label = null
+var timecode_label : Label = null
+var battery_label  : Label = null
+var item_label     : Label = null
+var _rec_dot       : Label = null
+var _rec_bg        : PanelContainer = null
+var _date_label    : Label = null
+var _cam_label     : Label = null
+
+# 映像エリア定数 (YouTubeChrome準拠)
+const VIDEO_LEFT   := 14
+const VIDEO_TOP    := 56
+const VIDEO_RIGHT  := 886  # 900 - 14
+const VIDEO_BOTTOM := 600  # 612 - 12
 
 var record_time : float = 0.0
 var rec_blink_t : float = 0.0
@@ -26,6 +38,21 @@ var _mono_panel  : PanelContainer = null
 var _mono_text   : RichTextLabel  = null
 var _exit_guide  : Control        = null
 var _exit_blink_t: float          = 0.0
+
+# ── ビデオカメラオーバーレイ ──
+# ── 画面全体ホラーレッド ──
+var _horror_red_rect  : ColorRect      = null
+var _horror_red_tween : Tween          = null
+var _horror_red_active: bool           = false
+
+# ── ビデオカメラオーバーレイ ──
+var _camcorder_overlay : Control       = null
+var _tracking_line     : ColorRect     = null
+var _tracking_t        : float         = 0.0
+var _tracking_next     : float         = 8.0   # 次のトラッキングノイズまでの時間
+var _tracking_active   : bool          = false
+var _tracking_y        : float         = 0.0
+var _focus_brackets    : Array[ColorRect] = []
 
 # ── 出口方向矢印 ──
 var _exit_arrow     : Control    = null
@@ -59,8 +86,11 @@ func _ready() -> void:
 	GameManager.item_collected.connect(_on_item_collected)
 	GameManager.player_caught.connect(_on_caught)
 	GameManager.player_won.connect(_on_won)
+	_build_rec_hud()
 	_update_item_label(0)
 	_build_monologue_window()
+	_build_camcorder_overlay()
+	_build_horror_red()
 
 
 func set_chrome(chrome: CanvasLayer) -> void:
@@ -126,18 +156,23 @@ func _process(delta: float) -> void:
 
 	record_time += delta
 
-	# ── REC 点滅 ──
+	# ── REC 点滅（ドット＋バッジ全体） ──
 	rec_blink_t += delta
-	if rec_blink_t >= 0.5:
+	if rec_blink_t >= 0.6:
 		rec_blink_t = 0.0
 		rec_show = not rec_show
-		rec_label.visible = rec_show
+	if is_instance_valid(_rec_dot):
+		_rec_dot.modulate.a = 1.0 if rec_show else 0.15
+	if is_instance_valid(rec_label):
+		rec_label.modulate.a = 1.0 if rec_show else 0.7
 
 	# ── タイムコード ──
 	var h := int(record_time / 3600.0)
 	var m := int(fmod(record_time, 3600.0) / 60.0)
 	var s := int(fmod(record_time, 60.0))
-	timecode_label.text = "%02d:%02d:%02d" % [h, m, s]
+	var f := int(fmod(record_time, 1.0) * 30)
+	if is_instance_valid(timecode_label):
+		timecode_label.text = "%02d:%02d:%02d.%02d" % [h, m, s, f]
 
 	# ── 放置中のランダムコメント ──
 	idle_chat_t += delta
@@ -160,11 +195,16 @@ func _process(delta: float) -> void:
 	if _exit_arrow_active and is_instance_valid(_exit_arrow) and is_instance_valid(_player_ref):
 		_update_exit_arrow()
 
+	# ── トラッキングノイズ（ビデオカメラ） ──
+	_update_tracking_noise(delta)
+
 
 func update_battery(level: float) -> void:
+	if not is_instance_valid(battery_label):
+		return
 	var filled := int(level * 5)
 	var empty  := 5 - filled
-	battery_label.text = " BAT [" + "I".repeat(filled) + ".".repeat(empty) + "] "
+	battery_label.text = "⚡ " + "▮".repeat(filled) + "▯".repeat(empty)
 	if level < 0.25:
 		battery_label.add_theme_color_override("font_color", Color(1, 0.2, 0.2))
 	elif level < 0.5:
@@ -238,9 +278,11 @@ func refresh_item_label() -> void:
 
 
 func _update_item_label(count: int) -> void:
+	if not is_instance_valid(item_label):
+		return
 	var total := GameManager.items_total
 	item_label.visible = total > 0
-	item_label.text = "VHS  %d / %d" % [count, total]
+	item_label.text = "📼 VHS  %d / %d" % [count, total]
 
 
 func add_chat(msg: String, user: String = "", user_type: String = "") -> void:
@@ -502,6 +544,262 @@ func _update_exit_arrow() -> void:
 	var arrow_color := Color(1.0, 0.4, 0.2).lerp(Color(0.3, 1.0, 0.4), color_t)
 	if is_instance_valid(_exit_arrow_lbl):
 		_exit_arrow_lbl.add_theme_color_override("font_color", arrow_color)
+
+
+# ════════════════════════════════════════════════════════════════
+# ビデオカメラ録画オーバーレイ（ホラー風ファインダー表示）
+# ════════════════════════════════════════════════════════════════
+
+# ════════════════════════════════════════════════════════════════
+# リッチ REC HUD（映像エリア内に配置）
+# ════════════════════════════════════════════════════════════════
+
+func _build_rec_hud() -> void:
+	# ── 左上: REC バッジ（角丸パネル＋点滅ドット） ──
+	_rec_bg = PanelContainer.new()
+	_rec_bg.position = Vector2(VIDEO_LEFT, VIDEO_TOP)
+	_rec_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var rec_sb := StyleBoxFlat.new()
+	rec_sb.bg_color = Color(0.75, 0.04, 0.04, 0.85)
+	rec_sb.set_corner_radius_all(6)
+	rec_sb.content_margin_left = 10
+	rec_sb.content_margin_right = 12
+	rec_sb.content_margin_top = 3
+	rec_sb.content_margin_bottom = 3
+	_rec_bg.add_theme_stylebox_override("panel", rec_sb)
+	add_child(_rec_bg)
+
+	var rec_hbox := HBoxContainer.new()
+	rec_hbox.add_theme_constant_override("separation", 6)
+	rec_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_rec_bg.add_child(rec_hbox)
+
+	_rec_dot = Label.new()
+	_rec_dot.text = "●"
+	_rec_dot.add_theme_font_size_override("font_size", 14)
+	_rec_dot.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+	_rec_dot.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_rec_dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rec_hbox.add_child(_rec_dot)
+
+	rec_label = Label.new()
+	rec_label.text = "REC"
+	rec_label.add_theme_font_size_override("font_size", 15)
+	rec_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+	rec_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	rec_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rec_hbox.add_child(rec_label)
+
+	# ── 左上: タイムコード（RECバッジの右） ──
+	timecode_label = Label.new()
+	timecode_label.text = "00:00:00.00"
+	timecode_label.add_theme_font_size_override("font_size", 14)
+	timecode_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.75))
+	timecode_label.position = Vector2(VIDEO_LEFT + 96, VIDEO_TOP + 4)
+	timecode_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(timecode_label)
+
+	# ── 右上: バッテリー ──
+	battery_label = Label.new()
+	battery_label.text = "⚡ ▮▮▮▮▮"
+	battery_label.add_theme_font_size_override("font_size", 13)
+	battery_label.add_theme_color_override("font_color", Color(0.3, 1.0, 0.3, 0.85))
+	battery_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	battery_label.position = Vector2(VIDEO_RIGHT - 120, VIDEO_TOP + 4)
+	battery_label.size = Vector2(120, 24)
+	battery_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(battery_label)
+
+	# ── 左下: CAM + 日付 ──
+	_cam_label = Label.new()
+	_cam_label.text = "CAM 1"
+	_cam_label.add_theme_font_size_override("font_size", 12)
+	_cam_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.6))
+	_cam_label.position = Vector2(VIDEO_LEFT, VIDEO_BOTTOM - 18)
+	_cam_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_cam_label)
+
+	_date_label = Label.new()
+	_date_label.text = "2026/02/24  23:48"
+	_date_label.add_theme_font_size_override("font_size", 12)
+	_date_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.5))
+	_date_label.position = Vector2(VIDEO_LEFT + 56, VIDEO_BOTTOM - 18)
+	_date_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_date_label)
+
+	# ── 右下: アイテム数 ──
+	item_label = Label.new()
+	item_label.text = ""
+	item_label.add_theme_font_size_override("font_size", 14)
+	item_label.add_theme_color_override("font_color", Color(0.7, 0.85, 1.0, 0.9))
+	item_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	item_label.position = Vector2(VIDEO_RIGHT - 160, VIDEO_BOTTOM - 20)
+	item_label.size = Vector2(160, 24)
+	item_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	item_label.visible = false
+	add_child(item_label)
+
+
+func _build_camcorder_overlay() -> void:
+	_camcorder_overlay = Control.new()
+	_camcorder_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_camcorder_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_camcorder_overlay)
+
+	# 映像エリア内にファインダー枠を配置
+	var area_l : float = VIDEO_LEFT
+	var area_t : float = VIDEO_TOP
+	var area_r : float = VIDEO_RIGHT
+	var area_b : float = VIDEO_BOTTOM
+
+	# ── ファインダー角括弧（四隅のL字マーク） ──
+	var bracket_len : float = 40.0
+	var bracket_w   : float = 2.0
+	var bracket_margin : float = 8.0
+	var bracket_col := Color(1.0, 1.0, 1.0, 0.45)
+
+	# 四隅: [top-left, top-right, bottom-left, bottom-right]
+	var corners : Array[Vector2] = [
+		Vector2(area_l + bracket_margin, area_t + bracket_margin),
+		Vector2(area_r - bracket_margin, area_t + bracket_margin),
+		Vector2(area_l + bracket_margin, area_b - bracket_margin),
+		Vector2(area_r - bracket_margin, area_b - bracket_margin),
+	]
+	# 各コーナーのL字方向 [横方向, 縦方向]
+	var dirs : Array[Array] = [
+		[Vector2(1, 0), Vector2(0, 1)],    # 左上 → 右・下
+		[Vector2(-1, 0), Vector2(0, 1)],   # 右上 → 左・下
+		[Vector2(1, 0), Vector2(0, -1)],   # 左下 → 右・上
+		[Vector2(-1, 0), Vector2(0, -1)],  # 右下 → 左・上
+	]
+	for i in range(4):
+		var corner : Vector2 = corners[i]
+		var h_dir  : Vector2 = dirs[i][0]
+		var v_dir  : Vector2 = dirs[i][1]
+		# 横線
+		var h_bar := ColorRect.new()
+		h_bar.color = bracket_col
+		h_bar.size = Vector2(bracket_len, bracket_w)
+		h_bar.position = Vector2(
+			corner.x if h_dir.x > 0 else corner.x - bracket_len,
+			corner.y if v_dir.y > 0 else corner.y - bracket_w
+		)
+		h_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_camcorder_overlay.add_child(h_bar)
+		# 縦線
+		var v_bar := ColorRect.new()
+		v_bar.color = bracket_col
+		v_bar.size = Vector2(bracket_w, bracket_len)
+		v_bar.position = Vector2(
+			corner.x if h_dir.x > 0 else corner.x - bracket_w,
+			corner.y if v_dir.y > 0 else corner.y - bracket_len
+		)
+		v_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_camcorder_overlay.add_child(v_bar)
+
+	# ── 中央フォーカス十字（映像エリア中央） ──
+	var cx : float = (area_l + area_r) / 2.0
+	var cy : float = (area_t + area_b) / 2.0
+	var cross_len : float = 14.0
+	var cross_w   : float = 1.0
+	var cross_col := Color(1.0, 1.0, 1.0, 0.30)
+	var cross_gap : float = 6.0
+
+	for seg in [
+		Vector4(-cross_w / 2.0, -cross_gap - cross_len, cross_w, cross_len),
+		Vector4(-cross_w / 2.0, cross_gap, cross_w, cross_len),
+		Vector4(-cross_gap - cross_len, -cross_w / 2.0, cross_len, cross_w),
+		Vector4(cross_gap, -cross_w / 2.0, cross_len, cross_w),
+	]:
+		var bar := ColorRect.new()
+		bar.color = cross_col
+		bar.position = Vector2(cx + seg.x, cy + seg.y)
+		bar.size = Vector2(seg.z, seg.w)
+		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_camcorder_overlay.add_child(bar)
+
+	# ── トラッキングノイズ用の水平線（映像エリア幅） ──
+	_tracking_line = ColorRect.new()
+	_tracking_line.color = Color(1.0, 1.0, 1.0, 0.12)
+	_tracking_line.size = Vector2(area_r - area_l, 3.0)
+	_tracking_line.position = Vector2(area_l, -10)
+	_tracking_line.visible = false
+	_tracking_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_camcorder_overlay.add_child(_tracking_line)
+
+
+func _update_tracking_noise(delta: float) -> void:
+	if not is_instance_valid(_tracking_line):
+		return
+
+	if _tracking_active:
+		# トラッキングノイズ発動中 — 映像エリア内を上から下へ走る
+		_tracking_y += delta * float(VIDEO_BOTTOM - VIDEO_TOP) * 1.8
+		_tracking_line.position.y = _tracking_y
+		if _tracking_y > VIDEO_BOTTOM + 5.0:
+			_tracking_active = false
+			_tracking_line.visible = false
+			_tracking_next = randf_range(5.0, 15.0)
+	else:
+		_tracking_t += delta
+		if _tracking_t >= _tracking_next:
+			_tracking_t = 0.0
+			_tracking_active = true
+			_tracking_y = float(VIDEO_TOP) - 5.0
+			_tracking_line.visible = true
+			var alpha : float = randf_range(0.06, 0.18)
+			_tracking_line.color.a = alpha
+			_tracking_line.size.y = randf_range(2.0, 6.0)
+
+
+# ════════════════════════════════════════════════════════════════
+# 画面全体ホラーレッド（発見の瞬間の恐怖演出）
+# ════════════════════════════════════════════════════════════════
+
+func _build_horror_red() -> void:
+	_horror_red_rect = ColorRect.new()
+	_horror_red_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_horror_red_rect.color = Color(0.5, 0.0, 0.0, 0.0)
+	_horror_red_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_horror_red_rect.visible = false
+	add_child(_horror_red_rect)
+
+
+func start_horror_red(dur: float = 8.0) -> void:
+	if not is_instance_valid(_horror_red_rect) or _horror_red_active:
+		return
+	_horror_red_active = true
+	_horror_red_rect.visible = true
+	_horror_red_rect.color = Color(0.45, 0.0, 0.0, 0.0)
+
+	# フェードイン
+	var fade_in := create_tween()
+	fade_in.tween_property(_horror_red_rect, "color:a", 0.35, 0.3)
+	await fade_in.finished
+
+	# 脈動ループ（心臓の鼓動リズム）
+	_horror_red_tween = create_tween().set_loops()
+	_horror_red_tween.tween_property(_horror_red_rect, "color:a", 0.5, 0.35).set_trans(Tween.TRANS_SINE)
+	_horror_red_tween.tween_property(_horror_red_rect, "color:a", 0.15, 0.55).set_trans(Tween.TRANS_SINE)
+	_horror_red_tween.tween_property(_horror_red_rect, "color:a", 0.45, 0.3).set_trans(Tween.TRANS_SINE)
+	_horror_red_tween.tween_property(_horror_red_rect, "color:a", 0.1, 0.8).set_trans(Tween.TRANS_SINE)
+
+	# 自動解除
+	if dur > 0.0:
+		get_tree().create_timer(dur).timeout.connect(stop_horror_red, CONNECT_ONE_SHOT)
+
+
+func stop_horror_red() -> void:
+	if not _horror_red_active:
+		return
+	_horror_red_active = false
+	if _horror_red_tween and _horror_red_tween.is_valid():
+		_horror_red_tween.kill()
+		_horror_red_tween = null
+	if is_instance_valid(_horror_red_rect):
+		var tw := create_tween()
+		tw.tween_property(_horror_red_rect, "color:a", 0.0, 2.0)
+		tw.tween_callback(func() -> void: _horror_red_rect.visible = false)
 
 
 func _add_chat(msg: String, user: String = "", user_type: String = "") -> void:

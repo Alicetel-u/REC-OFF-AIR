@@ -1287,6 +1287,7 @@ body.light .preset-custom-input input { background:rgba(255,255,255,.85); border
     <div class="ctx-sep"></div>
     <div class="ctx-item" data-action="insert-posx"><span class="ctx-icon">↔</span>X移動イベント挿入</div>
     <div class="ctx-item" data-action="insert-posz"><span class="ctx-icon">↕</span>Z移動イベント挿入</div>
+    <div class="ctx-item" data-action="insert-posxz"><span class="ctx-icon">⤢</span>斜め移動イベント挿入</div>
     <div class="ctx-item" data-action="insert-rot"><span class="ctx-icon">↻</span>回転イベント挿入</div>
     <div class="ctx-sep"></div>
     <div class="ctx-item ctx-danger" data-action="delete" style="color:#ff6b6b;"><span class="ctx-icon">✕</span>選択イベント削除<span class="ctx-key">Del</span></div>
@@ -1433,32 +1434,45 @@ const MAPS = {
   public_toilet: {
     name: "公衆トイレ",
     spawn: { x: 0, z: 5.5 },
-    bounds: { xMin: -4, xMax: 4, zMin: -5, zMax: 7 },
+    bounds: { xMin: -4, xMax: 4, zMin: -6, zMax: 7 },
     rects: [
+      // 建物外郭: CSGBox (0,2,0) size(6,4,8) → X=-3〜3, Z=-4〜4
       { x: -3, z: -4, w: 6, h: 8, color: "#2a2a3a", label: "建物" },
-      { x: -2.8, z: -3.8, w: 5.6, h: 7.6, color: "#1a1a28", label: "" },
-      { x: -1, z: 3.5, w: 2, h: 1.1, color: "#1a1a28", label: "入口" },
+      // 建物内部: CSGBox (0,2,0) size(5.6,3.8,7.6) → X=-2.8〜2.8, Z=-3.8〜3.8
       { x: -2.8, z: -3.8, w: 5.6, h: 7.6, color: "#222235", label: "" },
-      { x: 0.25, z: -3.05, w: 2.5, h: 0.1, color: "#555", label: "" },
-      { x: 0.25, z: -1.55, w: 2.5, h: 0.1, color: "#555", label: "" },
-      { x: 0.25, z: -0.05, w: 2.5, h: 0.1, color: "#555", label: "" },
-      { x: 0.25, z: 1.45, w: 2.5, h: 0.1, color: "#555", label: "" },
-      { x: 0, z: -3, w: 0.5, h: 1.5, color: "#444", label: "" },
-      { x: 0, z: -1.5, w: 0.5, h: 1.5, color: "#444", label: "" },
-      { x: 0, z: 0, w: 0.5, h: 1.5, color: "#444", label: "" },
-      { x: 0, z: 1.5, w: 0.5, h: 1.5, color: "#444", label: "" },
-      { x: 0.225, z: -2.7, w: 0.05, h: 0.9, color: "#888", label: "D0" },
-      { x: 0.225, z: -1.2, w: 0.05, h: 0.9, color: "#c44", label: "D1*" },
-      { x: 0.225, z: 0.3, w: 0.05, h: 0.9, color: "#888", label: "D2" },
-      { x: 0.225, z: 1.8, w: 0.05, h: 0.9, color: "#888", label: "D3" },
-      { x: -2.8, z: 1.7, w: 2, h: 0.6, color: "#335", label: "洗面台" },
-      { x: -2.78, z: 1.5, w: 0.05, h: 1, color: "#669", label: "鏡" },
+      // 入口: 南壁(Z=-4)のドア開口 CSGBox(-1.5,1.4,-4) size(1.5,2.8,1.2) → X=-2.25〜-0.75
+      { x: -2.25, z: -5.2, w: 1.5, h: 1.4, color: "#1a1a28", label: "入口" },
+      // === 個室仕切り（3個室: Divider_0〜2） ===
+      // Divider_0: (1.5, 1.5, -2) size(2.5, 3, 0.05)
+      { x: 0.25, z: -2.05, w: 2.5, h: 0.1, color: "#555", label: "" },
+      // Divider_1: (1.5, 1.5, 0.2) size(2.5, 3, 0.05)
+      { x: 0.25, z: 0.15, w: 2.5, h: 0.1, color: "#555", label: "" },
+      // Divider_2: (1.5, 1.5, 2.4) size(2.5, 3, 0.05)
+      { x: 0.25, z: 2.35, w: 2.5, h: 0.1, color: "#555", label: "" },
+      // === 個室前面パネル（FrontFixed_0〜2） ===
+      // FrontFixed_0: (0.25, 1.5, -1.58)
+      { x: 0, z: -3.8, w: 0.5, h: 1.8, color: "#444", label: "" },
+      // FrontFixed_1: (0.25, 1.5, 0.59)
+      { x: 0, z: -2, w: 0.5, h: 2.2, color: "#444", label: "" },
+      // FrontFixed_2: (0.25, 1.5, 3.18)
+      { x: 0, z: 0.2, w: 0.5, h: 2.2, color: "#444", label: "" },
+      // === ドア（Door_0〜2） ===
+      // Door_0: (0.25, 1.4, -2.86) — 個室0
+      { x: 0.225, z: -3.3, w: 0.05, h: 0.9, color: "#888", label: "D0" },
+      // Door_1: (0.25, 1.4, -0.51) — 個室1（対象）
+      { x: 0.225, z: -0.95, w: 0.05, h: 0.9, color: "#c44", label: "D1*" },
+      // Door_2: (0.25, 1.4, 1.64) — 個室2
+      { x: 0.225, z: 1.2, w: 0.05, h: 0.9, color: "#888", label: "D2" },
+      // === 洗面台（Washbasin_0〜1） ===
+      // Washbasin_0: (-2.44, 1.08, -1.49)
+      { x: -2.8, z: -1.8, w: 1, h: 0.6, color: "#335", label: "洗面台" },
+      // Washbasin_1: (-2.47, 1.04, 0.99)
+      { x: -2.8, z: 0.7, w: 1, h: 0.6, color: "#335", label: "洗面台" },
     ],
     labels: [
-      { x: 1.5, z: -2.25, text: "個室0", size: 9 },
-      { x: 1.5, z: -0.75, text: "個室1 (対象)", size: 9 },
-      { x: 1.5, z: 0.75, text: "個室2", size: 9 },
-      { x: 1.5, z: 2.25, text: "個室3", size: 9 },
+      { x: 1.5, z: -2.9, text: "個室0", size: 9 },
+      { x: 1.5, z: -0.9, text: "個室1 (対象)", size: 9 },
+      { x: 1.5, z: 1.3, text: "個室2", size: 9 },
     ]
   },
   stage_iriguchi: {
@@ -1765,11 +1779,14 @@ function sceneToMapKey(scenePath) {
 
 // allEventsからstage_swap境界でセクション分割
 function buildSections() {
+  _sectionApplied = false;  // セクション再構築時にリセット
   const initMapKey = document.getElementById("map-select").value;
   sections = [];
   let secStart = 0;
   let mapKey = initMapKey;
-  let spawnX = currentMap.spawn.x, spawnZ = currentMap.spawn.z;
+  // _pv_spawn があればそちらを使う（永続化されたスポーン座標）
+  let spawnX = (jsonData && jsonData._pv_spawn) ? jsonData._pv_spawn.x : currentMap.spawn.x;
+  let spawnZ = (jsonData && jsonData._pv_spawn) ? jsonData._pv_spawn.z : currentMap.spawn.z;
   let counter = {}; // mapKey → 出現回数
 
   for (let i = 0; i < allEvents.length; i++) {
@@ -1825,14 +1842,38 @@ function buildSections() {
   }
 }
 
+// 現在のセクションのeventsをallEventsに書き戻す
+let _sectionApplied = false;  // applySection完了後にtrueになる
+function syncEventsToAll() {
+  if (!_sectionApplied) return;  // まだセクション適用前なら何もしない
+  if (sections.length > 0 && currentSection < sections.length) {
+    const sec = sections[currentSection];
+    allEvents.splice(sec.startIdx, sec.endIdx - sec.startIdx, ...events);
+    // endIdxをeventsの実際の長さに合わせて更新（追加/削除があった場合）
+    const diff = events.length - (sec.endIdx - sec.startIdx);
+    if (diff !== 0) {
+      sec.endIdx = sec.startIdx + events.length;
+      // 後続セクションのインデックスも調整
+      for (let s = currentSection + 1; s < sections.length; s++) {
+        sections[s].startIdx += diff;
+        sections[s].endIdx += diff;
+      }
+    }
+  }
+}
+
 // 現在のセクションを適用（events/map切替 + パス抽出）
 function applySection(secIdx) {
+  // 切替前に現在のeventsをallEventsに書き戻す
+  syncEventsToAll();
+
   if (secIdx < 0 || secIdx >= sections.length) secIdx = 0;
   currentSection = secIdx;
   const sec = sections[secIdx];
 
   // イベントを該当範囲に絞る
   events = allEvents.slice(sec.startIdx, sec.endIdx);
+  _sectionApplied = true;  // これ以降syncEventsToAllが有効
 
   // マップ切替
   if (MAPS[sec.mapKey]) {
@@ -1851,6 +1892,40 @@ function applySection(secIdx) {
   draw();
 }
 
+// JSONに保存されたスポーン座標を復元（セクション0用）
+function restoreSpawnFromJson() {
+  if (jsonData && jsonData._pv_spawn) {
+    currentMap.spawn.x = jsonData._pv_spawn.x;
+    currentMap.spawn.z = jsonData._pv_spawn.z;
+  }
+}
+
+// スポーン変更をJSONデータに永続化
+// sec=0 → jsonData._pv_spawn, sec>0 → 直前のstage_swapイベントのspawn配列
+function persistSpawn(x, z) {
+  if (!jsonData) return;
+  if (sections.length <= 1 || currentSection === 0) {
+    // 最初のセクション → _pv_spawn に保存
+    jsonData._pv_spawn = { x, z };
+  } else {
+    // セクション2以降 → 直前の stage_swap イベントの spawn 配列を更新
+    const sec = sections[currentSection];
+    if (sec && sec.startIdx > 0) {
+      const swapEv = allEvents[sec.startIdx - 1];
+      if (swapEv && swapEv.type === "stage_swap") {
+        if (!swapEv.spawn) swapEv.spawn = [x, 0, z];
+        else { swapEv.spawn[0] = x; swapEv.spawn[2] = z; }
+      }
+    }
+  }
+}
+
+// セクション対応のextractPath呼び出しヘルパー
+function reExtractPath() {
+  const sec = (sections.length > 0 && currentSection < sections.length) ? sections[currentSection] : null;
+  extractPath(sec ? sec.spawnX : undefined, sec ? sec.spawnZ : undefined);
+}
+
 function extractPath(spawnX, spawnZ) {
   playerPath = [];
   eventPositions = [];
@@ -1864,8 +1939,23 @@ function extractPath(spawnX, spawnZ) {
   for (let i = 0; i < events.length; i++) {
     const ev = events[i], t = ev.type;
     if (t === "rot_y") { rot = parseFloat(ev.target)||0; playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"rot_y",mapKey}); }
-    else if (t === "pos_z") { pz = parseFloat(ev.target)||0; playerPath.push({x:px,z:pz,rot,eventIdx:i,type:t,mapKey}); }
-    else if (t === "pos_x") { px = parseFloat(ev.target)||0; playerPath.push({x:px,z:pz,rot,eventIdx:i,type:t,mapKey}); }
+    else if (t === "pos_z" || t === "pos_x") {
+      // 連続する pos_x + pos_z（順不同）を斜め移動として統合
+      if (t === "pos_z") pz = parseFloat(ev.target)||0;
+      else px = parseFloat(ev.target)||0;
+      const next = events[i+1];
+      const nt = next ? next.type : "";
+      if ((t === "pos_z" && nt === "pos_x") || (t === "pos_x" && nt === "pos_z")) {
+        // 次もpos移動 → 統合して1つの斜めウェイポイントにする
+        i++;
+        if (nt === "pos_z") pz = parseFloat(next.target)||0;
+        else px = parseFloat(next.target)||0;
+        playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"pos_xz",mapKey});
+        eventPositions[i-1] = { x: px, z: pz, rot };
+      } else {
+        playerPath.push({x:px,z:pz,rot,eventIdx:i,type:t,mapKey});
+      }
+    }
     else if (t === "pos_z_await" || t === "pos_x_await") { playerPath.push({x:px,z:pz,rot,eventIdx:i,type:t,mapKey}); }
     else if (t === "walk_set") { playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"walk_set",mapKey}); }
     else if (t === "head_x") { playerPath.push({x:px,z:pz,rot,eventIdx:i,type:"head_x",mapKey}); }
@@ -2110,13 +2200,13 @@ function drawFOV() {
   }
 }
 
-const WP_COLORS = { spawn:"#ffffff", pos_z:"#ff6b6b", pos_x:"#ff6b6b", pos_z_await:"#ff9b5b", pos_x_await:"#ff9b5b", rot_y:"#ffd93d", walk_set:"#6bcb77", stage_swap:"#4d96ff", head_x:"#c084fc", motion:"#f97316" };
-const WP_ICONS = { spawn:"\u2302", pos_z:"\u2195", pos_x:"\u2194", pos_z_await:"\u2195", pos_x_await:"\u2194", rot_y:"\u21BB", walk_set:"\u2B50", stage_swap:"\u21C4", head_x:"\u25CE", motion:"\u25C9" };
+const WP_COLORS = { spawn:"#ffffff", pos_z:"#ff6b6b", pos_x:"#ff6b6b", pos_xz:"#ff4b9b", pos_y:"#ff6bff", pos_z_await:"#ff9b5b", pos_x_await:"#ff9b5b", pos_y_await:"#ff9bff", rot_y:"#ffd93d", walk_set:"#6bcb77", stage_swap:"#4d96ff", head_x:"#c084fc", motion:"#f97316" };
+const WP_ICONS = { spawn:"\u2302", pos_z:"\u2195", pos_x:"\u2194", pos_xz:"\u2922", pos_y:"\u21D5", pos_z_await:"\u2195", pos_x_await:"\u2194", pos_y_await:"\u21D5", rot_y:"\u21BB", walk_set:"\u2B50", stage_swap:"\u21C4", head_x:"\u25CE", motion:"\u25C9" };
 
-const WP_NAMES = {spawn:"開始",pos_z:"前後",pos_x:"左右",pos_z_await:"前後(待)",pos_x_await:"左右(待)",rot_y:"向き",walk_set:"速度",stage_swap:"切替",head_x:"視線",motion:"モーション"};
+const WP_NAMES = {spawn:"開始",pos_z:"前後",pos_x:"左右",pos_xz:"斜め",pos_y:"高さ",pos_z_await:"前後(待)",pos_x_await:"左右(待)",pos_y_await:"高さ(待)",rot_y:"向き",walk_set:"速度",stage_swap:"切替",head_x:"視線",motion:"モーション"};
 
 function drawWaypoints() {
-  const MOVE_SET = new Set(["pos_z","pos_x","pos_z_await","pos_x_await"]);
+  const MOVE_SET = new Set(["pos_z","pos_x","pos_xz","pos_z_await","pos_x_await"]);
 
   for (let i = 0; i < playerPath.length; i++) {
     const wp = playerPath[i];
@@ -2353,7 +2443,7 @@ function drawPickedPoint() {
 // ═══════════════════════════════════════════════════
 // イベント一覧
 // ═══════════════════════════════════════════════════
-const MOVEMENT_TYPES = new Set(["pos_z","pos_x","pos_z_await","pos_x_await","rot_y","walk_set","stage_swap","head_x"]);
+const MOVEMENT_TYPES = new Set(["pos_z","pos_x","pos_xz","pos_y","pos_z_await","pos_x_await","pos_y_await","rot_y","walk_set","stage_swap","head_x"]);
 
 // ── 回転プリセット ──
 const PV_ROT_Y = [
@@ -2550,7 +2640,7 @@ function buildEventList() {
       const [moved] = events.splice(fromIdx, 1);
       const adjusted = toIdx > fromIdx ? toIdx - 1 : toIdx;
       events.splice(adjusted, 0, moved);
-      extractPath(); buildEventList(); selectEvent(adjusted); draw();
+      reExtractPath(); buildEventList(); selectEvent(adjusted); draw();
     });
 
     frag.appendChild(div);
@@ -2613,19 +2703,23 @@ window.actionWalkHere = function() {
   const newEvents = [];
   // walk_set ON
   newEvents.push({ type: "walk_set", on: true });
-  // 必要に応じてpos_x, pos_z
-  if (dx > 0.01) {
-    const dist = dx; const dur = Math.round(dist / 1.5 * 10) / 10; // 1.5m/s 歩行
+  // XとZ両方変位がある → 斜め歩行（同じdurで同時実行）
+  if (dx > 0.01 && dz > 0.01) {
+    const dist = Math.sqrt(dx*dx + dz*dz);
+    const dur = Math.max(0.5, Math.round(dist / 1.5 * 10) / 10);
     newEvents.push({ type: "pos_x", target: Math.round(pickedPoint.x*4)/4, dur, id: "" });
-  }
-  if (dz > 0.01) {
-    const dist = dz; const dur = Math.round(dist / 1.5 * 10) / 10;
+    newEvents.push({ type: "pos_z", target: Math.round(pickedPoint.z*4)/4, dur, id: "" });
+  } else if (dx > 0.01) {
+    const dur = Math.max(0.5, Math.round(dx / 1.5 * 10) / 10);
+    newEvents.push({ type: "pos_x", target: Math.round(pickedPoint.x*4)/4, dur, id: "" });
+  } else if (dz > 0.01) {
+    const dur = Math.max(0.5, Math.round(dz / 1.5 * 10) / 10);
     newEvents.push({ type: "pos_z", target: Math.round(pickedPoint.z*4)/4, dur, id: "" });
   }
   // walk_set OFF
   newEvents.push({ type: "walk_set", on: false });
   events.splice(insertAt, 0, ...newEvents);
-  extractPath(); buildEventList(); selectEvent(insertAt);
+  reExtractPath(); buildEventList(); selectEvent(insertAt);
   showStatus("歩行イベントを追加しました");
 };
 
@@ -2641,17 +2735,26 @@ window.actionFaceHere = function() {
   const rounded = Math.round(rot * 100) / 100;
   const insertAt = selectedIdx >= 0 ? selectedIdx + 1 : events.length;
   events.splice(insertAt, 0, { type: "rot_y", target: rounded, dur: 0.8 });
-  extractPath(); buildEventList(); selectEvent(insertAt);
+  reExtractPath(); buildEventList(); selectEvent(insertAt);
   showStatus(`回転イベントを追加 (${(rounded*180/Math.PI).toFixed(0)}°)`);
 };
 
 // スタート地点にする
 window.actionSetSpawn = function() {
   if (!pickedPoint) return;
-  currentMap.spawn.x = Math.round(pickedPoint.x * 4) / 4;
-  currentMap.spawn.z = Math.round(pickedPoint.z * 4) / 4;
-  extractPath(); draw();
-  showStatus(`スタート地点: (${currentMap.spawn.x}, ${currentMap.spawn.z})`);
+  pushUndo();
+  const sx = Math.round(pickedPoint.x * 4) / 4;
+  const sz = Math.round(pickedPoint.z * 4) / 4;
+  currentMap.spawn.x = sx;
+  currentMap.spawn.z = sz;
+  persistSpawn(sx, sz);
+  // 現在のセクション座標も更新
+  if (sections.length > 0 && currentSection < sections.length) {
+    sections[currentSection].spawnX = sx;
+    sections[currentSection].spawnZ = sz;
+  }
+  extractPath(sx, sz); draw();
+  showStatus(`スタート地点: (${sx}, ${sz})`);
 };
 
 // 座標コピー
@@ -2675,7 +2778,7 @@ let mouseDownPos = null;
 let dragRotWP = -1; // 回転ハンドルドラッグ中のwaypoint index
 function onWheel(e) { e.preventDefault(); hideContextMenu(); zoom *= e.deltaY>0?0.9:1.1; zoom=Math.max(3,Math.min(200,zoom)); draw(); }
 
-const DRAGGABLE_POS_TYPES = new Set(["pos_z","pos_x","pos_z_await","pos_x_await","spawn"]);
+const DRAGGABLE_POS_TYPES = new Set(["pos_z","pos_x","pos_xz","pos_z_await","pos_x_await","spawn"]);
 
 function findNearestWP(sx,sy,maxDist) {
   let best=-1,bestD=maxDist*maxDist;
@@ -2805,7 +2908,7 @@ function onMouseMove(e) {
     const rounded = Math.round(rot * 100) / 100;
     wp.rot = rounded;
     if (wp.eventIdx >= 0) events[wp.eventIdx].target = rounded;
-    extractPath(); ceRenderEditPanel(); draw();
+    reExtractPath(); ceRenderEditPanel(); draw();
     showDragTooltip(mx, my, `${(rounded * 180 / Math.PI).toFixed(1)}\u00B0`);
     return;
   }
@@ -2819,13 +2922,27 @@ function onMouseMove(e) {
     if (wp.type === "spawn") {
       currentMap.spawn.x = snappedX;
       currentMap.spawn.z = snappedZ;
+      persistSpawn(snappedX, snappedZ);
+      if (sections.length > 0 && currentSection < sections.length) {
+        sections[currentSection].spawnX = snappedX;
+        sections[currentSection].spawnZ = snappedZ;
+      }
+    } else if (wp.type === "pos_xz" && wp.eventIdx >= 0) {
+      // pos_xz は連続する2イベント（eventIdx-1 と eventIdx）を両方更新
+      const ev1 = events[wp.eventIdx - 1], ev2 = events[wp.eventIdx];
+      if (ev1 && ev2) {
+        if (ev1.type === "pos_x") { ev1.target = snappedX; ev2.target = snappedZ; }
+        else { ev1.target = snappedZ; ev2.target = snappedX; }
+        autoRecalcDur(wp, ev1); autoRecalcDur(wp, ev2);
+      }
     } else if (wp.eventIdx >= 0) {
       const ev = events[wp.eventIdx], t = ev.type;
       if (t === "pos_z") ev.target = snappedZ;
       if (t === "pos_x") ev.target = snappedX;
       autoRecalcDur(wp, ev);
     }
-    extractPath(); ceRenderEditPanel(); draw();
+    reExtractPath();
+    ceRenderEditPanel(); draw();
     showDragTooltip(mx, my, `X:${snappedX.toFixed(2)} Z:${snappedZ.toFixed(2)}`);
     return;
   }
@@ -2929,11 +3046,12 @@ cv.addEventListener("contextmenu", (e) => e.preventDefault());
 // ═══════════════════════════════════════════════════
 function onMapChange() {
   currentMap = MAPS[document.getElementById("map-select").value] || MAPS.empty;
+  restoreSpawnFromJson();
   // セクション分割をリセットして全イベント表示
   events = allEvents;
   sections = [];
   document.getElementById("section-select").style.display = "none";
-  extractPath(); buildEventList(); resetView(); draw();
+  reExtractPath(); buildEventList(); resetView(); draw();
 }
 
 function onFileLoad(e) {
@@ -2982,10 +3100,12 @@ async function onOpenAndWatch() {
   }
 }
 
+let _savingInProgress = false;  // onSave中のwatchリロード防止フラグ
+
 async function loadFromHandle(handle, isFirst) {
   const file = await handle.getFile();
   const text = await file.text();
-  if (!isFirst && text === watchLastText) return false;
+  if (!isFirst && (text === watchLastText || _savingInProgress)) return false;
   watchLastText = text;
   try {
     jsonData = JSON.parse(text); allEvents = jsonData.events || [];
@@ -3026,16 +3146,20 @@ function stopWatch() {
 
 async function onSave() {
   if(!jsonData){alert("JSONが読み込まれていません");return;}
+  _savingInProgress = true;
   // 保存中は監視を一時停止
   const wasWatching = !!watchTimer;
   if (watchTimer) { clearInterval(watchTimer); watchTimer = null; }
 
   // セクション分割されている場合、編集済みeventsをallEventsに戻す
-  if (sections.length > 0 && currentSection < sections.length) {
-    const sec = sections[currentSection];
-    allEvents.splice(sec.startIdx, sec.endIdx - sec.startIdx, ...events);
-  }
+  syncEventsToAll();
   jsonData.events = allEvents;
+  // セクション0のスポーン座標をJSONに保存（パスビューアー用メタデータ）
+  if (sections.length > 0 && sections[0]) {
+    jsonData._pv_spawn = { x: sections[0].spawnX, z: sections[0].spawnZ };
+  } else {
+    jsonData._pv_spawn = { x: currentMap.spawn.x, z: currentMap.spawn.z };
+  }
   const text=JSON.stringify(jsonData,null,"\t")+"\n";
   const fileName = getCurrentFileName();
 
@@ -3049,8 +3173,14 @@ async function onSave() {
     if (res.ok) {
       showStatus(`✓ 保存完了 → dialogue/${fileName}`, 3000);
       watchLastText = text;
-      // 監視を再開（2秒後、ファイル書き込み完了を待つ）
-      if (wasWatching) setTimeout(() => startWatch(), 2000);
+      // DIALOGUE_CACHE も更新（チャプター再選択時に古いデータが使われるのを防止）
+      if (typeof DIALOGUE_CACHE !== "undefined") {
+        const cacheKey = fileName.replace(/\.json$/, "");
+        DIALOGUE_CACHE[cacheKey] = JSON.parse(text);
+      }
+      // 監視を再開（3秒後、ファイル書き込み完了を確実に待つ）
+      if (wasWatching) setTimeout(() => { _savingInProgress = false; startWatch(); }, 3000);
+      else _savingInProgress = false;
       return;
     }
     const err = await res.json();
@@ -3059,6 +3189,7 @@ async function onSave() {
     showStatus("サーバー未起動です。先に起動してください:\npython tools/server.py", 8000);
   }
   // エラー時も監視再開
+  _savingInProgress = false;
   if (wasWatching) setTimeout(() => startWatch(), 2000);
 }
 
@@ -3532,7 +3663,7 @@ function undo() {
   redoStack.push(JSON.stringify(events));
   events = JSON.parse(undoStack.pop());
   if (jsonData) jsonData.events = events;
-  extractPath(); draw();
+  reExtractPath(); draw();
   updateUndoButtons();
   ceRender(); cipUpdatePos();
 }
@@ -3541,7 +3672,7 @@ function redo() {
   undoStack.push(JSON.stringify(events));
   events = JSON.parse(redoStack.pop());
   if (jsonData) jsonData.events = events;
-  extractPath(); draw();
+  reExtractPath(); draw();
   updateUndoButtons();
   ceRender(); cipUpdatePos();
 }
@@ -3587,6 +3718,7 @@ document.addEventListener("click", (e) => {
     case "copy": actionCopyCoords(); break;
     case "insert-posx": actionInsertPosX(); break;
     case "insert-posz": actionInsertPosZ(); break;
+    case "insert-posxz": actionInsertPosXZ(); break;
     case "insert-rot": actionInsertRot(); break;
     case "delete": actionDeleteSelected(); break;
   }
@@ -3601,7 +3733,7 @@ window.actionInsertPosX = function() {
   const dist = pp ? Math.abs(pickedPoint.x - pp.x) : 5;
   const dur = Math.max(0.5, Math.round(dist / 1.5 * 10) / 10);
   events.splice(insertAt, 0, { type: "pos_x", target: Math.round(pickedPoint.x*4)/4, dur, id: "" });
-  extractPath(); buildEventList(); selectEvent(insertAt);
+  reExtractPath(); buildEventList(); selectEvent(insertAt);
   showStatus("X移動イベントを挿入しました");
 };
 
@@ -3614,8 +3746,26 @@ window.actionInsertPosZ = function() {
   const dist = pp ? Math.abs(pickedPoint.z - pp.z) : 5;
   const dur = Math.max(0.5, Math.round(dist / 1.5 * 10) / 10);
   events.splice(insertAt, 0, { type: "pos_z", target: Math.round(pickedPoint.z*4)/4, dur, id: "" });
-  extractPath(); buildEventList(); selectEvent(insertAt);
+  reExtractPath(); buildEventList(); selectEvent(insertAt);
   showStatus("Z移動イベントを挿入しました");
+};
+
+// 斜め移動イベント挿入（pos_x + pos_z を連続挿入）
+window.actionInsertPosXZ = function() {
+  if (!pickedPoint || !jsonData) return;
+  pushUndo();
+  const insertAt = selectedIdx >= 0 ? selectedIdx + 1 : events.length;
+  const pp = getPlayerPosAtSelected();
+  const dx = pp ? Math.abs(pickedPoint.x - pp.x) : 5;
+  const dz = pp ? Math.abs(pickedPoint.z - pp.z) : 5;
+  const dist = pp ? Math.sqrt(dx*dx + dz*dz) : 5;
+  const dur = Math.max(0.5, Math.round(dist / 1.5 * 10) / 10);
+  events.splice(insertAt, 0,
+    { type: "pos_x", target: Math.round(pickedPoint.x*4)/4, dur, id: "" },
+    { type: "pos_z", target: Math.round(pickedPoint.z*4)/4, dur, id: "" }
+  );
+  reExtractPath(); buildEventList(); selectEvent(insertAt);
+  showStatus("斜め移動イベントを挿入しました");
 };
 
 // 単独回転イベント挿入
@@ -3628,7 +3778,7 @@ window.actionInsertRot = function() {
   const rot = Math.round(Math.atan2(dx, -dz) * 100) / 100;
   const insertAt = selectedIdx >= 0 ? selectedIdx + 1 : events.length;
   events.splice(insertAt, 0, { type: "rot_y", target: rot, dur: 0.8 });
-  extractPath(); buildEventList(); selectEvent(insertAt);
+  reExtractPath(); buildEventList(); selectEvent(insertAt);
   showStatus(`回転イベントを挿入 (${(rot*180/Math.PI).toFixed(0)}\u00B0)`);
 };
 
@@ -3643,7 +3793,7 @@ window.actionDeleteSelected = function() {
   }
   multiSelected.clear();
   selectedIdx = Math.min(selectedIdx, events.length - 1);
-  extractPath(); draw();
+  reExtractPath(); draw();
   ceRender(); cipUpdatePos();
   showStatus(`${toDelete.length}件のイベントを削除しました`);
 };
@@ -3735,7 +3885,7 @@ function dirCommitQueue() {
   events.splice(insertAt, 0, ...dirQueue);
   const commitCount = dirQueue.length;
   dirQueue = [];
-  extractPath(); buildEventList();
+  reExtractPath(); buildEventList();
   selectEvent(insertAt + commitCount - 1);
   updateDirQueueUI(); updateDirInsertIndicator();
   showStatus(`${commitCount}件のイベントを挿入しました`);
@@ -4088,7 +4238,7 @@ document.getElementById("dir-step").addEventListener("input", (e) => {
 // カードエディタ
 // ═══════════════════════════════════════════════════
 const CE_TYPE_COLORS = {
-  pos_z:"ce-move", pos_x:"ce-move", pos_z_await:"ce-move", pos_x_await:"ce-move", walk_set:"ce-move",
+  pos_z:"ce-move", pos_x:"ce-move", pos_y:"ce-move", pos_z_await:"ce-move", pos_x_await:"ce-move", pos_y_await:"ce-move", walk_set:"ce-move",
   rot_y:"ce-rotate", head_x:"ce-rotate",
   say:"ce-say", say_clear:"ce-say",
   chat:"ce-chat", superchat:"ce-chat",
@@ -4482,7 +4632,7 @@ function ceRender() {
       const adjusted = toIdx > fromIdx ? toIdx - 1 : toIdx;
       events.splice(adjusted, 0, moved);
       ceSelectedIdx = adjusted; selectedIdx = adjusted;
-      extractPath(); ceRender(); buildEventList(); draw();
+      reExtractPath(); ceRender(); buildEventList(); draw();
     });
   });
 
@@ -4727,7 +4877,7 @@ window.applyModalExec = function() {
   if (t === "set_viewers") { ev.viewers = ev.count; }
 
   applyModalClose();
-  extractPath(); ceRender(); draw();
+  reExtractPath(); ceRender(); buildEventList(); draw();
   onSave().then(() => showStatus("✓ 適用＋保存しました"));
 };
 
@@ -4736,7 +4886,7 @@ window.ceDelete = function() {
   pushUndo();
   events.splice(ceSelectedIdx, 1);
   if (ceSelectedIdx >= events.length) ceSelectedIdx = events.length - 1;
-  ceRender();
+  reExtractPath(); ceRender(); buildEventList(); draw();
   showStatus("✓ 削除しました");
 };
 
@@ -4746,7 +4896,7 @@ window.ceDuplicate = function() {
   const copy = JSON.parse(JSON.stringify(events[ceSelectedIdx]));
   events.splice(ceSelectedIdx + 1, 0, copy);
   ceSelectedIdx++;
-  ceRender();
+  reExtractPath(); ceRender(); buildEventList(); draw();
   showStatus("✓ 複製しました");
 };
 

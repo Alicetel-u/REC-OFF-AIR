@@ -39,8 +39,8 @@ var _debug_label : Label = null
 
 
 func _ready() -> void:
-	# プレイヤーをイントロ中は停止
-	player.process_mode = Node.PROCESS_MODE_DISABLED
+	# プレイヤーをイントロ中は操作無効（ESC等は効くようにDISABLEDにしない）
+	player.input_disabled = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 	# チャプターデータからステージを動的生成
@@ -95,8 +95,8 @@ func _ready() -> void:
 	Inventory.player = player
 	Inventory.inventory_ui = $InventoryLayer/InventoryUI
 
-	# 廃村入口: イントロ前（画面が黒い間）に初期状態を設定してスナップを防ぐ
-	if chapter.chapter_id == "ch01_haison_iriguchi":
+	# 廃村入口: 初期状態を設定してスナップを防ぐ
+	if chapter.chapter_id == "ch01_haison_iriguchi" and GameManager.start_section == 0:
 		player.rotation.y      = 0.29   # バス停方向（-Z）を向く
 		player.head.rotation.x = -0.06
 		player.flashlight.visible  = false
@@ -109,19 +109,18 @@ func _ready() -> void:
 	# ローディング画面をフェードアウト
 	await LoadingScreen.fade_out()
 
-	await _run_intro()
-
 	# 廃村入口チャプターは自動演出シーケンスを実行して次チャプターへ進む
 	var cur_chapter := GameManager.current_chapter
 	if cur_chapter and cur_chapter.chapter_id == "ch01_haison_iriguchi":
 		await _run_entrance_sequence()
 		return
 
-	# CP2/CP4/CP5 は映像演出（プレイヤー無効）。CP3 だけ操作可能。
+	# CP2/CP4/CP5 は映像演出（プレイヤー移動無効）。CP3 だけ操作可能。
 	var is_cinematic : bool = cur_chapter != null and cur_chapter.chapter_id in AUTO_PROGRESS_CHAPTERS
 	if not is_cinematic:
-		player.process_mode = Node.PROCESS_MODE_INHERIT
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		player.input_disabled = false
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	# シネマティック中はカーソル表示のまま（操作不要＋ウィンドウ閉じられるように）
 
 	# チャプターオープニング演出（JSON駆動。映像演出中はプレイヤー動作なし）
 	if cur_chapter:
@@ -179,6 +178,19 @@ func _run_chapter_opening(chapter_id: String) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	# ESC: マウスカーソル表示/トグル
+	if event.is_action_pressed("ui_cancel"):
+		if player.input_disabled:
+			# シネマティック中は常にVISIBLEへ（トグルしない）
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		else:
+			# プレイヤー操作中はトグル
+			var mode := Input.get_mouse_mode()
+			var new_mode := Input.MOUSE_MODE_VISIBLE if mode == Input.MOUSE_MODE_CAPTURED else Input.MOUSE_MODE_CAPTURED
+			Input.set_mouse_mode(new_mode)
+		get_viewport().set_input_as_handled()
+		return
+
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
 	var kc := (event as InputEventKey).keycode
@@ -207,10 +219,10 @@ func _input(event: InputEvent) -> void:
 func _toggle_debug_free_move() -> void:
 	GameManager.debug_free_move = not GameManager.debug_free_move
 	if GameManager.debug_free_move:
-		player.process_mode = Node.PROCESS_MODE_INHERIT
+		player.input_disabled = false
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	else:
-		player.process_mode = Node.PROCESS_MODE_DISABLED
+		player.input_disabled = true
 	_refresh_debug_label()
 
 
@@ -324,6 +336,61 @@ func tween_vhs_param(param_name: String, target: float, dur: float) -> Tween:
 func _ensure_vhs_overlay() -> void:
 	if not _vhs_layer:
 		_setup_vhs_overlay()
+
+
+# ──────────────────────────────────────────────
+# 魚眼レンズオーバーレイ
+# ──────────────────────────────────────────────
+
+var _fisheye_layer : CanvasLayer = null
+var _fisheye_rect  : ColorRect   = null
+
+func _setup_fisheye_overlay() -> void:
+	if _fisheye_layer:
+		return
+	var shader := load("res://shaders/fisheye.gdshader") as Shader
+	if not shader:
+		return
+	_fisheye_layer = CanvasLayer.new()
+	_fisheye_layer.layer = 3   # VHS(1)・HUD(2)の上
+	add_child(_fisheye_layer)
+	_fisheye_rect = ColorRect.new()
+	_fisheye_rect.anchor_right  = 1.0
+	_fisheye_rect.anchor_bottom = 1.0
+	_fisheye_rect.mouse_filter  = Control.MOUSE_FILTER_IGNORE
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	_fisheye_rect.material = mat
+	_fisheye_layer.add_child(_fisheye_rect)
+
+
+func _ensure_fisheye_overlay() -> void:
+	if not _fisheye_layer:
+		_setup_fisheye_overlay()
+
+
+func set_fisheye_param(param_name: String, value: float) -> void:
+	_ensure_fisheye_overlay()
+	if is_instance_valid(_fisheye_rect) and _fisheye_rect.material:
+		(_fisheye_rect.material as ShaderMaterial).set_shader_parameter(param_name, value)
+
+
+func tween_fisheye_param(param_name: String, target: float, dur: float) -> Tween:
+	_ensure_fisheye_overlay()
+	if not is_instance_valid(_fisheye_rect) or not _fisheye_rect.material:
+		return null
+	var mat := _fisheye_rect.material as ShaderMaterial
+	var tw := create_tween()
+	tw.tween_method(func(v: float) -> void: mat.set_shader_parameter(param_name, v),
+		float(mat.get_shader_parameter(param_name)), target, dur)
+	return tw
+
+
+func remove_fisheye_overlay() -> void:
+	if is_instance_valid(_fisheye_layer):
+		_fisheye_layer.queue_free()
+		_fisheye_layer = null
+		_fisheye_rect  = null
 
 
 ## フォグ密度を動的変更
@@ -507,7 +574,7 @@ func _show_win() -> void:
 func _show_true_ending() -> void:
 	## CP5 エンディング — ending_route に応じた演出
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	player.process_mode = Node.PROCESS_MODE_DISABLED
+	player.input_disabled = true
 
 	# 画面を暗転（CanvasLayer には modulate がないので子の Overlay を使う）
 	overlay_ctrl.modulate.a = 0.0
@@ -662,6 +729,7 @@ func _setup_debug_ui() -> void:
 	_debug_label.add_theme_constant_override("shadow_offset_x", 1)
 	_debug_label.add_theme_constant_override("shadow_offset_y", 1)
 	_debug_label.position = Vector2(8, 8)
+	_debug_label.visible = false  # デバッグラベル非表示
 	cl.add_child(_debug_label)
 	_refresh_debug_label()
 

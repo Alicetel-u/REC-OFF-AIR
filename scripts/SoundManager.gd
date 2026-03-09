@@ -27,6 +27,7 @@ var _monster_idx   : int = 0
 
 var _voice    : AudioStreamPlayer = null
 var _bgm      : AudioStreamPlayer = null
+var _sfx      : AudioStreamPlayer = null
 
 
 func _ready() -> void:
@@ -36,6 +37,7 @@ func _ready() -> void:
 	_door    = _make_player(0.0)
 	_voice   = _make_player(0.0)
 	_bgm     = _make_player(0.0)
+	_sfx     = _make_player(0.0)
 	_scan_all()
 
 
@@ -196,6 +198,21 @@ func play_door_creak() -> void:
 	_door.stream    = s
 	_door.volume_db = -6.0
 	_door.play()
+
+
+## 汎用 SFX を再生（file = "door/creak1" → res://assets/audio/sfx/door/creak1.ogg）
+func play_sfx_file(file: String, vol_db: float = -6.0) -> void:
+	var path := "res://assets/audio/sfx/" + file
+	# 拡張子が省略されていたら .ogg を試す
+	if not path.get_extension():
+		path += ".ogg"
+	var s := _load_audio(path)
+	if not s:
+		push_warning("SoundManager: sfx not found: " + path)
+		return
+	_sfx.stream    = s
+	_sfx.volume_db = vol_db
+	_sfx.play()
 
 
 ## ボイス（WAV）を再生 — 直前のボイスは停止してから再生
