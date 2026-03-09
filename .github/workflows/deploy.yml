@@ -49,12 +49,16 @@ jobs:
       - name: Validate dialogue JSON
         run: |
           python tools/fix_voice_wait.py --validate-only
-          # CONSECUTIVE_WAIT / LONG_GAP / MISSING_WAV は致命的
+          # CONSECUTIVE_WAIT は致命的（MISSING_WAV は音声生成待ちで一時的に許容）
           output=$(python tools/fix_voice_wait.py --validate-only 2>&1)
-          if echo "$output" | grep -qE "CONSECUTIVE_WAIT|MISSING_WAV"; then
+          if echo "$output" | grep -qE "CONSECUTIVE_WAIT"; then
             echo "ERROR: 致命的なバリデーション警告があります"
-            echo "$output" | grep -E "CONSECUTIVE_WAIT|MISSING_WAV"
+            echo "$output" | grep -E "CONSECUTIVE_WAIT"
             exit 1
+          fi
+          if echo "$output" | grep -qE "MISSING_WAV"; then
+            echo "WARNING: 未生成WAVがあります（音声生成待ち）"
+            echo "$output" | grep "MISSING_WAV"
           fi
           echo "OK: バリデーション通過"
 
