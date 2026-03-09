@@ -9,15 +9,15 @@ const HorrorChoicePanelScript := preload("res://scripts/HorrorChoicePanel.gd")
 var player: CharacterBody3D = null
 var hud: Control = null
 
-var _walking           := false
-var _moving            := false   # 実際に前進するか（walk_setで制御）
-var _bob_t             := 0.0
+var _walking : bool           = false
+var _moving : bool            = false   # 実際に前進するか（walk_setで制御）
+var _bob_t : float            = 0.0
 var _flash_orig_energy : float = 1.0
 var _fade_layer        : CanvasLayer = null
 var _fade_rect         : ColorRect = null
 
 # クリックスキップ制御
-var _skip_to_next_say  := false
+var _skip_to_next_say : bool = false
 
 
 func _unhandled_input(_event: InputEvent) -> void:
@@ -33,10 +33,10 @@ func _process(delta: float) -> void:
 	if not is_instance_valid(player):
 		return
 	if _walking:
-		var prev_bob := _bob_t
+		var prev_bob : float = _bob_t
 		_bob_t += delta * Player.BOB_FREQ
 		var ty : float = abs(sin(_bob_t)) * Player.BOB_AMP
-		var tx : float = sin(_bob_t * 2.0) * Player.BOB_AMP * 0.4
+		var tx : float = sin(_bob_t * 2.0) * (Player.BOB_AMP * 0.4)
 		player.camera.position.y = lerp(player.camera.position.y, ty, delta * 12.0)
 		player.camera.position.x = lerp(player.camera.position.x, tx, delta * 12.0)
 		# 足音 — bob_t が π の倍数を通過（着地タイミング）で再生

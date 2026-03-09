@@ -11,6 +11,11 @@
 			"_": "【シーン1：終点への片道切符】"
 		},
 		{
+			"type": "say",
+			"text": "次は...霧原村前...霧原村前...",
+			"voice": "v067"
+		},
+		{
 			"type": "_comment",
 			"_": "════════════════════════════════════════════"
 		},
@@ -85,22 +90,17 @@
 			"voice": "v004"
 		},
 		{
+			"type": "rot_y",
+			"target": -1.57,
+			"dur": 0.8
+		},
+		{
 			"type": "wait",
 			"sec": 3.23
 		},
 		{
-			"type": "rot_y",
-			"target": -0.5,
-			"dur": 1.5
-		},
-		{
 			"type": "wait",
 			"sec": 1
-		},
-		{
-			"type": "rot_y",
-			"target": -2.3,
-			"dur": 2
 		},
 		{
 			"type": "wait",
@@ -170,11 +170,6 @@
 		{
 			"type": "wait",
 			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "ヤラセじゃないし！ほら、証拠にここのテープ！ガチの規制線！",
-			"voice": "v006"
 		},
 		{
 			"type": "wait",
@@ -266,8 +261,8 @@
 		},
 		{
 			"type": "pos_x",
-			"target": 21.75,
-			"dur": 13.8,
+			"target": 20.25,
+			"dur": 12.5,
 			"id": "walk_to_arch"
 		},
 		{
@@ -676,11 +671,11 @@
 		{
 			"type": "head_x",
 			"target": 0.5,
-			"dur": 1.0
+			"dur": 1
 		},
 		{
 			"type": "wait",
-			"sec": 2.0
+			"sec": 2
 		},
 		{
 			"type": "choice",
@@ -710,44 +705,6 @@
 			"type": "rot_y",
 			"target": -1.57,
 			"dur": 0.8
-		},
-		{
-			"type": "stage_swap",
-			"scene": "res://assets/models/public_toilet/PublicToilet.tscn",
-			"spawn": [
-				0,
-				1,
-				5
-			]
-		},
-		{
-			"type": "rot_y",
-			"target": 0,
-			"dur": 0.01
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "fade_clear",
-			"dur": 1
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン3：公衆トイレの首無し少女】トイレマップ演出"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "── フェーズ1: トイレ前に到着・入場 ──"
 		},
 		{
 			"type": "set_viewers",
