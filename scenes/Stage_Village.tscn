@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" path="res://shaders/素材/立ち入り禁止.glb" id="14_3p2gp"]
 [ext_resource type="PackedScene" path="res://shaders/素材/鳥居.glb" id="14_cvmbd"]
 [ext_resource type="PackedScene" path="res://shaders/素材/dead_tree.glb" id="15_cvmbd"]
+[ext_resource type="PackedScene" path="res://shaders/素材/rusty_fence.glb" id="16_fence"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cvmbd"]
 render_priority = 0
@@ -857,3 +858,15 @@ transform = Transform3D(9.396926, 0, 3.4202013, 0, 12, 0, -3.4202013, 0, 9.39692
 
 [node name="GateDeadTree_Right" parent="." instance=ExtResource("15_cvmbd")]
 transform = Transform3D(7.7134514, 0, -9.1925335, 0, 15, 0, 9.1925335, 0, 7.7134514, 45, 6.5, -2)
+
+[node name="ShrineFence_Front" parent="." instance=ExtResource("16_fence")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 12, 0.8, -10)
+
+[node name="ShrineFence_Back" parent="." instance=ExtResource("16_fence")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 12, 0.8, -20)
+
+[node name="ShrineFence_Left" parent="." instance=ExtResource("16_fence")]
+transform = Transform3D(-2.185569e-07, 0, 5, 0, 5, 0, -5, 0, -2.185569e-07, 8, 0.8, -15)
+
+[node name="ShrineFence_Right" parent="." instance=ExtResource("16_fence")]
+transform = Transform3D(-2.185569e-07, 0, 5, 0, 5, 0, -5, 0, -2.185569e-07, 16, 0.8, -15)
