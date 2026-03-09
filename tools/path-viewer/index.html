@@ -413,12 +413,16 @@ body.light #ce-lane-footer { border-color:#b0b8cc; }
 .ce-card {
   display:inline-flex; flex-direction:column; justify-content:center;
   min-width:120px; max-width:220px; width:auto; padding:8px 14px;
-  border-radius:10px; cursor:pointer; flex-shrink:0;
+  border-radius:10px; cursor:grab; flex-shrink:0;
   border:2px solid var(--card-color, #334);
   transition:all .1s ease; position:relative;
   background:rgba(14,20,40,.6); vertical-align:top;
   gap:2px;
 }
+.ce-card:active { cursor:grabbing; }
+.ce-card.ce-dragging { opacity:.3; transform:scale(.95); }
+.ce-card.ce-drag-left { border-left:3px solid #4d96ff !important; }
+.ce-card.ce-drag-right { border-right:3px solid #4d96ff !important; }
 body.light .ce-card { background:rgba(255,255,255,.7); }
 .ce-card:hover { background:rgba(30,40,70,.8); }
 .ce-card.ce-selected {
@@ -795,6 +799,13 @@ body.light #ce-edit-panel input, body.light #ce-edit-panel textarea {
 
 /* ── A4: 複数選択 ── */
 .ev-item.multi-selected { background:#1a3a60; outline:1px solid rgba(26,115,232,.5); }
+
+/* ── D&D: ドラッグ並び替え ── */
+.ev-item[draggable] { cursor:grab; }
+.ev-item[draggable]:active { cursor:grabbing; }
+.ev-item.dragging { opacity:.35; background:rgba(77,150,255,.08); }
+.ev-item.drag-over-top { border-top:2px solid var(--blue) !important; }
+.ev-item.drag-over-bottom { border-bottom:2px solid var(--blue) !important; }
 
 /* ── B5: セリフ吹き出し ── */
 .speech-bubble {
@@ -1617,6 +1628,7 @@ const MAPS = {
 // ═══════════════════════════════════════════════════
 let events = [], allEvents = [], jsonData = null, currentMap = MAPS.stage_iriguchi;
 let selectedIdx = -1, playerPath = [];
+let _dndFrom = -1; // D&Dドラッグ元インデックス
 let pickedPoint = null; // {x, z} クリックで選んだ地点
 
 // セクション分割（stage_swap境界）
@@ -2305,6 +2317,19 @@ function drawPickedPoint() {
   ctx.fillStyle = "#ffd93d";
   ctx.beginPath(); ctx.arc(sx,sy,2.5,0,Math.PI*2); ctx.fill();
 
+  // Coordinate label on canvas
+  const coordLabel = `X: ${pickedPoint.x.toFixed(2)},  Z: ${pickedPoint.z.toFixed(2)}`;
+  ctx.font = "bold 11px 'Consolas',monospace";
+  const clm = ctx.measureText(coordLabel);
+  const clx = sx + 14, cly = sy - 24;
+  ctx.fillStyle = lightMode ? "rgba(230,235,245,.92)" : "rgba(8,12,26,.88)";
+  ctx.beginPath(); ctx.roundRect(clx-4, cly-2, clm.width+8, 18, 4); ctx.fill();
+  ctx.strokeStyle = "rgba(255,217,61,.55)"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.roundRect(clx-4, cly-2, clm.width+8, 18, 4); ctx.stroke();
+  ctx.fillStyle = "#ffd93d"; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+  ctx.fillText(coordLabel, clx, cly+7);
+  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
+
   // Distance line to player
   const lastWP = getPlayerPosAtSelected();
   if (lastWP) {
@@ -2491,6 +2516,43 @@ function buildEventList() {
     else if(t==="sfx")det=ev.sound||"";
     div.innerHTML=`<span class="ev-dot" style="background:${cat.color}"></span><span class="ev-idx">${i}</span><span class="ev-type">${ja}</span><span class="ev-detail">${det}</span>`;
     div.addEventListener("click",(e)=>{ if(e.shiftKey){toggleMultiSelect(i);}else{multiSelected.clear();selectEvent(i);} });
+
+    // ドラッグ&ドロップ並び替え
+    div.draggable = true;
+    div.addEventListener("dragstart",(e)=>{
+      _dndFrom = i;
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", String(i)); // fallback
+      setTimeout(()=>div.classList.add("dragging"), 0);
+    });
+    div.addEventListener("dragend",()=>{
+      div.classList.remove("dragging"); _dndFrom = -1;
+    });
+    div.addEventListener("dragover",(e)=>{
+      if (_dndFrom < 0) return;
+      e.preventDefault(); e.dataTransfer.dropEffect = "move";
+      const rect = div.getBoundingClientRect();
+      const mid = rect.top + rect.height / 2;
+      div.classList.toggle("drag-over-top",    e.clientY < mid);
+      div.classList.toggle("drag-over-bottom", e.clientY >= mid);
+    });
+    div.addEventListener("dragleave",()=>{ div.classList.remove("drag-over-top","drag-over-bottom"); });
+    div.addEventListener("drop",(e)=>{
+      e.preventDefault();
+      div.classList.remove("drag-over-top","drag-over-bottom");
+      const fromIdx = _dndFrom;
+      if (fromIdx < 0) return;
+      const rect = div.getBoundingClientRect();
+      const insertAfter = e.clientY >= rect.top + rect.height / 2;
+      const toIdx = i + (insertAfter ? 1 : 0);
+      if (fromIdx === toIdx || fromIdx === toIdx - 1) return;
+      pushUndo();
+      const [moved] = events.splice(fromIdx, 1);
+      const adjusted = toIdx > fromIdx ? toIdx - 1 : toIdx;
+      events.splice(adjusted, 0, moved);
+      extractPath(); buildEventList(); selectEvent(adjusted); draw();
+    });
+
     frag.appendChild(div);
   }
   el.appendChild(frag);
@@ -4380,6 +4442,50 @@ function ceRender() {
   html += `<div class="ce-lane-insert" onclick="ceShowInsert(event,${events.length})" title="イベントを追加">+</div>`;
 
   lane.innerHTML = html;
+
+  // ── カードD&Dバインド ──
+  lane.querySelectorAll(".ce-card").forEach(card => {
+    const idx = parseInt(card.dataset.idx);
+    card.draggable = true;
+    card.addEventListener("dragstart", (e) => {
+      _dndFrom = idx;
+      e.dataTransfer.effectAllowed = "move";
+      setTimeout(() => card.classList.add("ce-dragging"), 0);
+    });
+    card.addEventListener("dragend", () => {
+      card.classList.remove("ce-dragging"); _dndFrom = -1;
+      lane.querySelectorAll(".ce-drag-left,.ce-drag-right").forEach(c =>
+        c.classList.remove("ce-drag-left","ce-drag-right"));
+    });
+    card.addEventListener("dragover", (e) => {
+      if (_dndFrom < 0 || _dndFrom === idx) return;
+      e.preventDefault(); e.dataTransfer.dropEffect = "move";
+      const rect = card.getBoundingClientRect();
+      const mid = rect.left + rect.width / 2;
+      card.classList.toggle("ce-drag-left",  e.clientX < mid);
+      card.classList.toggle("ce-drag-right", e.clientX >= mid);
+    });
+    card.addEventListener("dragleave", () => {
+      card.classList.remove("ce-drag-left","ce-drag-right");
+    });
+    card.addEventListener("drop", (e) => {
+      e.preventDefault();
+      card.classList.remove("ce-drag-left","ce-drag-right");
+      const fromIdx = _dndFrom;
+      if (fromIdx < 0 || fromIdx === idx) return;
+      const rect = card.getBoundingClientRect();
+      const insertAfter = e.clientX >= rect.left + rect.width / 2;
+      const toIdx = idx + (insertAfter ? 1 : 0);
+      if (fromIdx === toIdx || fromIdx === toIdx - 1) return;
+      pushUndo();
+      const [moved] = events.splice(fromIdx, 1);
+      const adjusted = toIdx > fromIdx ? toIdx - 1 : toIdx;
+      events.splice(adjusted, 0, moved);
+      ceSelectedIdx = adjusted; selectedIdx = adjusted;
+      extractPath(); ceRender(); buildEventList(); draw();
+    });
+  });
+
   ceBuildFilters();
   ceRenderEditPanel();
 
