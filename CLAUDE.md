@@ -27,10 +27,23 @@
 
 ## ボイス生成
 
-- VOICEVOX Speaker ID: 20
+マルチエンジン対応（VOICEVOX / Style-Bert-VITS2）。
+
+### VOICEVOX（デフォルト）
+- Speaker ID: 20
 - パラメータ: speedScale=1.25, intonationScale=1.5, pitchScale=0.02
-- 末尾無音トリミング: threshold=2000, margin=40ms
 - ポーズ短縮: pause_mora.vowel_length max=0.15s, prePhonemeLength=0.05, postPhonemeLength=0.05
+- 実行: `python tools/generate_voice_ch01.py`
+
+### Style-Bert-VITS2
+- サーバー: `http://127.0.0.1:5000`（起動: `Antigravity_Projects/Style-Bert-VITS2/Server.bat`）
+- デフォルトモデル: amitaro / スタイル: Neutral / 話速(length): 0.8
+- パラメータ: sdp_ratio=0.2, noise=0.6, noisew=0.8
+- 実行: `python tools/generate_voice_ch01.py --engine sbv2`
+- モデル指定: `--model jvnv-M1-jp --style Happy`
+
+### 共通設定
+- 末尾無音トリミング: threshold=2000, margin=40ms
 - セリフ編集後は必ず `python tools/fix_voice_wait.py --validate-only` でバリデーション実行
 - 発音修正: TIKTOK→ティックトック / 廃村→はいそん / お札→おふだ
 - 出力先: `assets/audio/voice/ch01/v001.wav` 〜

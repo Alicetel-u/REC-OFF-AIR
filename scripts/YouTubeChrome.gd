@@ -61,6 +61,7 @@ var _horror_overlay   : ColorRect = null  # ホラー演出用オーバーレイ
 var _speed_btn        : Button   = null  # 倍速トグルボタン
 var _speed_idx        : int      = 0     # 現在の速度インデックス
 const SPEED_OPTIONS   = [1.0, 2.0, 4.0]
+var _stage_btn        : Button   = null  # ステージ切替ボタン
 
 const SUPERCHAT_NAMES = ["ゆきんこ77","幽霊ガチ勢","ホラー好き太郎","配信民99","ゴーストハンター"]
 const SUPERCHAT_MSGS  = [
@@ -475,6 +476,9 @@ func _build_video_controls() -> void:
 	_ctrl_btn(btn_row, "⏸", 18)
 	_speed_btn = _ctrl_button(btn_row, "▶▶", 12)
 	_speed_btn.pressed.connect(_toggle_speed)
+	_pad(btn_row, 2)
+	_stage_btn = _ctrl_button(btn_row, "📍", 12)
+	_stage_btn.pressed.connect(_open_stage_menu)
 	_pad(btn_row, 4)
 	_ctrl_btn(btn_row, "🔊", 14)
 	_pad(btn_row, 6)
@@ -969,6 +973,67 @@ func _toggle_speed() -> void:
 		else:
 			_speed_btn.text = "x%d" % int(spd)
 			_speed_btn.add_theme_color_override("font_color", C_RED)
+
+
+# ── ステージ切替メニュー ──
+var _stage_popup : PopupMenu = null
+
+func _open_stage_menu() -> void:
+	if _stage_popup and is_instance_valid(_stage_popup):
+		_stage_popup.queue_free()
+	_stage_popup = PopupMenu.new()
+	_stage_popup.add_theme_font_size_override("font_size", 12)
+	# 全チャプターをリストに追加
+	for i in GameManager.chapter_order.size():
+		var path : String = GameManager.chapter_order[i]
+		var ch := load(path) as Resource
+		var label : String = ch.chapter_name if ch else "CP%d" % (i + 1)
+		if i == GameManager.chapter_index:
+			label = "▶ " + label
+		_stage_popup.add_item(label, i)
+	# テスト用チャプターも追加（chapter_orderに入っていないもの）
+	var test_chapters : Array[String] = [
+		"res://chapters/ch_test_toilet.tres",
+	]
+	if test_chapters.size() > 0:
+		_stage_popup.add_separator("── テスト ──")
+	for tc in test_chapters:
+		if ResourceLoader.exists(tc):
+			var ch := load(tc) as Resource
+			var label : String = ch.chapter_name if ch else tc.get_file()
+			_stage_popup.add_item(label, 100 + test_chapters.find(tc))
+	_stage_popup.id_pressed.connect(_on_stage_selected)
+	add_child(_stage_popup)
+	# ボタンの上にポップアップ表示
+	var btn_rect := _stage_btn.get_global_rect()
+	_stage_popup.popup(Rect2i(int(btn_rect.position.x), int(btn_rect.position.y - _stage_popup.size.y - 10), 0, 0))
+
+
+func _on_stage_selected(id: int) -> void:
+	if id < 100:
+		# 本編チャプター
+		GameManager.state = GameManager.State.PLAYING
+		GameManager.items_found = 0
+		GameManager.hit_count = 0
+		GameManager._hit_invincible = false
+		GameManager.load_chapter(id)
+		get_tree().reload_current_scene()
+	else:
+		# テスト用チャプター
+		var test_chapters : Array[String] = [
+			"res://chapters/ch_test_toilet.tres",
+		]
+		var tc_idx : int = id - 100
+		if tc_idx < test_chapters.size():
+			var ch := load(test_chapters[tc_idx]) as Resource
+			if ch:
+				GameManager.state = GameManager.State.PLAYING
+				GameManager.items_found = 0
+				GameManager.hit_count = 0
+				GameManager._hit_invincible = false
+				GameManager.current_chapter = ch
+				GameManager.chapter_index = -1
+				get_tree().reload_current_scene()
 
 
 func _hbox(parent: Node, sep: int) -> HBoxContainer:

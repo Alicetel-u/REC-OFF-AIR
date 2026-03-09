@@ -1,10 +1,16 @@
 """
-CP1 ボイス生成スクリプト（差分生成対応）
-VOICEVOX API を使って ch01_entrance.json の say イベントの音声を生成する
+CP1 ボイス生成スクリプト（差分生成対応・マルチエンジン）
+VOICEVOX / Style-Bert-VITS2 API でセリフ音声を生成する
 - voice_hash で変更検出 → 変更分だけ再生成
 - reading フィールド対応（読み指定があればそちらを使用）
 - 末尾の無音を自動トリミング
 - 生成後に fix_voice_wait.py を自動実行して wait 時間を最適化
+
+使い方:
+  python tools/generate_voice_ch01.py                  # VOICEVOX（デフォルト）
+  python tools/generate_voice_ch01.py --engine sbv2     # Style-Bert-VITS2
+  python tools/generate_voice_ch01.py --engine sbv2 --model jvnv-M1-jp --style Neutral
+  python tools/generate_voice_ch01.py --force           # 全再生成
 """
 
 import json
@@ -14,31 +20,50 @@ import sys
 import os
 import io
 import subprocess
+import argparse
 from wav_utils import trim_trailing_silence as _trim_wav
 
 # Windows コンソールの文字化け対策
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
+# ═══════════════════════════════════════════════════
+# VOICEVOX 設定
+# ═══════════════════════════════════════════════════
 VOICEVOX_URL = "http://127.0.0.1:50021"
 SPEAKER_ID = 20
-DIALOGUE_PATH = os.path.join(os.path.dirname(__file__), "..", "dialogue", "ch01_entrance.json")
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "audio", "voice", "ch01")
-HASH_PATH = os.path.join(os.path.dirname(__file__), "..", "assets", "audio", "voice", "ch01", ".voice_hashes.json")
 
 # 音声パラメータ（テンション高め・流暢・早口）
 SPEED_SCALE = 1.25         # 速度アップ
 INTONATION_SCALE = 1.5     # 抑揚強め（テンション高い感じ）
 PITCH_SCALE = 0.02         # ほんの少しピッチ上げ
 
-# 末尾無音トリミング設定
-SILENCE_THRESHOLD = 2000    # この振幅以下を無音とみなす（微小音もカット）
-TAIL_MARGIN_MS = 40         # トリミング後に残す余白（ミリ秒）
-
 # VOICEVOXポーズ制御
 MAX_PAUSE_LENGTH = 0.15     # 句読点ポーズの最大長（秒）
 PRE_PHONEME_LENGTH = 0.05   # 文頭ポーズ（秒）
 POST_PHONEME_LENGTH = 0.05  # 文末ポーズ（秒）
+
+# ═══════════════════════════════════════════════════
+# Style-Bert-VITS2 設定
+# ═══════════════════════════════════════════════════
+SBV2_URL = "http://127.0.0.1:5000"
+SBV2_MODEL = "amitaro"      # デフォルトモデル（model_assets/ 内のディレクトリ名）
+SBV2_STYLE = "Neutral"      # デフォルトスタイル（Neutral/Happy/Sad/Angry等）
+SBV2_LENGTH = 0.8            # 話速（1.0基準、小さい=速い）
+SBV2_SDP_RATIO = 0.2        # SDP/DP比（トーンのばらつき）
+SBV2_NOISE = 0.6            # サンプルノイズ
+SBV2_NOISEW = 0.8           # SDPノイズ
+
+# ═══════════════════════════════════════════════════
+# 共通設定
+# ═══════════════════════════════════════════════════
+DIALOGUE_PATH = os.path.join(os.path.dirname(__file__), "..", "dialogue", "ch01_entrance.json")
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "audio", "voice", "ch01")
+HASH_PATH = os.path.join(os.path.dirname(__file__), "..", "assets", "audio", "voice", "ch01", ".voice_hashes.json")
+
+# 末尾無音トリミング設定
+SILENCE_THRESHOLD = 2000    # この振幅以下を無音とみなす（微小音もカット）
+TAIL_MARGIN_MS = 40         # トリミング後に残す余白（ミリ秒）
 
 # 発音修正テーブル
 PRONUNCIATION_FIXES = {
@@ -68,7 +93,7 @@ def trim_trailing_silence(wav_path: str) -> float:
     return _trim_wav(wav_path, threshold=SILENCE_THRESHOLD, margin_ms=TAIL_MARGIN_MS)
 
 
-def generate_voice(text: str, speaker_id: int, output_path: str) -> bool:
+def generate_voice_voicevox(text: str, speaker_id: int, output_path: str) -> tuple:
     """VOICEVOX APIで音声を生成してWAVファイルに保存（末尾無音トリミング付き）"""
     try:
         tts_text = fix_pronunciation(text)
@@ -116,6 +141,55 @@ def generate_voice(text: str, speaker_id: int, output_path: str) -> bool:
         return False, 0.0
 
 
+def generate_voice_sbv2(text: str, output_path: str,
+                        model: str = SBV2_MODEL, style: str = SBV2_STYLE) -> tuple:
+    """Style-Bert-VITS2 APIで音声を生成してWAVファイルに保存（末尾無音トリミング付き）"""
+    try:
+        tts_text = fix_pronunciation(text)
+
+        # SBV2は1リクエストでWAVを直接返す
+        resp = requests.post(
+            f"{SBV2_URL}/voice",
+            params={
+                "text": tts_text,
+                "model_name": model,
+                "style": style,
+                "length": SBV2_LENGTH,
+                "sdp_ratio": SBV2_SDP_RATIO,
+                "noise": SBV2_NOISE,
+                "noisew": SBV2_NOISEW,
+                "language": "JP",
+                "auto_split": True,
+            },
+            timeout=120
+        )
+        resp.raise_for_status()
+
+        with open(output_path, "wb") as f:
+            f.write(resp.content)
+
+        # 末尾無音トリミング
+        duration = trim_trailing_silence(output_path)
+
+        return True, duration
+    except requests.exceptions.ConnectionError:
+        print(f"  ERROR: SBV2サーバーに接続できません ({SBV2_URL})")
+        print(f"         Style-Bert-VITS2 の Server.bat を起動してください")
+        return False, 0.0
+    except Exception as e:
+        print(f"  ERROR: {e}")
+        return False, 0.0
+
+
+def generate_voice(text: str, output_path: str, engine: str = "voicevox",
+                   model: str = SBV2_MODEL, style: str = SBV2_STYLE) -> tuple:
+    """エンジンに応じて音声生成を振り分け"""
+    if engine == "sbv2":
+        return generate_voice_sbv2(text, output_path, model=model, style=style)
+    else:
+        return generate_voice_voicevox(text, SPEAKER_ID, output_path)
+
+
 def load_hashes() -> dict:
     """サイドカーファイルからハッシュを読み込む"""
     if os.path.exists(HASH_PATH):
@@ -130,8 +204,21 @@ def save_hashes(hashes: dict) -> None:
         json.dump(hashes, f, ensure_ascii=False, indent=2)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="ボイス生成スクリプト（VOICEVOX / Style-Bert-VITS2）")
+    parser.add_argument("--engine", choices=["voicevox", "sbv2"], default="voicevox",
+                        help="音声エンジン (default: voicevox)")
+    parser.add_argument("--model", default=SBV2_MODEL,
+                        help=f"SBV2モデル名 (default: {SBV2_MODEL})")
+    parser.add_argument("--style", default=SBV2_STYLE,
+                        help=f"SBV2スタイル (default: {SBV2_STYLE})")
+    parser.add_argument("--force", action="store_true",
+                        help="全件再生成（差分検出を無視）")
+    return parser.parse_args()
+
+
 def main():
-    force = "--force" in sys.argv
+    args = parse_args()
 
     with open(DIALOGUE_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -146,10 +233,14 @@ def main():
     # ハッシュはサイドカーファイルで管理（対話JSONを書き換えない）
     hashes = load_hashes()
 
-    mode_label = "全再生成 (--force)" if force else "差分生成"
-    print(f"=== CP1 ボイス{mode_label} (Speaker ID: {SPEAKER_ID}) ===")
+    mode_label = "全再生成 (--force)" if args.force else "差分生成"
+    engine_label = "Style-Bert-VITS2" if args.engine == "sbv2" else "VOICEVOX"
+    print(f"=== CP1 ボイス{mode_label} [{engine_label}] ===")
     print(f"対象: {len(voice_events)} 件")
-    print(f"speed={SPEED_SCALE} intonation={INTONATION_SCALE} pitch={PITCH_SCALE}")
+    if args.engine == "sbv2":
+        print(f"model={args.model} style={args.style} length={SBV2_LENGTH}")
+    else:
+        print(f"speaker={SPEAKER_ID} speed={SPEED_SCALE} intonation={INTONATION_SCALE} pitch={PITCH_SCALE}")
     print(f"末尾トリミング: threshold={SILENCE_THRESHOLD} margin={TAIL_MARGIN_MS}ms")
     print()
 
@@ -168,24 +259,27 @@ def main():
         output_path = os.path.join(OUTPUT_DIR, f"{voice_id}.wav")
 
         # 差分検出（サイドカーファイルのハッシュと比較）
+        # SBV2使用時はエンジン名をハッシュに含めて区別
+        hash_key = voice_id if args.engine == "voicevox" else f"{voice_id}@sbv2"
         new_hash = compute_voice_hash(text, reading)
-        old_hash = hashes.get(voice_id, "")
+        old_hash = hashes.get(hash_key, "")
 
-        if not force and new_hash == old_hash and os.path.exists(output_path):
+        if not args.force and new_hash == old_hash and os.path.exists(output_path):
             print(f"[{i+1}/{len(voice_events)}] {voice_id} -- スキップ（変更なし）")
             skipped += 1
             continue
 
-        reason = "force" if force else ("新規" if not old_hash else "変更あり")
+        reason = "force" if args.force else ("新規" if not old_hash else "変更あり")
         print(f"[{i+1}/{len(voice_events)}] {voice_id} ({reason})")
         if reading:
             print(f"  読み: {reading}")
 
-        ok, duration = generate_voice(voice_text, SPEAKER_ID, output_path)
+        ok, duration = generate_voice(voice_text, output_path,
+                                      engine=args.engine, model=args.model, style=args.style)
         if ok:
             size_kb = os.path.getsize(output_path) / 1024
             print(f"  -> OK ({size_kb:.1f} KB, {duration:.2f}s)")
-            hashes[voice_id] = new_hash
+            hashes[hash_key] = new_hash
             hashes_updated = True
             success += 1
         else:
