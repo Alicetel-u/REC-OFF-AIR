@@ -43,11 +43,11 @@
 - 実行: `python tools/generate_voice_ch01.py`
 
 ### Style-Bert-VITS2
-- サーバー: `http://127.0.0.1:5000`（起動: `Antigravity_Projects/Style-Bert-VITS2/Server.bat`）
-- デフォルトモデル: amitaro / スタイル: Neutral / 話速(length): 0.8
+- サーバー: `http://127.0.0.1:5000`（起動: `cd C:\repos\Voice-Cloner && venv\Scripts\python.exe server_fastapi.py --device cuda`）
+- デフォルトモデル: jvnv-F2-jp / スタイル: Fear / 話速(length): 0.8
 - パラメータ: sdp_ratio=0.2, noise=0.6, noisew=0.8
-- 実行: `python tools/generate_voice_ch01.py --engine sbv2`
-- モデル指定: `--model jvnv-M1-jp --style Happy`
+- 実行: `python tools/generate_voice_ch01.py --engine sbv2 --model jvnv-F2-jp --style Fear`
+- 他モデル指定例: `--model jvnv-M1-jp --style Happy`
 
 ### 共通設定
 - 末尾無音トリミング: threshold=2000, margin=40ms
