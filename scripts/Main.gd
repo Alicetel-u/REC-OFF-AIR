@@ -9,11 +9,11 @@ const _DANK_VIDEO_BOT = 612
 const _DANK_ROWS      = 7
 const _DANK_ROW_H     = 44
 
-# 演出終了後に自動で次チャプターへ進むチャプターID一覧（CP3のみ手動）
+# 演出終了後に自動で次チャプターへ進むチャプターID一覧（CP3のみ手動＝プレイアブル）
 const AUTO_PROGRESS_CHAPTERS : Array[String] = [
-	"ch02_yashiki",
-	"ch04_kirihara_jinja",
-	"ch05_haison_dasshutsu",
+	"ch02_mura_tansaku",
+	"ch04_jinja",
+	"ch05_dasshutsu",
 ]
 
 @onready var player       : CharacterBody3D = $Player
@@ -586,21 +586,21 @@ func _show_true_ending() -> void:
 	await tw.finished
 
 	match GameManager.ending_route:
-		0:  # NORMAL END: 夢の代償
+		0:  # NORMAL END: 夢の保存（アーカイブ）
 			win_label.visible = true
 			win_label.text    = "NORMAL END"
 			win_label.add_theme_color_override("font_color", Color(0.8, 0.6, 0.2))
-			sub_label.text    = "夢の代償 — 赤い糸は、まだ首に巻きついている"
-		1:  # TRUE END: 配信停止
+			sub_label.text    = "夢の保存 — まばたきは、もう必要ない"
+		1:  # TRUE END: 承認欲求からのログアウト
 			win_label.visible = true
 			win_label.text    = "TRUE END"
 			win_label.add_theme_color_override("font_color", Color(0.4, 0.7, 1.0))
-			sub_label.text    = "配信停止 — 誰にも見られない。それが、いちばん安全だった"
-		2:  # BAD END: 永遠のバズり
+			sub_label.text    = "承認欲求からのログアウト — 誰にも見られない。それが、自由だった"
+		2:  # BAD END: 永遠のサムネイル
 			win_label.visible = true
 			win_label.text    = "BAD END"
 			win_label.add_theme_color_override("font_color", Color(1.0, 0.1, 0.1))
-			sub_label.text    = "永遠のバズり — 配信は、まだ続いている"
+			sub_label.text    = "永遠のサムネイル — この配信のアーカイブは削除できません"
 		_:  # フォールバック（未選択）
 			win_label.visible = true
 			win_label.text    = "END"
@@ -741,7 +741,7 @@ func _refresh_debug_label() -> void:
 	var idx : int    = GameManager.chapter_index + 1
 	var cname: String = ch.chapter_name if ch else "?"
 	var free_str := " | [F9] 自由移動: ON ✓" if GameManager.debug_free_move else " | [F9] 自由移動"
-	var skip_str := "  F1=入口  F2=屋敷  F3=倉庫  F4=神社  F5=脱出" if _DEBUG_CHAPTER_SKIP else ""
+	var skip_str := "  F1=入口  F2=村探索  F3=民家  F4=神社  F5=脱出" if _DEBUG_CHAPTER_SKIP else ""
 	_debug_label.text = "【DEBUG】CP%d: %s%s%s" % [idx, cname, free_str, skip_str]
 
 

@@ -22,6 +22,9 @@ uniform float wrinkle_strength : hint_range(0.0, 1.0) = 0.6;
 uniform float fade_amount : hint_range(0.0, 1.0) = 0.3;
 // 汚れの強さ
 uniform float dirt_amount : hint_range(0.0, 1.0) = 0.15;
+// ほんのり発光（暗闘でシルエットが浮かぶ程度）
+uniform vec4 glow_color : source_color = vec4(0.3, 0.35, 0.5, 1.0);
+uniform float glow_strength : hint_range(0.0, 1.0) = 0.25;
 
 // ハッシュ関数（ランダム値生成）
 float hash(vec2 p) {
@@ -127,6 +130,9 @@ void fragment() {
 	base *= mix(0.92, 1.05, weave_pattern);
 
 	ALBEDO = base;
+
+	// ほんのり発光 — 暗闇でシルエットが不気味に浮かぶ
+	EMISSION = glow_color.rgb * glow_strength;
 
 	// 布は比較的粗い表面、しわ部分はよりマットに
 	ROUGHNESS = mix(0.75, 0.95, wrinkle * 0.5 + weave_bump * 2.0);

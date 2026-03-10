@@ -35,10 +35,10 @@ var chapter_index: int = 0
 
 var chapter_order: Array[String] = [
 	"res://chapters/ch01_haison_iriguchi.tres",   # CP1: 廃村入口→トイレ
-	"res://chapters/ch02_yashiki.tres",            # CP2: 村長の屋敷
-	"res://chapters/ch01_haison_souko.tres",       # CP3: 廃倉庫
-	"res://chapters/ch04_kirihara_jinja.tres",     # CP4: 桐原神社
-	"res://chapters/ch05_haison_dasshutsu.tres",   # CP5: 脱出＋最終分岐
+	"res://chapters/ch02_mura_tansaku.tres",      # CP2: 村の探索 ─ 10FPSの呪い
+	"res://chapters/ch03_minka.tres",             # CP3: 民家探索（プレイアブル）
+	"res://chapters/ch04_jinja.tres",             # CP4: 桐原神社 ─ 10万人の視線
+	"res://chapters/ch05_dasshutsu.tres",         # CP5: 終焉のログアウト ─ 3分岐
 ]
 
 signal item_collected(count: int, total: int)

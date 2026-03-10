@@ -133,16 +133,16 @@
     },
     {
       "type": "_comment",
-      "_": "── 前方パン（進行方向=東の案山子エリアを見渡す） ──"
+      "_": "── 前方パン（進行方向右の畑〜案山子エリアを見渡す） ──"
     },
     {
       "type": "rot_y",
-      "target": -0.5,
-      "dur": 1.5
+      "target": -1.2,
+      "dur": 3.0
     },
     {
       "type": "wait",
-      "sec": 1.5
+      "sec": 3.0
     },
     {
       "type": "chat",
@@ -160,11 +160,12 @@
     {
       "type": "say",
       "text": "ヤラセじゃないって！ ほら、見てよこれ。村の入り口の周りに並んでるこの案山子……全部首がないの。",
+      "reading": "ヤラセじゃないって！ ほら、見てよこれ。村の入り口の周りに並んでるこの案山子……全部くびがないの。",
       "voice": "v002"
     },
     {
       "type": "wait",
-      "sec": 5.67
+      "sec": 5.87
     },
     {
       "type": "chat",
@@ -208,11 +209,12 @@
     {
       "type": "say",
       "text": "この立ち入り禁止の柵の向こうに行きたいと思いまーす！",
-      "voice": "v002c"
+      "voice": "v002c",
+      "reading": "この立ち入り禁止の柵の向こうに行きたいと思いまーす！"
     },
     {
       "type": "wait",
-      "sec": 3.38
+      "sec": 3.19
     },
     {
       "type": "chat",
@@ -405,7 +407,8 @@
     {
       "type": "say",
       "text": "この村、20年前に『みゆき事件』っていう未解決事件があってさ。17歳の女の子……霧原みゆきちゃんが、村の公衆トイレで首を撥ねられたの。犯人は見つかってない。",
-      "voice": "v004"
+      "voice": "v004",
+      "reading": "この村、20年前に『みゆき事件』っていう未解決事件があってさ。17歳の女の子……霧原みゆきちゃんが、村の公衆トイレでくびを撥ねられたの。犯人は見つかってない。"
     },
     {
       "type": "wait",
@@ -450,11 +453,12 @@
     {
       "type": "say",
       "text": "……ほら、ここ見て。案山子の首の切り口、全部同じ角度なんだよね。まるで刀で一太刀……ぞっとするでしょ。",
-      "voice": "v005"
+      "voice": "v005",
+      "reading": "……ほら、ここ見て。案山子のくびの切り口、全部同じ角度なんだよね。まるで刀で一太刀……ぞっとするでしょ。"
     },
     {
       "type": "wait",
-      "sec": 7.46
+      "sec": 7.18
     },
     {
       "type": "rot_y",
@@ -492,11 +496,12 @@
     {
       "type": "say",
       "text": "で、それ以来この村の公衆トイレには『みゆきちゃんが出る』って噂があって。首のない女の子が、天井に貼り付いてるらしいの。……カメラ越しにしか見えないんだって。",
-      "voice": "v006"
+      "voice": "v006",
+      "reading": "で、それ以来この村の公衆トイレには『みゆきちゃんが出る』って噂があって。くびのない女の子が、天井に貼り付いてるらしいの。……カメラ越しにしか見えないんだって。"
     },
     {
       "type": "wait",
-      "sec": 8.72
+      "sec": 9.08
     },
     {
       "type": "chat",
@@ -1109,7 +1114,38 @@
     },
     {
       "type": "_comment",
-      "_": "── ② 商店街は暗転維持（flashlight_onはトイレ側で実行） ──"
+      "_": "── ② 懐中電灯ON → 暗転を薄く解除（うっすら廃墟が浮かぶ） ──"
+    },
+    {
+      "type": "flashlight_on"
+    },
+    {
+      "type": "fade_clear",
+      "dur": 2.0,
+      "target": 0.82
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "chat",
+      "msg": "おっ見えてきた",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "暗すぎて全然わかんないw",
+      "user": "名無しさん"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
     },
     {
       "type": "camera_shake",
@@ -1165,11 +1201,19 @@
     },
     {
       "type": "_comment",
-      "_": "── ③ 不審な金属音（ホラー第1波） ──"
+      "_": "── ③ 不審な金属音（ホラー第1波）→ 懐中電灯が一瞬揺れる ──"
     },
     {
       "type": "sfx",
       "file": "metal/impactMetal_heavy_002"
+    },
+    {
+      "type": "flashlight_flicker"
+    },
+    {
+      "type": "fade_black",
+      "dur": 0.3,
+      "target": 0.92
     },
     {
       "type": "wait",
@@ -1183,6 +1227,11 @@
     {
       "type": "wait",
       "sec": 3.68
+    },
+    {
+      "type": "fade_clear",
+      "dur": 1.5,
+      "target": 0.82
     },
     {
       "type": "chat",
@@ -1217,8 +1266,16 @@
       "file": "metal/impactMetal_heavy_001"
     },
     {
+      "type": "flashlight_flicker"
+    },
+    {
       "type": "horror_glitch",
       "dur": 0.12
+    },
+    {
+      "type": "fade_black",
+      "dur": 0.15,
+      "target": 0.95
     },
     {
       "type": "wait",
@@ -1226,7 +1283,7 @@
     },
     {
       "type": "chat",
-      "msg": "また鳴った！！",
+      "msg": "また鳴った！！ 懐中電灯もやばい！",
       "user": "配信民99",
       "utype": "member"
     },
@@ -1242,6 +1299,11 @@
     {
       "type": "wait",
       "sec": 4.25
+    },
+    {
+      "type": "fade_clear",
+      "dur": 1.0,
+      "target": 0.82
     },
     {
       "type": "_comment",
@@ -1282,7 +1344,7 @@
     },
     {
       "type": "_comment",
-      "_": "── ⑤ 懐中電灯の異常（ホラー第2波） ──"
+      "_": "── ⑤ 懐中電灯の異常（ホラー第2波）→ 画面も連動して暗くなる ──"
     },
     {
       "type": "sfx",
@@ -1296,12 +1358,22 @@
       "type": "flashlight_flicker"
     },
     {
+      "type": "fade_black",
+      "dur": 0.4,
+      "target": 0.93
+    },
+    {
       "type": "wait",
       "sec": 0.3
     },
     {
       "type": "sfx",
       "file": "door/creak3"
+    },
+    {
+      "type": "fade_clear",
+      "dur": 0.8,
+      "target": 0.85
     },
     {
       "type": "wait",
@@ -1346,9 +1418,17 @@
       "sec": 0.3
     },
     {
+      "type": "flashlight_flicker"
+    },
+    {
       "type": "camera_shake",
       "intensity": 0.04,
       "dur": 0.5
+    },
+    {
+      "type": "fade_black",
+      "dur": 0.2,
+      "target": 0.95
     },
     {
       "type": "say",
@@ -1358,6 +1438,11 @@
     {
       "type": "wait",
       "sec": 4.37
+    },
+    {
+      "type": "fade_clear",
+      "dur": 1.5,
+      "target": 0.82
     },
     {
       "type": "chat",
@@ -1379,7 +1464,10 @@
     },
     {
       "type": "_comment",
-      "_": "── ⑥ トイレ発見（暗転→一瞬だけ映す） ──"
+      "_": "── ⑥ トイレ発見（懐中電灯OFF→完全暗転→一瞬だけ映す） ──"
+    },
+    {
+      "type": "flashlight_off"
     },
     {
       "type": "fade_black",
@@ -1476,27 +1564,41 @@
     },
     {
       "type": "sfx",
-      "file": "bell/impactBell_heavy_004",
+      "file": "bell/impactBell_heavy_000",
+      "vol": 0
+    },
+    {
+      "type": "sfx",
+      "sound": "monster_growl",
+      "vol": -8
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.08,
+      "dur": 1.5
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 8,
+      "count": 3
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "sfx",
+      "file": "door/creak1",
       "vol": -4
     },
     {
       "type": "sfx",
-      "file": "metal/impactMetal_heavy_003",
-      "vol": -6
-    },
-    {
-      "type": "camera_shake",
-      "intensity": 0.05,
-      "dur": 1.0
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 6,
-      "count": 2
+      "file": "metal/impactMetal_heavy_000",
+      "vol": -3
     },
     {
       "type": "wait",
-      "sec": 0.8
+      "sec": 1.0
     },
     {
       "type": "chat",
@@ -1756,11 +1858,11 @@
     },
     {
       "type": "_comment",
-      "_": "── まず足元を見る（暗闘で怖くて下を向いている） ──"
+      "_": "── 正面を見ている（暗くて不安） ──"
     },
     {
       "type": "head_x",
-      "target": -0.4,
+      "target": 0.0,
       "dur": 0.01
     },
     {
@@ -1782,7 +1884,7 @@
     },
     {
       "type": "_comment",
-      "_": "── びくっとして顔を上げる ──"
+      "_": "── びくっとして少し見回す ──"
     },
     {
       "type": "head_x",
@@ -2499,16 +2601,17 @@
     },
     {
       "type": "miyuki_spawn",
-      "pos": [0.5, 3.8, -1.0],
+      "pos": [1.0, 3.8, -2.5],
       "upside_down": true,
       "walk": false,
-      "convulsion": true,
-      "convulsion_intensity": 0.2,
-      "arms_spread": 0.8,
-      "light_energy": 4.0,
-      "light_range": 8.0,
+      "convulsion": false,
+      "convulsion_intensity": 0.0,
+      "arms_spread": 0.0,
+      "arms_sway": false,
+      "light_energy": 3.0,
+      "light_range": 6.0,
       "scale": 8.0,
-      "_note": "天井に逆さまで貼り付いたみゆき — 首なし・直立不動"
+      "_note": "個室上の天井に逆さまで貼り付き — プレイヤー正面（rot_y=4.71時）"
     },
     {
       "type": "horror_glitch",
@@ -2688,12 +2791,12 @@
     },
     {
       "type": "miyuki_move",
-      "pos": [0.5, 0.0, -1.0],
+      "pos": [1.0, 0.0, -2.5],
       "upside_down": false,
       "walk": false,
-      "convulsion_intensity": 0.8,
-      "light_energy": 8.0,
-      "_note": "天井から床に落下ワープ — 痙攣が激しくなる"
+      "convulsion_intensity": 0.15,
+      "light_energy": 6.0,
+      "_note": "天井から床に落下 — 個室の前に立つ"
     },
     {
       "type": "horror_glitch",
@@ -2713,9 +2816,9 @@
       "type": "miyuki_move",
       "track_player": true,
       "walk": true,
-      "convulsion_intensity": 1.2,
-      "light_energy": 12.0,
-      "_note": "みゆきがプレイヤーを追跡開始 — 背後から接近"
+      "convulsion_intensity": 0.3,
+      "light_energy": 8.0,
+      "_note": "みゆきがプレイヤーを追跡開始 — 背後からゆっくり接近"
     },
     {
       "type": "head_x",

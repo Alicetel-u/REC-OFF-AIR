@@ -54,8 +54,8 @@ if [ -n "$staged_wavs" ]; then
     for wav in $staged_wavs; do
         import_file="${wav}.import"
         if [ -f "$import_file" ]; then
-            # .importファイルが存在するがステージされていない場合
-            if ! git diff --cached --name-only | grep -qF "$import_file"; then
+            # .importファイルに未ステージの変更がある場合のみエラー
+            if git diff --name-only | grep -qF "$import_file"; then
                 echo -e "${RED}ERROR: $wav が変更されていますが ${import_file} がステージされていません${NC}"
                 echo "  → godot.exe --headless --import を実行してから git add ${import_file}"
                 errors=$((errors + 1))

@@ -15,6 +15,7 @@ var _bob_t : float            = 0.0
 var _flash_orig_energy : float = 1.0
 var _fade_layer        : CanvasLayer = null
 var _fade_rect         : ColorRect = null
+var _miyuki_instance   : Node3D    = null
 
 # クリックスキップ制御
 var _skip_to_next_say : bool = false
@@ -343,10 +344,10 @@ func run_from_path(json_path: String) -> void:
 				_flashlight_off()
 
 			"fade_black":
-				await _fade_black(float(ev.get("dur", 0.8)))
+				await _fade_black(float(ev.get("dur", 0.8)), float(ev.get("target", 1.0)))
 
 			"fade_clear":
-				await _fade_clear(float(ev.get("dur", 0.8)))
+				await _fade_clear(float(ev.get("dur", 0.8)), float(ev.get("target", 0.0)))
 
 			"stage_swap":
 				await _stage_swap(ev.get("scene", ""), ev.get("spawn", [0, 1, 0]))
@@ -408,6 +409,28 @@ func run_from_path(json_path: String) -> void:
 				_garbled_text(
 					ev.get("text", ""),
 					float(ev.get("dur", 0.3)))
+
+			"set_fps":
+				# Engine.max_fps を変更してカクツキ演出（0 = 制限なし＝通常）
+				var target_fps : int = int(ev.get("fps", 0))
+				Engine.max_fps = target_fps
+
+			"chat_flood":
+				# チャット欄を特定メッセージで埋め尽くす
+				await _chat_flood(
+					ev.get("msg", "藁"),
+					int(ev.get("count", 10)),
+					float(ev.get("interval", 0.1)),
+					ev.get("color", ""))
+
+			"miyuki_spawn":
+				_miyuki_spawn(ev)
+
+			"miyuki_move":
+				_miyuki_move(ev)
+
+			"miyuki_despawn":
+				_miyuki_despawn()
 
 			_:
 				pass  # 未知タイプは無視
@@ -838,17 +861,17 @@ func _ensure_fade_layer() -> void:
 	_fade_layer.add_child(_fade_rect)
 
 
-func _fade_black(dur: float = 0.8) -> void:
+func _fade_black(dur: float = 0.8, target: float = 1.0) -> void:
 	_ensure_fade_layer()
 	var tw := create_tween()
-	tw.tween_property(_fade_rect, "color:a", 1.0, dur / GameManager.playback_speed)
+	tw.tween_property(_fade_rect, "color:a", target, dur / GameManager.playback_speed)
 	await tw.finished
 
 
-func _fade_clear(dur: float = 0.8) -> void:
+func _fade_clear(dur: float = 0.8, target: float = 0.0) -> void:
 	_ensure_fade_layer()
 	var tw := create_tween()
-	tw.tween_property(_fade_rect, "color:a", 0.0, dur / GameManager.playback_speed)
+	tw.tween_property(_fade_rect, "color:a", target, dur / GameManager.playback_speed)
 	await tw.finished
 
 
@@ -880,8 +903,9 @@ func _stage_swap(scene_path: String, spawn: Array) -> void:
 
 	# 新シーン読み込み
 	var packed := load(scene_path) as PackedScene
+	var stage : Node = null
 	if packed:
-		var stage := packed.instantiate()
+		stage = packed.instantiate()
 		main.add_child(stage)
 	else:
 		push_warning("EntranceDirector: stage_swap — シーンが読み込めません: " + scene_path)
@@ -897,19 +921,40 @@ func _stage_swap(scene_path: String, spawn: Array) -> void:
 	ground_mesh.material_override = mat
 	main.add_child(ground_mesh)
 
-	# 薄暗い環境光（ホラー用：懐中電灯メインで暗めに）
+	# 環境光なし — 懐中電灯だけが頼り
 	var env_light := OmniLight3D.new()
 	env_light.position = Vector3(0, 4, 0)
-	env_light.light_color = Color(0.3, 0.35, 0.4)
-	env_light.light_energy = 0.15
-	env_light.omni_range = 20.0
+	env_light.light_color = Color(0.08, 0.08, 0.12)
+	env_light.light_energy = 0.02
+	env_light.omni_range = 10.0
 	main.add_child(env_light)
+
+	# GLB蛍光灯ライトをほぼ完全消灯
+	if stage:
+		_dim_lights_recursive(stage, 0.02)
+
+	# トイレ等の閉所では懐中電灯を減光（広い屋外では元に戻す）
+	if is_instance_valid(player):
+		if "Toilet" in scene_path or "toilet" in scene_path:
+			player.flashlight.light_energy = _flash_orig_energy * 0.25
+			player.flashlight.spot_range = 20.0
+		else:
+			player.flashlight.light_energy = _flash_orig_energy
+			player.flashlight.spot_range = 80.0
 
 	# プレイヤー位置設定
 	var sx : float = float(spawn[0]) if spawn.size() > 0 else 0.0
 	var sy : float = float(spawn[1]) if spawn.size() > 1 else 1.0
 	var sz : float = float(spawn[2]) if spawn.size() > 2 else 0.0
 	player.position = Vector3(sx, sy, sz)
+
+
+## ステージ内の全Light3Dのenergyにscaleを掛ける（GLBライト減光用）
+func _dim_lights_recursive(node: Node, scale: float) -> void:
+	if node is Light3D:
+		node.light_energy *= scale
+	for child in node.get_children():
+		_dim_lights_recursive(child, scale)
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -1072,6 +1117,26 @@ func _vignette(amount: float, dur: float) -> void:
 		main.tween_vhs_param("vignette_boost", amount, dur)
 
 
+## チャットフラッド — 特定メッセージでチャット欄を埋め尽くす
+func _chat_flood(msg: String, count: int, interval: float, color_name: String) -> void:
+	if not is_instance_valid(hud):
+		return
+	var usernames : Array[String] = [
+		"???", "視聴者", "名無し", "■■■", "▓▓▓",
+		"░░░", "呪い", "案山子", "藁人形", "霧原村民"
+	]
+	var utype : String = ""
+	if color_name == "red":
+		utype = "owner"  # 赤色表示
+	for i in count:
+		if not is_inside_tree():
+			return
+		var uname : String = usernames[randi() % usernames.size()]
+		_chat(msg, uname, utype)
+		if interval > 0.0 and i < count - 1:
+			await get_tree().create_timer(interval / GameManager.playback_speed).timeout
+
+
 ## 文字化けテキスト — セリフを一瞬壊してから正しく表示
 const GARBLE_CHARS := "ア̷̢イ̶ウ̸エ̴オ̷カ̸キ̶ク̴ケ̷コ̸■▓░█▒▌▐◈◆●◼ᚠᛗᛁᚾᛟᚳ"
 
@@ -1106,3 +1171,116 @@ func _garbled_text(text: String, dur: float) -> void:
 	if is_inside_tree():
 		await get_tree().create_timer(step_dur).timeout
 	hud.show_monologue(text)
+
+
+# ════════════════════════════════════════════════════════════════════
+# みゆきゴースト — 動的スポーン・移動・消去
+# ════════════════════════════════════════════════════════════════════
+
+func _miyuki_spawn(ev: Dictionary) -> void:
+	# 既存インスタンスがあれば消す
+	_miyuki_despawn()
+
+	var glb : PackedScene = load("res://assets/models/characters/Miyuki.glb") as PackedScene
+	if not glb:
+		push_warning("EntranceDirector: Miyuki.glb が見つかりません")
+		return
+
+	_miyuki_instance = Node3D.new()
+	_miyuki_instance.name = "MiyukiGhost"
+
+	# GLBモデルをインスタンス化して子に追加
+	var model := glb.instantiate()
+	model.name = "ModelInstance"
+	# テストシーンではスケール10倍だった — そのまま適用
+	var s : float = float(ev.get("scale", 10.0))
+	model.scale = Vector3(s, s, s)
+	_miyuki_instance.add_child(model)
+
+	# MiyukiGhost.gd をアタッチ
+	var ghost_script := load("res://assets/models/characters/MiyukiGhost.gd") as GDScript
+	if ghost_script:
+		_miyuki_instance.set_script(ghost_script)
+
+	# 位置
+	var pos_arr : Array = ev.get("pos", [0, 3.8, -1])
+	_miyuki_instance.global_position = Vector3(
+		float(pos_arr[0]), float(pos_arr[1]), float(pos_arr[2]))
+
+	# パラメータ設定（日本語変数名はスクリプト側で定義済み）
+	_miyuki_instance.set("逆さまにする", ev.get("upside_down", false))
+	_miyuki_instance.set("歩く", ev.get("walk", false))
+	_miyuki_instance.set("歩行速度", float(ev.get("speed", 0.3)))
+	_miyuki_instance.set("痙攣を有効にする", ev.get("convulsion", false))
+	_miyuki_instance.set("痙攣の激しさ", float(ev.get("convulsion_intensity", 0.1)))
+	_miyuki_instance.set("関節のガクつき", float(ev.get("joint_jitter", 0.1)))
+	_miyuki_instance.set("腕を広げる", float(ev.get("arms_spread", 0.0)))
+	_miyuki_instance.set("腕をゆらゆらさせる", ev.get("arms_sway", false))
+
+	# プレイヤーをターゲットに設定
+	if is_instance_valid(player) and ev.get("track_player", false):
+		_miyuki_instance.set("ターゲット", player)
+
+	# 不気味な赤い照明
+	var light := OmniLight3D.new()
+	light.name = "GhostLight"
+	light.light_color = Color(0.8, 0.1, 0.05)
+	light.light_energy = float(ev.get("light_energy", 6.0))
+	light.omni_range = float(ev.get("light_range", 12.0))
+	_miyuki_instance.add_child(light)
+
+	# 表示/非表示
+	_miyuki_instance.visible = ev.get("visible", true)
+
+	# シーンツリーに追加
+	get_tree().current_scene.add_child(_miyuki_instance)
+
+
+func _miyuki_move(ev: Dictionary) -> void:
+	if not is_instance_valid(_miyuki_instance):
+		return
+
+	# 位置
+	if ev.has("pos"):
+		var pos_arr : Array = ev.get("pos", [0, 0, 0])
+		_miyuki_instance.global_position = Vector3(
+			float(pos_arr[0]), float(pos_arr[1]), float(pos_arr[2]))
+
+	# 逆さま切替
+	if ev.has("upside_down"):
+		_miyuki_instance.set("逆さまにする", ev.get("upside_down", false))
+		if ev.get("upside_down", false):
+			_miyuki_instance.rotation.x = PI
+		else:
+			_miyuki_instance.rotation.x = 0.0
+
+	# 歩行切替
+	if ev.has("walk"):
+		_miyuki_instance.set("歩く", ev.get("walk", false))
+
+	# プレイヤー追跡切替
+	if ev.has("track_player"):
+		if ev.get("track_player", false) and is_instance_valid(player):
+			_miyuki_instance.set("ターゲット", player)
+		else:
+			_miyuki_instance.set("ターゲット", null)
+
+	# 痙攣の激しさ
+	if ev.has("convulsion_intensity"):
+		_miyuki_instance.set("痙攣の激しさ", float(ev.get("convulsion_intensity", 0.4)))
+
+	# 表示/非表示
+	if ev.has("visible"):
+		_miyuki_instance.visible = ev.get("visible", true)
+
+	# ライトの強さ変更
+	if ev.has("light_energy"):
+		var light := _miyuki_instance.get_node_or_null("GhostLight") as OmniLight3D
+		if light:
+			light.light_energy = float(ev.get("light_energy", 6.0))
+
+
+func _miyuki_despawn() -> void:
+	if is_instance_valid(_miyuki_instance):
+		_miyuki_instance.queue_free()
+		_miyuki_instance = null

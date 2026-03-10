@@ -113,6 +113,8 @@ func _build_atmosphere() -> void:
 	moon.light_energy = 0.45
 	moon.rotation_degrees = Vector3(-35, 25, 0)
 	moon.shadow_enabled = true
+	moon.shadow_bias = 0.3
+	moon.shadow_normal_bias = 2.0
 	add_child(moon)
 
 	# ── 道路沿いの街灯（SpotLight3D × 5） ──
@@ -134,6 +136,8 @@ func _build_atmosphere() -> void:
 		lamp.spot_angle   = 60.0
 		lamp.rotation_degrees = Vector3(-80, 0, 0)
 		lamp.shadow_enabled = true
+		lamp.shadow_bias = 0.3
+		lamp.shadow_normal_bias = 2.0
 		add_child(lamp)
 		# 街灯の柱
 		_box(pos - Vector3(0, 2.75, 0), Vector3(0.12, 5.5, 0.12), Color(0.28, 0.28, 0.32))

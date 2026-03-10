@@ -19,6 +19,9 @@
       "sound": "ambient_wind"
     },
     {
+      "type": "flashlight_on"
+    },
+    {
       "type": "set_viewers",
       "count": 32000
     },
