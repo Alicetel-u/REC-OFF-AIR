@@ -1,258 +1,266 @@
 {
-	"chapter": "ch01_haison_souko",
-	"_note": "CP3 廃倉庫 — VHS5本収集前の導入演出。屋敷で発見した手記に従い倉庫へ。Kの恐怖・視聴者投票あり",
-	"events": [
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【CP3 導入：廃倉庫への侵入】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "set_viewers",
-			"count": 8000
-		},
-		{
-			"type": "flashlight_on"
-		},
-		{
-			"type": "say",
-			"text": "……屋敷の裏手に出た。手記に書いてあった『倉』……あれだ"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "あの建物？",
-			"user": "視聴者A"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "蔦がすごい…",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "『倉の中にあの子たちの記録が残っている。全部消さなければ』……誰かが証拠を隠そうとして、できなかったんだ"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "chat",
-			"msg": "あの子たちって…",
-			"user": "深夜探偵"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "みゆきちゃん以外にもいたの？",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "sfx",
-			"sound": "door_creak"
-		},
-		{
-			"type": "say",
-			"text": "南京錠が……もう壊れてる。誰かが先に来た？それとも、ずっと開いてた？"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "入るなって意味じゃ…",
-			"user": "幽霊ガチ勢",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "むしろ入れって言ってるんだよ",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.6
-		},
-		{
-			"type": "say",
-			"text": "中に入ると……暗い。懐中電灯だけが頼り。棚がずらっと並んでる"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "flashlight_flicker"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "……あった。VHSテープ。ラベルに『1994_06_記録』って書いてある"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "1994年！",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "みゆきが殺された年だ",
-			"user": "深夜探偵"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "全部で5本ある。6月から10月まで……全部『記録』とだけ書いてある。これが証拠だ"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "chat",
-			"msg": "全部持って帰れ！！",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "配信的にも最高じゃん",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "set_viewers",
-			"count": 10000
-		},
-		{
-			"type": "say",
-			"text": "同接1万人……マジで来てる。みんな、あたしが全部見つけるから待ってて"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "_comment",
-			"_": "── 視聴者投票：倉庫の探索方針 ──"
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "choice",
-			"prompt": "VHSテープが棚のあちこちに散らばっている。倉庫は広い。どう探索する？",
-			"choices": [
-				{
-					"text": "手前から順番にしらみつぶし",
-					"sub": "確実だけど時間がかかる。何かが近づいてくる前に……"
-				},
-				{
-					"text": "ラベルの年月順に探す",
-					"sub": "6月→7月→…って順番に。物語を追いかける"
-				},
-				{
-					"text": "光ってるやつから回収する",
-					"sub": "暗闇の中で微かに光って見えるのは……気のせい？"
-				}
-			]
-		},
-		{
-			"type": "say",
-			"text": "よし……全部で5本。見つけたら出口から脱出する"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "chat",
-			"msg": "頑張れ！",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "ひとりで見つかるの？",
-			"user": "視聴者A"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "1万人で見守ってるから大丈夫",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say_clear"
-		}
-	]
+  "chapter": "ch01_haison_souko",
+  "_note": "CP3 廃倉庫 — VHS5本収集前の導入演出。屋敷で発見した手記に従い倉庫へ。Kの恐怖・視聴者投票あり",
+  "events": [
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【CP3 導入：廃倉庫への侵入】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "set_viewers",
+      "count": 8000
+    },
+    {
+      "type": "flashlight_on"
+    },
+    {
+      "type": "say",
+      "text": "……屋敷の裏手に出た。手記に書いてあった『倉』……あれだ",
+      "voice": "v101"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "あの建物？",
+      "user": "視聴者A"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "蔦がすごい…",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "『倉の中にあの子たちの記録が残っている。全部消さなければ』……誰かが証拠を隠そうとして、できなかったんだ",
+      "voice": "v102"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "あの子たちって…",
+      "user": "深夜探偵"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "みゆきちゃん以外にもいたの？",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "sfx",
+      "sound": "door_creak"
+    },
+    {
+      "type": "say",
+      "text": "南京錠が……もう壊れてる。誰かが先に来た？それとも、ずっと開いてた？",
+      "voice": "v103"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "入るなって意味じゃ…",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "むしろ入れって言ってるんだよ",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.6
+    },
+    {
+      "type": "say",
+      "text": "中に入ると……暗い。懐中電灯だけが頼り。棚がずらっと並んでる",
+      "voice": "v104"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "flashlight_flicker"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "……あった。VHSテープ。ラベルに『1994_06_記録』って書いてある",
+      "voice": "v105"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "1994年！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "みゆきが殺された年だ",
+      "user": "深夜探偵"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "全部で5本ある。6月から10月まで……全部『記録』とだけ書いてある。これが証拠だ",
+      "voice": "v106"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "全部持って帰れ！！",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "配信的にも最高じゃん",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "set_viewers",
+      "count": 10000
+    },
+    {
+      "type": "say",
+      "text": "同接1万人……マジで来てる。みんな、あたしが全部見つけるから待ってて",
+      "voice": "v107"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "_comment",
+      "_": "── 視聴者投票：倉庫の探索方針 ──"
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "choice",
+      "prompt": "VHSテープが棚のあちこちに散らばっている。倉庫は広い。どう探索する？",
+      "choices": [
+        {
+          "text": "手前から順番にしらみつぶし",
+          "sub": "確実だけど時間がかかる。何かが近づいてくる前に……"
+        },
+        {
+          "text": "ラベルの年月順に探す",
+          "sub": "6月→7月→…って順番に。物語を追いかける"
+        },
+        {
+          "text": "光ってるやつから回収する",
+          "sub": "暗闇の中で微かに光って見えるのは……気のせい？"
+        }
+      ]
+    },
+    {
+      "type": "say",
+      "text": "よし……全部で5本。見つけたら出口から脱出する",
+      "voice": "v108"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "chat",
+      "msg": "頑張れ！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "ひとりで見つかるの？",
+      "user": "視聴者A"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "1万人で見守ってるから大丈夫",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say_clear"
+    }
+  ]
 }

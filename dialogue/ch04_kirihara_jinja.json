@@ -1,2605 +1,2669 @@
 {
-	"chapter": "ch04_kirihara_jinja",
-	"_note": "CP4 桐原神社 — 参道→鳥居→狛犬→石段→本殿→鈴の投票→白木の箱→みゆきの首→逃走",
-	"events": [
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン1：参道の入口 — 霧の中の石灯籠】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "sfx",
-			"sound": "ambient_wind",
-			"vol": -8
-		},
-		{
-			"type": "flashlight_on"
-		},
-		{
-			"type": "set_viewers",
-			"count": 50000
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "say",
-			"text": "…VHSの最後のテープに映ってた場所。桐原神社。あのおばあちゃんたちが白い箱を運んでた"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "chat",
-			"msg": "ついに来たか…",
-			"user": "幽霊ガチ勢",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "「首は神に返す」ってやつ？",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "うん。…参道の入口。石灯籠が並んでる。奥は霧で何も見えない"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "雰囲気やばすぎ",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "マジで行くの？",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "行く。ここまで来て帰れない"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン2：参道を歩く — 石灯籠の列】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "walk_set",
-			"on": true
-		},
-		{
-			"type": "pos_z",
-			"target": 22.0,
-			"dur": 8.0,
-			"id": "sando_walk1"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "say",
-			"text": "…石灯籠、苔だらけ。何十年も誰も来てない感じ"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "rot_y",
-			"target": -0.4,
-			"dur": 1.0
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "左の灯籠、火がついてる…？いや、中に何か光って——"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "flashlight_flicker"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "rot_y",
-			"target": 0.0,
-			"dur": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "懐中電灯揺れた！",
-			"user": "視聴者A",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "気のせいだよ…たぶん",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…気のせいか。先行こう"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "pos_z_await",
-			"id": "sando_walk1"
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン3：大鳥居をくぐる】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "pos_z",
-			"target": 18.0,
-			"dur": 5.0,
-			"id": "torii_approach"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "say",
-			"text": "…鳥居だ。でかい。朱色が全部剥がれて灰色になってる"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "head_x",
-			"target": -0.3,
-			"dur": 0.8
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "上に何か彫ってある…「桐原大神」。読める"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "head_x",
-			"target": 0.0,
-			"dur": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "桐原大神…聞いたことない神様",
-			"user": "幽霊ガチ勢",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "くぐって大丈夫なやつ？",
-			"user": "ガクブル太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "sfx",
-			"sound": "door_creak",
-			"vol": -10
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…今、鳥居が軋んだ。風じゃない。無風なのに"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 2,
-			"count": 1
-		},
-		{
-			"type": "chat",
-			"msg": "画面ノイズ入った！",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "電波悪い？",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "pos_z_await",
-			"id": "torii_approach"
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "set_viewers",
-			"count": 55000
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン4：狛犬 — 赤い目】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "pos_z",
-			"target": 12.0,
-			"dur": 6.0,
-			"id": "komainu_walk"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "say",
-			"text": "…左右に狛犬。口が開いてる方と閉じてる方。阿吽の——"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "rot_y",
-			"target": -0.6,
-			"dur": 0.5
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "say",
-			"text": "…目が。赤く光ってる"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "horror_tint"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "え！？目光ってない！？",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "うわうわうわ",
-			"user": "ガクブル太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "rot_y",
-			"target": 0.6,
-			"dur": 0.8
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "右のも…両方赤い。石像の目が赤く光るとか何——"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 4,
-			"count": 2
-		},
-		{
-			"type": "sfx",
-			"sound": "monster_growl",
-			"vol": -14
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "今の音なに！？",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "犬の声？",
-			"user": "視聴者A",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "狛犬が唸ってるんだよ…",
-			"user": "幽霊ガチ勢",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "rot_y",
-			"target": 0.0,
-			"dur": 0.5
-		},
-		{
-			"type": "horror_tint_clear"
-		},
-		{
-			"type": "say",
-			"text": "…通り過ぎよう。目を合わせちゃダメな気がする"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "pos_z_await",
-			"id": "komainu_walk"
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン5：Kの出現 — コメントが壊れ始める】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "set_viewers",
-			"count": 62000
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "首ヲ置ケ",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.8
-		},
-		{
-			"type": "say",
-			"text": "…今のコメント。誰"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "chat",
-			"msg": "Kって誰！？",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "BANしろ",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "女ハ残レ",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.8
-		},
-		{
-			"type": "chat",
-			"msg": "こわい…",
-			"user": "ガクブル太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 3,
-			"count": 1
-		},
-		{
-			"type": "say",
-			"text": "…カタカナ混じりの日本語。人間じゃない書き方。BANできない…アカウントが存在しない"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "chat",
-			"msg": "アカウントページ開けない…",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.6
-		},
-		{
-			"type": "say",
-			"text": "…無視する。先に進む"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン6：石段を登る】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "pos_z",
-			"target": 2.0,
-			"dur": 8.0,
-			"id": "stairs_walk"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "say",
-			"text": "石段だ。苔で滑る。…一段ずつ登る"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "head_x",
-			"target": -0.2,
-			"dur": 0.5
-		},
-		{
-			"type": "sfx",
-			"sound": "ambient_wind",
-			"vol": -12
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "chat",
-			"msg": "足元気をつけて",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "say",
-			"text": "…段の横に何か彫ってある。人の名前？奉納者か"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "chat",
-			"msg": "読める？",
-			"user": "幽霊ガチ勢",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "say",
-			"text": "…全部同じ名前。「桐原」。桐原、桐原、桐原——何十人分も"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "一族の神社か…",
-			"user": "幽霊ガチ勢",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "ヤバい一族だよ絶対",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "set_viewers",
-			"count": 70000
-		},
-		{
-			"type": "chat",
-			"msg": "7万人突破してるよ",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "flashlight_flicker"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "head_x",
-			"target": 0.0,
-			"dur": 0.4
-		},
-		{
-			"type": "say",
-			"text": "…懐中電灯がまた。電池は替えたばっかりなのに"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "pos_z_await",
-			"id": "stairs_walk"
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン7：本殿前 — 視聴者数が異常増加】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "walk_set",
-			"on": false
-		},
-		{
-			"type": "pos_z",
-			"target": -3.0,
-			"dur": 4.0,
-			"id": "honden_approach"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "say",
-			"text": "…着いた。本殿。扉が閉まってる。古い木の扉に鉄の錠前"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "これが桐原神社の本殿…",
-			"user": "幽霊ガチ勢",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "say",
-			"text": "扉の前に鈴がある。大きい。神社の鈴だ。…紐も垂れてる"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "pos_z_await",
-			"id": "honden_approach"
-		},
-		{
-			"type": "set_viewers",
-			"count": 85000
-		},
-		{
-			"type": "chat",
-			"msg": "鈴鳴らすの？",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "やめとけって！！",
-			"user": "ガクブル太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "鳴ラセ",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.6
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 3,
-			"count": 1
-		},
-		{
-			"type": "chat",
-			"msg": "Kが鳴らせって言ってる…",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "set_viewers",
-			"count": 92000
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "視聴者9万超えてるんだが",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "増え方おかしくない？",
-			"user": "視聴者A",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "set_viewers",
-			"count": 100000
-		},
-		{
-			"type": "say",
-			"text": "…10万人。10万人が今、この配信を見てる。コメントが…速すぎて読めない"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "chat",
-			"msg": "10万！！！",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "首ヲ返セ",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "鳴ラセ鳴ラセ鳴ラセ",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…コメント欄が。Kだらけになってる。人間のコメントが流されてく"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "コメント荒らされてる！",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "BAN効かない！！",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン8：3択投票 — 鈴をどうする？】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "choice",
-			"prompt": "本殿の鈴の前に立っている。視聴者が10万人を超えた。コメントが人間のものではなくなっている。",
-			"choices": [
-				{
-					"text": "お札を使って鈴を鳴らす",
-					"sub": "おばあちゃんの札を信じる。中に何があっても確認する"
-				},
-				{
-					"text": "鈴に触らず、賽銭箱から中を覗く",
-					"sub": "ガラス越しでいいでしょ…直接触りたくない"
-				},
-				{
-					"text": "鈴をスマホで配信して視聴者に判断させる",
-					"sub": "10万人が見てるんだから、みんなで決めよう（民主主義！）"
-				}
-			],
-			"targets": [
-				"route_ofuda",
-				"route_peek",
-				"route_stream"
-			]
-		},
-		{
-			"type": "_comment",
-			"_": "────────────────────────────────────────────"
-		},
-		{
-			"type": "_comment",
-			"_": "ルートA：お札で鈴を鳴らす（正攻法・恐怖度中）"
-		},
-		{
-			"type": "_comment",
-			"_": "────────────────────────────────────────────"
-		},
-		{
-			"type": "label",
-			"name": "route_ofuda"
-		},
-		{
-			"type": "say",
-			"text": "…お札を手に持つ。おばあちゃんが残してくれたお守り…これを信じる"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "use_ofuda"
-		},
-		{
-			"type": "chat",
-			"msg": "お札使った！！",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "頑張れ！！",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "お札を紐に巻きつけて…鈴を鳴らす"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "sfx",
-			"sound": "door_creak",
-			"vol": -4
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 5,
-			"count": 2
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "say",
-			"text": "…鈴の音が響いた。空気が震えた。…扉が、開いていく"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "goto",
-			"label": "converge_door_open"
-		},
-		{
-			"type": "_comment",
-			"_": "────────────────────────────────────────────"
-		},
-		{
-			"type": "_comment",
-			"_": "ルートB：賽銭箱から覗く（ビビり・恐怖度高）"
-		},
-		{
-			"type": "_comment",
-			"_": "────────────────────────────────────────────"
-		},
-		{
-			"type": "label",
-			"name": "route_peek"
-		},
-		{
-			"type": "say",
-			"text": "…触りたくない。賽銭箱の隙間から中を覗けないか"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "chat",
-			"msg": "ビビリやんｗ",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "賢いと思う！",
-			"user": "ガクブル太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "head_x",
-			"target": 0.4,
-			"dur": 0.6
-		},
-		{
-			"type": "say",
-			"text": "賽銭箱に近づいて…覗き込む——"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "horror_flash",
-			"dur": 0.2
-		},
-		{
-			"type": "sfx",
-			"sound": "monster_growl",
-			"vol": -6
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "say",
-			"text": "ッ！？…中から目が。こっちを見てる目が！！"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "head_x",
-			"target": 0.0,
-			"dur": 0.3
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 6,
-			"count": 3
-		},
-		{
-			"type": "chat",
-			"msg": "ぎゃああああ！！",
-			"user": "ガクブル太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "何が見えた！？",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…鈴が。勝手に鳴ってる。お札が手の中で熱くなって——"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "use_ofuda"
-		},
-		{
-			"type": "sfx",
-			"sound": "door_creak",
-			"vol": -4
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "扉が開いた。…勝手に。お札が反応して鈴が鳴って——"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "goto",
-			"label": "converge_door_open"
-		},
-		{
-			"type": "_comment",
-			"_": "────────────────────────────────────────────"
-		},
-		{
-			"type": "_comment",
-			"_": "ルートC：視聴者に判断させる（最大恐怖）"
-		},
-		{
-			"type": "_comment",
-			"_": "────────────────────────────────────────────"
-		},
-		{
-			"type": "label",
-			"name": "route_stream"
-		},
-		{
-			"type": "say",
-			"text": "…みんなどうする？10万人いるんだから、みんなで決めよう。民主主義でしょ"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "鳴らせ！！！",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "やめとけ！！",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "鳴ラセ",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "鳴ラセ",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "鳴ラセ",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "鳴ラセ",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "鳴ラセ",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "say",
-			"text": "…コメント欄がKに完全に乗っ取られた。「鳴ラセ」しか流れてこない"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 8,
-			"count": 3
-		},
-		{
-			"type": "chat",
-			"msg": "これ民主主義じゃないよ！！",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "say",
-			"text": "…スマホが振動してる。画面にノイズが。お札が光って——勝手に——"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "use_ofuda"
-		},
-		{
-			"type": "scare_flash",
-			"color": "white"
-		},
-		{
-			"type": "sfx",
-			"sound": "door_creak",
-			"vol": -2
-		},
-		{
-			"type": "wait",
-			"sec": 0.8
-		},
-		{
-			"type": "say",
-			"text": "鈴が！！勝手に鳴った！！扉が開く——お札が飛んでいった！！"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "goto",
-			"label": "converge_door_open"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン9：本殿に入る — 白木の箱】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "label",
-			"name": "converge_door_open"
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "horror_tint"
-		},
-		{
-			"type": "set_viewers",
-			"count": 105000
-		},
-		{
-			"type": "chat",
-			"msg": "扉開いた！！",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "中入るの…？",
-			"user": "ガクブル太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…中が見える。暗い。埃の匂い。…奥に何かある"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "walk_set",
-			"on": true
-		},
-		{
-			"type": "pos_z",
-			"target": -10.0,
-			"dur": 6.0,
-			"id": "enter_honden"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "sfx",
-			"sound": "ambient_wind",
-			"vol": -14
-		},
-		{
-			"type": "say",
-			"text": "足音が反響する。木の床。…祭壇がある。その上に——"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "何か置いてある！",
-			"user": "視聴者A",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "say",
-			"text": "…白い箱。VHSに映ってた、あの白木の箱だ"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "「首は神に返す」の箱！！",
-			"user": "幽霊ガチ勢",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "開けるな開けるな開けるな",
-			"user": "ガクブル太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "開けて",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "開ケロ",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "pos_z_await",
-			"id": "enter_honden"
-		},
-		{
-			"type": "walk_set",
-			"on": false
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン10：白木の箱に近づく — 緊張の頂点】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "pos_z",
-			"target": -15.0,
-			"dur": 5.0,
-			"id": "box_approach"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "say",
-			"text": "…近づく。箱は白木。桐だ。蓋に紙の封がしてある"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "flashlight_flicker"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "flashlight_flicker"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "say",
-			"text": "懐中電灯が明滅してる。電池じゃない。箱に近づくほど激しくなる"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "やめてやめてやめて",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "カメラちゃんと映して！",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "superchat",
-			"name": "深夜探偵",
-			"msg": "開けるな。お前が見たら、もう戻れない",
-			"amount": 10000
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "pos_z_await",
-			"id": "box_approach"
-		},
-		{
-			"type": "say",
-			"text": "…ごめん。でも開ける。ここまで来たんだから"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン11：箱を開ける — みゆきの首】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "say",
-			"text": "封を剥がす。…蓋を、持ち上げる——"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "head_x",
-			"target": 0.3,
-			"dur": 0.5
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "say",
-			"text": "…………"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 12,
-			"count": 4
-		},
-		{
-			"type": "scare_flash",
-			"color": "white"
-		},
-		{
-			"type": "sleep",
-			"sec": 0.1
-		},
-		{
-			"type": "say",
-			"text": "……首……人の……女の子の首が……入ってる"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "chat",
-			"msg": "え",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "は？",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "マジ？",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "horror_tint_clear"
-		},
-		{
-			"type": "sleep",
-			"sec": 0.1
-		},
-		{
-			"type": "horror_tint"
-		},
-		{
-			"type": "say",
-			"text": "…腐ってない。まるで昨日切られたみたいに。肌が白くて。髪が黒くて。…目が"
-		},
-		{
-			"type": "wait",
-			"sec": 3.0
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 15,
-			"count": 5
-		},
-		{
-			"type": "sfx",
-			"sound": "monster_growl",
-			"vol": -4
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "_comment",
-			"_": "────────────────────────────────────────────"
-		},
-		{
-			"type": "_comment",
-			"_": "最大恐怖ポイント：目が瞬きする"
-		},
-		{
-			"type": "_comment",
-			"_": "────────────────────────────────────────────"
-		},
-		{
-			"type": "say",
-			"text": "目が開いてる。…こっちを見てる。…待って。今——まばたき、した？"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "scare_flash",
-			"color": "red"
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 20,
-			"count": 6
-		},
-		{
-			"type": "sfx",
-			"sound": "monster_growl",
-			"vol": -2
-		},
-		{
-			"type": "sleep",
-			"sec": 0.1
-		},
-		{
-			"type": "horror_flash",
-			"dur": 0.3
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "まばたきしてる！！生きてる！！首だけで生きてる！！"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "ぎゃああああああ",
-			"user": "ガクブル太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "うそでしょ！！！",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "逃げろ！！！",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "CG？合成？",
-			"user": "視聴者A",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン12：みゆきが喋る — 「助けて」】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "say",
-			"text": "…口が。動いてる。何か言おうとしてる"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 10,
-			"count": 3
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "「た……す……け……て……」"
-		},
-		{
-			"type": "wait",
-			"sec": 3.0
-		},
-		{
-			"type": "chat",
-			"msg": "…",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "しゃべった…？",
-			"user": "幽霊ガチ勢",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "みゆきだ…これがみゆきなんだ",
-			"user": "幽霊ガチ勢",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "みゆき…1994年に首を切られた女の子。30年間、この箱の中で——"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "horror_flash",
-			"dur": 0.2
-		},
-		{
-			"type": "say",
-			"text": "「助……け……て……」"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "scare_flash",
-			"color": "red"
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 20,
-			"count": 8
-		},
-		{
-			"type": "sfx",
-			"sound": "monster_growl",
-			"vol": 0
-		},
-		{
-			"type": "sleep",
-			"sec": 0.1
-		},
-		{
-			"type": "horror_flash",
-			"dur": 0.5
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "目が！！見開いた！！こっちを真っ直ぐ見てる！！離れられない！！"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "逃げて！！！！！",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "やばいやばいやばい",
-			"user": "ガクブル太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "走れ！！！",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.2
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン13：逃走 — 本殿から石段へ】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "horror_tint_clear"
-		},
-		{
-			"type": "say",
-			"text": "逃げる！！"
-		},
-		{
-			"type": "wait",
-			"sec": 0.8
-		},
-		{
-			"type": "rot_y",
-			"target": 3.14,
-			"dur": 0.3
-		},
-		{
-			"type": "head_x",
-			"target": 0.0,
-			"dur": 0.2
-		},
-		{
-			"type": "walk_set",
-			"on": true
-		},
-		{
-			"type": "pos_z",
-			"target": 0.0,
-			"dur": 5.0,
-			"id": "flee_honden"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "sfx",
-			"sound": "door_creak",
-			"vol": -6
-		},
-		{
-			"type": "say",
-			"text": "後ろで扉が閉まった！！走れ走れ走れ！！"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 8,
-			"count": 2
-		},
-		{
-			"type": "flashlight_flicker"
-		},
-		{
-			"type": "chat",
-			"msg": "足速く！！！",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "石段気をつけて！！",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "pos_z_await",
-			"id": "flee_honden"
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン14：逃走 — 石段を駆け下りる】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "pos_z",
-			"target": 8.0,
-			"dur": 4.0,
-			"id": "flee_stairs"
-		},
-		{
-			"type": "say",
-			"text": "石段！滑る！…転びそう——大丈夫、走れ！"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "flashlight_flicker"
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 5,
-			"count": 2
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "後ろ見るな！！",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "女ハ残レ",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "pos_z_await",
-			"id": "flee_stairs"
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン15：逃走 — 狛犬を通過】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "pos_z",
-			"target": 18.0,
-			"dur": 4.0,
-			"id": "flee_komainu"
-		},
-		{
-			"type": "say",
-			"text": "狛犬！！目がまだ光って——無視！走る！！"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "sfx",
-			"sound": "monster_growl",
-			"vol": -8
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 6,
-			"count": 2
-		},
-		{
-			"type": "chat",
-			"msg": "狛犬の首が動いた！？",
-			"user": "幽霊ガチ勢",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "見るな！走れ！",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "pos_z_await",
-			"id": "flee_komainu"
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン16：逃走 — 鳥居をくぐり抜ける】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "pos_z",
-			"target": 28.0,
-			"dur": 5.0,
-			"id": "flee_torii"
-		},
-		{
-			"type": "say",
-			"text": "鳥居！くぐれば——鳥居を越えれば神域の外だ！！"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "走って！！！",
-			"user": "ガクブル太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "horror_glitch",
-			"intensity": 4,
-			"count": 1
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…くぐった！鳥居の向こう側に出た！！"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "horror_tint_clear"
-		},
-		{
-			"type": "chat",
-			"msg": "出た！！！",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "まだ走って！！止まるな！！",
-			"user": "ホラー好き太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "pos_z_await",
-			"id": "flee_torii"
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン17：参道を駆け抜ける — 出口へ】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "pos_z",
-			"target": 38.0,
-			"dur": 5.0,
-			"id": "flee_exit"
-		},
-		{
-			"type": "say",
-			"text": "参道を走る！石灯籠を通り過ぎる！…出口が見える！！"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "あと少し！！",
-			"user": "配信民99",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "頑張れ！！",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "pos_z_await",
-			"id": "flee_exit"
-		},
-		{
-			"type": "walk_set",
-			"on": false
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "_comment",
-			"_": "【シーン18：逃走後 — 振り返りと余韻】"
-		},
-		{
-			"type": "_comment",
-			"_": "════════════════════════════════════════════"
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "rot_y",
-			"target": 0.0,
-			"dur": 0.8
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "……はぁ……はぁ……。…出た。神社の外に出た"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "よかった…",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "無事！？怪我は！？",
-			"user": "ガクブル太郎",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…みゆきの首が。まだ目の裏に焼きついてる。まばたきした目が"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "chat",
-			"msg": "リアルだったの…？",
-			"user": "視聴者A",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "30年間あの箱の中で生きてたってこと…？",
-			"user": "幽霊ガチ勢",
-			"utype": "member"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…「助けて」って。あの子はまだ助けを求めてる"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "次どうするの…",
-			"user": "ゆきんこ77",
-			"utype": "moderator"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "say",
-			"text": "…先に進むしかない。答えはこの先にある"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "horror"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "fade_black",
-			"dur": 1.5
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "fade_clear",
-			"dur": 0.5
-		}
-	]
+  "chapter": "ch04_kirihara_jinja",
+  "_note": "CP4 桐原神社 — 参道→鳥居→狛犬→石段→本殿→鈴の投票→白木の箱→みゆきの首→逃走",
+  "events": [
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン1：参道の入口 — 霧の中の石灯籠】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "sfx",
+      "sound": "ambient_wind",
+      "vol": -8
+    },
+    {
+      "type": "flashlight_on"
+    },
+    {
+      "type": "set_viewers",
+      "count": 50000
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "say",
+      "text": "…VHSの最後のテープに映ってた場所。桐原神社。あのおばあちゃんたちが白い箱を運んでた",
+      "voice": "v451"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "ついに来たか…",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "「首は神に返す」ってやつ？",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "うん。…参道の入口。石灯籠が並んでる。奥は霧で何も見えない",
+      "voice": "v452"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "雰囲気やばすぎ",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "マジで行くの？",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "行く。ここまで来て帰れない",
+      "voice": "v453"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン2：参道を歩く — 石灯籠の列】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_z",
+      "target": 22.0,
+      "dur": 8.0,
+      "id": "sando_walk1"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "say",
+      "text": "…石灯籠、苔だらけ。何十年も誰も来てない感じ",
+      "voice": "v454"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "rot_y",
+      "target": -0.4,
+      "dur": 1.0
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "左の灯籠、火がついてる…？いや、中に何か光って——",
+      "voice": "v455"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "flashlight_flicker"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "rot_y",
+      "target": 0.0,
+      "dur": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "懐中電灯揺れた！",
+      "user": "視聴者A",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "気のせいだよ…たぶん",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…気のせいか。先行こう",
+      "voice": "v456"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "pos_z_await",
+      "id": "sando_walk1"
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン3：大鳥居をくぐる】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "pos_z",
+      "target": 18.0,
+      "dur": 5.0,
+      "id": "torii_approach"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "say",
+      "text": "…鳥居だ。でかい。朱色が全部剥がれて灰色になってる",
+      "voice": "v457"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "head_x",
+      "target": -0.3,
+      "dur": 0.8
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "上に何か彫ってある…「桐原大神」。読める",
+      "voice": "v458"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "head_x",
+      "target": 0.0,
+      "dur": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "桐原大神…聞いたことない神様",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "くぐって大丈夫なやつ？",
+      "user": "ガクブル太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "sfx",
+      "sound": "door_creak",
+      "vol": -10
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…今、鳥居が軋んだ。風じゃない。無風なのに",
+      "voice": "v459"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 2,
+      "count": 1
+    },
+    {
+      "type": "chat",
+      "msg": "画面ノイズ入った！",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "電波悪い？",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "pos_z_await",
+      "id": "torii_approach"
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "set_viewers",
+      "count": 55000
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン4：狛犬 — 赤い目】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "pos_z",
+      "target": 12.0,
+      "dur": 6.0,
+      "id": "komainu_walk"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "say",
+      "text": "…左右に狛犬。口が開いてる方と閉じてる方。阿吽の——",
+      "voice": "v460"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "rot_y",
+      "target": -0.6,
+      "dur": 0.5
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "say",
+      "text": "…目が。赤く光ってる",
+      "voice": "v461"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "horror_tint"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "え！？目光ってない！？",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "うわうわうわ",
+      "user": "ガクブル太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "rot_y",
+      "target": 0.6,
+      "dur": 0.8
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "右のも…両方赤い。石像の目が赤く光るとか何——",
+      "voice": "v462"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 4,
+      "count": 2
+    },
+    {
+      "type": "sfx",
+      "sound": "monster_growl",
+      "vol": -14
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "今の音なに！？",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "犬の声？",
+      "user": "視聴者A",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "狛犬が唸ってるんだよ…",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "rot_y",
+      "target": 0.0,
+      "dur": 0.5
+    },
+    {
+      "type": "horror_tint_clear"
+    },
+    {
+      "type": "say",
+      "text": "…通り過ぎよう。目を合わせちゃダメな気がする",
+      "voice": "v463"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "pos_z_await",
+      "id": "komainu_walk"
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン5：Kの出現 — コメントが壊れ始める】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "set_viewers",
+      "count": 62000
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "首ヲ置ケ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "say",
+      "text": "…今のコメント。誰",
+      "voice": "v464"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "chat",
+      "msg": "Kって誰！？",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "BANしろ",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "女ハ残レ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "chat",
+      "msg": "こわい…",
+      "user": "ガクブル太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 3,
+      "count": 1
+    },
+    {
+      "type": "say",
+      "text": "…カタカナ混じりの日本語。人間じゃない書き方。BANできない…アカウントが存在しない",
+      "voice": "v465"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "アカウントページ開けない…",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.6
+    },
+    {
+      "type": "say",
+      "text": "…無視する。先に進む",
+      "voice": "v466"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン6：石段を登る】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "pos_z",
+      "target": 2.0,
+      "dur": 8.0,
+      "id": "stairs_walk"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "say",
+      "text": "石段だ。苔で滑る。…一段ずつ登る",
+      "voice": "v467"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "head_x",
+      "target": -0.2,
+      "dur": 0.5
+    },
+    {
+      "type": "sfx",
+      "sound": "ambient_wind",
+      "vol": -12
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "chat",
+      "msg": "足元気をつけて",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "say",
+      "text": "…段の横に何か彫ってある。人の名前？奉納者か",
+      "voice": "v468"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "chat",
+      "msg": "読める？",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "say",
+      "text": "…全部同じ名前。「桐原」。桐原、桐原、桐原——何十人分も",
+      "voice": "v469"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "一族の神社か…",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "ヤバい一族だよ絶対",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "set_viewers",
+      "count": 70000
+    },
+    {
+      "type": "chat",
+      "msg": "7万人突破してるよ",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "flashlight_flicker"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "head_x",
+      "target": 0.0,
+      "dur": 0.4
+    },
+    {
+      "type": "say",
+      "text": "…懐中電灯がまた。電池は替えたばっかりなのに",
+      "voice": "v470"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "pos_z_await",
+      "id": "stairs_walk"
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン7：本殿前 — 視聴者数が異常増加】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "pos_z",
+      "target": -3.0,
+      "dur": 4.0,
+      "id": "honden_approach"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "say",
+      "text": "…着いた。本殿。扉が閉まってる。古い木の扉に鉄の錠前",
+      "voice": "v471"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "これが桐原神社の本殿…",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "say",
+      "text": "扉の前に鈴がある。大きい。神社の鈴だ。…紐も垂れてる",
+      "voice": "v472"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "pos_z_await",
+      "id": "honden_approach"
+    },
+    {
+      "type": "set_viewers",
+      "count": 85000
+    },
+    {
+      "type": "chat",
+      "msg": "鈴鳴らすの？",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "やめとけって！！",
+      "user": "ガクブル太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "鳴ラセ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.6
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 3,
+      "count": 1
+    },
+    {
+      "type": "chat",
+      "msg": "Kが鳴らせって言ってる…",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "set_viewers",
+      "count": 92000
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "視聴者9万超えてるんだが",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "増え方おかしくない？",
+      "user": "視聴者A",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "set_viewers",
+      "count": 100000
+    },
+    {
+      "type": "say",
+      "text": "…10万人。10万人が今、この配信を見てる。コメントが…速すぎて読めない",
+      "voice": "v473"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "10万！！！",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "首ヲ返セ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "鳴ラセ鳴ラセ鳴ラセ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…コメント欄が。Kだらけになってる。人間のコメントが流されてく",
+      "voice": "v474"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "コメント荒らされてる！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "BAN効かない！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン8：3択投票 — 鈴をどうする？】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "choice",
+      "prompt": "本殿の鈴の前に立っている。視聴者が10万人を超えた。コメントが人間のものではなくなっている。",
+      "choices": [
+        {
+          "text": "お札を使って鈴を鳴らす",
+          "sub": "おばあちゃんの札を信じる。中に何があっても確認する"
+        },
+        {
+          "text": "鈴に触らず、賽銭箱から中を覗く",
+          "sub": "ガラス越しでいいでしょ…直接触りたくない"
+        },
+        {
+          "text": "鈴をスマホで配信して視聴者に判断させる",
+          "sub": "10万人が見てるんだから、みんなで決めよう（民主主義！）"
+        }
+      ],
+      "targets": [
+        "route_ofuda",
+        "route_peek",
+        "route_stream"
+      ]
+    },
+    {
+      "type": "_comment",
+      "_": "────────────────────────────────────────────"
+    },
+    {
+      "type": "_comment",
+      "_": "ルートA：お札で鈴を鳴らす（正攻法・恐怖度中）"
+    },
+    {
+      "type": "_comment",
+      "_": "────────────────────────────────────────────"
+    },
+    {
+      "type": "label",
+      "name": "route_ofuda"
+    },
+    {
+      "type": "say",
+      "text": "…お札を手に持つ。おばあちゃんが残してくれたお守り…これを信じる",
+      "voice": "v475"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "use_ofuda"
+    },
+    {
+      "type": "chat",
+      "msg": "お札使った！！",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "頑張れ！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "お札を紐に巻きつけて…鈴を鳴らす",
+      "voice": "v476"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "sfx",
+      "sound": "door_creak",
+      "vol": -4
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 5,
+      "count": 2
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "say",
+      "text": "…鈴の音が響いた。空気が震えた。…扉が、開いていく",
+      "voice": "v477"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "goto",
+      "label": "converge_door_open"
+    },
+    {
+      "type": "_comment",
+      "_": "────────────────────────────────────────────"
+    },
+    {
+      "type": "_comment",
+      "_": "ルートB：賽銭箱から覗く（ビビり・恐怖度高）"
+    },
+    {
+      "type": "_comment",
+      "_": "────────────────────────────────────────────"
+    },
+    {
+      "type": "label",
+      "name": "route_peek"
+    },
+    {
+      "type": "say",
+      "text": "…触りたくない。賽銭箱の隙間から中を覗けないか",
+      "voice": "v478"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "chat",
+      "msg": "ビビリやんｗ",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "賢いと思う！",
+      "user": "ガクブル太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "head_x",
+      "target": 0.4,
+      "dur": 0.6
+    },
+    {
+      "type": "say",
+      "text": "賽銭箱に近づいて…覗き込む——",
+      "voice": "v479"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "horror_flash",
+      "dur": 0.2
+    },
+    {
+      "type": "sfx",
+      "sound": "monster_growl",
+      "vol": -6
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "say",
+      "text": "ッ！？…中から目が。こっちを見てる目が！！",
+      "voice": "v480"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "head_x",
+      "target": 0.0,
+      "dur": 0.3
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 6,
+      "count": 3
+    },
+    {
+      "type": "chat",
+      "msg": "ぎゃああああ！！",
+      "user": "ガクブル太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "何が見えた！？",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…鈴が。勝手に鳴ってる。お札が手の中で熱くなって——",
+      "voice": "v481"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "use_ofuda"
+    },
+    {
+      "type": "sfx",
+      "sound": "door_creak",
+      "vol": -4
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "扉が開いた。…勝手に。お札が反応して鈴が鳴って——",
+      "voice": "v482"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "goto",
+      "label": "converge_door_open"
+    },
+    {
+      "type": "_comment",
+      "_": "────────────────────────────────────────────"
+    },
+    {
+      "type": "_comment",
+      "_": "ルートC：視聴者に判断させる（最大恐怖）"
+    },
+    {
+      "type": "_comment",
+      "_": "────────────────────────────────────────────"
+    },
+    {
+      "type": "label",
+      "name": "route_stream"
+    },
+    {
+      "type": "say",
+      "text": "…みんなどうする？10万人いるんだから、みんなで決めよう。民主主義でしょ",
+      "voice": "v483"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "鳴らせ！！！",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "やめとけ！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "鳴ラセ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "鳴ラセ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "鳴ラセ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "鳴ラセ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "鳴ラセ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "say",
+      "text": "…コメント欄がKに完全に乗っ取られた。「鳴ラセ」しか流れてこない",
+      "voice": "v484"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 8,
+      "count": 3
+    },
+    {
+      "type": "chat",
+      "msg": "これ民主主義じゃないよ！！",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "say",
+      "text": "…スマホが振動してる。画面にノイズが。お札が光って——勝手に——",
+      "voice": "v485"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "use_ofuda"
+    },
+    {
+      "type": "scare_flash",
+      "color": "white"
+    },
+    {
+      "type": "sfx",
+      "sound": "door_creak",
+      "vol": -2
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "say",
+      "text": "鈴が！！勝手に鳴った！！扉が開く——お札が飛んでいった！！",
+      "voice": "v486"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "goto",
+      "label": "converge_door_open"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン9：本殿に入る — 白木の箱】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "label",
+      "name": "converge_door_open"
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "horror_tint"
+    },
+    {
+      "type": "set_viewers",
+      "count": 105000
+    },
+    {
+      "type": "chat",
+      "msg": "扉開いた！！",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "中入るの…？",
+      "user": "ガクブル太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…中が見える。暗い。埃の匂い。…奥に何かある",
+      "voice": "v487"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_z",
+      "target": -10.0,
+      "dur": 6.0,
+      "id": "enter_honden"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "sfx",
+      "sound": "ambient_wind",
+      "vol": -14
+    },
+    {
+      "type": "say",
+      "text": "足音が反響する。木の床。…祭壇がある。その上に——",
+      "voice": "v488"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "何か置いてある！",
+      "user": "視聴者A",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "say",
+      "text": "…白い箱。VHSに映ってた、あの白木の箱だ",
+      "voice": "v489"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "「首は神に返す」の箱！！",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "開けるな開けるな開けるな",
+      "user": "ガクブル太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "開けて",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "開ケロ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "pos_z_await",
+      "id": "enter_honden"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン10：白木の箱に近づく — 緊張の頂点】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "pos_z",
+      "target": -15.0,
+      "dur": 5.0,
+      "id": "box_approach"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "say",
+      "text": "…近づく。箱は白木。桐だ。蓋に紙の封がしてある",
+      "voice": "v490"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "flashlight_flicker"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "flashlight_flicker"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "say",
+      "text": "懐中電灯が明滅してる。電池じゃない。箱に近づくほど激しくなる",
+      "voice": "v491"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "やめてやめてやめて",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "カメラちゃんと映して！",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "superchat",
+      "name": "深夜探偵",
+      "msg": "開けるな。お前が見たら、もう戻れない",
+      "amount": 10000
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "pos_z_await",
+      "id": "box_approach"
+    },
+    {
+      "type": "say",
+      "text": "…ごめん。でも開ける。ここまで来たんだから",
+      "voice": "v492"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン11：箱を開ける — みゆきの首】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "say",
+      "text": "封を剥がす。…蓋を、持ち上げる——",
+      "voice": "v493"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "head_x",
+      "target": 0.3,
+      "dur": 0.5
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "say",
+      "text": "…………",
+      "voice": "v494"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 12,
+      "count": 4
+    },
+    {
+      "type": "scare_flash",
+      "color": "white"
+    },
+    {
+      "type": "sleep",
+      "sec": 0.1
+    },
+    {
+      "type": "say",
+      "text": "……首……人の……女の子の首が……入ってる",
+      "voice": "v495"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "え",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "は？",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "マジ？",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "horror_tint_clear"
+    },
+    {
+      "type": "sleep",
+      "sec": 0.1
+    },
+    {
+      "type": "horror_tint"
+    },
+    {
+      "type": "say",
+      "text": "…腐ってない。まるで昨日切られたみたいに。肌が白くて。髪が黒くて。…目が",
+      "voice": "v496"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 15,
+      "count": 5
+    },
+    {
+      "type": "sfx",
+      "sound": "monster_growl",
+      "vol": -4
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "_comment",
+      "_": "────────────────────────────────────────────"
+    },
+    {
+      "type": "_comment",
+      "_": "最大恐怖ポイント：目が瞬きする"
+    },
+    {
+      "type": "_comment",
+      "_": "────────────────────────────────────────────"
+    },
+    {
+      "type": "say",
+      "text": "目が開いてる。…こっちを見てる。…待って。今——まばたき、した？",
+      "voice": "v497"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "scare_flash",
+      "color": "red"
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 20,
+      "count": 6
+    },
+    {
+      "type": "sfx",
+      "sound": "monster_growl",
+      "vol": -2
+    },
+    {
+      "type": "sleep",
+      "sec": 0.1
+    },
+    {
+      "type": "horror_flash",
+      "dur": 0.3
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "まばたきしてる！！生きてる！！首だけで生きてる！！",
+      "voice": "v498"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "ぎゃああああああ",
+      "user": "ガクブル太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "うそでしょ！！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "逃げろ！！！",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "CG？合成？",
+      "user": "視聴者A",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン12：みゆきが喋る — 「助けて」】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "say",
+      "text": "…口が。動いてる。何か言おうとしてる",
+      "voice": "v499"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 10,
+      "count": 3
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "「た……す……け……て……」",
+      "voice": "v500"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "chat",
+      "msg": "…",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "しゃべった…？",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "みゆきだ…これがみゆきなんだ",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "みゆき…1994年に首を切られた女の子。30年間、この箱の中で——",
+      "voice": "v501"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "horror_flash",
+      "dur": 0.2
+    },
+    {
+      "type": "say",
+      "text": "「助……け……て……」",
+      "voice": "v502"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "scare_flash",
+      "color": "red"
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 20,
+      "count": 8
+    },
+    {
+      "type": "sfx",
+      "sound": "monster_growl",
+      "vol": 0
+    },
+    {
+      "type": "sleep",
+      "sec": 0.1
+    },
+    {
+      "type": "horror_flash",
+      "dur": 0.5
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "目が！！見開いた！！こっちを真っ直ぐ見てる！！離れられない！！",
+      "voice": "v503"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "逃げて！！！！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "やばいやばいやばい",
+      "user": "ガクブル太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "走れ！！！",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン13：逃走 — 本殿から石段へ】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "horror_tint_clear"
+    },
+    {
+      "type": "say",
+      "text": "逃げる！！",
+      "voice": "v504"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "rot_y",
+      "target": 3.14,
+      "dur": 0.3
+    },
+    {
+      "type": "head_x",
+      "target": 0.0,
+      "dur": 0.2
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_z",
+      "target": 0.0,
+      "dur": 5.0,
+      "id": "flee_honden"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "sfx",
+      "sound": "door_creak",
+      "vol": -6
+    },
+    {
+      "type": "say",
+      "text": "後ろで扉が閉まった！！走れ走れ走れ！！",
+      "voice": "v505"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 8,
+      "count": 2
+    },
+    {
+      "type": "flashlight_flicker"
+    },
+    {
+      "type": "chat",
+      "msg": "足速く！！！",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "石段気をつけて！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "pos_z_await",
+      "id": "flee_honden"
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン14：逃走 — 石段を駆け下りる】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "pos_z",
+      "target": 8.0,
+      "dur": 4.0,
+      "id": "flee_stairs"
+    },
+    {
+      "type": "say",
+      "text": "石段！滑る！…転びそう——大丈夫、走れ！",
+      "voice": "v506"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "flashlight_flicker"
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 5,
+      "count": 2
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "後ろ見るな！！",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "女ハ残レ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "pos_z_await",
+      "id": "flee_stairs"
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン15：逃走 — 狛犬を通過】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "pos_z",
+      "target": 18.0,
+      "dur": 4.0,
+      "id": "flee_komainu"
+    },
+    {
+      "type": "say",
+      "text": "狛犬！！目がまだ光って——無視！走る！！",
+      "voice": "v507"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "sfx",
+      "sound": "monster_growl",
+      "vol": -8
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 6,
+      "count": 2
+    },
+    {
+      "type": "chat",
+      "msg": "狛犬の首が動いた！？",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "見るな！走れ！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "pos_z_await",
+      "id": "flee_komainu"
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン16：逃走 — 鳥居をくぐり抜ける】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "pos_z",
+      "target": 28.0,
+      "dur": 5.0,
+      "id": "flee_torii"
+    },
+    {
+      "type": "say",
+      "text": "鳥居！くぐれば——鳥居を越えれば神域の外だ！！",
+      "voice": "v508"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "走って！！！",
+      "user": "ガクブル太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 4,
+      "count": 1
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…くぐった！鳥居の向こう側に出た！！",
+      "voice": "v509"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "horror_tint_clear"
+    },
+    {
+      "type": "chat",
+      "msg": "出た！！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "まだ走って！！止まるな！！",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "pos_z_await",
+      "id": "flee_torii"
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン17：参道を駆け抜ける — 出口へ】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "pos_z",
+      "target": 38.0,
+      "dur": 5.0,
+      "id": "flee_exit"
+    },
+    {
+      "type": "say",
+      "text": "参道を走る！石灯籠を通り過ぎる！…出口が見える！！",
+      "voice": "v510"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "あと少し！！",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "頑張れ！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "pos_z_await",
+      "id": "flee_exit"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【シーン18：逃走後 — 振り返りと余韻】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "rot_y",
+      "target": 0.0,
+      "dur": 0.8
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "……はぁ……はぁ……。…出た。神社の外に出た",
+      "voice": "v511"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "よかった…",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "無事！？怪我は！？",
+      "user": "ガクブル太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…みゆきの首が。まだ目の裏に焼きついてる。まばたきした目が",
+      "voice": "v512"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "リアルだったの…？",
+      "user": "視聴者A",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "30年間あの箱の中で生きてたってこと…？",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…「助けて」って。あの子はまだ助けを求めてる",
+      "voice": "v513"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "次どうするの…",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "say",
+      "text": "…先に進むしかない。答えはこの先にある",
+      "voice": "v514"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "fade_black",
+      "dur": 1.5
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "fade_clear",
+      "dur": 0.5
+    }
+  ]
 }

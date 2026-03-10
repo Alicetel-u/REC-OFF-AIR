@@ -1,0 +1,786 @@
+{
+  "chapter": "ch04_jinja",
+  "_note": "CP4 神社 ─ 10万人の視線 ─ 白木の箱・みゆきの生首・藁コメフラッド・最後のお札発見",
+  "events": [
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション1：神社本殿に入る】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "sfx",
+      "sound": "ambient_wind"
+    },
+    {
+      "type": "set_viewers",
+      "count": 65000
+    },
+    {
+      "type": "flashlight_on"
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_z",
+      "target": 22.0,
+      "dur": 5.0,
+      "id": "enter_shrine"
+    },
+    {
+      "type": "say",
+      "text": "儀式の道具を祭壇に供えたら……門が開いた。本殿の中に入るよ",
+      "voice": "v401"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/door/creak1.ogg",
+      "vol": -3.0
+    },
+    {
+      "type": "chat",
+      "msg": "ついに神社の中…",
+      "user": "廃墟マニア",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "絶対やばいやつ",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "入らない方がいいって！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "fog_change",
+      "density": 0.06,
+      "dur": 3.0,
+      "color": [
+        0.06,
+        0.02,
+        0.02
+      ]
+    },
+    {
+      "type": "say",
+      "text": "空気が変わった……冷たい。嫌な予感がする",
+      "voice": "v402"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "pos_z_await",
+      "id": "enter_shrine"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション2：祭壇・白木の箱を発見】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "say",
+      "text": "祭壇がある……真ん中に白い箱が置いてある",
+      "voice": "v403"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_z",
+      "target": 15.0,
+      "dur": 4.0,
+      "id": "approach_altar"
+    },
+    {
+      "type": "chat",
+      "msg": "開けるな開けるな開けるな",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "絶対開けるだろ",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "superchat",
+      "name": "恐怖のスパチャ",
+      "msg": "開けたら1万円",
+      "amount": 10000
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "pos_z_await",
+      "id": "approach_altar"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "say",
+      "text": "……開けるよ",
+      "voice": "v404"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "motion",
+      "name": "look_down_up",
+      "dur": 1.5
+    },
+    {
+      "type": "head_x",
+      "target": 0.3,
+      "dur": 0.8
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/door/creak3.ogg",
+      "vol": -2.0
+    },
+    {
+      "type": "sleep",
+      "sec": 1.5
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション3：みゆきの生首・衝撃】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "horror_flash",
+      "dur": 0.2
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/metal/impactMetal_heavy_000.ogg",
+      "vol": 0.0
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.08,
+      "dur": 1.0
+    },
+    {
+      "type": "say",
+      "text": "これ……みゆきちゃんの首",
+      "voice": "v405"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 0.5,
+      "dur": 0.8
+    },
+    {
+      "type": "chat",
+      "msg": "！！！！！",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "うわああああ",
+      "user": "視聴者A"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "首！？首！？",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "通報した方がいい",
+      "user": "常識人",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "say",
+      "text": "……生きてる？ 生きてカメラを見てる",
+      "voice": "v406"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "fisheye",
+      "distortion": 0.3,
+      "breath": 0.05,
+      "dur": 1.5
+    },
+    {
+      "type": "horror_tint"
+    },
+    {
+      "type": "say",
+      "text": "目が……こっちを見てる。瞬きしてる！",
+      "voice": "v407"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "まばたきした！！",
+      "user": "夜更かし太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "逃げろ！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション4：同接10万突破・承認欲求の頂点】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "set_viewers",
+      "count": 78000
+    },
+    {
+      "type": "say",
+      "text": "……あ。同接が……上がってる",
+      "voice": "v408"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "set_viewers",
+      "count": 85000
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "set_viewers",
+      "count": 92000
+    },
+    {
+      "type": "chat",
+      "msg": "同接すごいことになってる",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "set_viewers",
+      "count": 97000
+    },
+    {
+      "type": "superchat",
+      "name": "赤スパの人",
+      "msg": "これガチ？",
+      "amount": 50000
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "set_viewers",
+      "count": 100000
+    },
+    {
+      "type": "scare_flash",
+      "color": "white"
+    },
+    {
+      "type": "say",
+      "text": "10万……いった。……いったよ！！",
+      "voice": "v409"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "10万人突破！！！",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "say",
+      "text": "見て、私が、私が世界で一番の……！",
+      "voice": "v410"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション5：コメント「藁」フラッド・呪い暴走】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "chat_flood",
+      "msg": "藁",
+      "count": 8,
+      "interval": 0.15,
+      "color": "red"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 0.7,
+      "dur": 2.0
+    },
+    {
+      "type": "horror_red",
+      "dur": 15.0
+    },
+    {
+      "type": "say",
+      "text": "何これ、コメントが全部『藁』！？",
+      "voice": "v411"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat_flood",
+      "msg": "藁藁藁藁藁",
+      "count": 10,
+      "interval": 0.1,
+      "color": "red"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "首ヲ置ケ",
+      "user": "???",
+      "utype": "owner"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "案山子ニ成レ",
+      "user": "???",
+      "utype": "owner"
+    },
+    {
+      "type": "wait",
+      "sec": 0.6
+    },
+    {
+      "type": "chat_flood",
+      "msg": "藁",
+      "count": 12,
+      "interval": 0.08,
+      "color": "red"
+    },
+    {
+      "type": "set_fps",
+      "fps": 20
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.05,
+      "dur": 3.0
+    },
+    {
+      "type": "say",
+      "text": "身体がまた止まりそう……ゲージが……減らない！",
+      "voice": "v412"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "desaturate",
+      "amount": 0.4,
+      "dur": 1.0
+    },
+    {
+      "type": "set_fps",
+      "fps": 12
+    },
+    {
+      "type": "chat_flood",
+      "msg": "藁藁藁",
+      "count": 6,
+      "interval": 0.12,
+      "color": "red"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション6：最後のお札を発見】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "say",
+      "text": "でも、最後のお札が……あった！ 祭壇の裏に！",
+      "voice": "v413"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/bell/impactBell_heavy_001.ogg",
+      "vol": -4.0
+    },
+    {
+      "type": "chat",
+      "msg": "お札！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "最後の1枚…！",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.6
+    },
+    {
+      "type": "say",
+      "text": "これさえあれば……これさえあれば勝てる！",
+      "voice": "v414"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション7：案山子出現・脱出開始】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/metal/impactMetal_heavy_002.ogg",
+      "vol": -1.0
+    },
+    {
+      "type": "horror_glitch",
+      "intensity": 10.0,
+      "count": 4
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.1,
+      "dur": 1.5
+    },
+    {
+      "type": "say",
+      "text": "！？ 案山子が……動いてる！ バス停への道を塞いでる！！",
+      "voice": "v415"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "flashlight_flicker"
+    },
+    {
+      "type": "chat",
+      "msg": "うわああ動いたああ",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "首なし案山子！！",
+      "user": "視聴者A"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "ワープしてるぞ！？",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat_flood",
+      "msg": "藁",
+      "count": 5,
+      "interval": 0.2,
+      "color": "red"
+    },
+    {
+      "type": "say",
+      "text": "逃げる！！ バス停まで走れ！！",
+      "voice": "v416"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "rot_y",
+      "target": 3.14,
+      "dur": 0.8
+    },
+    {
+      "type": "pos_z",
+      "target": 30.0,
+      "dur": 5.0,
+      "id": "escape_shrine"
+    },
+    {
+      "type": "set_fps",
+      "fps": 8
+    },
+    {
+      "type": "say",
+      "text": "身体がカクカクする……でも止まったら終わりだ！",
+      "voice": "v417"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/metal/impactMetal_heavy_004.ogg",
+      "vol": -2.0
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 0.6,
+      "dur": 1.0
+    },
+    {
+      "type": "chat",
+      "msg": "走れ走れ走れ！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "案山子追ってきてる！！",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "pos_z_await",
+      "id": "escape_shrine"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "horror_red_clear"
+    },
+    {
+      "type": "fisheye_off",
+      "dur": 0.5
+    },
+    {
+      "type": "horror_tint_clear"
+    },
+    {
+      "type": "fade_black",
+      "dur": 0.8
+    },
+    {
+      "type": "set_fps",
+      "fps": 0
+    },
+    {
+      "type": "desaturate",
+      "amount": 0.0,
+      "dur": 0.3
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "set_viewers",
+      "count": 105000
+    },
+    {
+      "type": "sleep",
+      "sec": 1.0
+    },
+    {
+      "type": "fade_clear",
+      "dur": 0.8
+    }
+  ]
+}

@@ -2498,6 +2498,19 @@
       "_": "── 天井に逆さまの直立不動ポーズで貼り付いたみゆきが映り込む ──"
     },
     {
+      "type": "miyuki_spawn",
+      "pos": [0.5, 3.8, -1.0],
+      "upside_down": true,
+      "walk": false,
+      "convulsion": true,
+      "convulsion_intensity": 0.2,
+      "arms_spread": 0.8,
+      "light_energy": 4.0,
+      "light_range": 8.0,
+      "scale": 8.0,
+      "_note": "天井に逆さまで貼り付いたみゆき — 首なし・直立不動"
+    },
+    {
       "type": "horror_glitch",
       "intensity": 5,
       "count": 2
@@ -2674,6 +2687,15 @@
       "_": "── ノイズの隙にみゆきが天井→床→背後へワープ ──"
     },
     {
+      "type": "miyuki_move",
+      "pos": [0.5, 0.0, -1.0],
+      "upside_down": false,
+      "walk": false,
+      "convulsion_intensity": 0.8,
+      "light_energy": 8.0,
+      "_note": "天井から床に落下ワープ — 痙攣が激しくなる"
+    },
+    {
       "type": "horror_glitch",
       "intensity": 10,
       "count": 4
@@ -2686,6 +2708,14 @@
       "type": "sfx",
       "sound": "monster_growl",
       "vol": -6
+    },
+    {
+      "type": "miyuki_move",
+      "track_player": true,
+      "walk": true,
+      "convulsion_intensity": 1.2,
+      "light_energy": 12.0,
+      "_note": "みゆきがプレイヤーを追跡開始 — 背後から接近"
     },
     {
       "type": "head_x",
@@ -3230,6 +3260,10 @@
     {
       "type": "wait",
       "sec": 1.0
+    },
+    {
+      "type": "miyuki_despawn",
+      "_note": "トイレ脱出 — みゆきを消去"
     },
     {
       "type": "fade_black",

@@ -1,0 +1,120 @@
+{
+  "chapter": "ch03_minka",
+  "_note": "CP3 民家探索（プレイアブル）— 儀式道具の回収。短い導入後プレイヤー操作。案山子ゴースト出現",
+  "events": [
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【CP3導入：民家内部・儀式道具を探せ】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "sfx",
+      "sound": "ambient_wind"
+    },
+    {
+      "type": "set_viewers",
+      "count": 55000
+    },
+    {
+      "type": "flashlight_on"
+    },
+    {
+      "type": "say",
+      "text": "ここが村の奥の民家……儀式の道具を全部見つけないと",
+      "voice": "v321"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "探索パートきた！",
+      "user": "RPG脳"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "何個あるんだろ",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "say",
+      "text": "注連縄、鏡、鈴……仏壇の裏とか押し入れの中にあるかも",
+      "voice": "v322"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "暗すぎて何も見えんｗ",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "……なんか視線を感じる。窓の外に何かいる気がする",
+      "voice": "v323"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 0.3,
+      "dur": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "！？",
+      "user": "視聴者A"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "今なんか映った！？",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.6
+    },
+    {
+      "type": "say",
+      "text": "……気のせい、だよね。探索しよう",
+      "voice": "v324"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "say_clear"
+    }
+  ]
+}
