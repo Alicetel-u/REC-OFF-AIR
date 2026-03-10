@@ -435,7 +435,7 @@ async function loadFile(f){
 function applyData(d,f){
   data=d;dirty=false;undoStack=[];redoStack=[];fname=f;$('#chapterName').textContent=data.chapter||'';
   const lv=$('#loadingView');if(lv)lv.remove();
-  try{const s=localStorage.getItem('roa_'+f);if(s){const{data:bk,t}=JSON.parse(s);const ago=Math.round((Date.now()-t)/60000);if(ago<1440&&bk&&bk.events&&confirm(`${ago}分前のバックアップを復元？`)){data=bk;dirty=true}localStorage.removeItem('roa_'+f)}}catch(e){}
+  try{const s=localStorage.getItem('roa_'+f);if(s){const{data:bk,t}=JSON.parse(s);const ago=Math.round((Date.now()-t)/60000);if(ago<1440&&bk&&bk.events&&confirm(`${ago}分前のバックアップを復元？`)){data=bk;dirty=true;localStorage.removeItem('roa_'+f)}else{localStorage.removeItem('roa_'+f)}}}catch(e){}
   buildSectionRanges();
   render();setStatus(dirty?'● 未保存（復元済み）':f);
 }

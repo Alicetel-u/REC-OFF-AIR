@@ -21,6 +21,7 @@ const VIDEO_BOTTOM := 600  # 612 - 12
 
 var record_time : float = 0.0
 var rec_blink_t : float = 0.0
+var _last_tc_frame : int = -1
 var rec_show    : bool  = true
 var scare_t     : float = 0.0
 var idle_chat_t : float = 0.0
@@ -156,22 +157,24 @@ func _process(delta: float) -> void:
 
 	record_time += delta
 
-	# ── REC 点滅（ドット＋バッジ全体） ──
+	# ── REC 点滅（状態変化時のみUI更新） ──
 	rec_blink_t += delta
 	if rec_blink_t >= 0.6:
 		rec_blink_t = 0.0
 		rec_show = not rec_show
-	if is_instance_valid(_rec_dot):
-		_rec_dot.modulate.a = 1.0 if rec_show else 0.15
-	if is_instance_valid(rec_label):
-		rec_label.modulate.a = 1.0 if rec_show else 0.7
+		if is_instance_valid(_rec_dot):
+			_rec_dot.modulate.a = 1.0 if rec_show else 0.15
+		if is_instance_valid(rec_label):
+			rec_label.modulate.a = 1.0 if rec_show else 0.7
 
-	# ── タイムコード ──
-	var h := int(record_time / 3600.0)
-	var m := int(fmod(record_time, 3600.0) / 60.0)
-	var s := int(fmod(record_time, 60.0))
-	var f := int(fmod(record_time, 1.0) * 30)
-	if is_instance_valid(timecode_label):
+	# ── タイムコード（フレーム番号が変わった時のみ更新） ──
+	var cur_frame := int(record_time * 30)
+	if cur_frame != _last_tc_frame and is_instance_valid(timecode_label):
+		_last_tc_frame = cur_frame
+		var h := int(record_time / 3600.0)
+		var m := int(fmod(record_time, 3600.0) / 60.0)
+		var s := int(fmod(record_time, 60.0))
+		var f : int = cur_frame % 30
 		timecode_label.text = "%02d:%02d:%02d.%02d" % [h, m, s, f]
 
 	# ── 放置中のランダムコメント ──
@@ -556,8 +559,10 @@ func _update_exit_arrow() -> void:
 
 func _build_rec_hud() -> void:
 	# ── 左上: REC バッジ（角丸パネル＋点滅ドット） ──
+	# ファインダー括弧の内側に配置（bracket_margin=8 + bracket_w=2 + 余白4 = 14）
+	var inset : float = 14.0
 	_rec_bg = PanelContainer.new()
-	_rec_bg.position = Vector2(VIDEO_LEFT, VIDEO_TOP)
+	_rec_bg.position = Vector2(VIDEO_LEFT + inset, VIDEO_TOP + inset)
 	_rec_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var rec_sb := StyleBoxFlat.new()
 	rec_sb.bg_color = Color(0.75, 0.04, 0.04, 0.85)
@@ -595,7 +600,7 @@ func _build_rec_hud() -> void:
 	timecode_label.text = "00:00:00.00"
 	timecode_label.add_theme_font_size_override("font_size", 14)
 	timecode_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.75))
-	timecode_label.position = Vector2(VIDEO_LEFT + 96, VIDEO_TOP + 4)
+	timecode_label.position = Vector2(VIDEO_LEFT + inset + 82, VIDEO_TOP + inset + 4)
 	timecode_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(timecode_label)
 
@@ -605,7 +610,7 @@ func _build_rec_hud() -> void:
 	battery_label.add_theme_font_size_override("font_size", 13)
 	battery_label.add_theme_color_override("font_color", Color(0.3, 1.0, 0.3, 0.85))
 	battery_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	battery_label.position = Vector2(VIDEO_RIGHT - 120, VIDEO_TOP + 4)
+	battery_label.position = Vector2(VIDEO_RIGHT - inset - 120, VIDEO_TOP + inset + 4)
 	battery_label.size = Vector2(120, 24)
 	battery_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(battery_label)
@@ -615,7 +620,7 @@ func _build_rec_hud() -> void:
 	_cam_label.text = "CAM 1"
 	_cam_label.add_theme_font_size_override("font_size", 12)
 	_cam_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.6))
-	_cam_label.position = Vector2(VIDEO_LEFT, VIDEO_BOTTOM - 18)
+	_cam_label.position = Vector2(VIDEO_LEFT + inset, VIDEO_BOTTOM - inset - 18)
 	_cam_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_cam_label)
 
@@ -623,7 +628,7 @@ func _build_rec_hud() -> void:
 	_date_label.text = "2026/02/24  23:48"
 	_date_label.add_theme_font_size_override("font_size", 12)
 	_date_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.5))
-	_date_label.position = Vector2(VIDEO_LEFT + 56, VIDEO_BOTTOM - 18)
+	_date_label.position = Vector2(VIDEO_LEFT + inset + 56, VIDEO_BOTTOM - inset - 18)
 	_date_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_date_label)
 
@@ -633,7 +638,7 @@ func _build_rec_hud() -> void:
 	item_label.add_theme_font_size_override("font_size", 14)
 	item_label.add_theme_color_override("font_color", Color(0.7, 0.85, 1.0, 0.9))
 	item_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	item_label.position = Vector2(VIDEO_RIGHT - 160, VIDEO_BOTTOM - 20)
+	item_label.position = Vector2(VIDEO_RIGHT - inset - 160, VIDEO_BOTTOM - inset - 20)
 	item_label.size = Vector2(160, 24)
 	item_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	item_label.visible = false

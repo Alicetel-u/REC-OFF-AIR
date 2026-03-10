@@ -15,6 +15,15 @@ var _bob_t : float            = 0.0
 var _flash_orig_energy : float = 1.0
 var _fade_layer        : CanvasLayer = null
 var _fade_rect         : ColorRect = null
+var _bg_image_rect     : TextureRect = null
+var _bg_vignette       : ColorRect = null
+var _bg_walk_active    : bool      = false
+var _bg_walk_t         : float     = 0.0
+var _bg_walk_speed     : float     = 1.0
+var _bg_walk_brightness: float     = 0.3
+var _bg_walk_zoom_start: float     = 1.0
+var _bg_walk_zoom_end  : float     = 1.4
+var _bg_walk_zoom_dur  : float     = 30.0
 var _miyuki_instance   : Node3D    = null
 
 # クリックスキップ制御
@@ -46,6 +55,29 @@ func _process(delta: float) -> void:
 	else:
 		if player.camera.position.length_squared() > 0.0001:
 			player.camera.position = player.camera.position.lerp(Vector3.ZERO, delta * 5.0)
+	# ── 背景画像ウォーク演出 ──
+	if _bg_walk_active:
+		_bg_walk_t += delta * _bg_walk_speed
+		_update_bg_walk()
+
+
+# ════════════════════════════════════════════════════════════════════
+# クリーンアップ（チャプター遷移前に必ず呼ぶ）
+# ════════════════════════════════════════════════════════════════════
+
+func cleanup() -> void:
+	_bg_walk_active = false
+	# root直下に追加したCanvasLayerを確実に削除
+	if is_instance_valid(_fade_layer):
+		if _fade_layer.get_parent():
+			_fade_layer.get_parent().remove_child(_fade_layer)
+		_fade_layer.queue_free()
+		_fade_layer = null
+		_fade_rect = null
+		_bg_image_rect = null
+		_bg_vignette = null
+	# VHSシェーダーをリセット
+	_vhs_reset()
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -89,6 +121,7 @@ func run_from_path(json_path: String) -> void:
 	# セクションスキップ: start_section 回目の stage_swap まで飛ばす
 	var skip_section : int = GameManager.start_section
 	GameManager.start_section = 0  # リセット（先にクリアして再リロード時のループ防止）
+	print("EntranceDirector: skip_section=%d, events=%d" % [skip_section, events.size()])
 	if skip_section > 0 and is_inside_tree():
 		var swap_count := 0
 		var skip_idx := 0
@@ -96,6 +129,7 @@ func run_from_path(json_path: String) -> void:
 			var skip_ev : Dictionary = events[skip_idx]
 			if skip_ev.get("type", "") == "stage_swap":
 				swap_count += 1
+				print("EntranceDirector: found stage_swap #%d at idx=%d scene=%s" % [swap_count, skip_idx, skip_ev.get("scene", "")])
 				if swap_count >= skip_section:
 					# この stage_swap を実行してから、次のイベントから開始
 					if is_inside_tree():
@@ -107,6 +141,10 @@ func run_from_path(json_path: String) -> void:
 						player.flashlight.visible = true
 						player.flashlight_on = true
 						player.flashlight.light_energy = _flash_orig_energy
+					# 商店街セクション（bg_imageパート）は暗転状態で始まる
+					if swap_count == 1 and is_inside_tree():
+						_ensure_fade_layer()
+						_fade_rect.color = Color(0, 0, 0, 1)
 					break
 			skip_idx += 1
 		# stage_swap の次から再開（見つからなかった場合は最初から）
@@ -342,6 +380,34 @@ func run_from_path(json_path: String) -> void:
 
 			"flashlight_off":
 				_flashlight_off()
+
+			"bg_image":
+				await _bg_image_show(
+					ev.get("file", ""),
+					float(ev.get("dur", 1.0)),
+					float(ev.get("brightness", 0.35)),
+					float(ev.get("radius", 0.38)),
+					float(ev.get("softness", 0.45)),
+					ev.get("center", [0.5, 0.5]))
+
+			"bg_image_clear":
+				await _bg_image_clear(float(ev.get("dur", 1.0)))
+
+			"bg_image_flicker":
+				_bg_image_flicker(
+					float(ev.get("dur", 3.0)),
+					float(ev.get("brightness", 0.3)))
+
+			"bg_walk_start":
+				_bg_walk_start(
+					float(ev.get("speed", 1.0)),
+					float(ev.get("zoom_end", 1.4)),
+					float(ev.get("zoom_dur", 30.0)),
+					float(ev.get("radius", 0.22)),
+					float(ev.get("softness", 0.35)))
+
+			"bg_walk_stop":
+				_bg_walk_stop()
 
 			"fade_black":
 				await _fade_black(float(ev.get("dur", 0.8)), float(ev.get("target", 1.0)))
@@ -844,6 +910,185 @@ func _flashlight_off() -> void:
 
 
 # ════════════════════════════════════════════════════════════════════
+# 背景画像表示（紙芝居風 — 暗転レイヤー上に画像を重ねる）
+# ════════════════════════════════════════════════════════════════════
+
+func _bg_image_show(file: String, dur: float = 1.0, brightness: float = 0.35,
+		vignette_radius: float = 0.38, vignette_softness: float = 0.45,
+		vignette_center: Array = [0.5, 0.5]) -> void:
+	_ensure_fade_layer()
+	# ── 画像テクスチャ（load失敗時はImage.load_from_fileでフォールバック） ──
+	var path := "res://assets/textures/" + file if not file.begins_with("res://") else file
+	var tex : Texture2D = load(path) as Texture2D
+	if not tex:
+		var img := Image.new()
+		if img.load(path) == OK:
+			tex = ImageTexture.create_from_image(img)
+	if not tex:
+		push_warning("EntranceDirector: bg_image — texture not found: " + path)
+		return
+	if not is_instance_valid(_bg_image_rect):
+		_bg_image_rect = TextureRect.new()
+		_bg_image_rect.anchor_right = 1.0
+		_bg_image_rect.anchor_bottom = 1.0
+		_bg_image_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		_bg_image_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_bg_image_rect.modulate = Color(brightness, brightness, brightness, 0.0)
+		_fade_layer.add_child(_bg_image_rect)
+	_bg_image_rect.texture = tex
+	_bg_image_rect.modulate = Color(brightness, brightness, brightness, 0.0)
+	_bg_image_rect.show()
+	# ── 円形ビネット（懐中電灯風 — center移動対応） ──
+	if not is_instance_valid(_bg_vignette):
+		_bg_vignette = ColorRect.new()
+		_bg_vignette.anchor_right = 1.0
+		_bg_vignette.anchor_bottom = 1.0
+		_bg_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var shd := Shader.new()
+		shd.code = """
+shader_type canvas_item;
+uniform vec2 center = vec2(0.5, 0.5);
+uniform float radius : hint_range(0.0, 1.0) = 0.38;
+uniform float softness : hint_range(0.0, 1.0) = 0.45;
+void fragment() {
+	vec2 uv = UV - center;
+	float aspect = SCREEN_PIXEL_SIZE.y / SCREEN_PIXEL_SIZE.x;
+	uv.x *= aspect;
+	float d = length(uv);
+	float v = smoothstep(radius, radius + softness, d);
+	COLOR = vec4(0.0, 0.0, 0.0, v);
+}
+"""
+		var mat := ShaderMaterial.new()
+		mat.shader = shd
+		mat.set_shader_parameter("center", Vector2(0.5, 0.5))
+		mat.set_shader_parameter("radius", 0.38)
+		mat.set_shader_parameter("softness", 0.45)
+		_bg_vignette.material = mat
+		_bg_vignette.modulate.a = 0.0
+		_fade_layer.add_child(_bg_vignette)
+	# パラメータを毎回反映（既存ビネットにも適用）
+	var vig_mat := _bg_vignette.material as ShaderMaterial
+	if vig_mat:
+		var cx : float = float(vignette_center[0]) if vignette_center.size() > 0 else 0.5
+		var cy : float = float(vignette_center[1]) if vignette_center.size() > 1 else 0.5
+		vig_mat.set_shader_parameter("center", Vector2(cx, cy))
+		vig_mat.set_shader_parameter("radius", vignette_radius)
+		vig_mat.set_shader_parameter("softness", vignette_softness)
+	_bg_vignette.show()
+	# フェードイン
+	var tw := create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(_bg_image_rect, "modulate:a", 1.0, dur / GameManager.playback_speed)
+	tw.tween_property(_bg_vignette, "modulate:a", 1.0, dur / GameManager.playback_speed)
+	await tw.finished
+
+
+func _bg_image_clear(dur: float = 1.0) -> void:
+	if _bg_walk_active:
+		_bg_walk_stop()
+	var tw := create_tween()
+	tw.set_parallel(true)
+	if is_instance_valid(_bg_image_rect):
+		tw.tween_property(_bg_image_rect, "modulate:a", 0.0, dur / GameManager.playback_speed)
+	if is_instance_valid(_bg_vignette):
+		tw.tween_property(_bg_vignette, "modulate:a", 0.0, dur / GameManager.playback_speed)
+	await tw.finished
+	if is_instance_valid(_bg_image_rect):
+		_bg_image_rect.hide()
+	if is_instance_valid(_bg_vignette):
+		_bg_vignette.hide()
+
+
+## 背景画像チカチカ（懐中電灯の接触不良風 — awaitしない、裏で勝手に走る）
+func _bg_image_flicker(dur: float = 3.0, brightness: float = 0.3) -> void:
+	if not is_instance_valid(_bg_image_rect):
+		return
+	var base_b : float = brightness
+	var tw := create_tween()
+	tw.set_loops(0)  # 無限ループ
+	# 暗→明→暗→明 の不規則パターン
+	tw.tween_property(_bg_image_rect, "modulate",
+		Color(base_b * 0.1, base_b * 0.1, base_b * 0.1, 1.0), 0.05)
+	tw.tween_property(_bg_image_rect, "modulate",
+		Color(base_b * 0.6, base_b * 0.6, base_b * 0.6, 1.0), 0.03)
+	tw.tween_property(_bg_image_rect, "modulate",
+		Color(base_b * 0.0, base_b * 0.0, base_b * 0.0, 1.0), 0.08)
+	tw.tween_property(_bg_image_rect, "modulate",
+		Color(base_b, base_b, base_b, 1.0), 0.06)
+	tw.tween_property(_bg_image_rect, "modulate",
+		Color(base_b * 0.3, base_b * 0.3, base_b * 0.3, 1.0), 0.04)
+	tw.tween_property(_bg_image_rect, "modulate",
+		Color(base_b * 0.8, base_b * 0.8, base_b * 0.8, 1.0), 0.12)
+	tw.tween_property(_bg_image_rect, "modulate",
+		Color(base_b * 0.05, base_b * 0.05, base_b * 0.05, 1.0), 0.06)
+	tw.tween_property(_bg_image_rect, "modulate",
+		Color(base_b, base_b, base_b, 1.0), 0.15)
+	# dur秒後に停止して元の明るさに戻す
+	await get_tree().create_timer(dur / GameManager.playback_speed).timeout
+	tw.kill()
+	if is_instance_valid(_bg_image_rect):
+		_bg_image_rect.modulate = Color(base_b, base_b, base_b, 1.0)
+
+
+## 背景画像ウォーク（奥に歩く + 懐中電灯サーチ）
+func _bg_walk_start(speed: float = 1.0, zoom_end: float = 1.4,
+		zoom_dur: float = 30.0, radius: float = 0.22, softness: float = 0.35) -> void:
+	_bg_walk_t = 0.0
+	_bg_walk_speed = speed
+	_bg_walk_zoom_start = 1.0
+	_bg_walk_zoom_end = zoom_end
+	_bg_walk_zoom_dur = zoom_dur
+	# 懐中電灯の範囲を狭くする
+	if is_instance_valid(_bg_vignette):
+		var mat := _bg_vignette.material as ShaderMaterial
+		if mat:
+			mat.set_shader_parameter("radius", radius)
+			mat.set_shader_parameter("softness", softness)
+	# 画像の pivot を中央に設定
+	if is_instance_valid(_bg_image_rect):
+		_bg_image_rect.pivot_offset = _bg_image_rect.size / 2.0
+	_bg_walk_active = true
+
+
+func _bg_walk_stop() -> void:
+	_bg_walk_active = false
+	# ビネットを中央・デフォルトサイズに戻す
+	if is_instance_valid(_bg_vignette):
+		var mat := _bg_vignette.material as ShaderMaterial
+		if mat:
+			mat.set_shader_parameter("center", Vector2(0.5, 0.5))
+			mat.set_shader_parameter("radius", 0.38)
+			mat.set_shader_parameter("softness", 0.45)
+	# 画像スケール・位置をリセット
+	if is_instance_valid(_bg_image_rect):
+		_bg_image_rect.scale = Vector2.ONE
+		_bg_image_rect.position = Vector2.ZERO
+
+
+func _update_bg_walk() -> void:
+	var t : float = _bg_walk_t
+	# ── ズーム（奥に歩く感じ） ──
+	if is_instance_valid(_bg_image_rect):
+		var progress : float = clampf(t / _bg_walk_zoom_dur, 0.0, 1.0)
+		var zoom_val : float = lerpf(_bg_walk_zoom_start, _bg_walk_zoom_end, progress)
+		_bg_image_rect.pivot_offset = _bg_image_rect.size / 2.0
+		_bg_image_rect.scale = Vector2(zoom_val, zoom_val)
+		# 歩行ボブ（上下の揺れ）
+		var bob_y : float = sin(t * 5.5) * 4.0
+		var bob_x : float = sin(t * 2.8) * 2.0
+		_bg_image_rect.position = Vector2(bob_x, bob_y)
+	# ── 懐中電灯サーチ（ビネット中心がゆらゆら動く） ──
+	if is_instance_valid(_bg_vignette):
+		var mat := _bg_vignette.material as ShaderMaterial
+		if mat:
+			# 複数のsin波を重ねて不規則な動きを演出
+			var cx : float = 0.4 + sin(t * 0.7) * 0.12 + sin(t * 1.9) * 0.06 + sin(t * 3.3) * 0.03
+			var cy : float = 0.5 + cos(t * 0.5) * 0.08 + sin(t * 1.3) * 0.05 + cos(t * 2.7) * 0.02
+			mat.set_shader_parameter("center", Vector2(cx, cy))
+
+
+# ════════════════════════════════════════════════════════════════════
 # 画面フェード（暗転 / 明転）
 # ════════════════════════════════════════════════════════════════════
 
@@ -1208,29 +1453,14 @@ func _miyuki_spawn(ev: Dictionary) -> void:
 	model.scale = Vector3(s, s, s)
 	_miyuki_instance.add_child(model)
 
-	# MiyukiGhost.gd をアタッチ
-	var ghost_script := load("res://assets/models/characters/MiyukiGhost.gd") as GDScript
-	if ghost_script:
-		_miyuki_instance.set_script(ghost_script)
-
 	# 位置
 	var pos_arr : Array = ev.get("pos", [0, 3.8, -1])
 	_miyuki_instance.global_position = Vector3(
 		float(pos_arr[0]), float(pos_arr[1]), float(pos_arr[2]))
 
-	# パラメータ設定（日本語変数名はスクリプト側で定義済み）
-	_miyuki_instance.set("逆さまにする", ev.get("upside_down", false))
-	_miyuki_instance.set("歩く", ev.get("walk", false))
-	_miyuki_instance.set("歩行速度", float(ev.get("speed", 0.3)))
-	_miyuki_instance.set("痙攣を有効にする", ev.get("convulsion", false))
-	_miyuki_instance.set("痙攣の激しさ", float(ev.get("convulsion_intensity", 0.1)))
-	_miyuki_instance.set("関節のガクつき", float(ev.get("joint_jitter", 0.1)))
-	_miyuki_instance.set("腕を広げる", float(ev.get("arms_spread", 0.0)))
-	_miyuki_instance.set("腕をゆらゆらさせる", ev.get("arms_sway", false))
-
-	# プレイヤーをターゲットに設定
-	if is_instance_valid(player) and ev.get("track_player", false):
-		_miyuki_instance.set("ターゲット", player)
+	# 逆さま
+	if ev.get("upside_down", false):
+		_miyuki_instance.rotation.x = PI
 
 	# 不気味な赤い照明
 	var light := OmniLight3D.new()
@@ -1259,26 +1489,10 @@ func _miyuki_move(ev: Dictionary) -> void:
 
 	# 逆さま切替
 	if ev.has("upside_down"):
-		_miyuki_instance.set("逆さまにする", ev.get("upside_down", false))
 		if ev.get("upside_down", false):
 			_miyuki_instance.rotation.x = PI
 		else:
 			_miyuki_instance.rotation.x = 0.0
-
-	# 歩行切替
-	if ev.has("walk"):
-		_miyuki_instance.set("歩く", ev.get("walk", false))
-
-	# プレイヤー追跡切替
-	if ev.has("track_player"):
-		if ev.get("track_player", false) and is_instance_valid(player):
-			_miyuki_instance.set("ターゲット", player)
-		else:
-			_miyuki_instance.set("ターゲット", null)
-
-	# 痙攣の激しさ
-	if ev.has("convulsion_intensity"):
-		_miyuki_instance.set("痙攣の激しさ", float(ev.get("convulsion_intensity", 0.4)))
 
 	# 表示/非表示
 	if ev.has("visible"):
@@ -1293,5 +1507,7 @@ func _miyuki_move(ev: Dictionary) -> void:
 
 func _miyuki_despawn() -> void:
 	if is_instance_valid(_miyuki_instance):
+		if _miyuki_instance.get_parent():
+			_miyuki_instance.get_parent().remove_child(_miyuki_instance)
 		_miyuki_instance.queue_free()
 		_miyuki_instance = null

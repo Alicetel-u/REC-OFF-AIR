@@ -3178,8 +3178,8 @@ async function onSave() {
         const cacheKey = fileName.replace(/\.json$/, "");
         DIALOGUE_CACHE[cacheKey] = JSON.parse(text);
       }
-      // 監視を再開（3秒後、ファイル書き込み完了を確実に待つ）
-      if (wasWatching) setTimeout(() => { _savingInProgress = false; startWatch(); }, 3000);
+      // 監視を再開（1秒後、ファイル書き込み完了を待つ）
+      if (wasWatching) setTimeout(() => { _savingInProgress = false; startWatch(); }, 1000);
       else _savingInProgress = false;
       return;
     }
@@ -3663,6 +3663,7 @@ function undo() {
   redoStack.push(JSON.stringify(events));
   events = JSON.parse(undoStack.pop());
   if (jsonData) jsonData.events = events;
+  syncEventsToAll();
   reExtractPath(); draw();
   updateUndoButtons();
   ceRender(); cipUpdatePos();
@@ -3672,6 +3673,7 @@ function redo() {
   undoStack.push(JSON.stringify(events));
   events = JSON.parse(redoStack.pop());
   if (jsonData) jsonData.events = events;
+  syncEventsToAll();
   reExtractPath(); draw();
   updateUndoButtons();
   ceRender(); cipUpdatePos();

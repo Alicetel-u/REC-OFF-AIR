@@ -112,18 +112,27 @@ func _scan_dir(path: String) -> Array:
 # 開発環境では FileAccess 生バイト読み込みにフォールバック
 # ════════════════════════════════════════════════════════════════
 
+var _audio_cache : Dictionary = {}  # path → AudioStream キャッシュ
+
 func _load_audio(path: String) -> AudioStream:
+	# キャッシュヒット
+	if _audio_cache.has(path):
+		return _audio_cache[path]
+	var stream : AudioStream = null
 	# 1) ResourceLoader（エクスポートビルドではこちらが必須）
 	if ResourceLoader.exists(path):
 		var s = load(path)
 		if s is AudioStream:
-			return s
+			stream = s
 	# 2) フォールバック: 生バイト読み込み（開発環境 / import未対応ファイル用）
-	if path.to_lower().ends_with(".mp3"):
-		return _load_mp3_raw(path)
-	if path.to_lower().ends_with(".wav"):
-		return _load_wav_raw(path)
-	return null
+	if stream == null and path.to_lower().ends_with(".mp3"):
+		stream = _load_mp3_raw(path)
+	if stream == null and path.to_lower().ends_with(".wav"):
+		stream = _load_wav_raw(path)
+	# キャッシュ保存（ボイス以外。ボイスはファイルが大きいため都度読み込み）
+	if stream and not "/voice/" in path:
+		_audio_cache[path] = stream
+	return stream
 
 
 func _load_mp3_raw(path: String) -> AudioStreamMP3:
@@ -359,4 +368,5 @@ func play_superchat_chime(vol_db: float = -6.0) -> void:
 		pb.push_frame(Vector2(v, v))
 
 	await get_tree().create_timer(DUR1 + DUR2 + 0.05).timeout
+	player.stop()
 	player.queue_free()

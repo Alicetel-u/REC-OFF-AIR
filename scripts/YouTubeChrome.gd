@@ -52,6 +52,7 @@ var _chat_scroll : ScrollContainer
 var _live_t      : float = 0.0
 var _view_t      : float = 0.0
 var _like_t      : float = 0.0
+var _like_next   : float = 30.0
 var _superchat_t : float = 0.0
 var _superchat_next : float = 0.0
 var _superchat_area : VBoxContainer
@@ -659,10 +660,11 @@ func _process(delta: float) -> void:
 		if is_instance_valid(_view_label):
 			_view_label.text = "%s 人が視聴中" % _fmt_count(_view_count)
 
-	# 高評価数ゆらぎ
+	# 高評価数ゆらぎ（次回閾値を事前計算して毎フレームのrandf_rangeを回避）
 	_like_t += delta
-	if _like_t >= randf_range(20.0, 40.0):
+	if _like_t >= _like_next:
 		_like_t = 0.0
+		_like_next = randf_range(20.0, 40.0)
 		_like_count += randi_range(5, 30)
 		if is_instance_valid(_like_label):
 			_like_label.text = _fmt_count(_like_count)
@@ -1028,7 +1030,7 @@ func _toggle_speed() -> void:
 var _stage_popup : PopupMenu = null
 
 ## CP1 サブセクション定義（stage_swap 境界で区切られる）
-const CP1_SECTIONS : Array[String] = ["CP1-1 廃村入口", "CP1-2 トイレ", "CP1-3 トイレ後"]
+const CP1_SECTIONS : Array[String] = ["CP1-1 廃村入口", "CP1-2 商店街", "CP1-3 トイレ", "CP1-4 トイレ後"]
 
 func _open_stage_menu() -> void:
 	if _stage_popup and is_instance_valid(_stage_popup):

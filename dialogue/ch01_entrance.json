@@ -1058,6 +1058,27 @@
     },
     {
       "type": "_comment",
+      "_": "【CP1-2 stage_swap 境界：商店街パート開始】"
+    },
+    {
+      "type": "fade_black",
+      "dur": 0.5
+    },
+    {
+      "type": "stage_swap",
+      "scene": "res://scenes/Stage_Village.tscn",
+      "spawn": [
+        0,
+        1,
+        -28
+      ]
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
       "_": "【シーン3A：商店街〜トイレ発見（暗転＋音響＋紙芝居ハイブリッド）】"
     },
     {
@@ -1114,10 +1135,30 @@
     },
     {
       "type": "_comment",
-      "_": "── ② 懐中電灯ON → 暗転を薄く解除（うっすら廃墟が浮かぶ） ──"
+      "_": "── ② 懐中電灯ON → 商店街画像表示（薄暗い懐中電灯風） ──"
     },
     {
       "type": "flashlight_on"
+    },
+    {
+      "type": "bg_image",
+      "file": "syouten.png",
+      "dur": 2.0,
+      "brightness": 0.3,
+      "radius": 0.2,
+      "softness": 0.3,
+      "center": [
+        0.4,
+        0.5
+      ]
+    },
+    {
+      "type": "bg_walk_start",
+      "speed": 1.0,
+      "zoom_end": 1.5,
+      "zoom_dur": 35.0,
+      "radius": 0.2,
+      "softness": 0.3
     },
     {
       "type": "fade_clear",
@@ -1192,7 +1233,7 @@
     },
     {
       "type": "say",
-      "text": "ほんとだ。メニュー表がまだ貼ってある……カレー500円。なんか、時間が止まってるみたい。",
+      "text": "ほんとだ。メニュー表がまだ貼ってある……カレー380円。なんか、時間が止まってるみたい。",
       "voice": "v011c"
     },
     {
@@ -1380,6 +1421,11 @@
       "sec": 0.5
     },
     {
+      "type": "bg_image_flicker",
+      "dur": 4.5,
+      "brightness": 0.3
+    },
+    {
       "type": "say",
       "text": "……懐中電灯チカチカしてる。電池じゃないよね、これ。なんか嫌な感じ。",
       "voice": "v011g"
@@ -1464,10 +1510,17 @@
     },
     {
       "type": "_comment",
-      "_": "── ⑥ トイレ発見（懐中電灯OFF→完全暗転→一瞬だけ映す） ──"
+      "_": "── ⑥ トイレ発見（懐中電灯OFF→背景画像消去→完全暗転→一瞬だけ映す） ──"
+    },
+    {
+      "type": "bg_walk_stop"
     },
     {
       "type": "flashlight_off"
+    },
+    {
+      "type": "bg_image_clear",
+      "dur": 0.5
     },
     {
       "type": "fade_black",
@@ -1524,6 +1577,12 @@
       "sec": 0.8
     },
     {
+      "type": "bg_image",
+      "file": "toilet.jpg",
+      "dur": 1.5,
+      "brightness": 0.35
+    },
+    {
       "type": "say",
       "text": "公衆トイレだ。ここでみゆきちゃんが首を……。ドアに『使用禁止』って張り紙がある。",
       "voice": "v011j"
@@ -1531,6 +1590,10 @@
     {
       "type": "wait",
       "sec": 4.57
+    },
+    {
+      "type": "bg_image_clear",
+      "dur": 1.0
     },
     {
       "type": "_comment",
@@ -1890,6 +1953,27 @@
       "type": "head_x",
       "target": 0.05,
       "dur": 0.6
+    },
+    {
+      "type": "wait",
+      "sec": 0.6
+    },
+    {
+      "type": "say",
+      "text": "……ッ！",
+      "voice": "v011r"
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.01,
+      "dur": 0.3
+    },
+    {
+      "type": "wait",
+      "sec": 1.14
+    },
+    {
+      "type": "say_clear"
     },
     {
       "type": "wait",
@@ -2372,6 +2456,39 @@
       "sec": 1.0
     },
     {
+      "type": "chat",
+      "msg": "今の何！？",
+      "user": "視聴者A"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "画面乱れたぞ",
+      "user": "深夜組"
+    },
+    {
+      "type": "wait",
+      "sec": 0.15
+    },
+    {
+      "type": "chat",
+      "msg": "ノイズ走ったな",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.15
+    },
+    {
+      "type": "chat",
+      "msg": "電波悪い？",
+      "user": "名無しさん"
+    },
+    {
       "type": "_comment",
       "_": "══ フェーズ3-2：個室へ歩いて開ける ══"
     },
@@ -2567,6 +2684,41 @@
       "sec": 1.2
     },
     {
+      "type": "chat",
+      "msg": "今ノイズ入った？",
+      "user": "おばけ見たい"
+    },
+    {
+      "type": "wait",
+      "sec": 0.15
+    },
+    {
+      "type": "chat",
+      "msg": "え、カメラバグってない？",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.12
+    },
+    {
+      "type": "chat",
+      "msg": "天井……何かいる？",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.1
+    },
+    {
+      "type": "chat",
+      "msg": "上見て！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
       "type": "flashlight_flicker"
     },
     {
@@ -2601,22 +2753,27 @@
     },
     {
       "type": "miyuki_spawn",
-      "pos": [1.0, 3.8, -2.5],
+      "pos": [
+        2.5,
+        3.0,
+        -0.75
+      ],
       "upside_down": true,
-      "walk": false,
-      "convulsion": false,
-      "convulsion_intensity": 0.0,
-      "arms_spread": 0.0,
-      "arms_sway": false,
-      "light_energy": 3.0,
-      "light_range": 6.0,
-      "scale": 8.0,
-      "_note": "個室上の天井に逆さまで貼り付き — プレイヤー正面（rot_y=4.71時）"
+      "scale": 1.5,
+      "light_energy": 2.5,
+      "light_range": 5.0,
+      "visible": false,
+      "_note": "プレイヤー正面(+X)の天井 — X=1.0,Z=-0.75の1.5m前方、Y=3.0天井"
     },
     {
       "type": "horror_glitch",
       "intensity": 5,
       "count": 2
+    },
+    {
+      "type": "miyuki_move",
+      "visible": true,
+      "_note": "グリッチノイズの隙に姿が見える"
     },
     {
       "type": "sfx",
@@ -2659,12 +2816,12 @@
     },
     {
       "type": "say",
-      "text": "……待って。何あれ。天井になんか……ポーズ決めて固まってるやつがいる。……え、スマホを外すといないのに、画面で見るとそこにいるの！？",
+      "text": "……待って。何あれ。天井になんか……いるっ…… え、スマホを外すといないのに、画面で見るとそこにいるの！？",
       "voice": "v015"
     },
     {
       "type": "wait",
-      "sec": 7.79
+      "sec": 8.09
     },
     {
       "type": "chat",
@@ -2791,12 +2948,14 @@
     },
     {
       "type": "miyuki_move",
-      "pos": [1.0, 0.0, -2.5],
+      "pos": [
+        1.0,
+        0.0,
+        -2.5
+      ],
       "upside_down": false,
-      "walk": false,
-      "convulsion_intensity": 0.15,
       "light_energy": 6.0,
-      "_note": "天井から床に落下 — 個室の前に立つ"
+      "_note": "天井から床にワープ — 通常サイズ感のまま接近"
     },
     {
       "type": "horror_glitch",
@@ -2811,6 +2970,49 @@
       "type": "sfx",
       "sound": "monster_growl",
       "vol": -6
+    },
+    {
+      "type": "chat",
+      "msg": "え、消えた！？",
+      "user": "深夜組"
+    },
+    {
+      "type": "wait",
+      "sec": 0.06
+    },
+    {
+      "type": "chat",
+      "msg": "どこいった！？！？",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.06
+    },
+    {
+      "type": "chat",
+      "msg": "ワープした！？",
+      "user": "おばけ見たい"
+    },
+    {
+      "type": "wait",
+      "sec": 0.06
+    },
+    {
+      "type": "chat",
+      "msg": "後ろ！後ろ！後ろ！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.06
+    },
+    {
+      "type": "chat",
+      "msg": "逃げろおおおお",
+      "user": "ガクブル太郎"
     },
     {
       "type": "miyuki_move",
@@ -2987,12 +3189,12 @@
     },
     {
       "type": "say",
-      "text": "ひっ……！？ こっち来た！(扉が閉まる) 扉が開かない！ 開けて、開けてよ！！",
+      "text": "ひっ……！？ こっち来た！ 扉が開かない！ 開けて、開けてよ！！",
       "voice": "v016"
     },
     {
       "type": "wait",
-      "sec": 4.05
+      "sec": 4.86
     },
     {
       "type": "chat",
@@ -3063,12 +3265,12 @@
     },
     {
       "type": "say",
-      "text": "お札、頼む……！ 閉じて！！",
+      "text": "お札、頼む……！ お願い助けてよっ！！",
       "voice": "v017"
     },
     {
       "type": "wait",
-      "sec": 1.9
+      "sec": 3.33
     },
     {
       "type": "use_ofuda"
@@ -3192,6 +3394,30 @@
       "sec": 0.3
     },
     {
+      "type": "_comment",
+      "_": "── 個室から飛び出す。心臓バクバク演出開始 ──"
+    },
+    {
+      "type": "sfx",
+      "file": "door/doorClose_2",
+      "vol": -4,
+      "_note": "心臓の鼓動1（ドクン）"
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.02,
+      "dur": 0.15
+    },
+    {
+      "type": "say",
+      "text": "で、出れた…… もういや本当に出るなんて聞いてない！！",
+      "voice": "v018"
+    },
+    {
+      "type": "set_viewers",
+      "count": 50200
+    },
+    {
       "type": "walk_set",
       "on": true
     },
@@ -3202,17 +3428,34 @@
       "id": "retreat_x"
     },
     {
-      "type": "set_viewers",
-      "count": 50200
+      "type": "wait",
+      "sec": 3.67
     },
     {
-      "type": "say",
-      "text": "はぁ、はぁ……見た！？ 今の見えたよね！？ あの子、天井に……。一旦戻ろう、入口まで戻る！",
-      "voice": "v018"
+      "type": "sfx",
+      "file": "door/doorClose_2",
+      "vol": -6,
+      "_note": "心臓の鼓動2"
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.018,
+      "dur": 0.12
     },
     {
       "type": "wait",
-      "sec": 5.75
+      "sec": 0.8
+    },
+    {
+      "type": "sfx",
+      "file": "door/doorClose_2",
+      "vol": -5,
+      "_note": "心臓の鼓動3"
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.02,
+      "dur": 0.12
     },
     {
       "type": "chat",
@@ -3222,7 +3465,7 @@
     },
     {
       "type": "wait",
-      "sec": 0.3
+      "sec": 0.25
     },
     {
       "type": "chat",
@@ -3232,12 +3475,27 @@
     },
     {
       "type": "wait",
-      "sec": 0.3
+      "sec": 0.2
     },
     {
       "type": "chat",
-      "msg": "心臓止まるかと思った",
+      "msg": "走れ走れ走れ！！",
       "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.6
+    },
+    {
+      "type": "sfx",
+      "file": "door/doorClose_2",
+      "vol": -5,
+      "_note": "心臓の鼓動4"
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.022,
+      "dur": 0.12
     },
     {
       "type": "pos_x_await",
@@ -3258,17 +3516,48 @@
     },
     {
       "type": "_comment",
-      "_": "── 来た道を戻る（z=-0.75 → z=-3.75） ──"
+      "_": "── 来た道を戻る（z=-0.75 → z=-3.75）心臓バクバク継続 ──"
     },
     {
       "type": "pos_z",
       "target": -3.75,
-      "dur": 5.0,
+      "dur": 4.0,
       "id": "retreat_z"
     },
     {
+      "type": "say",
+      "text": "怖い怖い怖い怖い！！！",
+      "voice": "v018b"
+    },
+    {
       "type": "wait",
-      "sec": 0.3
+      "sec": 1.7
+    },
+    {
+      "type": "sfx",
+      "file": "door/doorClose_2",
+      "vol": -4,
+      "_note": "心臓の鼓動5（加速）"
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.025,
+      "dur": 0.15
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "sfx",
+      "file": "door/doorClose_2",
+      "vol": -4,
+      "_note": "心臓の鼓動6"
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.025,
+      "dur": 0.12
     },
     {
       "type": "chat",
@@ -3277,11 +3566,11 @@
     },
     {
       "type": "wait",
-      "sec": 0.4
+      "sec": 0.3
     },
     {
       "type": "chat",
-      "msg": "お札すげえ……",
+      "msg": "心臓止まるかと思った",
       "user": "配信民99",
       "utype": "member"
     },
@@ -3290,19 +3579,30 @@
       "sec": 0.5
     },
     {
-      "type": "say",
-      "text": "来た道、戻るよ。お札は残り2枚。",
-      "voice": "v018b"
+      "type": "sfx",
+      "file": "door/doorClose_2",
+      "vol": -5,
+      "_note": "心臓の鼓動7（少し落ち着く）"
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.018,
+      "dur": 0.1
     },
     {
       "type": "wait",
-      "sec": 2.57
+      "sec": 0.6
+    },
+    {
+      "type": "sfx",
+      "file": "metal/impactMetal_heavy_002",
+      "vol": -16,
+      "_note": "背後で金属音（まだ安全じゃない感）"
     },
     {
       "type": "chat",
-      "msg": "正しい判断",
-      "user": "ホラー好き太郎",
-      "utype": "member"
+      "msg": "後ろから音した！？",
+      "user": "おばけ見たい"
     },
     {
       "type": "wait",
@@ -3310,8 +3610,9 @@
     },
     {
       "type": "sfx",
-      "file": "metal/impactMetal_heavy_002",
-      "vol": -16
+      "file": "door/doorClose_2",
+      "vol": -6,
+      "_note": "心臓の鼓動8（減速）"
     },
     {
       "type": "pos_z_await",
@@ -3323,16 +3624,11 @@
     },
     {
       "type": "_comment",
-      "_": "── トイレ入口到着。暗転→stage_swap ──"
+      "_": "── トイレ入口到着。心臓バクバク収まる ──"
     },
     {
       "type": "wait",
       "sec": 0.5
-    },
-    {
-      "type": "say",
-      "text": "スパチャありがとー！ ……さっきの天井の子、首がなかった。あれがみゆきちゃんだったんだ。",
-      "voice": "v018c"
     },
     {
       "type": "superchat",
@@ -3341,13 +3637,28 @@
       "msg": "生きて帰れ！！！"
     },
     {
+      "type": "say",
+      "text": "…… スパチャありがと……さっきの天井の、首がなかった…… あれがみゆきちゃんなの？",
+      "voice": "v018c"
+    },
+    {
       "type": "wait",
-      "sec": 4.57
+      "sec": 6.01
     },
     {
       "type": "chat",
       "msg": "マジで本物だったのか",
       "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "お札すげえ……",
+      "user": "ホラー好き太郎",
       "utype": "member"
     },
     {
@@ -3365,8 +3676,9 @@
       "sec": 1.0
     },
     {
-      "type": "miyuki_despawn",
-      "_note": "トイレ脱出 — みゆきを消去"
+      "type": "miyuki_move",
+      "visible": false,
+      "_note": "暗転前にみゆきを非表示"
     },
     {
       "type": "fade_black",
@@ -3374,10 +3686,24 @@
     },
     {
       "type": "wait",
-      "sec": 2.0
+      "sec": 1.5
     },
     {
       "type": "say_clear"
+    },
+    {
+      "type": "_comment",
+      "_": "── トイレ脱出：全ホラー演出をクリア ──"
+    },
+    {
+      "type": "horror_tint_clear",
+      "dur": 0.5
+    },
+    {
+      "type": "horror_red_clear"
+    },
+    {
+      "type": "chat_horror_clear"
     },
     {
       "type": "_comment",
@@ -3394,6 +3720,10 @@
     {
       "type": "_comment",
       "_": "── Phase1: stage_swap → 入口方向へ走る ──"
+    },
+    {
+      "type": "miyuki_despawn",
+      "_note": "トイレ脱出 — みゆきを消去"
     },
     {
       "type": "vhs_reset"

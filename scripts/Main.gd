@@ -39,6 +39,8 @@ var _debug_label : Label = null
 
 
 func _ready() -> void:
+	# 前チャプターのEntranceDirectorが残したCanvasLayerを掃除
+	_cleanup_orphan_layers()
 	# プレイヤーをイントロ中は操作無効（ESC等は効くようにDISABLEDにしない）
 	player.input_disabled = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -151,6 +153,22 @@ func _ready() -> void:
 	hud.setup_exit_arrow(player, exit_pos)
 
 
+## シーン再ロード後に root 直下に残った孤立 CanvasLayer を削除
+func _cleanup_orphan_layers() -> void:
+	for child in get_tree().root.get_children():
+		# Main（現在のシーン）とAutoload以外のCanvasLayerを削除
+		if child is CanvasLayer and not child.is_in_group("autoload"):
+			# Autoloadでないか確認（Autoloadはシーン再ロードでも残るべき）
+			var is_autoload := false
+			for al_name in ["GameManager", "ScenarioManager", "InventorySingleton", "SoundManager", "LoadingScreen"]:
+				if child.name == al_name:
+					is_autoload = true
+					break
+			if not is_autoload and child != get_tree().current_scene:
+				push_warning("Main: removing orphan CanvasLayer: " + child.name)
+				child.queue_free()
+
+
 func _run_entrance_sequence() -> void:
 	## 廃村入口: EntranceDirector に演出を委譲し、完了後に次チャプターへ進む
 	var director: Node = EntranceDirectorScript.new()
@@ -158,6 +176,8 @@ func _run_entrance_sequence() -> void:
 	director.set("hud", hud)
 	add_child(director)
 	await director.run()
+	director.cleanup()
+	remove_child(director)
 	director.queue_free()
 	GameManager.advance_to_next_chapter()
 
@@ -174,6 +194,8 @@ func _run_chapter_opening(chapter_id: String) -> void:
 	# EntranceDirector.run() は DIALOGUE_JSON 定数を使うため、
 	# 動的パスは _run_from_path() で渡す
 	await director.run_from_path(path)
+	director.cleanup()
+	remove_child(director)
 	director.queue_free()
 
 
@@ -285,6 +307,8 @@ func _apply_environment(chapter: Resource) -> void:
 	# ── VHS オーバーレイ ──
 	if chapter.vhs_overlay:
 		_setup_vhs_overlay()
+	else:
+		_remove_vhs_overlay()
 
 
 # ──────────────────────────────────────────────
@@ -327,15 +351,23 @@ func tween_vhs_param(param_name: String, target: float, dur: float) -> Tween:
 	if not is_instance_valid(_vhs_rect) or not _vhs_rect.material:
 		return null
 	var mat := _vhs_rect.material as ShaderMaterial
+	var current_val : float = float(mat.get_shader_parameter(param_name))
 	var tw := create_tween()
 	tw.tween_method(func(v: float) -> void: mat.set_shader_parameter(param_name, v),
-		float(mat.get_shader_parameter(param_name)), target, dur)
+		current_val, target, dur)
 	return tw
 
 
 func _ensure_vhs_overlay() -> void:
 	if not _vhs_layer:
 		_setup_vhs_overlay()
+
+
+func _remove_vhs_overlay() -> void:
+	if is_instance_valid(_vhs_layer):
+		_vhs_layer.queue_free()
+		_vhs_layer = null
+		_vhs_rect = null
 
 
 # ──────────────────────────────────────────────
@@ -380,9 +412,10 @@ func tween_fisheye_param(param_name: String, target: float, dur: float) -> Tween
 	if not is_instance_valid(_fisheye_rect) or not _fisheye_rect.material:
 		return null
 	var mat := _fisheye_rect.material as ShaderMaterial
+	var current_val : float = float(mat.get_shader_parameter(param_name))
 	var tw := create_tween()
 	tw.tween_method(func(v: float) -> void: mat.set_shader_parameter(param_name, v),
-		float(mat.get_shader_parameter(param_name)), target, dur)
+		current_val, target, dur)
 	return tw
 
 
@@ -441,7 +474,11 @@ func _run_intro() -> void:
 
 	tw = create_tween()
 	tw.tween_property(intro_root, "modulate:a", 0.0, 0.6)
-	await tw.finished
+	if _intro_skip:
+		tw.kill()
+		intro_root.modulate.a = 0.0
+	else:
+		await tw.finished
 	intro_layer.visible = false
 
 

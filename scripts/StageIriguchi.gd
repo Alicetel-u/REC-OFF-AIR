@@ -40,9 +40,9 @@ func _build_ground() -> void:
 # ── 砂利道 ───────────────────────────────────────────────────────
 func _build_road() -> void:
 	# Z=19 から Z=-33 まで（村門・商店街ゲートを通過する長さ）
-	_box(Vector3(0, 0.01, -7), Vector3(4.5, 0.05, 52), Color(0.55, 0.52, 0.46))
-	_box(Vector3(-2.6, 0.03, -7), Vector3(0.3, 0.04, 52), Color(0.40, 0.38, 0.34))
-	_box(Vector3( 2.6, 0.03, -7), Vector3(0.3, 0.04, 52), Color(0.40, 0.38, 0.34))
+	_box(Vector3(0, 0.01, -7), Vector3(4.5, 0.05, 52), Color(0.75, 0.72, 0.65))
+	_box(Vector3(-2.6, 0.03, -7), Vector3(0.3, 0.04, 52), Color(0.58, 0.55, 0.50))
+	_box(Vector3( 2.6, 0.03, -7), Vector3(0.3, 0.04, 52), Color(0.58, 0.55, 0.50))
 
 
 # ── 畑 ───────────────────────────────────────────────────────────
@@ -105,7 +105,7 @@ func _build_shopping_gate() -> void:
 		push_warning("ShoppingStreetGate.tscn が読み込めません")
 
 
-# ── 雰囲気演出（ライティング＋霧パーティクル） ─────────────────────
+# ── 雰囲気演出 ──────────────────────────────────────────────
 func _build_atmosphere() -> void:
 	# ── 月明かり（青白DirectionalLight3D・強め） ──
 	var moon := DirectionalLight3D.new()

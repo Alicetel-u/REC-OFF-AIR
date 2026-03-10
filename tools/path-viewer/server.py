@@ -111,7 +111,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self._json(404, {"error": "not found"})
 
     def _json(self, code, obj):
-        data = json.dumps(obj).encode()
+        data = json.dumps(obj, ensure_ascii=False).encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")

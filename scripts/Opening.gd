@@ -902,9 +902,10 @@ const _BTN_BORDER := Color(0.30, 0.12, 0.12, 0.6)
 
 const CHAPTER_INFO : Array[Dictionary] = [
 	{"name": "CP1  廃村入口", "sub": "公衆トイレの首無し少女", "icon": "🏚", "sections": [
-		{"name": "CP1-1  廃村入口", "sub": "配信開始〜商店街", "section": 0},
-		{"name": "CP1-2  公衆トイレ", "sub": "みゆき遭遇〜脱出", "section": 1},
-		{"name": "CP1-3  逃走と反転", "sub": "バス停へ逃走→村の奥へ", "section": 2},
+		{"name": "CP1-1  廃村入口", "sub": "配信開始〜村門", "section": 0},
+		{"name": "CP1-2  商店街", "sub": "懐中電灯で探索", "section": 1},
+		{"name": "CP1-3  公衆トイレ", "sub": "みゆき遭遇〜脱出", "section": 2},
+		{"name": "CP1-4  逃走と反転", "sub": "バス停へ逃走→村の奥へ", "section": 3},
 	]},
 	{"name": "CP2  村長の屋敷", "sub": "Kの日記と鏡の向こう", "icon": "🏛"},
 	{"name": "CP3  廃倉庫", "sub": "VHSテープ回収", "icon": "📼"},
