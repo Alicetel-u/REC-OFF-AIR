@@ -921,23 +921,34 @@ func _stage_swap(scene_path: String, spawn: Array) -> void:
 	ground_mesh.material_override = mat
 	main.add_child(ground_mesh)
 
-	# 環境光なし — 懐中電灯だけが頼り
+	# WorldEnvironment の ambient_light を抑える（白飛びの主因）
+	var we := main.get_node_or_null("WorldEnvironment")
+	if we and we is WorldEnvironment and we.environment:
+		var env : Environment = we.environment
+		env.ambient_light_energy = 0.02
+		env.ambient_light_color = Color(0.3, 0.35, 0.45)
+	# DirectionalLight3D も大幅減光
+	var dl := main.get_node_or_null("DirectionalLight3D")
+	if dl and dl is DirectionalLight3D:
+		dl.light_energy = 0.0
+
+	# 蛍光灯っぽい環境光（トイレ全体をふんわり照らす）
 	var env_light := OmniLight3D.new()
-	env_light.position = Vector3(0, 4, 0)
-	env_light.light_color = Color(0.08, 0.08, 0.12)
-	env_light.light_energy = 0.02
-	env_light.omni_range = 10.0
+	env_light.position = Vector3(0, 3.5, 0)
+	env_light.light_color = Color(0.85, 0.9, 1.0)
+	env_light.light_energy = 0.5
+	env_light.omni_range = 15.0
 	main.add_child(env_light)
 
-	# GLB蛍光灯ライトをほぼ完全消灯
+	# GLB蛍光灯ライトを適度に減光（白飛び防止）
 	if stage:
-		_dim_lights_recursive(stage, 0.02)
+		_dim_lights_recursive(stage, 0.15)
 
-	# トイレ等の閉所では懐中電灯を減光（広い屋外では元に戻す）
+	# トイレでは懐中電灯を控えめに（蛍光灯がメイン光源）
 	if is_instance_valid(player):
 		if "Toilet" in scene_path or "toilet" in scene_path:
-			player.flashlight.light_energy = _flash_orig_energy * 0.25
-			player.flashlight.spot_range = 20.0
+			player.flashlight.light_energy = _flash_orig_energy * 0.3
+			player.flashlight.spot_range = 25.0
 		else:
 			player.flashlight.light_energy = _flash_orig_energy
 			player.flashlight.spot_range = 80.0
