@@ -36,7 +36,7 @@
     },
     {
       "type": "wait",
-      "sec": 7.35
+      "sec": 7.26
     },
     {
       "type": "chat",
@@ -72,7 +72,7 @@
     },
     {
       "type": "wait",
-      "sec": 7.81
+      "sec": 8.29
     },
     {
       "type": "chat",
@@ -129,7 +129,7 @@
     },
     {
       "type": "wait",
-      "sec": 1.67
+      "sec": 1.94
     },
     {
       "type": "_comment",
@@ -164,7 +164,7 @@
     },
     {
       "type": "wait",
-      "sec": 5.56
+      "sec": 5.67
     },
     {
       "type": "chat",
@@ -212,7 +212,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.18
+      "sec": 3.38
     },
     {
       "type": "chat",
@@ -261,7 +261,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.8
+      "sec": 6.97
     },
     {
       "type": "chat",
@@ -289,7 +289,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.47
+      "sec": 6.04
     },
     {
       "type": "wait",
@@ -409,7 +409,7 @@
     },
     {
       "type": "wait",
-      "sec": 10.27
+      "sec": 9.95
     },
     {
       "type": "chat",
@@ -454,7 +454,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.3
+      "sec": 7.46
     },
     {
       "type": "rot_y",
@@ -496,7 +496,7 @@
     },
     {
       "type": "wait",
-      "sec": 9.16
+      "sec": 8.72
     },
     {
       "type": "chat",
@@ -546,7 +546,7 @@
     },
     {
       "type": "wait",
-      "sec": 8.41
+      "sec": 8.06
     },
     {
       "type": "rot_y",
@@ -610,7 +610,7 @@
     },
     {
       "type": "wait",
-      "sec": 5.59
+      "sec": 6.06
     },
     {
       "type": "chat",
@@ -650,7 +650,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.82
+      "sec": 3.62
     },
     {
       "type": "chat",
@@ -678,7 +678,7 @@
     },
     {
       "type": "wait",
-      "sec": 5.38
+      "sec": 5.12
     },
     {
       "type": "chat",
@@ -706,7 +706,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.94
+      "sec": 4.69
     },
     {
       "type": "chat",
@@ -738,7 +738,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.52
+      "sec": 3.69
     },
     {
       "type": "chat",
@@ -768,7 +768,7 @@
     },
     {
       "type": "wait",
-      "sec": 5.33
+      "sec": 5.29
     },
     {
       "type": "chat",
@@ -806,7 +806,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.42
+      "sec": 6.37
     },
     {
       "type": "chat",
@@ -834,7 +834,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.67
+      "sec": 6.45
     },
     {
       "type": "chat",
@@ -870,7 +870,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.67
+      "sec": 4.49
     },
     {
       "type": "chat",
@@ -889,7 +889,7 @@
     },
     {
       "type": "wait",
-      "sec": 6
+      "sec": 6.42
     },
     {
       "type": "chat",
@@ -918,7 +918,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.79
+      "sec": 6.66
     },
     {
       "type": "chat",
@@ -971,7 +971,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.87
+      "sec": 4.51
     },
     {
       "type": "chat",
@@ -1105,7 +1105,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.98
+      "sec": 4.65
     },
     {
       "type": "_comment",
@@ -1161,7 +1161,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.93
+      "sec": 5.06
     },
     {
       "type": "_comment",
@@ -1182,7 +1182,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.29
+      "sec": 3.68
     },
     {
       "type": "chat",
@@ -1241,7 +1241,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.88
+      "sec": 4.25
     },
     {
       "type": "_comment",
@@ -1314,7 +1314,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.45
+      "sec": 4.5
     },
     {
       "type": "chat",
@@ -1357,7 +1357,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.74
+      "sec": 4.37
     },
     {
       "type": "chat",
@@ -1396,7 +1396,7 @@
     },
     {
       "type": "wait",
-      "sec": 2.9
+      "sec": 3.17
     },
     {
       "type": "scare_flash",
@@ -1442,7 +1442,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.83
+      "sec": 4.57
     },
     {
       "type": "_comment",
@@ -1468,7 +1468,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.39
+      "sec": 4.15
     },
     {
       "type": "scare_flash",
@@ -1561,7 +1561,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.74
+      "sec": 6.6
     },
     {
       "type": "_comment",
@@ -1597,7 +1597,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.83
+      "sec": 3.86
     },
     {
       "type": "sfx",
@@ -1675,7 +1675,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.7
+      "sec": 4.12
     },
     {
       "type": "sfx",
@@ -1800,7 +1800,7 @@
     },
     {
       "type": "wait",
-      "sec": 1.04
+      "sec": 1.65
     },
     {
       "type": "say_clear"
@@ -1862,7 +1862,7 @@
     },
     {
       "type": "wait",
-      "sec": 1.81
+      "sec": 2.27
     },
     {
       "type": "say_clear"
@@ -1950,7 +1950,7 @@
     },
     {
       "type": "wait",
-      "sec": 0.79
+      "sec": 1.15
     },
     {
       "type": "say_clear"
@@ -2003,7 +2003,7 @@
     },
     {
       "type": "wait",
-      "sec": 0.34
+      "sec": 1.14
     },
     {
       "type": "say_clear"
@@ -2047,7 +2047,7 @@
     },
     {
       "type": "wait",
-      "sec": 5.48
+      "sec": 5.77
     },
     {
       "type": "chat",
@@ -2280,7 +2280,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.59
+      "sec": 3.41
     },
     {
       "type": "_comment",
@@ -2402,7 +2402,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.45
+      "sec": 3.67
     },
     {
       "type": "chat",
@@ -2548,7 +2548,7 @@
     },
     {
       "type": "wait",
-      "sec": 7.26
+      "sec": 7.79
     },
     {
       "type": "chat",
@@ -2859,7 +2859,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.25
+      "sec": 4.05
     },
     {
       "type": "chat",
@@ -2935,7 +2935,7 @@
     },
     {
       "type": "wait",
-      "sec": 1.67
+      "sec": 1.9
     },
     {
       "type": "use_ofuda"
@@ -3079,7 +3079,7 @@
     },
     {
       "type": "wait",
-      "sec": 5.81
+      "sec": 5.75
     },
     {
       "type": "chat",
@@ -3163,7 +3163,7 @@
     },
     {
       "type": "wait",
-      "sec": 2.65
+      "sec": 2.57
     },
     {
       "type": "chat",
@@ -3209,7 +3209,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.77
+      "sec": 4.57
     },
     {
       "type": "chat",
@@ -3304,7 +3304,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.41
+      "sec": 3.48
     },
     {
       "type": "chat",
@@ -3371,7 +3371,7 @@
     },
     {
       "type": "wait",
-      "sec": 0.81
+      "sec": 1.22
     },
     {
       "type": "chat",
@@ -3441,7 +3441,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.23
+      "sec": 3.59
     },
     {
       "type": "chat",
@@ -3493,7 +3493,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.48
+      "sec": 3.7
     },
     {
       "type": "rot_y",
@@ -3567,7 +3567,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.07
+      "sec": 4.16
     },
     {
       "type": "chat",

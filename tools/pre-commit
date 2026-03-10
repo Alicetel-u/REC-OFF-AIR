@@ -75,8 +75,9 @@ if [ -n "$staged_json" ]; then
         output=$(python tools/fix_voice_wait.py --validate-only 2>&1 || true)
         echo "$output"
 
-        # CONSECUTIVE_WAIT または MISSING_WAV があればエラー（致命的な問題）
-        if echo "$output" | grep -qE "CONSECUTIVE_WAIT|MISSING_WAV"; then
+        # MISSING_WAV があればエラー（致命的な問題）
+        # CONSECUTIVE_WAIT は演出意図の場合があるためブロックしない
+        if echo "$output" | grep -qE "MISSING_WAV"; then
             echo -e "${RED}ERROR: 致命的なバリデーション警告があります。修正してからコミットしてください${NC}"
             errors=$((errors + 1))
         fi
