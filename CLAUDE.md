@@ -43,7 +43,7 @@
 - 実行: `python tools/generate_voice_ch01.py`
 
 ### Style-Bert-VITS2
-- サーバー: `http://127.0.0.1:5000`（起動: `cd C:\repos\Voice-Cloner && venv\Scripts\python.exe server_fastapi.py --device cuda`）
+- サーバー: `http://127.0.0.1:5000`（起動: `cd C:\Users\【RST-9】リバイブ新所沢\Desktop\Antigravity_Projects\Style-Bert-VITS2 && venv\Scripts\python.exe server_fastapi.py`）
 - デフォルトモデル: jvnv-F2-jp / スタイル: Fear / 話速(length): 0.8
 - パラメータ: sdp_ratio=0.2, noise=0.6, noisew=0.8
 - 実行: `python tools/generate_voice_ch01.py --engine sbv2 --model jvnv-F2-jp --style Fear`
@@ -52,7 +52,7 @@
 ### 共通設定
 - 末尾無音トリミング: threshold=2000, margin=40ms
 - セリフ編集後は必ず `python tools/fix_voice_wait.py --validate-only` でバリデーション実行
-- 発音修正: TIKTOK→ティックトック / 廃村→はいそん / お札→おふだ
+- 発音修正: TIKTOK→ティックトック / 廃村→はいそん / お札→おふだ / 同接→どうせつ / 首→くび
 - 出力先: `assets/audio/voice/ch01/v001.wav` 〜
 
 ## 自動チェック（pre-commitフック + CI）
