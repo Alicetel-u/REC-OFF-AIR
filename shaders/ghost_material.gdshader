@@ -50,5 +50,5 @@ void fragment() {
 		alpha *= (1.0 - dissolve * 0.5);
 	}
 
-	ALPHA = clamp(alpha, 0.0, 0.85);
+	ALPHA = 1.0;
 }

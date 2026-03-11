@@ -7,6 +7,8 @@ extends Control
 ## 全UI動的生成。Opening.tscn はルートControlのみ。
 ## ─────────────────────────────────────────────────────────
 
+const EndingPlayerScript := preload("res://scripts/EndingPlayer.gd")
+
 enum Phase { TITLE, VIDEO, PROLOGUE, DONE }
 
 # ── 状態 ──────────────────────────────────────────────────
@@ -1047,6 +1049,7 @@ func _show_settings_top() -> void:
 
 	var menu_items : Array[Dictionary] = [
 		{"name": "ステージ選択", "sub": "チャプターを選んでプレイ", "icon": "🎮", "action": "_show_stage_select"},
+		{"name": "エンディング集", "sub": "解放したエンディングを閲覧", "icon": "📖", "action": "_show_ending_gallery"},
 		{"name": "サウンド", "sub": "BGM・SE音量調整", "icon": "🔊", "action": ""},
 		{"name": "グラフィック", "sub": "画質・エフェクト設定", "icon": "🖥", "action": ""},
 	]
@@ -1058,6 +1061,165 @@ func _show_settings_top() -> void:
 	var bot_pad := Control.new()
 	bot_pad.custom_minimum_size = Vector2(0, 8)
 	list.add_child(bot_pad)
+
+
+func _show_ending_gallery() -> void:
+	_clear_settings_content()
+	if is_instance_valid(_settings_title):
+		_settings_title.text = "ENDING GALLERY"
+	if is_instance_valid(_settings_back):
+		_settings_back.visible = true
+
+	var section := _settings_section_label("エンディング集")
+	_settings_content.add_child(section)
+
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_settings_content.add_child(scroll)
+
+	var list := VBoxContainer.new()
+	list.add_theme_constant_override("separation", 8)
+	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(list)
+
+	# エンディング定義（追加する度にここに足す）
+	var endings : Array[Dictionary] = [
+		{"id": "bad_hikikomori", "name": "ひきこもり", "chapter": "CP1", "type": "BAD END",
+		 "desc": "恐怖に負けて逃げ出した配信者の末路",
+		 "source_json": "res://dialogue/ch01_entrance.json"},
+	]
+
+	for ed in endings:
+		var unlocked : bool = true  # TODO: デバッグ用。リリース時は GameManager.is_ending_unlocked(ed["id"]) に戻す
+		var card := _ending_card(ed, unlocked)
+		list.add_child(card)
+		if unlocked:
+			card.gui_input.connect(func(event: InputEvent) -> void:
+				if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+					_play_ending_from_gallery(ed)
+			)
+
+	# 未解放カウント
+	var total : int = endings.size()
+	var unlocked_count : int = 0
+	for ed in endings:
+		if GameManager.is_ending_unlocked(ed["id"]):
+			unlocked_count += 1
+
+	var footer := Label.new()
+	footer.text = "解放済み: %d / %d" % [unlocked_count, total]
+	footer.add_theme_font_size_override("font_size", 12)
+	footer.add_theme_color_override("font_color", Color(0.45, 0.4, 0.38))
+	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	list.add_child(footer)
+
+
+func _ending_card(ed: Dictionary, unlocked: bool) -> Control:
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(0, 80)
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	if unlocked:
+		panel.mouse_filter = Control.MOUSE_FILTER_STOP
+		panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+
+	var sb := StyleBoxFlat.new()
+	sb.set_corner_radius_all(8)
+	sb.content_margin_left = 16
+	sb.content_margin_right = 16
+	sb.content_margin_top = 12
+	sb.content_margin_bottom = 12
+	if unlocked:
+		sb.bg_color = Color(0.12, 0.05, 0.05, 0.9)
+		sb.border_color = Color(0.5, 0.12, 0.12, 0.6)
+	else:
+		sb.bg_color = Color(0.06, 0.06, 0.06, 0.7)
+		sb.border_color = Color(0.2, 0.2, 0.2, 0.4)
+	sb.set_border_width_all(1)
+	panel.add_theme_stylebox_override("panel", sb)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	panel.add_child(vbox)
+
+	var header := HBoxContainer.new()
+	header.add_theme_constant_override("separation", 8)
+	vbox.add_child(header)
+
+	var type_lbl := Label.new()
+	type_lbl.text = ed.get("type", "END") if unlocked else "???"
+	type_lbl.add_theme_font_size_override("font_size", 11)
+	type_lbl.add_theme_color_override("font_color", Color(0.9, 0.2, 0.15) if unlocked else Color(0.4, 0.4, 0.4))
+	header.add_child(type_lbl)
+
+	var chapter_lbl := Label.new()
+	chapter_lbl.text = ed.get("chapter", "") if unlocked else ""
+	chapter_lbl.add_theme_font_size_override("font_size", 11)
+	chapter_lbl.add_theme_color_override("font_color", Color(0.5, 0.45, 0.4))
+	header.add_child(chapter_lbl)
+
+	var name_lbl := Label.new()
+	name_lbl.text = ed.get("name", "") if unlocked else "????????"
+	name_lbl.add_theme_font_size_override("font_size", 18)
+	name_lbl.add_theme_color_override("font_color", Color(0.9, 0.85, 0.8) if unlocked else Color(0.3, 0.3, 0.3))
+	vbox.add_child(name_lbl)
+
+	var desc_lbl := Label.new()
+	desc_lbl.text = ed.get("desc", "") if unlocked else "このエンディングはまだ解放されていません"
+	desc_lbl.add_theme_font_size_override("font_size", 12)
+	desc_lbl.add_theme_color_override("font_color", Color(0.55, 0.5, 0.45) if unlocked else Color(0.3, 0.28, 0.25))
+	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(desc_lbl)
+
+	return panel
+
+
+func _play_ending_from_gallery(ed: Dictionary) -> void:
+	# ダイアログJSONからplay_endingセクションを取得
+	var source : String = ed.get("source_json", "")
+	var ending_id : String = ed.get("id", "")
+	if source == "" or ending_id == "":
+		return
+
+	var f := FileAccess.open(source, FileAccess.READ)
+	if not f:
+		return
+	var json := JSON.new()
+	if json.parse(f.get_as_text()) != OK:
+		return
+	var data : Array = json.data if json.data is Array else json.data.get("events", [])
+
+	var sections : Array = []
+	var ending_title : String = ""
+	for ev in data:
+		if ev is Dictionary and ev.get("type", "") == "play_ending" and ev.get("id", "") == ending_id:
+			sections = ev.get("sections", [])
+			ending_title = ev.get("ending_title", "")
+			break
+
+	if sections.is_empty():
+		return
+
+	# タイトルBGMを止める
+	SoundManager.stop_bgm(1.5)
+
+	# タイトル画面全体を非表示にする
+	visible = false
+
+	# EndingPlayerで再生（ルートに追加してレイヤー順を保証）
+	var player := CanvasLayer.new()
+	player.set_script(EndingPlayerScript)
+	get_tree().root.add_child(player)
+	await player.play(sections, ending_title)
+
+	# EndingPlayer をフェードアウト
+	await player.fade_out(1.5)
+
+	# タイトル画面を復帰 + BGM再開
+	visible = true
+	if is_instance_valid(_settings_panel):
+		_settings_panel.visible = true
+	SoundManager.play_bgm("res://assets/audio/bgm/山あいのわらべ歌.mp3", -10.0)
 
 
 func _show_stage_select() -> void:

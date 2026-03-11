@@ -1,8 +1,8 @@
 extends Node3D
 
-## 案山子のメッシュにほんのり紫の発光を追加する
+## 案山子のメッシュにほんのり茶色の発光を追加する
 
-const GLOW_COLOR := Color(0.4, 0.15, 0.6)  # 紫系
+const GLOW_COLOR := Color(0.6, 0.35, 0.1)  # 茶色系
 const GLOW_ENERGY := 0.35
 
 func _ready() -> void:

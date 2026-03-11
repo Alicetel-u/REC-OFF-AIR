@@ -5,6 +5,7 @@ extends Node
 
 const DIALOGUE_JSON := "res://dialogue/ch01_entrance.json"
 const HorrorChoicePanelScript := preload("res://scripts/HorrorChoicePanel.gd")
+const EndingPlayerScript := preload("res://scripts/EndingPlayer.gd")
 
 var player: CharacterBody3D = null
 var hud: Control = null
@@ -25,6 +26,9 @@ var _bg_walk_zoom_start: float     = 1.0
 var _bg_walk_zoom_end  : float     = 1.4
 var _bg_walk_zoom_dur  : float     = 30.0
 var _miyuki_instance   : Node3D    = null
+var _miyuki_convulsion : float     = 0.0   # 痙攣の強さ (0=無し)
+var _miyuki_track      : bool      = false  # プレイヤーの方を向く
+var _miyuki_shader_mat : ShaderMaterial = null
 
 # クリックスキップ制御
 var _skip_to_next_say : bool = false
@@ -59,6 +63,8 @@ func _process(delta: float) -> void:
 	if _bg_walk_active:
 		_bg_walk_t += delta * _bg_walk_speed
 		_update_bg_walk()
+	# ── みゆきゴースト更新 ──
+	_miyuki_update(delta)
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -415,6 +421,22 @@ func run_from_path(json_path: String) -> void:
 			"fade_clear":
 				await _fade_clear(float(ev.get("dur", 0.8)), float(ev.get("target", 0.0)))
 
+			"play_ending":
+				await _play_ending(ev)
+
+			"bad_end":
+				await _bad_end(
+					ev.get("title", "BAD END"),
+					ev.get("return_label", ""),
+					float(ev.get("fade_dur", 1.5)),
+					float(ev.get("display_dur", 4.0)),
+					ev.get("image", ""))
+				# 「選択肢に戻る」を選んだ場合、ラベルにジャンプ
+				if _bad_end_return_label != "" and _bad_end_return_label in label_map:
+					idx = label_map[_bad_end_return_label]
+					_bad_end_return_label = ""
+					continue
+
 			"stage_swap":
 				await _stage_swap(ev.get("scene", ""), ev.get("spawn", [0, 1, 0]))
 
@@ -518,8 +540,10 @@ func _show_horror_choice(ev: Dictionary) -> int:
 
 	var prompt : String = ev.get("prompt", "")
 	var choices : Array = ev.get("choices", [])
+	var title_text : String = ev.get("title", "")
+	var danger : bool = ev.get("danger", false)
 
-	panel.show_choice(prompt, choices)
+	panel.show_choice(prompt, choices, title_text, danger)
 
 	var result : int = await panel.choice_selected
 	panel.queue_free()
@@ -1120,6 +1144,107 @@ func _fade_clear(dur: float = 0.8, target: float = 0.0) -> void:
 	await tw.finished
 
 
+## エンディング専用演出を再生（YouTubeChrome非表示 → EndingPlayer → 復帰）
+func _play_ending(ev: Dictionary) -> void:
+	var ending_id : String = ev.get("id", "")
+	var sections : Array = ev.get("sections", [])
+	var ending_title : String = ev.get("ending_title", "")
+
+	# エンディング開放を記録
+	if ending_id != "":
+		GameManager.unlock_ending(ending_id)
+
+	# YouTubeChrome を非表示
+	var chrome = hud.get_node_or_null("YouTubeChrome") if hud else null
+	if chrome:
+		chrome.visible = false
+
+	# 暗転
+	await _fade_black(1.5, 1.0)
+
+	# EndingPlayer を生成して再生
+	var ep := CanvasLayer.new()
+	ep.set_script(EndingPlayerScript)
+	get_tree().root.add_child(ep)
+	await ep.play(sections, ending_title)
+
+	# EndingPlayer をフェードアウト
+	await ep.fade_out(1.5)
+
+
+## バッドエンド演出：暗転 → 画像+タイトル表示 → 「選択肢に戻る？」→ タイトルへ or 分岐戻り
+func _bad_end(title_text: String, return_label: String, fade_dur: float, display_dur: float, image_path: String = "") -> void:
+	# 暗転
+	await _fade_black(fade_dur, 1.0)
+	await get_tree().create_timer(0.5).timeout
+
+	# バッドエンド画面用CanvasLayer
+	var canvas := CanvasLayer.new()
+	canvas.layer = 200
+	get_tree().root.add_child(canvas)
+
+	# コンテナ（全画面、黒背景）
+	var container := Control.new()
+	container.anchors_preset = Control.PRESET_FULL_RECT
+	container.modulate.a = 0.0
+	canvas.add_child(container)
+
+	# 背景画像（あれば）
+	if image_path != "":
+		var tex := load(image_path) as Texture2D
+		if tex:
+			var img_rect := TextureRect.new()
+			img_rect.texture = tex
+			img_rect.anchors_preset = Control.PRESET_FULL_RECT
+			img_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+			img_rect.modulate = Color(0.6, 0.6, 0.65, 1.0)  # やや暗く青みがかった色調
+			container.add_child(img_rect)
+
+	# バッドエンドタイトル（画像の上に重ねる）
+	var lbl := Label.new()
+	lbl.text = title_text
+	lbl.add_theme_font_size_override("font_size", 36)
+	lbl.add_theme_color_override("font_color", Color(0.9, 0.15, 0.1))
+	lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+	lbl.add_theme_constant_override("shadow_offset_x", 2)
+	lbl.add_theme_constant_override("shadow_offset_y", 2)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.anchors_preset = Control.PRESET_FULL_RECT
+	container.add_child(lbl)
+
+	# フェードイン
+	var tw_in := create_tween()
+	tw_in.tween_property(container, "modulate:a", 1.0, 1.5)
+	await tw_in.finished
+
+	await get_tree().create_timer(display_dur).timeout
+
+	# 「選択肢の直前に戻りますか？」選択
+	var retry_ev := {
+		"prompt": "",
+		"choices": [{"text": "選択肢の直前に戻る", "sub": ""}, {"text": "タイトルに戻る", "sub": ""}]
+	}
+	var result := await _show_horror_choice(retry_ev)
+
+	# フェードアウト
+	var tw_out := create_tween()
+	tw_out.tween_property(container, "modulate:a", 0.0, 0.5)
+	await tw_out.finished
+	canvas.queue_free()
+
+	if result == 0 and return_label != "":
+		# 選択肢の直前に戻る — フェードクリアしてラベルにジャンプ
+		await _fade_clear(0.8, 0.0)
+		_bad_end_return_label = return_label
+	else:
+		# タイトルに戻る
+		get_tree().change_scene_to_file("res://scenes/Opening.tscn")
+
+## _bad_end から戻るためのラベル（空なら戻らない）
+var _bad_end_return_label : String = ""
+
+
 # ════════════════════════════════════════════════════════════════════
 # ステージ差し替え（暗転中に呼ぶ想定）
 # ════════════════════════════════════════════════════════════════════
@@ -1177,23 +1302,23 @@ func _stage_swap(scene_path: String, spawn: Array) -> void:
 	if dl and dl is DirectionalLight3D:
 		dl.light_energy = 0.0
 
-	# 蛍光灯っぽい環境光（トイレ全体をふんわり照らす）
+	# 蛍光灯っぽい環境光（トイレをほんのり照らす程度）
 	var env_light := OmniLight3D.new()
 	env_light.position = Vector3(0, 3.5, 0)
-	env_light.light_color = Color(0.85, 0.9, 1.0)
-	env_light.light_energy = 0.5
-	env_light.omni_range = 15.0
+	env_light.light_color = Color(0.7, 0.75, 0.85)
+	env_light.light_energy = 0.15
+	env_light.omni_range = 8.0
 	main.add_child(env_light)
 
 	# GLB蛍光灯ライトを適度に減光（白飛び防止）
 	if stage:
-		_dim_lights_recursive(stage, 0.15)
+		_dim_lights_recursive(stage, 0.08)
 
 	# トイレでは懐中電灯を控えめに（蛍光灯がメイン光源）
 	if is_instance_valid(player):
 		if "Toilet" in scene_path or "toilet" in scene_path:
-			player.flashlight.light_energy = _flash_orig_energy * 0.3
-			player.flashlight.spot_range = 25.0
+			player.flashlight.light_energy = _flash_orig_energy * 0.25
+			player.flashlight.spot_range = 20.0
 		else:
 			player.flashlight.light_energy = _flash_orig_energy
 			player.flashlight.spot_range = 80.0
@@ -1448,7 +1573,6 @@ func _miyuki_spawn(ev: Dictionary) -> void:
 	# GLBモデルをインスタンス化して子に追加
 	var model := glb.instantiate()
 	model.name = "ModelInstance"
-	# テストシーンではスケール10倍だった — そのまま適用
 	var s : float = float(ev.get("scale", 10.0))
 	model.scale = Vector3(s, s, s)
 	_miyuki_instance.add_child(model)
@@ -1462,19 +1586,37 @@ func _miyuki_spawn(ev: Dictionary) -> void:
 	if ev.get("upside_down", false):
 		_miyuki_instance.rotation.x = PI
 
-	# 不気味な赤い照明
+	# 不気味な青白い照明（脈動は _miyuki_update で処理）
 	var light := OmniLight3D.new()
 	light.name = "GhostLight"
-	light.light_color = Color(0.8, 0.1, 0.05)
+	light.light_color = Color(0.4, 0.5, 0.9)
 	light.light_energy = float(ev.get("light_energy", 6.0))
 	light.omni_range = float(ev.get("light_range", 12.0))
 	_miyuki_instance.add_child(light)
 
-	# 表示/非表示
+	# 初期状態
 	_miyuki_instance.visible = ev.get("visible", true)
+	_miyuki_convulsion = float(ev.get("convulsion_intensity", 0.0))
+	_miyuki_track = ev.get("track_player", false)
 
 	# シーンツリーに追加
 	get_tree().current_scene.add_child(_miyuki_instance)
+
+
+## モデルの全 MeshInstance3D に ghost shader を再帰的に適用
+func _apply_ghost_shader(node: Node, mat: ShaderMaterial) -> void:
+	if node is MeshInstance3D:
+		var mi := node as MeshInstance3D
+		for surf_idx in mi.get_surface_override_material_count():
+			var orig := mi.mesh.surface_get_material(surf_idx)
+			# 元テクスチャがあればシェーダーに渡す
+			if orig is StandardMaterial3D:
+				var std := orig as StandardMaterial3D
+				if std.albedo_texture:
+					mat.set_shader_parameter("ghost_texture", std.albedo_texture)
+			mi.set_surface_override_material(surf_idx, mat)
+	for child in node.get_children():
+		_apply_ghost_shader(child, mat)
 
 
 func _miyuki_move(ev: Dictionary) -> void:
@@ -1504,6 +1646,64 @@ func _miyuki_move(ev: Dictionary) -> void:
 		if light:
 			light.light_energy = float(ev.get("light_energy", 6.0))
 
+	# 痙攣の強さ
+	if ev.has("convulsion_intensity"):
+		_miyuki_convulsion = float(ev.get("convulsion_intensity", 0.0))
+
+	# プレイヤー追跡
+	if ev.has("track_player"):
+		_miyuki_track = ev.get("track_player", false)
+
+	# rage（シェーダー — 赤く激しくなる）
+	if ev.has("rage") and _miyuki_shader_mat:
+		_miyuki_shader_mat.set_shader_parameter("rage", float(ev.get("rage", 0.0)))
+
+
+## 毎フレーム更新: ライト脈動・痙攣・プレイヤー追跡
+func _miyuki_update(delta: float) -> void:
+	if not is_instance_valid(_miyuki_instance):
+		return
+
+	var t : float = Time.get_ticks_msec() / 1000.0
+
+	# ── ライト脈動（sin で明滅） ──
+	var light := _miyuki_instance.get_node_or_null("GhostLight") as OmniLight3D
+	if light:
+		var base_energy : float = light.light_energy
+		# ±30% の脈動（不規則にするため2波合成）
+		var pulse : float = sin(t * 1.8) * 0.2 + sin(t * 4.3) * 0.1
+		light.light_energy = base_energy + pulse
+
+	# ── 痙攣（微細な回転ノイズ） ──
+	if _miyuki_convulsion > 0.0:
+		var model := _miyuki_instance.get_node_or_null("ModelInstance")
+		if model:
+			var ci : float = _miyuki_convulsion
+			var rx : float = sin(t * 17.3 + 0.5) * 0.05 * ci
+			var ry : float = cos(t * 13.7 + 1.2) * 0.03 * ci
+			var rz : float = sin(t * 21.1 + 2.8) * 0.04 * ci
+			model.rotation = Vector3(rx, ry, rz)
+			# 位置のブレ（小さく震える）
+			var px : float = sin(t * 23.0) * 0.02 * ci
+			var pz : float = cos(t * 19.0) * 0.02 * ci
+			model.position = Vector3(px, 0.0, pz)
+
+	# ── プレイヤーの方を向く ──
+	if _miyuki_track and is_instance_valid(player):
+		var target_pos := player.global_position
+		var my_pos := _miyuki_instance.global_position
+		# Y軸だけで回転（逆さでも自然に見える）
+		var dir := (target_pos - my_pos)
+		dir.y = 0.0
+		if dir.length_squared() > 0.01:
+			var target_angle : float = atan2(dir.x, dir.z)
+			# 逆さの場合は反転
+			var is_upside : bool = absf(_miyuki_instance.rotation.x - PI) < 0.1
+			if is_upside:
+				target_angle += PI
+			_miyuki_instance.rotation.y = lerp_angle(
+				_miyuki_instance.rotation.y, target_angle, delta * 2.0)
+
 
 func _miyuki_despawn() -> void:
 	if is_instance_valid(_miyuki_instance):
@@ -1511,3 +1711,6 @@ func _miyuki_despawn() -> void:
 			_miyuki_instance.get_parent().remove_child(_miyuki_instance)
 		_miyuki_instance.queue_free()
 		_miyuki_instance = null
+	_miyuki_convulsion = 0.0
+	_miyuki_track = false
+	_miyuki_shader_mat = null

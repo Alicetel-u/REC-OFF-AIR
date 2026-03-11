@@ -844,8 +844,6 @@ func _build_superchat_card(sc_name: String, sc_msg: String, amount: int, bg: Col
 func _fmt_count(n: int) -> String:
 	if n >= 10000:
 		return "%.1f万" % (n / 10000.0)
-	if n >= 1000:
-		return "%.1fK" % (n / 1000.0)
 	return str(n)
 
 

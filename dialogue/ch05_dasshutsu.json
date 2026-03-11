@@ -288,6 +288,8 @@
     },
     {
       "type": "choice",
+      "title": "▼  最 後 の 選 択  ▼",
+      "danger": true,
       "prompt": "最後のお札を……",
       "choices": [
         "スマホのレンズに貼る（配信を止める）",

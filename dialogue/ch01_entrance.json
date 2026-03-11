@@ -32,11 +32,12 @@
     {
       "type": "say",
       "text": "……あ、映った。みんな、深夜のガチ凸ライブ、霧原村編始まるよー！ 同接10万人いくまで、今日は絶対帰りませーん！",
+      "reading": "……あ、映った。みんな、深夜のガチ凸ライブ、霧原村編始まるよー！ どうせつ10万人いくまで、今日は絶対帰りませーん！",
       "voice": "v001"
     },
     {
       "type": "wait",
-      "sec": 7.26
+      "sec": 8.94
     },
     {
       "type": "chat",
@@ -72,7 +73,7 @@
     },
     {
       "type": "wait",
-      "sec": 8.29
+      "sec": 10.37
     },
     {
       "type": "chat",
@@ -129,20 +130,30 @@
     },
     {
       "type": "wait",
-      "sec": 1.94
+      "sec": 2.16
     },
     {
       "type": "_comment",
-      "_": "── 前方パン（進行方向右の畑〜案山子エリアを見渡す） ──"
+      "_": "── 空撮：見渡しながらv002（rot_yとsayが同時進行） ──"
+    },
+    {
+      "type": "set_viewers",
+      "count": 55
     },
     {
       "type": "rot_y",
-      "target": -1.2,
-      "dur": 3.0
+      "target": -2.5,
+      "dur": 7.0
+    },
+    {
+      "type": "say",
+      "text": "ヤラセじゃないって！ ほら、見てよこれ。村の入り口の周りに並んでるこの案山子……全部首がないの。",
+      "reading": "ヤラセじゃないって！ ほら、見てよこれ。村の入り口の周りに並んでるこの案山子……全部くびがないの。",
+      "voice": "v002"
     },
     {
       "type": "wait",
-      "sec": 3.0
+      "sec": 7.34
     },
     {
       "type": "chat",
@@ -154,20 +165,6 @@
       "sec": 0.3
     },
     {
-      "type": "set_viewers",
-      "count": 55
-    },
-    {
-      "type": "say",
-      "text": "ヤラセじゃないって！ ほら、見てよこれ。村の入り口の周りに並んでるこの案山子……全部首がないの。",
-      "reading": "ヤラセじゃないって！ ほら、見てよこれ。村の入り口の周りに並んでるこの案山子……全部くびがないの。",
-      "voice": "v002"
-    },
-    {
-      "type": "wait",
-      "sec": 5.87
-    },
-    {
       "type": "chat",
       "msg": "首なし案山子って時点でやばい",
       "user": "ホラー好き太郎",
@@ -176,15 +173,6 @@
     {
       "type": "wait",
       "sec": 0.5
-    },
-    {
-      "type": "rot_y",
-      "target": -2.5,
-      "dur": 4
-    },
-    {
-      "type": "wait",
-      "sec": 4.5
     },
     {
       "type": "head_x",
@@ -214,7 +202,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.19
+      "sec": 3.41
     },
     {
       "type": "chat",
@@ -257,13 +245,22 @@
       "count": 150
     },
     {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_x",
+      "target": 12,
+      "dur": 51
+    },
+    {
       "type": "say",
-      "text": "さて……歩きながら説明するね。あたし今、お札を3枚持ってるの。村の入り口の神社で、おばあちゃんからパクッ……",
+      "text": "さて……歩きながら説明するね。あたし今、お札を3枚持ってるの。村の入り口の神社で、おばあちゃんからパク",
       "voice": "v003"
     },
     {
       "type": "wait",
-      "sec": 6.97
+      "sec": 8.38
     },
     {
       "type": "chat",
@@ -291,7 +288,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.04
+      "sec": 7.2
     },
     {
       "type": "wait",
@@ -372,20 +369,6 @@
       "sec": 1.5
     },
     {
-      "type": "walk_set",
-      "on": true
-    },
-    {
-      "type": "pos_x",
-      "target": 38,
-      "dur": 130,
-      "id": "walk_main"
-    },
-    {
-      "type": "wait",
-      "sec": 0.5
-    },
-    {
       "type": "chat",
       "msg": "映えアイテムが命綱になるやつだこれ",
       "user": "配信民99",
@@ -412,7 +395,7 @@
     },
     {
       "type": "wait",
-      "sec": 9.95
+      "sec": 12.63
     },
     {
       "type": "chat",
@@ -458,7 +441,7 @@
     },
     {
       "type": "wait",
-      "sec": 7.18
+      "sec": 8.76
     },
     {
       "type": "rot_y",
@@ -501,7 +484,30 @@
     },
     {
       "type": "wait",
-      "sec": 9.08
+      "sec": 10.64
+    },
+    {
+      "type": "_comment",
+      "_": "── 神社の鳥居を見る（x=12到着・立ち止まり） ──"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "rot_y",
+      "target": 0,
+      "dur": 1.2
+    },
+    {
+      "type": "head_x",
+      "target": -0.15,
+      "dur": 2.0
+    },
+    {
+      "type": "pos_z",
+      "target": -3,
+      "dur": 10
     },
     {
       "type": "chat",
@@ -529,29 +535,26 @@
     },
     {
       "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "_comment",
-      "_": "── 神社の鳥居を見る ──"
-    },
-    {
-      "type": "rot_y",
-      "target": 0,
-      "dur": 1.2
-    },
-    {
-      "type": "wait",
-      "sec": 1
+      "sec": 4.44
     },
     {
       "type": "say",
-      "text": "あ、あそこに鳥居が見える。あのお札くれたおばあちゃん、あそこの神社にいたんだ。……『3枚使い切ったら、もう何も守れない』って言ってたけど、大丈夫でしょ！",
+      "text": "あのお札くれたおばあちゃん、あそこの神社にいたんだ。……『3枚使い切ったら、もう何も守れない』って言ってたけど、大丈夫でしょ！",
       "voice": "v007"
     },
     {
       "type": "wait",
-      "sec": 8.06
+      "sec": 7.83
+    },
+    {
+      "type": "pos_z",
+      "target": 3,
+      "dur": 2
+    },
+    {
+      "type": "head_x",
+      "target": 0,
+      "dur": 1.5
     },
     {
       "type": "rot_y",
@@ -560,7 +563,7 @@
     },
     {
       "type": "wait",
-      "sec": 0.5
+      "sec": 2.0
     },
     {
       "type": "chat",
@@ -580,6 +583,20 @@
     {
       "type": "wait",
       "sec": 0.4
+    },
+    {
+      "type": "_comment",
+      "_": "── 歩行再開・区間2開始 ──"
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_x",
+      "target": 38,
+      "dur": 108,
+      "id": "walk_main"
     },
     {
       "type": "set_viewers",
@@ -615,7 +632,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.06
+      "sec": 7.29
     },
     {
       "type": "chat",
@@ -655,7 +672,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.62
+      "sec": 4.83
     },
     {
       "type": "chat",
@@ -683,7 +700,7 @@
     },
     {
       "type": "wait",
-      "sec": 5.12
+      "sec": 6.87
     },
     {
       "type": "chat",
@@ -707,11 +724,12 @@
     {
       "type": "say",
       "text": "いやだってこれ2万したんだよ！？ バイト代3日分！ ……まあいいや、同接で元取るし。",
+      "reading": "いやだってこれ2万したんだよ！？ バイト代3日分！ ……まあいいや、どうせつで元取るし。",
       "voice": "v009b"
     },
     {
       "type": "wait",
-      "sec": 4.69
+      "sec": 6.25
     },
     {
       "type": "chat",
@@ -743,7 +761,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.69
+      "sec": 5.05
     },
     {
       "type": "chat",
@@ -773,7 +791,7 @@
     },
     {
       "type": "wait",
-      "sec": 5.29
+      "sec": 6.73
     },
     {
       "type": "chat",
@@ -811,7 +829,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.37
+      "sec": 8.3
     },
     {
       "type": "chat",
@@ -839,7 +857,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.45
+      "sec": 7.95
     },
     {
       "type": "chat",
@@ -875,7 +893,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.49
+      "sec": 6.39
     },
     {
       "type": "chat",
@@ -894,7 +912,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.42
+      "sec": 7.74
     },
     {
       "type": "chat",
@@ -923,7 +941,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.66
+      "sec": 8.52
     },
     {
       "type": "chat",
@@ -954,6 +972,188 @@
       "sec": 0.5
     },
     {
+      "type": "_comment",
+      "_": "── 三択：トイレに向かう動機 ──"
+    },
+    {
+      "type": "choice",
+      "title": "▼  あ な た の 覚 悟  ▼",
+      "prompt": "……この先にみゆきちゃんが殺されたトイレがある。どうする？",
+      "choices": [
+        {
+          "text": "怖いけど……約束したし。行こう。",
+          "sub": ""
+        },
+        {
+          "text": "同接伸びてるし、ここで引いたら終わりでしょ。",
+          "sub": ""
+        },
+        {
+          "text": "トイレ凸って泣いてる女配信者とか最高にバズるじゃん。行くっしょ。",
+          "sub": ""
+        }
+      ],
+      "targets": [
+        "choice_serious",
+        "choice_ambition",
+        "choice_clout"
+      ]
+    },
+    {
+      "type": "_comment",
+      "_": "── 選択肢A：覚悟（恐怖を飲み込む・おばあちゃんとの約束） ──"
+    },
+    {
+      "type": "label",
+      "name": "choice_serious"
+    },
+    {
+      "type": "say",
+      "text": "……おばあちゃんがくれたお札、ちゃんと持ってる。みゆきちゃんのこと、ちゃんと見届けなきゃ。",
+      "reading": "……おばあちゃんがくれたおふだ、ちゃんと持ってる。みゆきちゃんのこと、ちゃんと見届けなきゃ。",
+      "voice": "v010c"
+    },
+    {
+      "type": "wait",
+      "sec": 5.93
+    },
+    {
+      "type": "chat",
+      "msg": "急に真面目になった",
+      "user": "深夜組"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "こういうとこだけちゃんとしてるの好き",
+      "user": "幽霊ガチ勢",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "見届けるってなに…？",
+      "user": "はじめまして民"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "goto",
+      "label": "after_choice"
+    },
+    {
+      "type": "_comment",
+      "_": "── 選択肢B：野心（数字に取り憑かれ始めている） ──"
+    },
+    {
+      "type": "label",
+      "name": "choice_ambition"
+    },
+    {
+      "type": "say",
+      "text": "ここで帰ったら、ただの『途中で逃げた女』だよ。……あたしは最後まで撮る。それがコンテンツだから。",
+      "voice": "v010d"
+    },
+    {
+      "type": "wait",
+      "sec": 6.91
+    },
+    {
+      "type": "chat",
+      "msg": "逃げた女ｗｗｗ自分で言うなｗｗ",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "同接で判断するの草すぎる",
+      "user": "深夜組"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "数字に支配されてて好き",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "goto",
+      "label": "after_choice"
+    },
+    {
+      "type": "_comment",
+      "_": "── 選択肢C：承認欲求の暴走（倫理観が壊れかけている） ──"
+    },
+    {
+      "type": "label",
+      "name": "choice_clout"
+    },
+    {
+      "type": "say",
+      "text": "心霊トイレで絶叫してる女ストリーマーとか、切り抜きだけで100万再生いくっしょ。……あたしの時代来たわ。",
+      "voice": "v010e"
+    },
+    {
+      "type": "wait",
+      "sec": 7.38
+    },
+    {
+      "type": "chat",
+      "msg": "人が死んだ場所で再生数の話すんな",
+      "user": "名無しさん"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "みゆきちゃんの前でそれ言えんの？",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "こいつやべえ…でも目が離せない",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "_comment",
+      "_": "── 合流 ──"
+    },
+    {
+      "type": "label",
+      "name": "after_choice"
+    },
+    {
       "type": "pos_x_await",
       "id": "walk_main"
     },
@@ -972,11 +1172,12 @@
     {
       "type": "say",
       "text": "同接8000超えてる！ みんなありがとー！ ……よし、トイレ行くよ。ここからが本番！",
+      "reading": "どうせつ8000超えてる！ みんなありがとー！ ……よし、トイレ行くよ。ここからが本番！",
       "voice": "v011"
     },
     {
       "type": "wait",
-      "sec": 4.51
+      "sec": 6.33
     },
     {
       "type": "chat",
@@ -1131,7 +1332,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.65
+      "sec": 5.92
     },
     {
       "type": "_comment",
@@ -1200,7 +1401,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.43
+      "sec": 5.52
     },
     {
       "type": "chat",
@@ -1238,7 +1439,7 @@
     },
     {
       "type": "wait",
-      "sec": 5.06
+      "sec": 6.98
     },
     {
       "type": "_comment",
@@ -1267,7 +1468,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.68
+      "sec": 4.69
     },
     {
       "type": "fade_clear",
@@ -1339,7 +1540,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.25
+      "sec": 5.09
     },
     {
       "type": "fade_clear",
@@ -1381,7 +1582,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.18
+      "sec": 4.11
     },
     {
       "type": "_comment",
@@ -1432,7 +1633,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.5
+      "sec": 5.28
     },
     {
       "type": "chat",
@@ -1483,7 +1684,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.37
+      "sec": 6.01
     },
     {
       "type": "fade_clear",
@@ -1537,7 +1738,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.17
+      "sec": 4.14
     },
     {
       "type": "scare_flash",
@@ -1585,11 +1786,12 @@
     {
       "type": "say",
       "text": "公衆トイレだ。ここでみゆきちゃんが首を……。ドアに『使用禁止』って張り紙がある。",
+      "reading": "公衆トイレだ。ここでみゆきちゃんがくびを……。ドアに『使用禁止』って張り紙がある。",
       "voice": "v011j"
     },
     {
       "type": "wait",
-      "sec": 4.57
+      "sec": 5.93
     },
     {
       "type": "bg_image_clear",
@@ -1619,7 +1821,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.15
+      "sec": 5.66
     },
     {
       "type": "scare_flash",
@@ -1722,11 +1924,12 @@
     {
       "type": "say",
       "text": "お札はまだ使わない。3枚しかないんだから。……でも同接1万超えてるし。ここで引き返すわけにはいかないでしょ。",
+      "reading": "お札はまだ使わない。3枚しかないんだから。……でもどうせつ1万超えてるし。ここで引き返すわけにはいかないでしょ。",
       "voice": "v011l"
     },
     {
       "type": "wait",
-      "sec": 6.6
+      "sec": 8.15
     },
     {
       "type": "_comment",
@@ -1762,7 +1965,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.86
+      "sec": 5.52
     },
     {
       "type": "sfx",
@@ -1840,7 +2043,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.12
+      "sec": 5.14
     },
     {
       "type": "sfx",
@@ -1986,7 +2189,7 @@
     },
     {
       "type": "wait",
-      "sec": 1.65
+      "sec": 1.4
     },
     {
       "type": "say_clear"
@@ -2048,7 +2251,7 @@
     },
     {
       "type": "wait",
-      "sec": 2.27
+      "sec": 2.54
     },
     {
       "type": "say_clear"
@@ -2218,7 +2421,8 @@
     },
     {
       "type": "say",
-      "text": "ここが噂のトイレだよ。17歳のみゆきちゃんが首を撥ねられた場所……。個室、開けてみるね",
+      "text": "ここが噂の首切りトイレだよ。２番目の真ん中の個室、開けてみるね……。",
+      "reading": "ここが噂のくびきりトイレだよ。２番目の真ん中の個室、開けてみるね……。",
       "voice": "v012"
     },
     {
@@ -2233,7 +2437,7 @@
     },
     {
       "type": "wait",
-      "sec": 5.77
+      "sec": 5.68
     },
     {
       "type": "chat",
@@ -2494,12 +2698,12 @@
     },
     {
       "type": "say",
-      "text": "マジか！ みんなサンキュー！ じゃあ……開けるよ？ せーの！",
+      "text": "マジか！ みんなスパチャサンキュー！ じゃあ……開けるよ？ せーの！",
       "voice": "v013"
     },
     {
       "type": "wait",
-      "sec": 3.41
+      "sec": 4.81
     },
     {
       "type": "_comment",
@@ -2621,7 +2825,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.67
+      "sec": 4.43
     },
     {
       "type": "chat",
@@ -2821,7 +3025,7 @@
     },
     {
       "type": "wait",
-      "sec": 8.09
+      "sec": 8.01
     },
     {
       "type": "chat",
@@ -3194,7 +3398,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.86
+      "sec": 4.69
     },
     {
       "type": "chat",
@@ -3429,7 +3633,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.67
+      "sec": 3.61
     },
     {
       "type": "sfx",
@@ -3639,11 +3843,12 @@
     {
       "type": "say",
       "text": "…… スパチャありがと……さっきの天井の、首がなかった…… あれがみゆきちゃんなの？",
+      "reading": "…… スパチャありがと……さっきの天井の、くびがなかった…… あれがみゆきちゃんなの？",
       "voice": "v018c"
     },
     {
       "type": "wait",
-      "sec": 6.01
+      "sec": 6.11
     },
     {
       "type": "chat",
@@ -3771,7 +3976,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.48
+      "sec": 4.68
     },
     {
       "type": "chat",
@@ -3838,7 +4043,7 @@
     },
     {
       "type": "wait",
-      "sec": 1.22
+      "sec": 1.35
     },
     {
       "type": "chat",
@@ -3908,7 +4113,349 @@
     },
     {
       "type": "wait",
-      "sec": 3.59
+      "sec": 4.38
+    },
+    {
+      "type": "_comment",
+      "_": "── CP1-4 三択分岐 ──"
+    },
+    {
+      "type": "label",
+      "name": "cp4_choice"
+    },
+    {
+      "type": "choice",
+      "title": "▼  引 き 返 せ な い  ▼",
+      "danger": true,
+      "prompt": "どうする？",
+      "choices": [
+        {
+          "text": "……奥に進む。この目で確かめる。",
+          "sub": ""
+        },
+        {
+          "text": "もう一回トイレを調べる。証拠を押さえたい。",
+          "sub": ""
+        },
+        {
+          "text": "……やっぱ帰る。無理。",
+          "sub": "怖気づいてしまった"
+        }
+      ],
+      "targets": [
+        "cp4_continue",
+        "cp4_continue",
+        "cp4_bad_end"
+      ]
+    },
+    {
+      "type": "_comment",
+      "_": "── バッドエンド分岐：逃げる ──"
+    },
+    {
+      "type": "label",
+      "name": "cp4_bad_end"
+    },
+    {
+      "type": "_comment",
+      "_": "── バッドエンド：逃走 → 配信終了 ──"
+    },
+    {
+      "type": "chat",
+      "msg": "え、帰るの？",
+      "user": "深夜組"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "ここまで来て！？",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "say",
+      "text": "ごめん無理……！ さっきの天井のアレ思い出したら足震えてきた……！",
+      "voice": "v024"
+    },
+    {
+      "type": "wait",
+      "sec": 5.0
+    },
+    {
+      "type": "chat",
+      "msg": "5万人の前で逃げんのかよ",
+      "user": "名無しさん"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "superchat",
+      "user": "ゴーストハンター",
+      "amount": 5000,
+      "msg": "逃げるな！！ スパチャ返せ！！"
+    },
+    {
+      "type": "wait",
+      "sec": 0.6
+    },
+    {
+      "type": "say",
+      "text": "スパチャは返せないけど命は返してほしい……！ ばいばい！",
+      "voice": "v025"
+    },
+    {
+      "type": "wait",
+      "sec": 4.08
+    },
+    {
+      "type": "chat",
+      "msg": "草",
+      "user": "視聴者A"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "配信者の鑑",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "生存ルートで草",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "_comment",
+      "_": "── バッドエンド：配信終了 → 暗転 → エピローグ ──"
+    },
+    {
+      "type": "_comment",
+      "_": "── エンディング専用演出：ひきこもり ──"
+    },
+    {
+      "type": "play_ending",
+      "id": "bad_hikikomori",
+      "ending_title": "ひきこもり",
+      "sections": [
+        {
+          "title": "帰路",
+          "mood": "cold",
+          "lines": [
+            {
+              "text": "バス停で夜が明けるまで待った。",
+              "voice": "res://assets/audio/voice/ch01/v026.wav",
+              "voice_dur": 2.03,
+              "pause": 3.0
+            },
+            {
+              "text": "3時間。ずっと震えてた。",
+              "voice": "res://assets/audio/voice/ch01/v027.wav",
+              "voice_dur": 2.0,
+              "pause": 3.0
+            },
+            {
+              "text": "懐中電灯を抱きしめて、お札を握りしめて。",
+              "voice": "res://assets/audio/voice/ch01/v028.wav",
+              "voice_dur": 3.64,
+              "pause": 4.6
+            },
+            {
+              "text": "バスが来た時、泣いた。",
+              "voice": "res://assets/audio/voice/ch01/v029.wav",
+              "voice_dur": 1.94,
+              "pause": 3.4,
+              "emphasis": true
+            }
+          ],
+          "wait": 2.5
+        },
+        {
+          "title": "削除",
+          "mood": "dark",
+          "lines": [
+            {
+              "text": "家に帰って、アーカイブは全部消した。",
+              "voice": "res://assets/audio/voice/ch01/v030.wav",
+              "voice_dur": 2.81,
+              "pause": 3.8
+            },
+            {
+              "text": "5万5千人が見てたのに。",
+              "voice": "res://assets/audio/voice/ch01/v031.wav",
+              "voice_dur": 1.9,
+              "pause": 2.9
+            },
+            {
+              "text": "でも関係ない。あんなもの見ちゃったら、もう関係ない。",
+              "voice": "res://assets/audio/voice/ch01/v032.wav",
+              "voice_dur": 3.99,
+              "pause": 5.5,
+              "emphasis": true
+            }
+          ],
+          "wait": 2.5
+        },
+        {
+          "title": "天井",
+          "mood": "fear",
+          "lines": [
+            {
+              "text": "次の日から配信できなくなった。",
+              "voice": "res://assets/audio/voice/ch01/v033.wav",
+              "voice_dur": 2.41,
+              "pause": 3.4
+            },
+            {
+              "text": "パソコンの前に座ると、あの天井が見える。",
+              "voice": "res://assets/audio/voice/ch01/v034.wav",
+              "voice_dur": 3.12,
+              "pause": 4.1
+            },
+            {
+              "text": "首のない女の子が、こっちを見てる。",
+              "voice": "res://assets/audio/voice/ch01/v035.wav",
+              "voice_dur": 2.89,
+              "pause": 4.4,
+              "emphasis": true
+            }
+          ],
+          "wait": 2.5
+        },
+        {
+          "title": "閉鎖",
+          "mood": "cold",
+          "lines": [
+            {
+              "text": "1週間。2週間。1ヶ月。",
+              "voice": "res://assets/audio/voice/ch01/v036.wav",
+              "voice_dur": 2.85,
+              "pause": 3.9
+            },
+            {
+              "text": "気づいたら外に出られなくなってた。",
+              "voice": "res://assets/audio/voice/ch01/v037.wav",
+              "voice_dur": 2.56,
+              "pause": 3.6
+            },
+            {
+              "text": "カーテンも開けられない。スマホの通知も全部切った。",
+              "voice": "res://assets/audio/voice/ch01/v038.wav",
+              "voice_dur": 3.75,
+              "pause": 4.8
+            }
+          ],
+          "wait": 2.5
+        },
+        {
+          "title": "沈黙",
+          "image": "res://assets/textures/bad_end_hikikomori.png",
+          "mood": "warm",
+          "lines": [
+            {
+              "text": "お母さんがドアの向こうから呼んでる。",
+              "voice": "res://assets/audio/voice/ch01/v039.wav",
+              "voice_dur": 2.42,
+              "pause": 3.4
+            },
+            {
+              "text": "ごはんできたよって。",
+              "voice": "res://assets/audio/voice/ch01/v040.wav",
+              "voice_dur": 1.39,
+              "pause": 2.4
+            },
+            {
+              "text": "聞こえてるのに、返事ができない。",
+              "voice": "res://assets/audio/voice/ch01/v041.wav",
+              "voice_dur": 2.38,
+              "pause": 3.4
+            },
+            {
+              "text": "声の出し方、忘れちゃったのかな。",
+              "voice": "res://assets/audio/voice/ch01/v042.wav",
+              "voice_dur": 2.49,
+              "pause": 4.0,
+              "emphasis": true
+            }
+          ],
+          "wait": 3.0
+        },
+        {
+          "title": "",
+          "image": "res://assets/textures/bad_end_hikikomori.png",
+          "mood": "dark",
+          "lines": [
+            {
+              "text": "布団の中は暗くてあったかい。",
+              "voice": "res://assets/audio/voice/ch01/v043.wav",
+              "voice_dur": 2.25,
+              "pause": 3.2
+            },
+            {
+              "text": "ここにいれば誰にも会わなくていい。天井も見なくていい。",
+              "voice": "res://assets/audio/voice/ch01/v044.wav",
+              "voice_dur": 3.98,
+              "pause": 5.0
+            },
+            {
+              "text": "でもたまに思うんだ。",
+              "voice": "res://assets/audio/voice/ch01/v045.wav",
+              "voice_dur": 1.42,
+              "pause": 2.4
+            },
+            {
+              "text": "あの時、逃げなかったら。",
+              "voice": "res://assets/audio/voice/ch01/v046.wav",
+              "voice_dur": 2.03,
+              "pause": 3.5,
+              "emphasis": true
+            },
+            {
+              "text": "あたし、どうなってたんだろう。",
+              "voice": "res://assets/audio/voice/ch01/v047.wav",
+              "voice_dur": 2.03,
+              "pause": 3.5,
+              "emphasis": true
+            }
+          ],
+          "wait": 4.0
+        }
+      ]
+    },
+    {
+      "type": "bad_end",
+      "title": "BAD END\n「ひきこもり」",
+      "image": "res://assets/textures/bad_end_hikikomori.png",
+      "return_label": "cp4_choice",
+      "fade_dur": 0.5,
+      "display_dur": 5.0
+    },
+    {
+      "type": "_comment",
+      "_": "── 正規ルート続行 ──"
+    },
+    {
+      "type": "label",
+      "name": "cp4_continue"
     },
     {
       "type": "chat",
@@ -3960,7 +4507,7 @@
     },
     {
       "type": "wait",
-      "sec": 3.7
+      "sec": 4.51
     },
     {
       "type": "rot_y",
@@ -4034,7 +4581,7 @@
     },
     {
       "type": "wait",
-      "sec": 4.16
+      "sec": 5.44
     },
     {
       "type": "chat",

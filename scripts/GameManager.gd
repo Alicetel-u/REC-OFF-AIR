@@ -41,6 +41,10 @@ var chapter_order: Array[String] = [
 	"res://chapters/ch05_dasshutsu.tres",         # CP5: 終焉のログアウト ─ 3分岐
 ]
 
+## ── エンディング集 ──
+const SAVE_PATH := "user://endings.json"
+var unlocked_endings : Dictionary = {}  # { "ending_id": true }
+
 signal item_collected(count: int, total: int)
 signal player_caught
 signal player_won
@@ -114,3 +118,29 @@ func restart() -> void:
 	ending_route = -1
 	ofuda_count  = 3
 	get_tree().reload_current_scene()
+
+
+## ── エンディング開放・セーブ ──
+
+func unlock_ending(ending_id: String) -> void:
+	unlocked_endings[ending_id] = true
+	_save_endings()
+
+func is_ending_unlocked(ending_id: String) -> bool:
+	return unlocked_endings.has(ending_id)
+
+func _save_endings() -> void:
+	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if f:
+		f.store_string(JSON.stringify(unlocked_endings))
+
+func _load_endings() -> void:
+	if FileAccess.file_exists(SAVE_PATH):
+		var f := FileAccess.open(SAVE_PATH, FileAccess.READ)
+		if f:
+			var parsed = JSON.parse_string(f.get_as_text())
+			if parsed is Dictionary:
+				unlocked_endings = parsed
+
+func _ready() -> void:
+	_load_endings()
