@@ -1,8 +1,9 @@
-"""パスビューア用ローカルサーバー — JSON保存API付き"""
+"""統合ツールサーバー — パスビューア＋ダイアログエディター＋JSON保存API"""
 import http.server, json, os, glob
 
 PORT = 8090
 ROOT = os.path.dirname(os.path.abspath(__file__))
+TOOLS_ROOT = os.path.normpath(os.path.join(ROOT, ".."))
 DIALOGUE = os.path.normpath(os.path.join(ROOT, "..", "..", "dialogue"))
 CACHE_JS = os.path.join(ROOT, "dialogue_cache.js")
 
@@ -68,6 +69,27 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith("/api/save"):
             self._json(405, {"error": "use POST"})
             return
+        # /editor/ — dialogue-editor を配信
+        if self.path == "/editor" or self.path.startswith("/editor/"):
+            rel = self.path[len("/editor"):]
+            if not rel or rel == "/":
+                rel = "/index.html"
+            fpath = os.path.join(TOOLS_ROOT, "dialogue-editor", rel.lstrip("/"))
+            if os.path.isfile(fpath):
+                self.send_response(200)
+                ct = "text/html; charset=utf-8"
+                if fpath.endswith(".js"):
+                    ct = "application/javascript; charset=utf-8"
+                elif fpath.endswith(".css"):
+                    ct = "text/css; charset=utf-8"
+                self.send_header("Content-Type", ct)
+                self.send_header("Cache-Control", "no-store")
+                self.end_headers()
+                with open(fpath, "rb") as f:
+                    self.wfile.write(f.read())
+                return
+            self._json(404, {"error": "not found"})
+            return
         super().do_GET()
 
     def do_POST(self):
@@ -89,7 +111,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self._json(404, {"error": "not found"})
 
     def _json(self, code, obj):
-        data = json.dumps(obj).encode()
+        data = json.dumps(obj, ensure_ascii=False).encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -109,8 +131,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             super().log_message(fmt, *args)
 
 if __name__ == "__main__":
-    print(f"パスビューア サーバー起動")
-    print(f"  http://localhost:{PORT}/")
+    print(f"統合ツールサーバー起動")
+    print(f"  パスビューア:    http://localhost:{PORT}/")
+    print(f"  イベントエディタ: http://localhost:{PORT}/editor/")
     print(f"  保存先: {DIALOGUE}")
     # 起動時にキャッシュ再生成
     rebuild_cache()

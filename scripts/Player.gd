@@ -12,7 +12,7 @@ const BATTERY_CHARGE := 0.018   # 懐中電灯OFF時の回復 /sec
 
 # 手ブレ定数
 const SWAY_SPEED     := 1.8    # 揺れの速度
-const SWAY_AMOUNT    := 0.004  # 静止時の揺れ幅 (rad)
+const SWAY_AMOUNT    := 0.018  # 静止時の揺れ幅 (rad)
 const SWAY_MOVE_MULT := 2.5    # 移動時の揺れ倍率
 const HEAD_PITCH_MIN := -1.2   # 見下ろし限界 (rad)
 const HEAD_PITCH_MAX := 1.2    # 見上げ限界 (rad)
@@ -26,6 +26,7 @@ var flashlight_on: bool  = true
 var _prev_moving : bool  = false
 var battery      : float = 1.0   # 0.0 〜 1.0
 var _sway_t      : float = 0.0   # 手ブレ用タイマー
+var forced_moving : bool = false  # EntranceDirector等から強制的に移動中扱い
 
 # ── カメラシェイク ──
 var _shake_intensity : float = 0.0   # 現在のシェイク強度
@@ -48,33 +49,32 @@ signal battery_changed(level: float)
 
 func _ready() -> void:
 	add_to_group("player")
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	# マウスモードはMain.gdが管理するため、ここでは設定しない
 	# バッテリー・懐中電灯は常時ON（実装前の固定値）
 	battery = 1.0
 	flashlight_on = true
 	flashlight.visible = true
 
 
+var input_disabled : bool = false  # trueの間は移動・視点入力を無効化
+
 func _unhandled_input(event: InputEvent) -> void:
+	# ESCはMain._input()で処理済み（set_input_as_handled）
+
 	if GameManager.state != GameManager.State.PLAYING:
-		if event.is_action_pressed("ui_accept"):
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		return
 
-	if event is InputEventMouseMotion:
+	if input_disabled:
+		return
+
+	# マウスルックはCAPTUREDモード時のみ（VISIBLEモードでは無効）
+	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * MOUSE_SENS)
 		head.rotate_x(-event.relative.y * MOUSE_SENS)
 		head.rotation.x = clamp(head.rotation.x, HEAD_PITCH_MIN, HEAD_PITCH_MAX)
 
 	if event.is_action_pressed("toggle_flashlight"):
 		_toggle_flashlight()
-
-	if event.is_action_pressed("ui_cancel"):
-		var mode := Input.get_mouse_mode()
-		Input.set_mouse_mode(
-			Input.MOUSE_MODE_VISIBLE if mode == Input.MOUSE_MODE_CAPTURED
-			else Input.MOUSE_MODE_CAPTURED
-		)
 
 
 func _toggle_flashlight() -> void:
@@ -83,7 +83,7 @@ func _toggle_flashlight() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if GameManager.state != GameManager.State.PLAYING:
+	if GameManager.state != GameManager.State.PLAYING or input_disabled:
 		velocity = Vector3.ZERO
 		return
 
@@ -151,7 +151,7 @@ func _physics_process(delta: float) -> void:
 	if now_moving and is_on_floor() and prev_bob > 0.0:
 		if int(bob_t / PI) != int(prev_bob / PI):
 			SoundManager.play_footstep(GameManager.chapter_index, dashing)
-	_do_flashlight_sway(delta, now_moving)
+	_do_flashlight_sway(delta, now_moving or forced_moving)
 	_do_camera_shake(delta)
 
 

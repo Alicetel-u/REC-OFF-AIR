@@ -1,0 +1,813 @@
+{
+  "chapter": "ch05_dasshutsu",
+  "_note": "CP5 終焉のログアウト ─ 3分岐エンディング（TRUE/NORMAL/BAD）",
+  "events": [
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション1：最後の逃走・バス停へ】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "set_viewers",
+      "count": 105000
+    },
+    {
+      "type": "set_fps",
+      "fps": 15
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 0.4,
+      "dur": 1.0
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_z",
+      "target": 30.0,
+      "dur": 8.0,
+      "id": "run_to_bus"
+    },
+    {
+      "type": "say",
+      "text": "走れ……走れ！ バス停はもうすぐ！",
+      "voice": "v601"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/metal/impactMetal_heavy_001.ogg",
+      "vol": -3.0
+    },
+    {
+      "type": "chat",
+      "msg": "案山子がワープしてきてる！",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "道塞がれてるぞ！",
+      "user": "RPG脳"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 0.5,
+      "dur": 0.6
+    },
+    {
+      "type": "set_fps",
+      "fps": 10
+    },
+    {
+      "type": "say",
+      "text": "また身体が重く……でも止まったら案山子にされる！",
+      "voice": "v602"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat_flood",
+      "msg": "藁",
+      "count": 6,
+      "interval": 0.15,
+      "color": "red"
+    },
+    {
+      "type": "chat",
+      "msg": "案山子ニ成レ",
+      "user": "???",
+      "utype": "owner"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "flashlight_flicker"
+    },
+    {
+      "type": "set_fps",
+      "fps": 6
+    },
+    {
+      "type": "desaturate",
+      "amount": 0.4,
+      "dur": 1.0
+    },
+    {
+      "type": "say",
+      "text": "5時59分……バッテリー1%……あと少し……！",
+      "voice": "v603"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "pos_z_await",
+      "id": "run_to_bus"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション2：バス停到着・みゆきの静止体】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "set_fps",
+      "fps": 0
+    },
+    {
+      "type": "vhs_reset"
+    },
+    {
+      "type": "desaturate",
+      "amount": 0.0,
+      "dur": 0.5
+    },
+    {
+      "type": "say",
+      "text": "バス停……着いた……！",
+      "voice": "v604"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "say",
+      "text": "……え",
+      "voice": "v605"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/metal/impactMetal_heavy_003.ogg",
+      "vol": -4.0
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 0.3,
+      "dur": 0.5
+    },
+    {
+      "type": "say",
+      "text": "みゆきちゃんが……目の前に立ってる。動かない。ただこっちを見てる",
+      "voice": "v606"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "chat",
+      "msg": "！！！",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "さっき首だけだったのに…",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "体がある……",
+      "user": "視聴者A"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "set_viewers",
+      "count": 112000
+    },
+    {
+      "type": "say",
+      "text": "あ、ハァ……ハァ……。ここでお札を使わなきゃ、私は……私は……",
+      "voice": "v607"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション3：最後の選択】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "chat",
+      "msg": "お札使え！！",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "どこに貼る！？",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "カメラに貼れ！配信止めろ！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "自分に使って逃げるんだ！",
+      "user": "夜更かし太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "choice",
+      "title": "▼  最 後 の 選 択  ▼",
+      "danger": true,
+      "prompt": "最後のお札を……",
+      "choices": [
+        "スマホのレンズに貼る（配信を止める）",
+        "自分に使う（呪いを浄化して逃げる）",
+        "……使えない（身体が動かない）"
+      ],
+      "targets": [
+        "route_true",
+        "route_normal",
+        "route_bad"
+      ]
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【TRUE END：承認欲求からのログアウト】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "label",
+      "name": "route_true"
+    },
+    {
+      "type": "set_route",
+      "route": 1
+    },
+    {
+      "type": "use_ofuda"
+    },
+    {
+      "type": "say",
+      "text": "……もういい！！ こんなの、誰にも見せたくない！！",
+      "voice": "v608"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/bell/impactBell_heavy_000.ogg",
+      "vol": 0.0
+    },
+    {
+      "type": "scare_flash",
+      "color": "white"
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.1,
+      "dur": 1.0
+    },
+    {
+      "type": "chat",
+      "msg": "配信が……",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "set_viewers",
+      "count": 0
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 1.0,
+      "dur": 1.5
+    },
+    {
+      "type": "fade_black",
+      "dur": 1.5
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "sleep",
+      "sec": 2.0
+    },
+    {
+      "type": "say",
+      "text": "あ……全部、消えた",
+      "voice": "v609"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "say",
+      "text": "……みゆきちゃん、もう自由だよ",
+      "voice": "v610"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "say",
+      "text": "……私も、帰る。一人の、自分に",
+      "voice": "v611"
+    },
+    {
+      "type": "wait",
+      "sec": 4.0
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "sleep",
+      "sec": 2.0
+    },
+    {
+      "type": "garbled_text",
+      "text": "Stream Terminated",
+      "dur": 0.8
+    },
+    {
+      "type": "wait",
+      "sec": 5.0
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "goto",
+      "label": "end"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【NORMAL END：夢の保存（アーカイブ）】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "label",
+      "name": "route_normal"
+    },
+    {
+      "type": "set_route",
+      "route": 0
+    },
+    {
+      "type": "use_ofuda"
+    },
+    {
+      "type": "say",
+      "text": "私はトップスターになるの……！ みんな、ずっと私のこと、見ててね！！",
+      "voice": "v612"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "scare_flash",
+      "color": "white"
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/bell/impactBell_heavy_003.ogg",
+      "vol": -2.0
+    },
+    {
+      "type": "set_fps",
+      "fps": 0
+    },
+    {
+      "type": "vhs_reset"
+    },
+    {
+      "type": "say",
+      "text": "身体が動く！！ バスに飛び乗れ！！",
+      "voice": "v613"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_z",
+      "target": 40.0,
+      "dur": 2.0,
+      "id": "run_bus"
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/bus/bus_transit.mp3",
+      "vol": -6.0
+    },
+    {
+      "type": "chat",
+      "msg": "バスだ！！乗れ！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "間に合え！！！",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "pos_z_await",
+      "id": "run_bus"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "fade_black",
+      "dur": 1.0
+    },
+    {
+      "type": "sleep",
+      "sec": 2.0
+    },
+    {
+      "type": "_comment",
+      "_": "後日談：アーカイブ映像"
+    },
+    {
+      "type": "say",
+      "text": "【数日後 ─ アーカイブ映像】",
+      "voice": "v614"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "fade_clear",
+      "dur": 0.5
+    },
+    {
+      "type": "set_fps",
+      "fps": 5
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 0.6,
+      "dur": 8.0
+    },
+    {
+      "type": "desaturate",
+      "amount": 0.5,
+      "dur": 1.0
+    },
+    {
+      "type": "say",
+      "text": "今日も……配信、始まる……みん、な、見て……",
+      "voice": "v615"
+    },
+    {
+      "type": "wait",
+      "sec": 3.5
+    },
+    {
+      "type": "set_fps",
+      "fps": 3
+    },
+    {
+      "type": "say",
+      "text": "私の、完璧、なポーズ……",
+      "voice": "v616"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "set_fps",
+      "fps": 1
+    },
+    {
+      "type": "desaturate",
+      "amount": 0.8,
+      "dur": 1.0
+    },
+    {
+      "type": "say",
+      "text": "……私、もう、まばたき、一生……しなくて……いい……から",
+      "voice": "v617"
+    },
+    {
+      "type": "wait",
+      "sec": 4.0
+    },
+    {
+      "type": "set_fps",
+      "fps": 0
+    },
+    {
+      "type": "fade_black",
+      "dur": 2.0
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "sleep",
+      "sec": 2.0
+    },
+    {
+      "type": "goto",
+      "label": "end"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【BAD END：永遠のサムネイル】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "label",
+      "name": "route_bad"
+    },
+    {
+      "type": "set_route",
+      "route": 2
+    },
+    {
+      "type": "say",
+      "text": "あ、れ……動か……な……い……",
+      "voice": "v618"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "set_fps",
+      "fps": 3
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 1.0,
+      "dur": 3.0
+    },
+    {
+      "type": "desaturate",
+      "amount": 0.7,
+      "dur": 1.0
+    },
+    {
+      "type": "chat_flood",
+      "msg": "藁",
+      "count": 15,
+      "interval": 0.08,
+      "color": "red"
+    },
+    {
+      "type": "say",
+      "text": "お札が……手から離れない……指が……",
+      "voice": "v619"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "set_fps",
+      "fps": 1
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.02,
+      "dur": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "しゅっち！？",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "動いてない……",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/metal/knifeSlice.ogg",
+      "vol": 0.0
+    },
+    {
+      "type": "horror_flash",
+      "dur": 0.1
+    },
+    {
+      "type": "scare_flash",
+      "color": "red"
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.15,
+      "dur": 0.5
+    },
+    {
+      "type": "sleep",
+      "sec": 0.3
+    },
+    {
+      "type": "set_fps",
+      "fps": 0
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 0.8,
+      "dur": 2.0
+    },
+    {
+      "type": "desaturate",
+      "amount": 1.0,
+      "dur": 0.5
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "sleep",
+      "sec": 2.0
+    },
+    {
+      "type": "_comment",
+      "_": "首が飛んだ瞬間の美しい静止画がサムネイルとして永遠に残る"
+    },
+    {
+      "type": "vhs_reset"
+    },
+    {
+      "type": "desaturate",
+      "amount": 0.0,
+      "dur": 0.3
+    },
+    {
+      "type": "garbled_text",
+      "text": "この配信のアーカイブは削除できません",
+      "dur": 0.6
+    },
+    {
+      "type": "wait",
+      "sec": 4.0
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "fade_black",
+      "dur": 2.0
+    },
+    {
+      "type": "sleep",
+      "sec": 2.0
+    },
+    {
+      "type": "goto",
+      "label": "end"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【共通：終了】"
+    },
+    {
+      "type": "_comment",
+      "_": "════════════════════════════════════════════"
+    },
+    {
+      "type": "label",
+      "name": "end"
+    }
+  ]
+}

@@ -108,6 +108,7 @@ func _ready() -> void:
 	_build_outer_walls()
 	_build_roof()
 	_build_aging_details()
+	_build_ritual_tools()
 	_build_lighting()
 	if Engine.is_editor_hint():
 		_set_editor_owner(self)
@@ -603,6 +604,102 @@ func _build_aging_details() -> void:
 	for i in range(3):
 		var y_off : float = 1.2 + i * 0.15
 		_deco(Vector3(-3.88, y_off, 1.0 + i * 0.08), Vector3(0.01, 0.4, 0.02), Color(0.10, 0.07, 0.04))
+
+
+# ════════════════════════════════════════════════════════════════
+# 儀式道具（CP2で回収する3つのアイテム）
+# ════════════════════════════════════════════════════════════════
+
+func _build_ritual_tools() -> void:
+	# ── 道具A：木彫りの頭（奥座敷の作業台 Z=-12.5付近） ──
+	# 人形師の作業台
+	_tbox(Vector3(-2.5, 0.35, -14.0), Vector3(1.6, 0.70, 0.8), _mat_pillar)
+	# 作業台上の木くず
+	_deco(Vector3(-2.8, 0.72, -14.2), Vector3(0.3, 0.01, 0.2), Color(0.35, 0.25, 0.15))
+	_deco(Vector3(-2.2, 0.72, -13.8), Vector3(0.2, 0.01, 0.15), Color(0.30, 0.22, 0.12))
+	# 木彫り道具（ノミ・小刀）
+	_deco(Vector3(-3.1, 0.74, -14.3), Vector3(0.18, 0.02, 0.03), Color(0.15, 0.10, 0.06))
+	_deco(Vector3(-3.0, 0.74, -14.1), Vector3(0.14, 0.02, 0.02), Color(0.20, 0.12, 0.08))
+	# 木彫りの頭（メインアイテム）— 焼けただれた球体
+	_tdeco(Vector3(-2.5, 0.88, -14.0), Vector3(0.22, 0.28, 0.22), _mat_pillar)
+	# 頭部上面（焦げた質感）
+	_deco(Vector3(-2.5, 1.04, -14.0), Vector3(0.18, 0.02, 0.18), COL_SOOT)
+	# 眼球（異常に生々しい — 赤い発光）
+	var eye_mat := StandardMaterial3D.new()
+	eye_mat.albedo_color = Color(0.95, 0.92, 0.85)
+	eye_mat.emission_enabled = true
+	eye_mat.emission = Color(0.8, 0.2, 0.1)
+	eye_mat.emission_energy_multiplier = 0.3
+	eye_mat.roughness = 0.1
+	var eye_l := MeshInstance3D.new()
+	var eye_mesh_l := SphereMesh.new()
+	eye_mesh_l.radius = 0.025
+	eye_mesh_l.height = 0.05
+	eye_l.mesh = eye_mesh_l
+	eye_l.material_override = eye_mat
+	eye_l.position = Vector3(-2.56, 0.92, -13.92)
+	add_child(eye_l)
+	var eye_r := MeshInstance3D.new()
+	var eye_mesh_r := SphereMesh.new()
+	eye_mesh_r.radius = 0.025
+	eye_mesh_r.height = 0.05
+	eye_r.mesh = eye_mesh_r
+	eye_r.material_override = eye_mat
+	eye_r.position = Vector3(-2.44, 0.92, -13.92)
+	add_child(eye_r)
+	# 眼球の薄い赤色ライト
+	var eye_light := OmniLight3D.new()
+	eye_light.position = Vector3(-2.5, 0.95, -13.9)
+	eye_light.light_color = Color(1.0, 0.3, 0.1)
+	eye_light.light_energy = 0.15
+	eye_light.omni_range = 1.5
+	add_child(eye_light)
+	# 未完成の案山子の体（作業場に立てかけ）
+	_tbox(Vector3(-3.5, 0.65, -15.0), Vector3(0.35, 1.3, 0.25), _mat_pillar)
+	# 腕のパーツ
+	_tdeco(Vector3(-3.8, 0.80, -15.0), Vector3(0.6, 0.08, 0.08), _mat_pillar)
+
+	# ── 道具B：錆びた首切り鎌（東の仏間 血染め畳の上） ──
+	# 追加の血痕（既存の血痕を拡大）
+	_deco(Vector3(5.5, 0.11, -0.5), Vector3(0.8, 0.005, 1.0), COL_BLOOD_STAIN)
+	_deco(Vector3(6.5, 0.11, -1.2), Vector3(0.6, 0.005, 0.4), COL_BLOOD_STAIN)
+	# 鎌の柄
+	_tdeco(Vector3(5.8, 0.16, -0.6), Vector3(0.04, 0.04, 0.9), _mat_pillar)
+	# 鎌の刃（錆びた金属）
+	_tdeco(Vector3(5.6, 0.18, -0.2), Vector3(0.25, 0.02, 0.15), _mat_rust)
+	# 刃の先端（少し曲がった形）
+	_tdeco(Vector3(5.45, 0.18, -0.12), Vector3(0.08, 0.02, 0.10), _mat_rust)
+	# 鎌周辺の不穏なライト
+	var sickle_light := OmniLight3D.new()
+	sickle_light.position = Vector3(5.8, 0.5, -0.6)
+	sickle_light.light_color = Color(0.8, 0.15, 0.05)
+	sickle_light.light_energy = 0.2
+	sickle_light.omni_range = 2.5
+	add_child(sickle_light)
+
+	# ── 道具C：写し鏡の御札（仏壇の中・位牌の裏） ──
+	# 御札（仏壇内部 — 光を反射する白い長方形）
+	var ofuda_mat := StandardMaterial3D.new()
+	ofuda_mat.albedo_color = Color(0.95, 0.93, 0.88)
+	ofuda_mat.emission_enabled = true
+	ofuda_mat.emission = Color(0.6, 0.7, 0.9)
+	ofuda_mat.emission_energy_multiplier = 0.5
+	ofuda_mat.metallic = 0.4
+	ofuda_mat.roughness = 0.2
+	var ofuda := MeshInstance3D.new()
+	var ofuda_mesh := BoxMesh.new()
+	ofuda_mesh.size = Vector3(0.12, 0.20, 0.01)
+	ofuda.mesh = ofuda_mesh
+	ofuda.material_override = ofuda_mat
+	ofuda.position = Vector3(7.0, 1.02, -1.92)
+	add_child(ofuda)
+	# 御札の反射光
+	var mirror_light := OmniLight3D.new()
+	mirror_light.position = Vector3(7.0, 1.1, -1.85)
+	mirror_light.light_color = Color(0.6, 0.7, 1.0)
+	mirror_light.light_energy = 0.25
+	mirror_light.omni_range = 2.0
+	add_child(mirror_light)
 
 
 # ════════════════════════════════════════════════════════════════

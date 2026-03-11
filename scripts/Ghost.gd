@@ -133,6 +133,10 @@ func _apply_standard_material(node: Node, tex: Texture2D) -> void:
 		var mat := StandardMaterial3D.new()
 		if tex:
 			mat.albedo_texture = tex
+		# 暗所でもシルエットが見えるよう自発光
+		mat.emission_enabled = true
+		mat.emission = Color(0.15, 0.04, 0.04)
+		mat.emission_energy_multiplier = 0.8
 		mi.material_override = mat
 		_mesh_parts.append(mi)
 	for child in node.get_children():

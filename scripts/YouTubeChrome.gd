@@ -30,6 +30,8 @@ const C_PILL_HV = Color(0.22,  0.22,  0.22,  1.0)
 # ── チャンネル情報 ─────────────────────────────────────────────
 const CH_NAME   = "しゅっちTV"
 const CH_SUBS   = "347人"
+const CH_AVATAR = "res://assets/textures/tachie/きらきら.png"
+const CH_ICON   = "res://assets/textures/shucchi_icon.png"
 
 # ── ユーザータイプ別バッジ文字 ───────────────────────────────────
 const USER_BADGES = {
@@ -50,6 +52,7 @@ var _chat_scroll : ScrollContainer
 var _live_t      : float = 0.0
 var _view_t      : float = 0.0
 var _like_t      : float = 0.0
+var _like_next   : float = 30.0
 var _superchat_t : float = 0.0
 var _superchat_next : float = 0.0
 var _superchat_area : VBoxContainer
@@ -193,7 +196,7 @@ func _build_top_bar() -> void:
 	_pad(hbox, 6)
 	_notification_bell(hbox)
 	_pad(hbox, 8)
-	_avatar_circle(hbox, Color(0.30, 0.55, 0.85), "し", 30)
+	_avatar_icon(hbox, CH_ICON, 30)
 	_pad(hbox, 14)
 
 
@@ -368,7 +371,7 @@ func _build_chat_panel() -> void:
 	_pad(ia_hbox, 8)
 
 	# ユーザーアバター
-	_avatar_circle(ia_hbox, Color(0.30, 0.55, 0.85), "し", 24)
+	_avatar_icon(ia_hbox, CH_ICON, 24)
 
 	# 入力フィールド
 	var field_wrap := PanelContainer.new()
@@ -554,8 +557,8 @@ func _build_engagement_bar() -> void:
 	hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_pad(hbox, 14)
 
-	# ─ アバター（グラデーション風アイコン） ─
-	_avatar_circle(hbox, Color(0.85, 0.20, 0.15), "し", 38)
+	# ─ アバター（アイコン） ─
+	_avatar_icon(hbox, CH_ICON, 38)
 	_pad(hbox, 10)
 
 	# ─ チャンネル名 + 登録者 ─
@@ -657,10 +660,11 @@ func _process(delta: float) -> void:
 		if is_instance_valid(_view_label):
 			_view_label.text = "%s 人が視聴中" % _fmt_count(_view_count)
 
-	# 高評価数ゆらぎ
+	# 高評価数ゆらぎ（次回閾値を事前計算して毎フレームのrandf_rangeを回避）
 	_like_t += delta
-	if _like_t >= randf_range(20.0, 40.0):
+	if _like_t >= _like_next:
 		_like_t = 0.0
+		_like_next = randf_range(20.0, 40.0)
 		_like_count += randi_range(5, 30)
 		if is_instance_valid(_like_label):
 			_like_label.text = _fmt_count(_like_count)
@@ -840,8 +844,6 @@ func _build_superchat_card(sc_name: String, sc_msg: String, amount: int, bg: Col
 func _fmt_count(n: int) -> String:
 	if n >= 10000:
 		return "%.1f万" % (n / 10000.0)
-	if n >= 1000:
-		return "%.1fK" % (n / 1000.0)
 	return str(n)
 
 
@@ -930,6 +932,53 @@ func _avatar_circle(parent: Node, bg: Color, initial: String, size: int) -> void
 	wrap.add_child(lbl)
 
 
+## 立ち絵の顔部分を丸く切り抜いてアバター表示
+## CH_AVATAR_FACE_RECT: 顔領域 (x, y, w, h) — 画像内の顔の矩形
+const CH_AVATAR_FACE_RECT = Rect2(380, 80, 750, 750)
+
+func _avatar_image(parent: Node, tex_path: String, size: int) -> void:
+	var tex := ResourceLoader.load(tex_path, "Texture2D") as Texture2D
+	if not tex:
+		_avatar_circle(parent, Color(0.85, 0.20, 0.15), "し", size)
+		return
+	# AtlasTexture で顔領域だけ切り出す
+	var atlas := AtlasTexture.new()
+	atlas.atlas = tex
+	atlas.region = CH_AVATAR_FACE_RECT
+	var wrap := PanelContainer.new()
+	wrap.custom_minimum_size = Vector2(size, size)
+	var ws := StyleBoxFlat.new()
+	ws.bg_color = Color(0.85, 0.20, 0.15)
+	ws.set_corner_radius_all(size / 2)
+	wrap.add_theme_stylebox_override("panel", ws)
+	wrap.clip_contents = true
+	parent.add_child(wrap)
+	var tr := TextureRect.new()
+	tr.texture = atlas
+	tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	tr.custom_minimum_size = Vector2(size, size)
+	tr.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	wrap.add_child(tr)
+
+
+## アイコン画像を正円で表示（PNG自体が円形マスク済み → TextureRectのみ）
+func _avatar_icon(parent: Node, tex_path: String, size: int) -> void:
+	var tex := ResourceLoader.load(tex_path, "Texture2D") as Texture2D
+	if not tex:
+		_avatar_circle(parent, Color(0.85, 0.20, 0.15), "し", size)
+		return
+	var tr := TextureRect.new()
+	tr.texture = tex
+	tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	tr.custom_minimum_size = Vector2(size, size)
+	tr.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	tr.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(tr)
+
+
 func _icon_btn(parent: Node, icon: String, size: int) -> void:
 	var w := Control.new()
 	w.custom_minimum_size = Vector2(36, 36)
@@ -978,20 +1027,33 @@ func _toggle_speed() -> void:
 # ── ステージ切替メニュー ──
 var _stage_popup : PopupMenu = null
 
+## CP1 サブセクション定義（stage_swap 境界で区切られる）
+const CP1_SECTIONS : Array[String] = ["CP1-1 廃村入口", "CP1-2 商店街", "CP1-3 トイレ", "CP1-4 トイレ後"]
+
 func _open_stage_menu() -> void:
 	if _stage_popup and is_instance_valid(_stage_popup):
 		_stage_popup.queue_free()
 	_stage_popup = PopupMenu.new()
 	_stage_popup.add_theme_font_size_override("font_size", 12)
-	# 全チャプターをリストに追加
+	# 全チャプターをリストに追加（CP1はサブセクション展開）
 	for i in GameManager.chapter_order.size():
 		var path : String = GameManager.chapter_order[i]
 		var ch := load(path) as Resource
-		var label : String = ch.chapter_name if ch else "CP%d" % (i + 1)
-		if i == GameManager.chapter_index:
-			label = "▶ " + label
-		_stage_popup.add_item(label, i)
-	# テスト用チャプターも追加（chapter_orderに入っていないもの）
+		if i == 0:
+			# CP1: サブセクション展開
+			for sec_idx in CP1_SECTIONS.size():
+				var label : String = CP1_SECTIONS[sec_idx]
+				if i == GameManager.chapter_index and sec_idx == GameManager.start_section:
+					label = "▶ " + label
+				# id = sec_idx（0〜2）→ _on_stage_selected で CP1 + セクション指定
+				_stage_popup.add_item(label, sec_idx)
+		else:
+			var label : String = ch.chapter_name if ch else "CP%d" % (i + 1)
+			if i == GameManager.chapter_index:
+				label = "▶ " + label
+			# id = 10 + i（10〜14）→ 通常チャプター
+			_stage_popup.add_item(label, 10 + i)
+	# テスト用チャプターも追加
 	var test_chapters : Array[String] = [
 		"res://chapters/ch_test_toilet.tres",
 	]
@@ -1010,13 +1072,19 @@ func _open_stage_menu() -> void:
 
 
 func _on_stage_selected(id: int) -> void:
-	if id < 100:
-		# 本編チャプター
-		GameManager.state = GameManager.State.PLAYING
-		GameManager.items_found = 0
-		GameManager.hit_count = 0
-		GameManager._hit_invincible = false
-		GameManager.load_chapter(id)
+	GameManager.state = GameManager.State.PLAYING
+	GameManager.items_found = 0
+	GameManager.hit_count = 0
+	GameManager._hit_invincible = false
+	if id < 10:
+		# CP1 サブセクション（id = 0〜2）
+		GameManager.start_section = id
+		GameManager.load_chapter(0)
+		get_tree().reload_current_scene()
+	elif id < 100:
+		# 通常チャプター（id = 10 + chapter_index）
+		GameManager.start_section = 0
+		GameManager.load_chapter(id - 10)
 		get_tree().reload_current_scene()
 	else:
 		# テスト用チャプター
@@ -1027,10 +1095,7 @@ func _on_stage_selected(id: int) -> void:
 		if tc_idx < test_chapters.size():
 			var ch := load(test_chapters[tc_idx]) as Resource
 			if ch:
-				GameManager.state = GameManager.State.PLAYING
-				GameManager.items_found = 0
-				GameManager.hit_count = 0
-				GameManager._hit_invincible = false
+				GameManager.start_section = 0
 				GameManager.current_chapter = ch
 				GameManager.chapter_index = -1
 				get_tree().reload_current_scene()
@@ -1135,6 +1200,44 @@ func horror_k_spam(messages: Array, interval: float = 0.15) -> void:
 		if i > 0:
 			await get_tree().create_timer(interval).timeout
 		add_message(messages[i], "K", "horror")
+
+
+## チャット欄をホラーモードにする（赤背景＋脈動＋ノイズ）
+var _chat_horror_active : bool = false
+var _chat_horror_tween  : Tween = null
+var _chat_header_ref    : PanelContainer = null
+var _chat_orig_style    : StyleBoxFlat = null
+
+func chat_horror_mode(dur: float = 10.0) -> void:
+	if not is_instance_valid(_chat_panel_ref) or _chat_horror_active:
+		return
+	_chat_horror_active = true
+
+	# チャットパネル背景を血の赤に
+	if not is_instance_valid(_horror_overlay):
+		return
+	_horror_overlay.color = Color(0.4, 0.0, 0.0, 0.55)
+
+	# パネル全体の脈動（明滅）
+	_chat_horror_tween = create_tween().set_loops()
+	_chat_horror_tween.tween_property(_horror_overlay, "color:a", 0.7, 0.8).set_trans(Tween.TRANS_SINE)
+	_chat_horror_tween.tween_property(_horror_overlay, "color:a", 0.3, 0.8).set_trans(Tween.TRANS_SINE)
+
+	# 一定時間後に自動解除
+	if dur > 0.0:
+		get_tree().create_timer(dur).timeout.connect(chat_horror_clear, CONNECT_ONE_SHOT)
+
+
+func chat_horror_clear() -> void:
+	if not _chat_horror_active:
+		return
+	_chat_horror_active = false
+	if _chat_horror_tween and _chat_horror_tween.is_valid():
+		_chat_horror_tween.kill()
+		_chat_horror_tween = null
+	if is_instance_valid(_horror_overlay):
+		var tw := create_tween()
+		tw.tween_property(_horror_overlay, "color:a", 0.0, 1.5)
 
 
 ## 視聴者数を急変させる（急増 or ゼロ落ち演出）

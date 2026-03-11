@@ -298,6 +298,7 @@ select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; b
 <header class="header">
   <span class="logo">REC:OFF:AIR</span>
   <select id="fileSel"></select>
+  <select id="sectionSel" style="display:none"></select>
   <span class="chapter-name" id="chapterName"></span>
   <div class="spacer"></div>
   <span class="badge" id="countBadge">0</span>
@@ -354,6 +355,8 @@ let data=null,dirty=false,fname='';
 let undoStack=[],redoStack=[],_undoTimer=null,_undoPending=false;
 let filterMode='all';
 let selected=new Set(); // 選択中のイベントインデックス
+let sectionRanges=[]; // [{startIdx,endIdx,label}] stage_swap境界
+let currentSectionIdx=-1; // -1 = 全表示
 let clipboard=[]; // コピーしたイベントのディープコピー
 let _lastClickIdx=-1; // Shift選択用
 
@@ -361,7 +364,7 @@ const CATS=[
   {id:'say',label:'セリフ',color:'#e8a430',cls:'say',types:['say','say_clear']},
   {id:'chat',label:'チャット',color:'#4a8fd4',cls:'chat',types:['chat','superchat']},
   {id:'wait',label:'待機',color:'#6b7a99',cls:'wait',types:['wait','sleep']},
-  {id:'move',label:'移動',color:'#3dae6e',cls:'move',types:['pos_z','pos_x','pos_z_await','pos_x_await','rot_y','head_x','walk_set','motion']},
+  {id:'move',label:'移動',color:'#3dae6e',cls:'move',types:['pos_z','pos_x','pos_y','pos_z_await','pos_x_await','pos_y_await','rot_y','head_x','walk_set','motion']},
   {id:'effect',label:'画面効果',color:'#9b6bd4',cls:'effect',types:['fade_black','fade_clear','horror_flash','horror_glitch','horror_tint','horror_tint_clear','scare_flash']},
   {id:'audio',label:'音声',color:'#3db8b8',cls:'audio',types:['sfx','flashlight_on','flashlight_off','flashlight_flicker']},
   {id:'media',label:'メディア',color:'#d46ba8',cls:'media',types:['polaroid_video']},
@@ -372,8 +375,8 @@ const CATS=[
 ];
 function catFor(t){for(const c of CATS)if(c.types.includes(t))return c;return{id:'other',label:'?',color:'#6b7a99',cls:'wait',types:[]};}
 function boxCls(t){if(t==='superchat')return'ev-superchat';if(t==='sleep')return'ev-sleep';if(t==='say_clear')return'ev-say_clear';return'ev-'+catFor(t).cls;}
-const ICONS={say:'💬',say_clear:'🔇',chat:'👤',superchat:'💰',wait:'⏱',sleep:'⏸',pos_z:'↕',pos_x:'↔',pos_z_await:'⏳',pos_x_await:'⏳',rot_y:'↻',head_x:'⤡',walk_set:'🚶',motion:'🎭',fade_black:'◼',fade_clear:'◻',horror_flash:'⚡',horror_glitch:'⚡',horror_tint:'🎨',horror_tint_clear:'🎨',scare_flash:'💥',sfx:'🔊',flashlight_on:'🔦',flashlight_off:'🔦',flashlight_flicker:'🔦',polaroid_video:'🎬',set_viewers:'📺',choice:'🔀',label:'🏷',goto:'➡',goto_route:'🔀',set_route:'🎯',stage_swap:'🗺',use_ofuda:'🏮',_comment:'§'};
-const JA={say:'セリフ',say_clear:'セリフ消去',chat:'チャット',superchat:'スパチャ',wait:'待機',sleep:'強制待機',pos_z:'Z移動',pos_x:'X移動',pos_z_await:'Z待機',pos_x_await:'X待機',rot_y:'体の向き',head_x:'頭の上下',walk_set:'歩行切替',motion:'モーション',fade_black:'暗転',fade_clear:'明転',horror_flash:'フラッシュ',horror_glitch:'グリッチ',horror_tint:'色調変更',horror_tint_clear:'色調解除',scare_flash:'恐怖フラッシュ',sfx:'効果音',flashlight_on:'懐中電灯ON',flashlight_off:'懐中電灯OFF',flashlight_flicker:'フリッカー',polaroid_video:'動画再生',set_viewers:'視聴者数',choice:'選択肢',label:'ラベル',goto:'ジャンプ',goto_route:'ルート分岐',set_route:'ルート設定',stage_swap:'ステージ変更',use_ofuda:'お札使用',_comment:'コメント'};
+const ICONS={say:'💬',say_clear:'🔇',chat:'👤',superchat:'💰',wait:'⏱',sleep:'⏸',pos_z:'↕',pos_x:'↔',pos_y:'⇕',pos_z_await:'⏳',pos_x_await:'⏳',pos_y_await:'⏳',rot_y:'↻',head_x:'⤡',walk_set:'🚶',motion:'🎭',fade_black:'◼',fade_clear:'◻',horror_flash:'⚡',horror_glitch:'⚡',horror_tint:'🎨',horror_tint_clear:'🎨',scare_flash:'💥',sfx:'🔊',flashlight_on:'🔦',flashlight_off:'🔦',flashlight_flicker:'🔦',polaroid_video:'🎬',set_viewers:'📺',choice:'🔀',label:'🏷',goto:'➡',goto_route:'🔀',set_route:'🎯',stage_swap:'🗺',use_ofuda:'🏮',_comment:'§'};
+const JA={say:'セリフ',say_clear:'セリフ消去',chat:'チャット',superchat:'スパチャ',wait:'待機',sleep:'強制待機',pos_z:'Z移動',pos_x:'X移動',pos_y:'Y移動(高さ)',pos_z_await:'Z待機',pos_x_await:'X待機',pos_y_await:'Y待機',rot_y:'体の向き',head_x:'頭の上下',walk_set:'歩行切替',motion:'モーション',fade_black:'暗転',fade_clear:'明転',horror_flash:'フラッシュ',horror_glitch:'グリッチ',horror_tint:'色調変更',horror_tint_clear:'色調解除',scare_flash:'恐怖フラッシュ',sfx:'効果音',flashlight_on:'懐中電灯ON',flashlight_off:'懐中電灯OFF',flashlight_flicker:'フリッカー',polaroid_video:'動画再生',set_viewers:'視聴者数',choice:'選択肢',label:'ラベル',goto:'ジャンプ',goto_route:'ルート分岐',set_route:'ルート設定',stage_swap:'ステージ変更',use_ofuda:'お札使用',_comment:'コメント'};
 
 // ── 起動 ──
 (async()=>{await loadFileList();bindFilter();bindAll()})();
@@ -432,9 +435,51 @@ async function loadFile(f){
 function applyData(d,f){
   data=d;dirty=false;undoStack=[];redoStack=[];fname=f;$('#chapterName').textContent=data.chapter||'';
   const lv=$('#loadingView');if(lv)lv.remove();
-  try{const s=localStorage.getItem('roa_'+f);if(s){const{data:bk,t}=JSON.parse(s);const ago=Math.round((Date.now()-t)/60000);if(ago<1440&&bk&&bk.events&&confirm(`${ago}分前のバックアップを復元？`)){data=bk;dirty=true}localStorage.removeItem('roa_'+f)}}catch(e){}
+  try{const s=localStorage.getItem('roa_'+f);if(s){const{data:bk,t}=JSON.parse(s);const ago=Math.round((Date.now()-t)/60000);if(ago<1440&&bk&&bk.events&&confirm(`${ago}分前のバックアップを復元？`)){data=bk;dirty=true;localStorage.removeItem('roa_'+f)}else{localStorage.removeItem('roa_'+f)}}}catch(e){}
+  buildSectionRanges();
   render();setStatus(dirty?'● 未保存（復元済み）':f);
 }
+
+// ── セクション分割（stage_swap境界） ──
+function buildSectionRanges(){
+  sectionRanges=[];currentSectionIdx=-1;
+  const sel=$('#sectionSel');sel.innerHTML='';
+  if(!data||!data.events){sel.style.display='none';return;}
+  const evs=data.events;
+  // stage_swap位置を収集
+  const swaps=[];
+  for(let i=0;i<evs.length;i++){if(evs[i].type==='stage_swap')swaps.push(i);}
+  if(swaps.length===0){sel.style.display='none';return;}
+  // セクション分割
+  let start=0;
+  const chName=data.chapter||fname.replace('.json','');
+  // チャプター番号を抽出（ch01→CP1, ch02→CP2...）
+  const chMatch=chName.match(/ch0?(\d+)/);
+  const cpNum=chMatch?parseInt(chMatch[1]):0;
+  for(let si=0;si<swaps.length;si++){
+    const label=cpNum?`CP${cpNum}-${si+1}`:`セクション${si+1}`;
+    sectionRanges.push({startIdx:start,endIdx:swaps[si],label});
+    start=swaps[si]+1;
+  }
+  // 最後のセクション
+  const lastLabel=cpNum?`CP${cpNum}-${swaps.length+1}`:`セクション${swaps.length+1}`;
+  sectionRanges.push({startIdx:start,endIdx:evs.length,label:lastLabel});
+  // UI構築
+  sel.style.display='';
+  const optAll=document.createElement('option');optAll.value=-1;optAll.textContent=`全セクション (${evs.length}件)`;
+  sel.appendChild(optAll);
+  sectionRanges.forEach((s,i)=>{
+    const cnt=s.endIdx-s.startIdx;
+    const opt=document.createElement('option');opt.value=i;
+    opt.textContent=`${s.label} (${cnt}件)`;
+    sel.appendChild(opt);
+  });
+  sel.value=-1;
+}
+$('#sectionSel').addEventListener('change',()=>{
+  currentSectionIdx=parseInt($('#sectionSel').value);
+  selected.clear();render();
+});
 
 // ══════════ フィルター ══════════
 function bindFilter(){
@@ -459,13 +504,20 @@ function render(){
   let sayN=0,cumTime=0;const totalSay=evs.filter(e=>e.type==='say').length;
   const frag=document.createDocumentFragment();
 
+  // セクション範囲
+  const secRange=currentSectionIdx>=0&&currentSectionIdx<sectionRanges.length?sectionRanges[currentSectionIdx]:null;
+  let secSayN=0,secEvCount=0;
+
   for(let i=0;i<evs.length;i++){
     const ev=evs[i];
     // 累計時間は常に計算（フィルターに関わらず）
     const isWait=ev.type==='wait'||ev.type==='sleep';
     if(isWait) cumTime+=(ev.sec||0);
+    // セクション範囲外ならスキップ
+    if(secRange&&(i<secRange.startIdx||i>=secRange.endIdx)) continue;
     if(isHidden(ev.type)) continue;
     if(ev.type==='say') sayN++;
+    secEvCount++;
 
     // _comment → セクション見出し（装飾線のみは非表示）
     if(ev.type==='_comment'){
@@ -498,7 +550,12 @@ function render(){
     frag.appendChild(row);
   }
   wrap.appendChild(frag);
-  $('#countBadge').textContent=`${evs.length} 件 / ${totalSay} セリフ`;
+  if(secRange){
+    const secSays=evs.slice(secRange.startIdx,secRange.endIdx).filter(e=>e.type==='say').length;
+    $('#countBadge').textContent=`${secEvCount} 件 / ${secSays} セリフ`;
+  } else {
+    $('#countBadge').textContent=`${evs.length} 件 / ${totalSay} セリフ`;
+  }
   requestAnimationFrame(()=>renderImgBars());
 }
 
@@ -604,8 +661,8 @@ function buildFields(box,ev,idx){
     case 'rot_y': bRow(box,[['向き',numPresetIn(ev,'target',idx,ROT_Y_PRESETS)],['時間',nIn(ev,'dur',idx)]]);break;
     case 'head_x': bRow(box,[['向き',numPresetIn(ev,'target',idx,HEAD_X_PRESETS)],['時間',nIn(ev,'dur',idx)]]);break;
     case 'motion': bRow(box,[['動作',selIn(ev,'name',idx,MOTION_PRESETS,'mid')],['時間',nIn(ev,'dur',idx)]]);break;
-    case 'pos_z':case 'pos_x': bRow(box,[['目標値',nIn(ev,'target',idx)],['時間',nIn(ev,'dur',idx)],['ID',sIn(ev,'id',idx,'short')]]);break;
-    case 'pos_z_await':case 'pos_x_await': bRow(box,[['ID',sIn(ev,'id',idx,'short')]]);break;
+    case 'pos_z':case 'pos_x':case 'pos_y': bRow(box,[['目標値',nIn(ev,'target',idx)],['時間',nIn(ev,'dur',idx)],['ID',sIn(ev,'id',idx,'short')]]);break;
+    case 'pos_z_await':case 'pos_x_await':case 'pos_y_await': bRow(box,[['ID',sIn(ev,'id',idx,'short')]]);break;
     case 'walk_set': bToggle(box,ev,idx,'on');break;
     case 'fade_black':case 'fade_clear':case 'horror_flash': bRow(box,[['時間',nIn(ev,'dur',idx)]]);break;
     case 'horror_glitch': bRow(box,[['強度',nIn(ev,'intensity',idx)],['回数',nIn(ev,'count',idx)]]);break;
@@ -962,7 +1019,7 @@ const ADD_ITEMS=[
   {cat:'セリフ',items:[{t:'say',l:'💬 セリフ'},{t:'say_clear',l:'🔇 セリフ消去'}]},
   {cat:'チャット',items:[{t:'chat',l:'👤 チャット'},{t:'superchat',l:'💰 スパチャ'}]},
   {cat:'待機',items:[{t:'wait',l:'⏱ 待機'},{t:'sleep',l:'⏸ 強制待機'}]},
-  {cat:'移動',items:[{t:'rot_y',l:'↻ 体の向き'},{t:'head_x',l:'⤡ 頭の上下'},{t:'pos_z',l:'↕ Z移動'},{t:'pos_x',l:'↔ X移動'},{t:'pos_z_await',l:'⏳ Z待機'},{t:'pos_x_await',l:'⏳ X待機'},{t:'walk_set',l:'🚶 歩行切替'},{t:'motion',l:'🎭 モーション'}]},
+  {cat:'移動',items:[{t:'rot_y',l:'↻ 体の向き'},{t:'head_x',l:'⤡ 頭の上下'},{t:'pos_z',l:'↕ Z移動'},{t:'pos_x',l:'↔ X移動'},{t:'pos_y',l:'⇕ Y移動(高さ)'},{t:'pos_z_await',l:'⏳ Z待機'},{t:'pos_x_await',l:'⏳ X待機'},{t:'pos_y_await',l:'⏳ Y待機'},{t:'walk_set',l:'🚶 歩行切替'},{t:'motion',l:'🎭 モーション'}]},
   {cat:'画面効果',items:[{t:'fade_black',l:'◼ 暗転'},{t:'fade_clear',l:'◻ 明転'},{t:'horror_flash',l:'⚡ フラッシュ'},{t:'horror_glitch',l:'⚡ グリッチ'},{t:'scare_flash',l:'💥 恐怖フラッシュ'}]},
   {cat:'音声',items:[{t:'sfx',l:'🔊 効果音'},{t:'flashlight_on',l:'🔦 懐中電灯ON'},{t:'flashlight_off',l:'🔦 懐中電灯OFF'}]},
   {cat:'YouTube',items:[{t:'set_viewers',l:'📺 視聴者数'}]},

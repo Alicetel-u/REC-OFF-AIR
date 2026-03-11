@@ -1,908 +1,931 @@
 {
-	"chapter": "ch02_haison_naibu",
-	"_note": "CP2 廃村内部 — 自動歩行: 南入口→廃屋(人形)→掲示板(新聞)→中央広場(スマホ山・K初登場)",
-	"events": [
-		{
-			"type": "say",
-			"text": "村の中に入った。霧が…さっきより濃い気がする"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "chat",
-			"msg": "廃村感えぐすぎる",
-			"user": "幽霊ガチ勢",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "建物が全部朽ちてる…",
-			"user": "暗闇ウォッチャー",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "人が住んでたんだよね、ここ",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.7
-		},
-		{
-			"type": "say",
-			"text": "家が…全部、扉が開けっ放し。誰かが急いで逃げたみたいな"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "chat",
-			"msg": "廃村になった理由って何？",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "調べた？",
-			"user": "深夜探偵",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "調べたけど、記録がほとんど残ってない。1990年代に突然村が無人になったらしい"
-		},
-		{
-			"type": "wait",
-			"sec": 1.8
-		},
-		{
-			"type": "chat",
-			"msg": "人が消えた…",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "それ怖すぎだろｗ",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.6
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "walk_set",
-			"on": true
-		},
-		{
-			"type": "pos_z",
-			"target": 16.0,
-			"dur": 7.5,
-			"id": "walk1"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "chat",
-			"msg": "家の扉開いてる…",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "廃村感リアルすぎ",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "pos_z_await",
-			"id": "walk1"
-		},
-		{
-			"type": "walk_set",
-			"on": false
-		},
-		{
-			"type": "rot_y",
-			"target": 1.57,
-			"dur": 0.8
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…左の家の中。椅子の上に何か座ってる"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "chat",
-			"msg": "人形！？",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "映してーー！！",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "head_x",
-			"target": 0.2,
-			"dur": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…目が、ない。人形の目のところが、空洞になってる"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "chat",
-			"msg": "こわっっっ！！",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "なんで目を取るんだ…",
-			"user": "幽霊ガチ勢",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "全部の家にある？",
-			"user": "深夜探偵",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.7
-		},
-		{
-			"type": "head_x",
-			"target": 0.0,
-			"dur": 0.4
-		},
-		{
-			"type": "rot_y",
-			"target": -1.57,
-			"dur": 0.8
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "say",
-			"text": "右の家にも。全部に、目のない人形が一体ずつ。村人の数だけ座ってる"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "全員分の人形？",
-			"user": "暗闇ウォッチャー",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "村人の数と同じだったりして",
-			"user": "深夜探偵",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.8
-		},
-		{
-			"type": "rot_y",
-			"target": 0.0,
-			"dur": 0.6
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "walk_set",
-			"on": true
-		},
-		{
-			"type": "pos_z",
-			"target": 8.0,
-			"dur": 5.5,
-			"id": "walk2"
-		},
-		{
-			"type": "wait",
-			"sec": 1.8
-		},
-		{
-			"type": "chat",
-			"msg": "掲示板みたいなの見えるｗ",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "pos_z_await",
-			"id": "walk2"
-		},
-		{
-			"type": "walk_set",
-			"on": false
-		},
-		{
-			"type": "rot_y",
-			"target": -0.7,
-			"dur": 0.6
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "say",
-			"text": "…朽ちた掲示板に、紙が貼ってある。読めるか"
-		},
-		{
-			"type": "wait",
-			"sec": 0.9
-		},
-		{
-			"type": "chat",
-			"msg": "読んで読んで！！",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "say",
-			"text": "…新聞？「霧原村　謎の失踪事件　女系制と奇習　村を出ようとした少女の末路」"
-		},
-		{
-			"type": "wait",
-			"sec": 1.8
-		},
-		{
-			"type": "chat",
-			"msg": "奇習！？",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "なに書いてある！？",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…「この村は女系制であり、外部の男性は『種』として連れてこられた。男性は3歳で眼を摘出される。外の世界を見せないため——逃げられなくするためだ」"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "chat",
-			"msg": "え",
-			"user": "視聴者A",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "3歳で…",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "眼が空洞の人形はそういうことか",
-			"user": "深夜探偵",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.8
-		},
-		{
-			"type": "say",
-			"text": "…みゆき。首を…見せしめ。だから人形の目が空洞なのか。この村の男たちは目を奪われてた"
-		},
-		{
-			"type": "wait",
-			"sec": 1.8
-		},
-		{
-			"type": "chat",
-			"msg": "続き読んで",
-			"user": "深夜探偵",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…「1994年10月、少女『みゆき』が村の男と駆け落ちを図り捕縛。見せしめに首を——」…破れて読めない。「その直後、村民は一夜にして全員が」…ここも読めない"
-		},
-		{
-			"type": "wait",
-			"sec": 2.5
-		},
-		{
-			"type": "chat",
-			"msg": "1994年…",
-			"user": "視聴者A",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "トイレのスマホと同じ年",
-			"user": "深夜探偵",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "繋がってる！！",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.7
-		},
-		{
-			"type": "rot_y",
-			"target": 0.0,
-			"dur": 0.6
-		},
-		{
-			"type": "walk_set",
-			"on": true
-		},
-		{
-			"type": "pos_z",
-			"target": -2.0,
-			"dur": 7.0,
-			"id": "walk3"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "say",
-			"text": "1994年。あのスマホの刻印と同じ年だ。偶然じゃない"
-		},
-		{
-			"type": "wait",
-			"sec": 1.8
-		},
-		{
-			"type": "chat",
-			"msg": "何が起きたの1994年に",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "続きを探して",
-			"user": "深夜探偵",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "pos_z_await",
-			"id": "walk3"
-		},
-		{
-			"type": "walk_set",
-			"on": false
-		},
-		{
-			"type": "rot_y",
-			"target": 1.57,
-			"dur": 0.8
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "say",
-			"text": "奥の家に行く。一番大きい家だ"
-		},
-		{
-			"type": "wait",
-			"sec": 0.9
-		},
-		{
-			"type": "chat",
-			"msg": "ここが中心家族の家かな",
-			"user": "暗闇ウォッチャー",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "どうやって入る？",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "入れ",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "choice",
-			"prompt": "村で一番大きな家。扉は開いている。",
-			"choices": [
-				{
-					"text": "正面から堂々と入る",
-					"sub": "配信映えはする。だが何がいるかわからない"
-				},
-				{
-					"text": "窓から先に中を覗く",
-					"sub": "慎重に。中の様子を確認してからでも遅くない"
-				},
-				{
-					"text": "チャットに聞く——入るべきか",
-					"sub": "100人の目は1人の判断に勝る…はず"
-				}
-			]
-		},
-		{
-			"type": "say",
-			"text": "…入る。ここまで来て引き返す選択肢はない"
-		},
-		{
-			"type": "wait",
-			"sec": 1.0
-		},
-		{
-			"type": "chat",
-			"msg": "入ったぞ！！",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "入れ",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "walk_set",
-			"on": true
-		},
-		{
-			"type": "pos_x",
-			"target": -13.0,
-			"dur": 7.0,
-			"id": "walk_west"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "なんかあるかな",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "pos_x_await",
-			"id": "walk_west"
-		},
-		{
-			"type": "walk_set",
-			"on": false
-		},
-		{
-			"type": "rot_y",
-			"target": -1.57,
-			"dur": 0.6
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "say",
-			"text": "…押し入れが開いてる。中を見ると"
-		},
-		{
-			"type": "wait",
-			"sec": 1.2
-		},
-		{
-			"type": "chat",
-			"msg": "何が入ってる！？",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "say",
-			"text": "…スマホが。大量にスマホが詰め込まれてる。全部画面が割れてる"
-		},
-		{
-			"type": "wait",
-			"sec": 1.8
-		},
-		{
-			"type": "chat",
-			"msg": "えっっっ！！",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "何台あるの",
-			"user": "視聴者A",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "集めてたの？",
-			"user": "幽霊ガチ勢",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.6
-		},
-		{
-			"type": "say",
-			"text": "数えられないくらい。全部に「見ている」って通知が残ってる。誰からの通知なんだ"
-		},
-		{
-			"type": "wait",
-			"sec": 2.0
-		},
-		{
-			"type": "chat",
-			"msg": "見ている…？",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.3
-		},
-		{
-			"type": "chat",
-			"msg": "誰が？",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.8
-		},
-		{
-			"type": "say",
-			"text": "…K？誰だ。今どこで見てる"
-		},
-		{
-			"type": "wait",
-			"sec": 0.8
-		},
-		{
-			"type": "chat",
-			"msg": "Kって誰",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "初見さん？",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.6
-		},
-		{
-			"type": "chat",
-			"msg": "どこを見てるの",
-			"user": "深夜探偵",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.7
-		},
-		{
-			"type": "say",
-			"text": "…Kさん、ちょっと怖いんですけど（笑）。ここにいるの？"
-		},
-		{
-			"type": "wait",
-			"sec": 1.2
-		},
-		{
-			"type": "chat",
-			"msg": "Kってもしかして…",
-			"user": "幽霊ガチ勢",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "スルーしてｗ",
-			"user": "配信民99",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.7
-		},
-		{
-			"type": "say_clear"
-		},
-		{
-			"type": "rot_y",
-			"target": -1.57,
-			"dur": 0.6
-		},
-		{
-			"type": "walk_set",
-			"on": true
-		},
-		{
-			"type": "pos_x",
-			"target": 0.0,
-			"dur": 7.0,
-			"id": "return_road"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "say",
-			"text": "倉庫に向かう。VHSテープを探すのが目的だから。そこに真実がある"
-		},
-		{
-			"type": "wait",
-			"sec": 1.5
-		},
-		{
-			"type": "chat",
-			"msg": "そうだった！！VHS！！",
-			"user": "ホラー好き太郎",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.4
-		},
-		{
-			"type": "chat",
-			"msg": "頑張れ！！",
-			"user": "ゆきんこ77",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "chat",
-			"msg": "見ている",
-			"user": "K",
-			"utype": "viewer"
-		},
-		{
-			"type": "wait",
-			"sec": 0.5
-		},
-		{
-			"type": "pos_x_await",
-			"id": "return_road"
-		},
-		{
-			"type": "rot_y",
-			"target": 0.0,
-			"dur": 0.5
-		},
-		{
-			"type": "walk_set",
-			"on": false
-		},
-		{
-			"type": "say_clear"
-		}
-	]
+  "chapter": "ch02_haison_naibu",
+  "_note": "CP2 廃村内部 — 自動歩行: 南入口→廃屋(人形)→掲示板(新聞)→中央広場(スマホ山・K初登場)",
+  "events": [
+    {
+      "type": "say",
+      "text": "村の中に入った。霧が…さっきより濃い気がする",
+      "voice": "v301"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "chat",
+      "msg": "廃村感えぐすぎる",
+      "user": "幽霊ガチ勢",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "建物が全部朽ちてる…",
+      "user": "暗闇ウォッチャー",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "人が住んでたんだよね、ここ",
+      "user": "ゆきんこ77",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.7
+    },
+    {
+      "type": "say",
+      "text": "家が…全部、扉が開けっ放し。誰かが急いで逃げたみたいな",
+      "voice": "v302"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "chat",
+      "msg": "廃村になった理由って何？",
+      "user": "配信民99",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "調べた？",
+      "user": "深夜探偵",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "調べたけど、記録がほとんど残ってない。1990年代に突然村が無人になったらしい",
+      "voice": "v303"
+    },
+    {
+      "type": "wait",
+      "sec": 1.8
+    },
+    {
+      "type": "chat",
+      "msg": "人が消えた…",
+      "user": "ゆきんこ77",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "それ怖すぎだろｗ",
+      "user": "配信民99",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.6
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_z",
+      "target": 16.0,
+      "dur": 7.5,
+      "id": "walk1"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "家の扉開いてる…",
+      "user": "ゆきんこ77",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "廃村感リアルすぎ",
+      "user": "ホラー好き太郎",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "pos_z_await",
+      "id": "walk1"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "rot_y",
+      "target": 1.57,
+      "dur": 0.8
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…左の家の中。椅子の上に何か座ってる",
+      "voice": "v304"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "chat",
+      "msg": "人形！？",
+      "user": "配信民99",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "映してーー！！",
+      "user": "ホラー好き太郎",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "head_x",
+      "target": 0.2,
+      "dur": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…目が、ない。人形の目のところが、空洞になってる",
+      "voice": "v305"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "chat",
+      "msg": "こわっっっ！！",
+      "user": "ゆきんこ77",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "なんで目を取るんだ…",
+      "user": "幽霊ガチ勢",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "全部の家にある？",
+      "user": "深夜探偵",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.7
+    },
+    {
+      "type": "head_x",
+      "target": 0.0,
+      "dur": 0.4
+    },
+    {
+      "type": "rot_y",
+      "target": -1.57,
+      "dur": 0.8
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "say",
+      "text": "右の家にも。全部に、目のない人形が一体ずつ。村人の数だけ座ってる",
+      "voice": "v306"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "全員分の人形？",
+      "user": "暗闇ウォッチャー",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "村人の数と同じだったりして",
+      "user": "深夜探偵",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "rot_y",
+      "target": 0.0,
+      "dur": 0.6
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_z",
+      "target": 8.0,
+      "dur": 5.5,
+      "id": "walk2"
+    },
+    {
+      "type": "wait",
+      "sec": 1.8
+    },
+    {
+      "type": "chat",
+      "msg": "掲示板みたいなの見えるｗ",
+      "user": "ホラー好き太郎",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "pos_z_await",
+      "id": "walk2"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "rot_y",
+      "target": -0.7,
+      "dur": 0.6
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "say",
+      "text": "…朽ちた掲示板に、紙が貼ってある。読めるか",
+      "voice": "v307"
+    },
+    {
+      "type": "wait",
+      "sec": 0.9
+    },
+    {
+      "type": "chat",
+      "msg": "読んで読んで！！",
+      "user": "ホラー好き太郎",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "say",
+      "text": "…新聞？「霧原村　謎の失踪事件　女系制と奇習　村を出ようとした少女の末路」",
+      "voice": "v308"
+    },
+    {
+      "type": "wait",
+      "sec": 1.8
+    },
+    {
+      "type": "chat",
+      "msg": "奇習！？",
+      "user": "配信民99",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "なに書いてある！？",
+      "user": "ゆきんこ77",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…「この村は女系制であり、外部の男性は『種』として連れてこられた。男性は3歳で眼を摘出される。外の世界を見せないため——逃げられなくするためだ」",
+      "voice": "v309"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "え",
+      "user": "視聴者A",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "3歳で…",
+      "user": "ゆきんこ77",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "眼が空洞の人形はそういうことか",
+      "user": "深夜探偵",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "say",
+      "text": "…みゆき。首を…見せしめ。だから人形の目が空洞なのか。この村の男たちは目を奪われてた",
+      "reading": "…みゆき。くびを…見せしめ。だから人形の目が空洞なのか。この村の男たちは目を奪われてた",
+      "voice": "v310"
+    },
+    {
+      "type": "wait",
+      "sec": 1.8
+    },
+    {
+      "type": "chat",
+      "msg": "続き読んで",
+      "user": "深夜探偵",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…「1994年10月、少女『みゆき』が村の男と駆け落ちを図り捕縛。見せしめに首を——」…破れて読めない。「その直後、村民は一夜にして全員が」…ここも読めない",
+      "reading": "…「1994年10月、少女『みゆき』が村の男と駆け落ちを図り捕縛。見せしめにくびを——」…破れて読めない。「その直後、村民は一夜にして全員が」…ここも読めない",
+      "voice": "v311"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "1994年…",
+      "user": "視聴者A",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "トイレのスマホと同じ年",
+      "user": "深夜探偵",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "繋がってる！！",
+      "user": "ホラー好き太郎",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.7
+    },
+    {
+      "type": "rot_y",
+      "target": 0.0,
+      "dur": 0.6
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_z",
+      "target": -2.0,
+      "dur": 7.0,
+      "id": "walk3"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "say",
+      "text": "1994年。あのスマホの刻印と同じ年だ。偶然じゃない",
+      "voice": "v312"
+    },
+    {
+      "type": "wait",
+      "sec": 1.8
+    },
+    {
+      "type": "chat",
+      "msg": "何が起きたの1994年に",
+      "user": "ゆきんこ77",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "続きを探して",
+      "user": "深夜探偵",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "pos_z_await",
+      "id": "walk3"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "rot_y",
+      "target": 1.57,
+      "dur": 0.8
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "say",
+      "text": "奥の家に行く。一番大きい家だ",
+      "voice": "v313"
+    },
+    {
+      "type": "wait",
+      "sec": 0.9
+    },
+    {
+      "type": "chat",
+      "msg": "ここが中心家族の家かな",
+      "user": "暗闇ウォッチャー",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "どうやって入る？",
+      "user": "配信民99",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "入れ",
+      "user": "K",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "choice",
+      "title": "▼  踏 み 込 む か  ▼",
+      "prompt": "村で一番大きな家。扉は開いている。",
+      "choices": [
+        {
+          "text": "正面から堂々と入る",
+          "sub": "配信映えはする。だが何がいるかわからない"
+        },
+        {
+          "text": "窓から先に中を覗く",
+          "sub": "慎重に。中の様子を確認してからでも遅くない"
+        },
+        {
+          "text": "チャットに聞く——入るべきか",
+          "sub": "100人の目は1人の判断に勝る…はず"
+        }
+      ]
+    },
+    {
+      "type": "say",
+      "text": "…入る。ここまで来て引き返す選択肢はない",
+      "voice": "v314"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "chat",
+      "msg": "入ったぞ！！",
+      "user": "ホラー好き太郎",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "入れ",
+      "user": "K",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_x",
+      "target": -13.0,
+      "dur": 7.0,
+      "id": "walk_west"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "なんかあるかな",
+      "user": "配信民99",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "pos_x_await",
+      "id": "walk_west"
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "rot_y",
+      "target": -1.57,
+      "dur": 0.6
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "say",
+      "text": "…押し入れが開いてる。中を見ると",
+      "voice": "v315"
+    },
+    {
+      "type": "wait",
+      "sec": 1.2
+    },
+    {
+      "type": "chat",
+      "msg": "何が入ってる！？",
+      "user": "配信民99",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "…スマホが。大量にスマホが詰め込まれてる。全部画面が割れてる",
+      "voice": "v316"
+    },
+    {
+      "type": "wait",
+      "sec": 1.8
+    },
+    {
+      "type": "chat",
+      "msg": "えっっっ！！",
+      "user": "ゆきんこ77",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "何台あるの",
+      "user": "視聴者A",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "集めてたの？",
+      "user": "幽霊ガチ勢",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.6
+    },
+    {
+      "type": "say",
+      "text": "数えられないくらい。全部に「見ている」って通知が残ってる。誰からの通知なんだ",
+      "voice": "v317"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "見ている…？",
+      "user": "配信民99",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "誰が？",
+      "user": "ゆきんこ77",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "say",
+      "text": "…K？誰だ。今どこで見てる",
+      "voice": "v318"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "chat",
+      "msg": "Kって誰",
+      "user": "配信民99",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "初見さん？",
+      "user": "ゆきんこ77",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.6
+    },
+    {
+      "type": "chat",
+      "msg": "どこを見てるの",
+      "user": "深夜探偵",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.7
+    },
+    {
+      "type": "say",
+      "text": "…Kさん、ちょっと怖いんですけど（笑）。ここにいるの？",
+      "voice": "v319"
+    },
+    {
+      "type": "wait",
+      "sec": 1.2
+    },
+    {
+      "type": "chat",
+      "msg": "Kってもしかして…",
+      "user": "幽霊ガチ勢",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "スルーしてｗ",
+      "user": "配信民99",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.7
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "rot_y",
+      "target": -1.57,
+      "dur": 0.6
+    },
+    {
+      "type": "walk_set",
+      "on": true
+    },
+    {
+      "type": "pos_x",
+      "target": 0.0,
+      "dur": 7.0,
+      "id": "return_road"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "say",
+      "text": "倉庫に向かう。VHSテープを探すのが目的だから。そこに真実がある",
+      "voice": "v320"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "chat",
+      "msg": "そうだった！！VHS！！",
+      "user": "ホラー好き太郎",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "頑張れ！！",
+      "user": "ゆきんこ77",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "見ている",
+      "user": "K",
+      "utype": "viewer"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "pos_x_await",
+      "id": "return_road"
+    },
+    {
+      "type": "rot_y",
+      "target": 0.0,
+      "dur": 0.5
+    },
+    {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "say_clear"
+    }
+  ]
 }

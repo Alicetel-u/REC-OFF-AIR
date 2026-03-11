@@ -5,31 +5,31 @@
 
 [sub_resource type="Resource" id="light_busstop"]
 script = ExtResource("2")
-position = Vector3(0, 3, 0)
-color = Color(0.7, 0.85, 0.6, 1)
-energy = 0.6
-omni_range = 8.0
+position = Vector3(5.2, 4.0, 14.8)
+color = Color(1.0, 0.92, 0.72, 1)
+energy = 0.8
+omni_range = 6.0
 
 [sub_resource type="Resource" id="light_gate"]
 script = ExtResource("2")
-position = Vector3(25, 3, 4.3)
-color = Color(0.8, 0.3, 0.1, 1)
-energy = 0.4
-omni_range = 10.0
+position = Vector3(0, 3, -14)
+color = Color(0.6, 0.2, 0.05, 1)
+energy = 0.1
+omni_range = 5.0
 
 [sub_resource type="Resource" id="light_shrine"]
 script = ExtResource("2")
 position = Vector3(12, 3, -15)
 color = Color(0.9, 0.1, 0.05, 1)
-energy = 0.3
-omni_range = 12.0
+energy = 0.05
+omni_range = 6.0
 
 [sub_resource type="Resource" id="light_road"]
 script = ExtResource("2")
-position = Vector3(12, 4.0, 4)
-color = Color(0.4, 0.5, 0.7, 1)
-energy = 0.5
-omni_range = 28.0
+position = Vector3(0, 3, 0)
+color = Color(0.3, 0.35, 0.5, 1)
+energy = 0.08
+omni_range = 15.0
 
 [resource]
 script = ExtResource("1")
@@ -42,23 +42,23 @@ player_spawn = Vector3(1.5, 1.0, 3.0)
 item_positions = PackedVector3Array()
 exit_position = Vector3(36, 1.5, -2)
 lights = [SubResource("light_busstop"), SubResource("light_gate"), SubResource("light_shrine"), SubResource("light_road")]
-ambient_light_energy = 0.12
-directional_light_energy = 0.06
+ambient_light_energy = 0.02
+directional_light_energy = 0.0
 background_color = Color(0.02, 0.02, 0.05, 1)
 fog_enabled = true
-fog_density = 0.05
+fog_density = 0.015
 use_sky_background = true
 sky_top_color = Color(0, 0, 0, 1)
 sky_horizon_color = Color(0.05, 0.05, 0.05, 1)
-ambient_light_color = Color(0.1, 0.1, 0.15, 1)
+ambient_light_color = Color(0.03, 0.03, 0.06, 1)
 tonemap_mode = 3
 ssao_enabled = true
 ssil_enabled = true
 sdfgi_enabled = true
-fog_light_color = Color(0.1, 0.1, 0.15, 1)
+fog_light_color = Color(0.03, 0.03, 0.06, 1)
 fog_aerial_perspective = 1.0
 volumetric_fog_enabled = true
-volumetric_fog_density = 0.02
+volumetric_fog_density = 0.008
 vhs_overlay = false
 monologue_lines = PackedStringArray("深夜0時…バスを降りたらすごい霧だ", "ここが霧原村の入口か…", "奥の倉庫にVHSテープがあるって情報があった", "門をくぐって奥に進もう")
 next_chapter_id = "ch02_yashiki"

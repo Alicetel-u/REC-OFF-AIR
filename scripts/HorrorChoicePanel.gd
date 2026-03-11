@@ -40,15 +40,141 @@ func _ready() -> void:
 	visible = false
 
 
-func show_choice(prompt: String, choices: Array) -> void:
+func show_choice(prompt: String, choices: Array, title_text: String = "", danger: bool = false) -> void:
 	# マウスカーソルを表示（シネマティック中はCAPTURED状態のため）
 	_prev_mouse_mode = Input.get_mouse_mode()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	_build_ui(prompt, choices)
+	if danger:
+		await _danger_warning()
+	_build_ui(prompt, choices, title_text)
 	_start_vote(choices)
 
 
-func _build_ui(prompt: String, choices: Array) -> void:
+## バッドエンド注意喚起演出
+func _danger_warning() -> void:
+	# 全画面を暗くする
+	var overlay := ColorRect.new()
+	overlay.color = Color(0.0, 0.0, 0.0, 0.0)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(overlay)
+
+	# 赤いにじみ（中央から広がるビネット風）
+	var red_glow := ColorRect.new()
+	red_glow.color = Color(0.4, 0.0, 0.0, 0.0)
+	red_glow.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	red_glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(red_glow)
+
+	# メインテキスト（大きめ、画面ど真ん中）
+	var warn := Label.new()
+	warn.text = ""
+	warn.add_theme_font_size_override("font_size", 42)
+	warn.add_theme_color_override("font_color", Color(0.95, 0.08, 0.05, 0.0))
+	warn.add_theme_color_override("font_shadow_color", Color(0.3, 0.0, 0.0, 0.9))
+	warn.add_theme_constant_override("shadow_offset_x", 3)
+	warn.add_theme_constant_override("shadow_offset_y", 3)
+	warn.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	warn.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	warn.anchors_preset = Control.PRESET_FULL_RECT
+	warn.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(warn)
+
+	# ノイズライン（画面を横切る赤い線）
+	var noise_lines : Array[ColorRect] = []
+	for i in range(5):
+		var line := ColorRect.new()
+		line.color = Color(0.7, 0.05, 0.05, 0.0)
+		line.size = Vector2(1280, 1 + randi() % 2)
+		line.position.y = randf_range(100, 620)
+		line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(line)
+		noise_lines.append(line)
+
+	visible = true
+
+	# Phase 1: 暗転（じわっと）
+	var tw1 := create_tween()
+	tw1.tween_property(overlay, "color:a", 0.92, 1.2)
+	await tw1.finished
+
+	await get_tree().create_timer(0.5).timeout
+
+	# Phase 2: 1文字ずつ「選択を誤ると——」を表示
+	var line1 := "選 択 を 誤 る と ——"
+	warn.add_theme_color_override("font_color", Color(0.95, 0.08, 0.05, 1.0))
+	for i in range(line1.length()):
+		warn.text = line1.substr(0, i + 1)
+		# ノイズラインをランダムに瞬かせる
+		for nl in noise_lines:
+			nl.color.a = randf_range(0.0, 0.15)
+			nl.position.y = randf_range(50, 670)
+		await get_tree().create_timer(0.08).timeout
+
+	# 赤にじみ
+	var tw_red := create_tween()
+	tw_red.tween_property(red_glow, "color:a", 0.12, 0.5)
+	await tw_red.finished
+
+	# Phase 3: グリッチ振動（強め）
+	var shake_time : float = 0.0
+	while shake_time < 2.0:
+		var d : float = get_process_delta_time()
+		shake_time += d
+		var intensity : float = shake_time * 3.0  # 時間と共に激化
+		warn.position.x = sin(shake_time * 30.0) * intensity
+		warn.position.y = cos(shake_time * 23.0) * (intensity * 0.6)
+		# ノイズラインも連動
+		for nl in noise_lines:
+			nl.color.a = randf_range(0.0, 0.2 + shake_time * 0.1)
+			nl.position.y += sin(shake_time * 50.0) * 2.0
+		await get_tree().process_frame
+
+	warn.position = Vector2.ZERO
+
+	# Phase 4: 一瞬暗転してテキスト切り替え
+	warn.add_theme_color_override("font_color", Color(0.95, 0.08, 0.05, 0.0))
+	await get_tree().create_timer(0.3).timeout
+
+	warn.text = ""
+	warn.add_theme_font_size_override("font_size", 48)
+	var line2 := "——取り返しがつかない"
+
+	# ばっと出現
+	warn.text = line2
+	warn.add_theme_color_override("font_color", Color(1.0, 0.1, 0.05, 1.0))
+	red_glow.color.a = 0.25
+
+	# 画面全体を一瞬赤くフラッシュ
+	var flash := ColorRect.new()
+	flash.color = Color(0.6, 0.0, 0.0, 0.4)
+	flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(flash)
+	var tw_flash := create_tween()
+	tw_flash.tween_property(flash, "color:a", 0.0, 0.6)
+
+	await get_tree().create_timer(2.0).timeout
+
+	# Phase 5: フェードアウト
+	var tw2 := create_tween().set_parallel(true)
+	tw2.tween_property(warn, "theme_override_colors/font_color:a", 0.0, 0.8)
+	tw2.tween_property(overlay, "color:a", 0.0, 0.8)
+	tw2.tween_property(red_glow, "color:a", 0.0, 0.8)
+	for nl in noise_lines:
+		tw2.tween_property(nl, "color:a", 0.0, 0.5)
+	await tw2.finished
+
+	warn.queue_free()
+	overlay.queue_free()
+	red_glow.queue_free()
+	flash.queue_free()
+	for nl in noise_lines:
+		nl.queue_free()
+	visible = false
+
+
+func _build_ui(prompt: String, choices: Array, title_text: String = "") -> void:
 	# 既存UIをクリア
 	for child in get_children():
 		child.queue_free()
@@ -100,7 +226,8 @@ func _build_ui(prompt: String, choices: Array) -> void:
 	title.bbcode_enabled = true
 	title.fit_content = true
 	title.scroll_active = false
-	title.bbcode_text = "[center][color=#ff3333][font_size=20]▼  最 後 の 選 択  ▼[/font_size][/color][/center]"
+	var display_title : String = title_text if title_text != "" else "▼  選 択  ▼"
+	title.bbcode_text = "[center][color=#ff3333][font_size=20]%s[/font_size][/color][/center]" % display_title
 	vbox.add_child(title)
 
 	# ── お札残数 ──

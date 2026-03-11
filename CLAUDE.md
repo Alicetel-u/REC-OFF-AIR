@@ -7,6 +7,13 @@
 - `globalize_path()` はエクスポートビルド（.pck）で動作しない
 - 音声・画像・JSON 等すべてのリソース読み込みに適用
 
+## 効果音（SFX）のルール（重要）
+
+- **高音のピコピコ系SFXは使用禁止**
+- 禁止カテゴリ: `impactMetal_light_*`, `impactGlass_light_*`, `horror_static/computerNoise_*`
+- 代わりに低く重い音を使う: `impactMetal_heavy_*`, `impactMetal_medium_*`, `impactGlass_heavy_*`, `bell/impactBell_heavy_*`, `door/creak*`
+- ホラー作品の雰囲気に合う鈍い金属音・軋み音・鐘の音を優先すること
+
 ## アセット追加時のルール（重要）
 
 - 音声・画像・モデル等を追加したら、Godotエディタで一度開いて生成される **`.import` ファイルも必ずコミット**すること
@@ -36,16 +43,16 @@
 - 実行: `python tools/generate_voice_ch01.py`
 
 ### Style-Bert-VITS2
-- サーバー: `http://127.0.0.1:5000`（起動: `Antigravity_Projects/Style-Bert-VITS2/Server.bat`）
-- デフォルトモデル: amitaro / スタイル: Neutral / 話速(length): 0.8
+- サーバー: `http://127.0.0.1:5000`（起動: `cd C:\Users\【RST-9】リバイブ新所沢\Desktop\Antigravity_Projects\Style-Bert-VITS2 && venv\Scripts\python.exe server_fastapi.py`）
+- デフォルトモデル: jvnv-F2-jp / スタイル: Fear / 話速(length): 0.8
 - パラメータ: sdp_ratio=0.2, noise=0.6, noisew=0.8
-- 実行: `python tools/generate_voice_ch01.py --engine sbv2`
-- モデル指定: `--model jvnv-M1-jp --style Happy`
+- 実行: `python tools/generate_voice_ch01.py --engine sbv2 --model jvnv-F2-jp --style Fear`
+- 他モデル指定例: `--model jvnv-M1-jp --style Happy`
 
 ### 共通設定
 - 末尾無音トリミング: threshold=2000, margin=40ms
 - セリフ編集後は必ず `python tools/fix_voice_wait.py --validate-only` でバリデーション実行
-- 発音修正: TIKTOK→ティックトック / 廃村→はいそん / お札→おふだ
+- 発音修正: TIKTOK→ティックトック / 廃村→はいそん / お札→おふだ / 同接→どうせつ / 首→くび
 - 出力先: `assets/audio/voice/ch01/v001.wav` 〜
 
 ## 自動チェック（pre-commitフック + CI）

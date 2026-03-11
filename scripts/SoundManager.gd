@@ -27,6 +27,7 @@ var _monster_idx   : int = 0
 
 var _voice    : AudioStreamPlayer = null
 var _bgm      : AudioStreamPlayer = null
+var _sfx      : AudioStreamPlayer = null
 
 
 func _ready() -> void:
@@ -36,6 +37,7 @@ func _ready() -> void:
 	_door    = _make_player(0.0)
 	_voice   = _make_player(0.0)
 	_bgm     = _make_player(0.0)
+	_sfx     = _make_player(0.0)
 	_scan_all()
 
 
@@ -110,18 +112,27 @@ func _scan_dir(path: String) -> Array:
 # 開発環境では FileAccess 生バイト読み込みにフォールバック
 # ════════════════════════════════════════════════════════════════
 
+var _audio_cache : Dictionary = {}  # path → AudioStream キャッシュ
+
 func _load_audio(path: String) -> AudioStream:
+	# キャッシュヒット
+	if _audio_cache.has(path):
+		return _audio_cache[path]
+	var stream : AudioStream = null
 	# 1) ResourceLoader（エクスポートビルドではこちらが必須）
 	if ResourceLoader.exists(path):
 		var s = load(path)
 		if s is AudioStream:
-			return s
+			stream = s
 	# 2) フォールバック: 生バイト読み込み（開発環境 / import未対応ファイル用）
-	if path.to_lower().ends_with(".mp3"):
-		return _load_mp3_raw(path)
-	if path.to_lower().ends_with(".wav"):
-		return _load_wav_raw(path)
-	return null
+	if stream == null and path.to_lower().ends_with(".mp3"):
+		stream = _load_mp3_raw(path)
+	if stream == null and path.to_lower().ends_with(".wav"):
+		stream = _load_wav_raw(path)
+	# キャッシュ保存（ボイス以外。ボイスはファイルが大きいため都度読み込み）
+	if stream and not "/voice/" in path:
+		_audio_cache[path] = stream
+	return stream
 
 
 func _load_mp3_raw(path: String) -> AudioStreamMP3:
@@ -196,6 +207,21 @@ func play_door_creak() -> void:
 	_door.stream    = s
 	_door.volume_db = -6.0
 	_door.play()
+
+
+## 汎用 SFX を再生（file = "door/creak1" → res://assets/audio/sfx/door/creak1.ogg）
+func play_sfx_file(file: String, vol_db: float = -6.0) -> void:
+	var path := "res://assets/audio/sfx/" + file
+	# 拡張子が省略されていたら .ogg を試す
+	if not path.get_extension():
+		path += ".ogg"
+	var s := _load_audio(path)
+	if not s:
+		push_warning("SoundManager: sfx not found: " + path)
+		return
+	_sfx.stream    = s
+	_sfx.volume_db = vol_db
+	_sfx.play()
 
 
 ## ボイス（WAV）を再生 — 直前のボイスは停止してから再生
@@ -342,4 +368,5 @@ func play_superchat_chime(vol_db: float = -6.0) -> void:
 		pb.push_frame(Vector2(v, v))
 
 	await get_tree().create_timer(DUR1 + DUR2 + 0.05).timeout
+	player.stop()
 	player.queue_free()

@@ -47,8 +47,8 @@ POST_PHONEME_LENGTH = 0.05  # 文末ポーズ（秒）
 # Style-Bert-VITS2 設定
 # ═══════════════════════════════════════════════════
 SBV2_URL = "http://127.0.0.1:5000"
-SBV2_MODEL = "amitaro"      # デフォルトモデル（model_assets/ 内のディレクトリ名）
-SBV2_STYLE = "Neutral"      # デフォルトスタイル（Neutral/Happy/Sad/Angry等）
+SBV2_MODEL = "jvnv-F2-jp"   # デフォルトモデル（model_assets/ 内のディレクトリ名）
+SBV2_STYLE = "Fear"          # デフォルトスタイル（Neutral/Happy/Sad/Angry/Fear等）
 SBV2_LENGTH = 0.8            # 話速（1.0基準、小さい=速い）
 SBV2_SDP_RATIO = 0.2        # SDP/DP比（トーンのばらつき）
 SBV2_NOISE = 0.6            # サンプルノイズ
@@ -72,6 +72,8 @@ PRONUNCIATION_FIXES = {
     "tiktok": "ティックトック",
     "廃村": "はいそん",
     "お札": "おふだ",
+    "柵": "さく",
+    "萎え": "なえー",
 }
 
 
@@ -190,17 +192,17 @@ def generate_voice(text: str, output_path: str, engine: str = "voicevox",
         return generate_voice_voicevox(text, SPEAKER_ID, output_path)
 
 
-def load_hashes() -> dict:
+def load_hashes(path: str = HASH_PATH) -> dict:
     """サイドカーファイルからハッシュを読み込む"""
-    if os.path.exists(HASH_PATH):
-        with open(HASH_PATH, "r", encoding="utf-8") as f:
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     return {}
 
 
-def save_hashes(hashes: dict) -> None:
+def save_hashes(hashes: dict, path: str = HASH_PATH) -> None:
     """サイドカーファイルにハッシュを保存（対話JSONには触らない）"""
-    with open(HASH_PATH, "w", encoding="utf-8") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(hashes, f, ensure_ascii=False, indent=2)
 
 
@@ -214,13 +216,24 @@ def parse_args():
                         help=f"SBV2スタイル (default: {SBV2_STYLE})")
     parser.add_argument("--force", action="store_true",
                         help="全件再生成（差分検出を無視）")
+    parser.add_argument("--dialogue", default=None,
+                        help="対話JSONファイルパス（デフォルト: ch01_entrance.json）")
+    parser.add_argument("--output-dir", default=None,
+                        help="音声出力ディレクトリ（デフォルト: assets/audio/voice/ch01）")
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
 
-    with open(DIALOGUE_PATH, "r", encoding="utf-8") as f:
+    # --dialogue / --output-dir が指定されていればそちらを使う
+    dialogue_path = args.dialogue if args.dialogue else DIALOGUE_PATH
+    dialogue_path = os.path.abspath(dialogue_path)
+    output_dir = args.output_dir if args.output_dir else OUTPUT_DIR
+    output_dir = os.path.abspath(output_dir)
+    hash_path = os.path.join(output_dir, ".voice_hashes.json")
+
+    with open(dialogue_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     events = data.get("events", [])
@@ -231,11 +244,12 @@ def main():
             voice_events.append(ev)
 
     # ハッシュはサイドカーファイルで管理（対話JSONを書き換えない）
-    hashes = load_hashes()
+    hashes = load_hashes(hash_path)
 
+    chapter_label = os.path.basename(dialogue_path).replace(".json", "")
     mode_label = "全再生成 (--force)" if args.force else "差分生成"
     engine_label = "Style-Bert-VITS2" if args.engine == "sbv2" else "VOICEVOX"
-    print(f"=== CP1 ボイス{mode_label} [{engine_label}] ===")
+    print(f"=== {chapter_label} ボイス{mode_label} [{engine_label}] ===")
     print(f"対象: {len(voice_events)} 件")
     if args.engine == "sbv2":
         print(f"model={args.model} style={args.style} length={SBV2_LENGTH}")
@@ -244,7 +258,7 @@ def main():
     print(f"末尾トリミング: threshold={SILENCE_THRESHOLD} margin={TAIL_MARGIN_MS}ms")
     print()
 
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
 
     success = 0
     skipped = 0
@@ -256,7 +270,7 @@ def main():
         text = ev.get("text", "")
         reading = ev.get("reading", "")
         voice_text = reading if reading else text
-        output_path = os.path.join(OUTPUT_DIR, f"{voice_id}.wav")
+        output_path = os.path.join(output_dir, f"{voice_id}.wav")
 
         # 差分検出（サイドカーファイルのハッシュと比較）
         # SBV2使用時はエンジン名をハッシュに含めて区別
@@ -287,9 +301,9 @@ def main():
 
     # ハッシュをサイドカーファイルに保存（対話JSONは一切変更しない）
     if hashes_updated:
-        save_hashes(hashes)
+        save_hashes(hashes, hash_path)
         print()
-        print(f"ハッシュ更新: {HASH_PATH}")
+        print(f"ハッシュ更新: {hash_path}")
 
     print()
     print(f"=== 完了: 生成 {success} / スキップ {skipped} / 失敗 {fail} / 合計 {len(voice_events)} ===")
@@ -298,7 +312,7 @@ def main():
     if success > 0:
         missing_imports = []
         for ev in voice_events:
-            import_path = os.path.join(OUTPUT_DIR, f"{ev['voice']}.wav.import")
+            import_path = os.path.join(output_dir, f"{ev['voice']}.wav.import")
             if not os.path.exists(import_path):
                 missing_imports.append(f"{ev['voice']}.wav.import")
         if missing_imports:

@@ -12,8 +12,12 @@ var hit_count  : int   = 0
 ## デバッグ: シナリオ中自由移動フラグ（F9 でトグル）
 var debug_free_move: bool = false
 
-## 演出早送り倍率（移動Tweenには影響しない、wait/sleepのみ短縮）
+## 演出早送り倍率
 var playback_speed: float = 1.0
+
+## セクションスキップ（CP1のstage_swap区切りサブセクション指定）
+## 0=最初から、1=1回目のstage_swap後から、2=2回目のstage_swap後から
+var start_section: int = 0
 
 var _hit_invincible : bool = false
 const HIT_MAX       : int  = 3
@@ -31,11 +35,15 @@ var chapter_index: int = 0
 
 var chapter_order: Array[String] = [
 	"res://chapters/ch01_haison_iriguchi.tres",   # CP1: 廃村入口→トイレ
-	"res://chapters/ch02_yashiki.tres",            # CP2: 村長の屋敷
-	"res://chapters/ch01_haison_souko.tres",       # CP3: 廃倉庫
-	"res://chapters/ch04_kirihara_jinja.tres",     # CP4: 桐原神社
-	"res://chapters/ch05_haison_dasshutsu.tres",   # CP5: 脱出＋最終分岐
+	"res://chapters/ch02_mura_tansaku.tres",      # CP2: 村の探索 ─ 10FPSの呪い
+	"res://chapters/ch03_minka.tres",             # CP3: 民家探索（プレイアブル）
+	"res://chapters/ch04_jinja.tres",             # CP4: 桐原神社 ─ 10万人の視線
+	"res://chapters/ch05_dasshutsu.tres",         # CP5: 終焉のログアウト ─ 3分岐
 ]
+
+## ── エンディング集 ──
+const SAVE_PATH := "user://endings.json"
+var unlocked_endings : Dictionary = {}  # { "ending_id": true }
 
 signal item_collected(count: int, total: int)
 signal player_caught
@@ -110,3 +118,29 @@ func restart() -> void:
 	ending_route = -1
 	ofuda_count  = 3
 	get_tree().reload_current_scene()
+
+
+## ── エンディング開放・セーブ ──
+
+func unlock_ending(ending_id: String) -> void:
+	unlocked_endings[ending_id] = true
+	_save_endings()
+
+func is_ending_unlocked(ending_id: String) -> bool:
+	return unlocked_endings.has(ending_id)
+
+func _save_endings() -> void:
+	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if f:
+		f.store_string(JSON.stringify(unlocked_endings))
+
+func _load_endings() -> void:
+	if FileAccess.file_exists(SAVE_PATH):
+		var f := FileAccess.open(SAVE_PATH, FileAccess.READ)
+		if f:
+			var parsed = JSON.parse_string(f.get_as_text())
+			if parsed is Dictionary:
+				unlocked_endings = parsed
+
+func _ready() -> void:
+	_load_endings()

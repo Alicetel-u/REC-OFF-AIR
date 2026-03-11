@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="ChapterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ChapterData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+chapter_id = "ch02_mura_tansaku"
+chapter_name = "村の探索"
+location_text = "霧原村　村の中心部"
+date_text = "2026/02/25  00:15"
+stage_scene_path = "res://scenes/Stage_Village.tscn"
+player_spawn = Vector3(0, 1.0, 12)
+item_positions = PackedVector3Array()
+exit_position = Vector3(0, 1.0, -18)
+ambient_light_energy = 0.1
+directional_light_energy = 0.04
+background_color = Color(0.03, 0.03, 0.06, 1)
+fog_enabled = true
+fog_density = 0.06
+use_sky_background = true
+sky_top_color = Color(0, 0, 0, 1)
+sky_horizon_color = Color(0.03, 0.03, 0.05, 1)
+ambient_light_color = Color(0.08, 0.08, 0.12, 1)
+tonemap_mode = 3
+ssao_enabled = true
+ssil_enabled = true
+fog_light_color = Color(0.08, 0.06, 0.10, 1)
+fog_aerial_perspective = 1.0
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.03
+vhs_overlay = true
+monologue_lines = PackedStringArray()
+next_chapter_id = "ch03_minka"

@@ -9,11 +9,11 @@ const _DANK_VIDEO_BOT = 612
 const _DANK_ROWS      = 7
 const _DANK_ROW_H     = 44
 
-# 演出終了後に自動で次チャプターへ進むチャプターID一覧（CP3のみ手動）
+# 演出終了後に自動で次チャプターへ進むチャプターID一覧（CP3のみ手動＝プレイアブル）
 const AUTO_PROGRESS_CHAPTERS : Array[String] = [
-	"ch02_yashiki",
-	"ch04_kirihara_jinja",
-	"ch05_haison_dasshutsu",
+	"ch02_mura_tansaku",
+	"ch04_jinja",
+	"ch05_dasshutsu",
 ]
 
 @onready var player       : CharacterBody3D = $Player
@@ -39,8 +39,10 @@ var _debug_label : Label = null
 
 
 func _ready() -> void:
-	# プレイヤーをイントロ中は停止
-	player.process_mode = Node.PROCESS_MODE_DISABLED
+	# 前チャプターのEntranceDirectorが残したCanvasLayerを掃除
+	_cleanup_orphan_layers()
+	# プレイヤーをイントロ中は操作無効（ESC等は効くようにDISABLEDにしない）
+	player.input_disabled = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 	# チャプターデータからステージを動的生成
@@ -95,8 +97,8 @@ func _ready() -> void:
 	Inventory.player = player
 	Inventory.inventory_ui = $InventoryLayer/InventoryUI
 
-	# 廃村入口: イントロ前（画面が黒い間）に初期状態を設定してスナップを防ぐ
-	if chapter.chapter_id == "ch01_haison_iriguchi":
+	# 廃村入口: 初期状態を設定してスナップを防ぐ
+	if chapter.chapter_id == "ch01_haison_iriguchi" and GameManager.start_section == 0:
 		player.rotation.y      = 0.29   # バス停方向（-Z）を向く
 		player.head.rotation.x = -0.06
 		player.flashlight.visible  = false
@@ -109,19 +111,18 @@ func _ready() -> void:
 	# ローディング画面をフェードアウト
 	await LoadingScreen.fade_out()
 
-	await _run_intro()
-
 	# 廃村入口チャプターは自動演出シーケンスを実行して次チャプターへ進む
 	var cur_chapter := GameManager.current_chapter
 	if cur_chapter and cur_chapter.chapter_id == "ch01_haison_iriguchi":
 		await _run_entrance_sequence()
 		return
 
-	# CP2/CP4/CP5 は映像演出（プレイヤー無効）。CP3 だけ操作可能。
+	# CP2/CP4/CP5 は映像演出（プレイヤー移動無効）。CP3 だけ操作可能。
 	var is_cinematic : bool = cur_chapter != null and cur_chapter.chapter_id in AUTO_PROGRESS_CHAPTERS
 	if not is_cinematic:
-		player.process_mode = Node.PROCESS_MODE_INHERIT
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		player.input_disabled = false
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	# シネマティック中はカーソル表示のまま（操作不要＋ウィンドウ閉じられるように）
 
 	# チャプターオープニング演出（JSON駆動。映像演出中はプレイヤー動作なし）
 	if cur_chapter:
@@ -152,6 +153,22 @@ func _ready() -> void:
 	hud.setup_exit_arrow(player, exit_pos)
 
 
+## シーン再ロード後に root 直下に残った孤立 CanvasLayer を削除
+func _cleanup_orphan_layers() -> void:
+	for child in get_tree().root.get_children():
+		# Main（現在のシーン）とAutoload以外のCanvasLayerを削除
+		if child is CanvasLayer and not child.is_in_group("autoload"):
+			# Autoloadでないか確認（Autoloadはシーン再ロードでも残るべき）
+			var is_autoload := false
+			for al_name in ["GameManager", "ScenarioManager", "InventorySingleton", "SoundManager", "LoadingScreen"]:
+				if child.name == al_name:
+					is_autoload = true
+					break
+			if not is_autoload and child != get_tree().current_scene:
+				push_warning("Main: removing orphan CanvasLayer: " + child.name)
+				child.queue_free()
+
+
 func _run_entrance_sequence() -> void:
 	## 廃村入口: EntranceDirector に演出を委譲し、完了後に次チャプターへ進む
 	var director: Node = EntranceDirectorScript.new()
@@ -159,6 +176,8 @@ func _run_entrance_sequence() -> void:
 	director.set("hud", hud)
 	add_child(director)
 	await director.run()
+	director.cleanup()
+	remove_child(director)
 	director.queue_free()
 	GameManager.advance_to_next_chapter()
 
@@ -175,10 +194,25 @@ func _run_chapter_opening(chapter_id: String) -> void:
 	# EntranceDirector.run() は DIALOGUE_JSON 定数を使うため、
 	# 動的パスは _run_from_path() で渡す
 	await director.run_from_path(path)
+	director.cleanup()
+	remove_child(director)
 	director.queue_free()
 
 
 func _input(event: InputEvent) -> void:
+	# ESC: マウスカーソル表示/トグル
+	if event.is_action_pressed("ui_cancel"):
+		if player.input_disabled:
+			# シネマティック中は常にVISIBLEへ（トグルしない）
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		else:
+			# プレイヤー操作中はトグル
+			var mode := Input.get_mouse_mode()
+			var new_mode := Input.MOUSE_MODE_VISIBLE if mode == Input.MOUSE_MODE_CAPTURED else Input.MOUSE_MODE_CAPTURED
+			Input.set_mouse_mode(new_mode)
+		get_viewport().set_input_as_handled()
+		return
+
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
 	var kc := (event as InputEventKey).keycode
@@ -207,10 +241,10 @@ func _input(event: InputEvent) -> void:
 func _toggle_debug_free_move() -> void:
 	GameManager.debug_free_move = not GameManager.debug_free_move
 	if GameManager.debug_free_move:
-		player.process_mode = Node.PROCESS_MODE_INHERIT
+		player.input_disabled = false
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	else:
-		player.process_mode = Node.PROCESS_MODE_DISABLED
+		player.input_disabled = true
 	_refresh_debug_label()
 
 
@@ -273,6 +307,8 @@ func _apply_environment(chapter: Resource) -> void:
 	# ── VHS オーバーレイ ──
 	if chapter.vhs_overlay:
 		_setup_vhs_overlay()
+	else:
+		_remove_vhs_overlay()
 
 
 # ──────────────────────────────────────────────
@@ -315,15 +351,79 @@ func tween_vhs_param(param_name: String, target: float, dur: float) -> Tween:
 	if not is_instance_valid(_vhs_rect) or not _vhs_rect.material:
 		return null
 	var mat := _vhs_rect.material as ShaderMaterial
+	var current_val : float = float(mat.get_shader_parameter(param_name))
 	var tw := create_tween()
 	tw.tween_method(func(v: float) -> void: mat.set_shader_parameter(param_name, v),
-		float(mat.get_shader_parameter(param_name)), target, dur)
+		current_val, target, dur)
 	return tw
 
 
 func _ensure_vhs_overlay() -> void:
 	if not _vhs_layer:
 		_setup_vhs_overlay()
+
+
+func _remove_vhs_overlay() -> void:
+	if is_instance_valid(_vhs_layer):
+		_vhs_layer.queue_free()
+		_vhs_layer = null
+		_vhs_rect = null
+
+
+# ──────────────────────────────────────────────
+# 魚眼レンズオーバーレイ
+# ──────────────────────────────────────────────
+
+var _fisheye_layer : CanvasLayer = null
+var _fisheye_rect  : ColorRect   = null
+
+func _setup_fisheye_overlay() -> void:
+	if _fisheye_layer:
+		return
+	var shader := load("res://shaders/fisheye.gdshader") as Shader
+	if not shader:
+		return
+	_fisheye_layer = CanvasLayer.new()
+	_fisheye_layer.layer = 3   # VHS(1)・HUD(2)の上
+	add_child(_fisheye_layer)
+	_fisheye_rect = ColorRect.new()
+	_fisheye_rect.anchor_right  = 1.0
+	_fisheye_rect.anchor_bottom = 1.0
+	_fisheye_rect.mouse_filter  = Control.MOUSE_FILTER_IGNORE
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	_fisheye_rect.material = mat
+	_fisheye_layer.add_child(_fisheye_rect)
+
+
+func _ensure_fisheye_overlay() -> void:
+	if not _fisheye_layer:
+		_setup_fisheye_overlay()
+
+
+func set_fisheye_param(param_name: String, value: float) -> void:
+	_ensure_fisheye_overlay()
+	if is_instance_valid(_fisheye_rect) and _fisheye_rect.material:
+		(_fisheye_rect.material as ShaderMaterial).set_shader_parameter(param_name, value)
+
+
+func tween_fisheye_param(param_name: String, target: float, dur: float) -> Tween:
+	_ensure_fisheye_overlay()
+	if not is_instance_valid(_fisheye_rect) or not _fisheye_rect.material:
+		return null
+	var mat := _fisheye_rect.material as ShaderMaterial
+	var current_val : float = float(mat.get_shader_parameter(param_name))
+	var tw := create_tween()
+	tw.tween_method(func(v: float) -> void: mat.set_shader_parameter(param_name, v),
+		current_val, target, dur)
+	return tw
+
+
+func remove_fisheye_overlay() -> void:
+	if is_instance_valid(_fisheye_layer):
+		_fisheye_layer.queue_free()
+		_fisheye_layer = null
+		_fisheye_rect  = null
 
 
 ## フォグ密度を動的変更
@@ -374,7 +474,11 @@ func _run_intro() -> void:
 
 	tw = create_tween()
 	tw.tween_property(intro_root, "modulate:a", 0.0, 0.6)
-	await tw.finished
+	if _intro_skip:
+		tw.kill()
+		intro_root.modulate.a = 0.0
+	else:
+		await tw.finished
 	intro_layer.visible = false
 
 
@@ -507,7 +611,7 @@ func _show_win() -> void:
 func _show_true_ending() -> void:
 	## CP5 エンディング — ending_route に応じた演出
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	player.process_mode = Node.PROCESS_MODE_DISABLED
+	player.input_disabled = true
 
 	# 画面を暗転（CanvasLayer には modulate がないので子の Overlay を使う）
 	overlay_ctrl.modulate.a = 0.0
@@ -519,21 +623,21 @@ func _show_true_ending() -> void:
 	await tw.finished
 
 	match GameManager.ending_route:
-		0:  # NORMAL END: 夢の代償
+		0:  # NORMAL END: 夢の保存（アーカイブ）
 			win_label.visible = true
 			win_label.text    = "NORMAL END"
 			win_label.add_theme_color_override("font_color", Color(0.8, 0.6, 0.2))
-			sub_label.text    = "夢の代償 — 赤い糸は、まだ首に巻きついている"
-		1:  # TRUE END: 配信停止
+			sub_label.text    = "夢の保存 — まばたきは、もう必要ない"
+		1:  # TRUE END: 承認欲求からのログアウト
 			win_label.visible = true
 			win_label.text    = "TRUE END"
 			win_label.add_theme_color_override("font_color", Color(0.4, 0.7, 1.0))
-			sub_label.text    = "配信停止 — 誰にも見られない。それが、いちばん安全だった"
-		2:  # BAD END: 永遠のバズり
+			sub_label.text    = "承認欲求からのログアウト — 誰にも見られない。それが、自由だった"
+		2:  # BAD END: 永遠のサムネイル
 			win_label.visible = true
 			win_label.text    = "BAD END"
 			win_label.add_theme_color_override("font_color", Color(1.0, 0.1, 0.1))
-			sub_label.text    = "永遠のバズり — 配信は、まだ続いている"
+			sub_label.text    = "永遠のサムネイル — この配信のアーカイブは削除できません"
 		_:  # フォールバック（未選択）
 			win_label.visible = true
 			win_label.text    = "END"
@@ -662,6 +766,7 @@ func _setup_debug_ui() -> void:
 	_debug_label.add_theme_constant_override("shadow_offset_x", 1)
 	_debug_label.add_theme_constant_override("shadow_offset_y", 1)
 	_debug_label.position = Vector2(8, 8)
+	_debug_label.visible = false  # デバッグラベル非表示
 	cl.add_child(_debug_label)
 	_refresh_debug_label()
 
@@ -673,7 +778,7 @@ func _refresh_debug_label() -> void:
 	var idx : int    = GameManager.chapter_index + 1
 	var cname: String = ch.chapter_name if ch else "?"
 	var free_str := " | [F9] 自由移動: ON ✓" if GameManager.debug_free_move else " | [F9] 自由移動"
-	var skip_str := "  F1=入口  F2=屋敷  F3=倉庫  F4=神社  F5=脱出" if _DEBUG_CHAPTER_SKIP else ""
+	var skip_str := "  F1=入口  F2=村探索  F3=民家  F4=神社  F5=脱出" if _DEBUG_CHAPTER_SKIP else ""
 	_debug_label.text = "【DEBUG】CP%d: %s%s%s" % [idx, cname, free_str, skip_str]
 
 
