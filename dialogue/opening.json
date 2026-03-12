@@ -6,15 +6,42 @@
 		"fade_in": 0.7,
 		"fade_out": 0.5,
 		"lines": [
-			{"text": "しゅっち ch", "style": "name"},
-			{"text": "@shucchi_horror", "style": "handle"},
-			{"text": "JK配信者 / ホラー凸 / 心霊スポット巡り", "style": "bio"},
-			{"text": "「配信で一発当てて、人生変えてやる」", "style": "bio"},
-			{"text": "▶ 動画 7本　　👥 347人登録", "style": "stats"},
-			{"text": "深夜の廃病院、制服で行ってみた（再生数 210）", "style": "video"},
-			{"text": "心霊スポット行ったけど何も起きなかった（再生数 83）", "style": "video"},
-			{"text": "廃トンネルに潜入したら…（再生数 41）", "style": "video"},
-			{"text": "収益化まであと 653人……", "style": "warning"}
+			{
+				"text": "しゅっち ch",
+				"style": "name"
+			},
+			{
+				"text": "@shucchi_horror",
+				"style": "handle"
+			},
+			{
+				"text": "JK配信者 / ホラー凸 / 心霊スポット巡り",
+				"style": "bio"
+			},
+			{
+				"text": "「配信で一発当てて、人生変えてやる」",
+				"style": "bio"
+			},
+			{
+				"text": "▶ 動画 7本　　👥 347人登録",
+				"style": "stats"
+			},
+			{
+				"text": "深夜の廃病院、制服で行ってみた（再生数 210）",
+				"style": "video"
+			},
+			{
+				"text": "心霊スポット行ったけど何も起きなかった（再生数 83）",
+				"style": "video"
+			},
+			{
+				"text": "廃トンネルに潜入したら…（再生数 41）",
+				"style": "video"
+			},
+			{
+				"text": "収益化まであと 653人……",
+				"style": "warning"
+			}
 		]
 	},
 	"dm": {
@@ -24,15 +51,38 @@
 		"fade_in": 0.5,
 		"fade_out": 0.5,
 		"lines": [
-			{"text": "⚠ アカウント削除済み", "style": "alert"},
-			{"text": "はじめまして。しゅっちさんですよね。", "style": "normal"},
-			{"text": "今夜、霧原村に行ってみてください。", "style": "bold"},
-			{"text": "1994年に「事件」があった廃村です。", "style": "normal"},
-			{"text": "倉庫にVHSテープが残っているはず。", "style": "normal"},
-			{"text": "配信すれば…間違いなく、バズります。", "style": "normal"},
-			{"text": "場所は県道沿い、霧の多い山道を進んだ先。", "style": "normal"},
-			{"text": "必ず、深夜0時に入ってください。", "style": "bold"},
-			{"text": "…あなたのこと、見ています。", "style": "creepy"}
+			{
+				"text": "⚠ アカウント削除済み",
+				"style": "alert"
+			},
+			{
+				"text": "はじめまして。しゅっちさんですよね。",
+				"style": "normal"
+			},
+			{
+				"text": "今夜、霧原村に行ってみてください。",
+				"style": "bold"
+			},
+			{
+				"text": "1994年に「事件」があった廃村です。",
+				"style": "normal"
+			},
+			{
+				"text": "配信すれば…間違いなく、バズります。",
+				"style": "normal"
+			},
+			{
+				"text": "場所は県道沿い、霧の多い山道を進んだ先。",
+				"style": "normal"
+			},
+			{
+				"text": "必ず、深夜0時に入ってください。",
+				"style": "bold"
+			},
+			{
+				"text": "…あなたのこと、見ています。",
+				"style": "creepy"
+			}
 		]
 	},
 	"scary_flash": {
@@ -44,18 +94,54 @@
 		"fade_in": 0.5,
 		"fade_out": 0.5,
 		"lines": [
-			{"text": "（ 自室、深夜 ── スマホの画面を見つめて ）", "style": "stage_direction"},
-			{"text": "「…怪しいDM。アカウントも消えてるし」", "style": "dialogue_strong"},
-			{"text": "「でも……廃村にVHSテープ、か」", "style": "dialogue"},
-			{"text": "「本物だったらマジでバズるかも」", "style": "dialogue"},
-			{"text": "「再生数ぜんっぜん伸びない。登録者347人」", "style": "dialogue_dim"},
-			{"text": "「収益化なんて夢のまた夢」", "style": "dialogue_dim"},
-			{"text": "「来月の携帯代も怪しいのに」", "style": "dialogue_faint"},
-			{"text": "「お母さんにはこれ以上頼れない……」", "style": "dialogue_faint"},
-			{"text": "「あたしには配信しかないんだ」", "style": "dialogue"},
-			{"text": "「誰かが見てくれてる限り、あたしは大丈夫」", "style": "dialogue_faint"},
-			{"text": "（ ── 深夜0時。霧原村行き最終バスに乗り込んだ ）", "style": "stage_direction"},
-			{"text": "「── 行くしかない」", "style": "final"}
+			{
+				"text": "（ 自室、深夜 ── スマホの画面を見つめて ）",
+				"style": "stage_direction"
+			},
+			{
+				"text": "「…怪しいDM。アカウントも消えてるし」",
+				"style": "dialogue_strong"
+			},
+			{
+				"text": "「でも……霧原村か」",
+				"style": "dialogue"
+			},
+			{
+				"text": "「有名な心霊スポットだし、本物だったらマジでバズるかも」",
+				"style": "dialogue"
+			},
+			{
+				"text": "「再生数ぜんっぜん伸びない。登録者347人」",
+				"style": "dialogue_dim"
+			},
+			{
+				"text": "「収益化なんて夢のまた夢」",
+				"style": "dialogue_dim"
+			},
+			{
+				"text": "「来月の携帯代も怪しいのに」",
+				"style": "dialogue_faint"
+			},
+			{
+				"text": "「お母さんにはこれ以上頼れない……」",
+				"style": "dialogue_faint"
+			},
+			{
+				"text": "「あたしには配信しかないんだ」",
+				"style": "dialogue"
+			},
+			{
+				"text": "「誰かが見てくれてる限り、あたしは大丈夫」",
+				"style": "dialogue_faint"
+			},
+			{
+				"text": "（ ── 深夜0時。霧原村行き最終バスに乗り込んだ ）",
+				"style": "stage_direction"
+			},
+			{
+				"text": "「── 行くしかない」",
+				"style": "final"
+			}
 		]
 	},
 	"caption": {
@@ -64,8 +150,11 @@
 		"display_wait": 2.5,
 		"fade_in": 1.0,
 		"fade_out": 0.8,
-		"lines": ["霧 原 村", "", "深 夜   0 : 0 0"],
-		"warning_text": "⚠  立 入 禁 止  ⚠"
+		"lines": [
+			"霧 原 村",
+			"",
+			"深 夜   0 : 0 0"
+		]
 	},
 	"timing": {
 		"initial_wait": 0.8,

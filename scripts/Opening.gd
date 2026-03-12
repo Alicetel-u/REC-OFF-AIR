@@ -201,8 +201,29 @@ func _play_video() -> void:
 	_video_player.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_video_player.expand = true
 	_video_player.stream = load(VIDEO_PATH)
+	_video_player.volume_db = -80.0
 	add_child(_video_player)
 	_video_player.play()
+	
+	# 動画の長さに合わせて BGM (Loop2.mp3) の速度を調整
+	var bgm_path := "res://assets/audio/bgm/Loop2.mp3"
+	var audio_res: Resource = load(bgm_path)
+	var video_res: Resource = _video_player.stream
+	
+	var a_len: float = 0.0
+	if audio_res is AudioStream:
+		a_len = audio_res.get_length()
+	
+	var v_len: float = 0.0
+	if video_res and video_res.has_method("get_length"):
+		v_len = video_res.call("get_length")
+	
+	if a_len > 0.1 and v_len > 0.1:
+		var p_scale: float = a_len / v_len
+		SoundManager.play_bgm(bgm_path, -10.0, p_scale)
+	else:
+		SoundManager.play_bgm(bgm_path, -10.0)
+	
 	_video_started = false
 	_video_wait = 0.0
 	_create_skip_button()
@@ -503,6 +524,9 @@ func _show_dm() -> void:
 # ── 3. 恐怖の瞬間（RGB分離テキスト）─────────────────────
 
 func _scare_moment() -> void:
+	# 恐怖フラッシュの瞬間に BGM を停止
+	SoundManager.stop_bgm(0.0)
+
 	var sf : Dictionary = _od.get("scary_flash", {})
 	var text : String = sf.get("text", "見 て い る")
 
@@ -725,10 +749,11 @@ func _show_caption() -> void:
 		cap_label.queue_free()
 		return
 
-	await _caption_warning(cap_label, c)
-	if _skipped:
-		cap_label.queue_free()
-		return
+	# 警告テキスト（立入禁止）をスキップ
+	#await _caption_warning(cap_label, c)
+	#if _skipped:
+	#	cap_label.queue_free()
+	#	return
 
 	await get_tree().create_timer(1.0).timeout
 	if _skipped:
@@ -910,7 +935,7 @@ const CHAPTER_INFO : Array[Dictionary] = [
 		{"name": "CP1-4  逃走と反転", "sub": "バス停へ逃走→村の奥へ", "section": 3},
 	]},
 	{"name": "CP2  村長の屋敷", "sub": "Kの日記と鏡の向こう", "icon": "🏛"},
-	{"name": "CP3  廃倉庫", "sub": "VHSテープ回収", "icon": "📼"},
+	{"name": "CP3  廃倉庫", "sub": "事件の痕跡", "icon": "🏚"},
 	{"name": "CP4  桐原神社", "sub": "白い木箱の秘密", "icon": "⛩"},
 	{"name": "CP5  脱出", "sub": "最終分岐・3エンディング", "icon": "🚌"},
 ]

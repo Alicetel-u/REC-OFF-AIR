@@ -25,8 +25,8 @@ const HIT_MAX       : int  = 3
 ## ── エンディング分岐 ──
 ## -1=未選択, 0=NORMAL(鈴), 1=TRUE(スマホ), 2=BAD(使わない)
 var ending_route: int = -1
-## お札の残数 (初期3枚)
-var ofuda_count: int = 3
+## お札の残数 (初期2枚)
+var ofuda_count: int = 2
 
 ## ── チャプターシステム ──
 const ChapterDataScript := preload("res://scripts/ChapterData.gd")
@@ -116,7 +116,7 @@ func restart() -> void:
 	hit_count   = 0
 	_hit_invincible = false
 	ending_route = -1
-	ofuda_count  = 3
+	ofuda_count  = 2
 	get_tree().reload_current_scene()
 
 

@@ -242,7 +242,7 @@ func stop_voice() -> void:
 
 
 ## BGM を再生（ループ再生）
-func play_bgm(path: String, vol_db: float = -10.0) -> void:
+func play_bgm(path: String, vol_db: float = -10.0, pitch: float = 1.0) -> void:
 	var s := _load_audio(path)
 	if not s:
 		push_warning("SoundManager: BGM not found: " + path)
@@ -251,6 +251,7 @@ func play_bgm(path: String, vol_db: float = -10.0) -> void:
 	_bgm.stop()
 	_bgm.stream    = s
 	_bgm.volume_db = vol_db
+	_bgm.pitch_scale = pitch
 	_bgm.play()
 
 
