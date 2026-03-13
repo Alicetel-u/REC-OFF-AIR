@@ -1,17 +1,28 @@
-[gd_resource type="Resource" script_class="ChapterData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="ChapterData" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ChapterData.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/GhostConfig.gd" id="2"]
 
+; ── みゆき（追跡ゴースト・専用モデル） ──
+[sub_resource type="Resource" id="miyuki_1"]
+script = ExtResource("2")
+position = Vector3(4.75, 0.5, -10.0)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(3, 3, 3)
+
+; ── チャプターデータ本体 ──
 [resource]
 script = ExtResource("1")
 chapter_id = "ch02_mura_tansaku"
 chapter_name = "村の探索"
-location_text = "霧原村　村の中心部"
+location_text = "霧原村　廃倉庫"
 date_text = "2026/02/25  00:15"
 stage_scene_path = "res://scenes/KiriharaVillageMap/VillageMap.tscn"
-player_spawn = Vector3(0, 1.0, 12)
-item_positions = PackedVector3Array()
-exit_position = Vector3(9999, -9999, 9999)
+player_spawn = Vector3(0.0, 1.0, 7.5)
+ghost_configs = [SubResource("miyuki_1")]
+item_positions = PackedVector3Array(-24.25, 1, -11.25)
+exit_position = Vector3(0.25, 1.5, 17.5)
 ambient_light_energy = 0.1
 directional_light_energy = 0.04
 background_color = Color(0.03, 0.03, 0.06, 1)

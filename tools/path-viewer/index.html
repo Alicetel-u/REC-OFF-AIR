@@ -1148,12 +1148,12 @@ body.light .preset-custom-input input { background:rgba(255,255,255,.85); border
     <select id="map-select">
       <optgroup label="── 本編マップ ──">
         <option value="stage_iriguchi">CP1: 廃村入口</option>
-        <option value="kirihara_village">CP2: 霧原村</option>
-        <option value="stage_naibu">CP3/CP4: 廃村内部</option>
+        <option value="stage_souko">CP2/CP3: 廃倉庫</option>
+        <option value="stage_naibu">CP4: 廃村内部</option>
         <option value="stage_escape">CP5: 脱出路</option>
       </optgroup>
       <optgroup label="── その他 ──">
-        <option value="stage_souko">廃倉庫</option>
+        <option value="kirihara_village">霧原村</option>
         <option value="stage_yashiki">廃屋敷</option>
         <option value="public_toilet">公衆トイレ</option>
         <option value="empty">空</option>
@@ -1539,7 +1539,7 @@ const MAPS = {
     ]
   },
   stage_naibu: {
-    name: "CP3/CP4: 廃村内部", spawn: { x: 0, z: 25 },
+    name: "CP4: 廃村内部", spawn: { x: 0, z: 25 },
     bounds: { xMin: -45, xMax: 45, zMin: -45, zMax: 30 },
     rects: [
       { x: -80, z: -80, w: 160, h: 160, color: "#1a2a1a", label: "" },
@@ -1570,7 +1570,7 @@ const MAPS = {
     ]
   },
   stage_souko: {
-    name: "CP3: 廃倉庫", spawn: { x: 0, z: 15 },
+    name: "CP2/CP3: 廃倉庫", spawn: { x: 0, z: 15 },
     bounds: { xMin: -28, xMax: 28, zMin: -20, zMax: 20 },
     rects: [
       { x: -25, z: -18, w: 50, h: 36, color: "#222", label: "" },
@@ -3678,8 +3678,8 @@ async function onDialogueSelect() {
   const autoMap = {
     // 本編
     ch01_entrance: "stage_iriguchi",
-    ch02_mura_tansaku: "kirihara_village",
-    ch03_minka: "stage_naibu",
+    ch02_mura_tansaku: "stage_souko",
+    ch03_minka: "stage_souko",
     ch04_jinja: "stage_naibu",
     ch05_dasshutsu: "stage_escape",
     // 旧チャプター

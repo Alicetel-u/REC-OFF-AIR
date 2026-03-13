@@ -33,6 +33,10 @@ func generate(chapter: Resource) -> Dictionary:
 			break
 		var ghost := GhostScene.instantiate()
 		ghost.position = gc.position
+		# カスタムモデル指定（みゆき等）
+		if gc.model_path and not gc.model_path.is_empty():
+			ghost.custom_model_path = gc.model_path
+			ghost.custom_model_scale = gc.model_scale
 		for i in range(gc.patrol_points.size()):
 			var marker := Marker3D.new()
 			marker.name = "Patrol_%d" % i

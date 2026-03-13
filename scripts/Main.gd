@@ -9,9 +9,8 @@ const _DANK_VIDEO_BOT = 612
 const _DANK_ROWS      = 7
 const _DANK_ROW_H     = 44
 
-# 演出終了後に自動で次チャプターへ進むチャプターID一覧（CP3のみ手動＝プレイアブル）
+# 演出終了後に自動で次チャプターへ進むチャプターID一覧（CP2・CP3は手動＝プレイアブル）
 const AUTO_PROGRESS_CHAPTERS : Array[String] = [
-	#"ch02_mura_tansaku",  # CP2作り直し中のため一時無効化
 	"ch04_jinja",
 	"ch05_dasshutsu",
 ]
@@ -103,6 +102,10 @@ func _ready() -> void:
 		player.head.rotation.x = -0.06
 		player.flashlight.visible  = false
 		player.flashlight_on       = false
+
+	# CP2 村の探索: 出口方向（+Z）を向く
+	if chapter.chapter_id == "ch02_mura_tansaku":
+		player.rotation.y = PI  # +Z方向（出口方面）を向く
 
 	_setup_debug_ui()
 
@@ -430,6 +433,63 @@ func remove_fisheye_overlay() -> void:
 		_fisheye_layer.queue_free()
 		_fisheye_layer = null
 		_fisheye_rect  = null
+
+
+# ──────────────────────────────────────────────
+# CRT ブラウン管モニターオーバーレイ
+# ──────────────────────────────────────────────
+
+var _crt_layer : CanvasLayer = null
+var _crt_rect  : ColorRect   = null
+
+func _setup_crt_overlay() -> void:
+	if _crt_layer:
+		return
+	var shader := load("res://shaders/crt_monitor.gdshader") as Shader
+	if not shader:
+		return
+	_crt_layer = CanvasLayer.new()
+	_crt_layer.layer = 4   # VHS(1)・HUD(2)・Fisheye(3)の上
+	add_child(_crt_layer)
+	_crt_rect = ColorRect.new()
+	_crt_rect.anchor_right  = 1.0
+	_crt_rect.anchor_bottom = 1.0
+	_crt_rect.mouse_filter  = Control.MOUSE_FILTER_IGNORE
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	mat.set_shader_parameter("intensity", 0.0)
+	_crt_rect.material = mat
+	_crt_layer.add_child(_crt_rect)
+
+
+func _ensure_crt_overlay() -> void:
+	if not _crt_layer:
+		_setup_crt_overlay()
+
+
+func set_crt_param(param_name: String, value: float) -> void:
+	_ensure_crt_overlay()
+	if is_instance_valid(_crt_rect) and _crt_rect.material:
+		(_crt_rect.material as ShaderMaterial).set_shader_parameter(param_name, value)
+
+
+func tween_crt_param(param_name: String, target: float, dur: float) -> Tween:
+	_ensure_crt_overlay()
+	if not is_instance_valid(_crt_rect) or not _crt_rect.material:
+		return null
+	var mat := _crt_rect.material as ShaderMaterial
+	var current_val : float = float(mat.get_shader_parameter(param_name))
+	var tw := create_tween()
+	tw.tween_method(func(v: float) -> void: mat.set_shader_parameter(param_name, v),
+		current_val, target, dur)
+	return tw
+
+
+func remove_crt_overlay() -> void:
+	if is_instance_valid(_crt_layer):
+		_crt_layer.queue_free()
+		_crt_layer = null
+		_crt_rect  = null
 
 
 ## フォグ密度を動的変更

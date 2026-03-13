@@ -276,6 +276,23 @@ func run_from_path(json_path: String) -> void:
 			"set_viewers":
 				_set_viewers(int(ev.get("count", 0)))
 
+			"nav_to":
+				# ナビ矢印を表示し、プレイヤーが目的地に到達するまで待機
+				if is_instance_valid(hud) and is_instance_valid(player):
+					var nav_pos := Vector3(
+						float(ev.get("x", 0.0)),
+						0.0,
+						float(ev.get("z", 0.0))
+					)
+					var nav_label : String = ev.get("label", "NEXT")
+					var nav_radius : float = float(ev.get("radius", 3.0))
+					# プレイヤー操作を有効化
+					player.input_disabled = false
+					Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+					hud.start_nav(nav_pos, nav_label, nav_radius)
+					await hud.nav_reached
+					# 到達後、セリフ等のためにwaitを挟まない
+
 			"walk_set":
 				if not GameManager.debug_free_move:
 					_walking = ev.get("on", false)
@@ -464,6 +481,12 @@ func run_from_path(json_path: String) -> void:
 
 			"fisheye_off":
 				_fisheye_off(float(ev.get("dur", 1.0)))
+
+			"crt_on":
+				_crt_on(float(ev.get("dur", 1.0)))
+
+			"crt_off":
+				_crt_off(float(ev.get("dur", 1.0)))
 
 			"light_flicker":
 				await _light_flicker(
@@ -1407,6 +1430,32 @@ func _fisheye_off(dur: float) -> void:
 		await get_tree().create_timer(dur + 0.1).timeout
 	if main.has_method("remove_fisheye_overlay"):
 		main.remove_fisheye_overlay()
+
+
+## CRTブラウン管モニターON — intensityをTweenで立ち上げ
+func _crt_on(dur: float) -> void:
+	var main := _get_main()
+	if not main or not main.has_method("set_crt_param"):
+		return
+	main.set_crt_param("intensity", 0.0)
+	if main.has_method("tween_crt_param"):
+		main.tween_crt_param("intensity", 1.0, dur)
+		main.tween_crt_param("flicker", 0.04, dur * 0.5)
+		main.tween_crt_param("noise", 0.06, dur * 0.5)
+
+
+## CRTブラウン管モニターOFF — intensityを0へTween→オーバーレイ除去
+func _crt_off(dur: float) -> void:
+	var main := _get_main()
+	if not main or not main.has_method("tween_crt_param"):
+		return
+	main.tween_crt_param("intensity", 0.0, dur)
+	main.tween_crt_param("flicker", 0.0, dur)
+	main.tween_crt_param("noise", 0.0, dur)
+	if is_inside_tree():
+		await get_tree().create_timer(dur + 0.1).timeout
+	if main.has_method("remove_crt_overlay"):
+		main.remove_crt_overlay()
 
 
 ## シーン内の全ライトをフリッカー

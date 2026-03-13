@@ -63,6 +63,16 @@ var _player_ref     : Node3D     = null
 var _exit_position  : Vector3    = Vector3.ZERO
 var _exit_arrow_active : bool    = false
 
+# ── ナビ矢印（イベントナビ） ──
+var _nav_arrow       : Control    = null
+var _nav_arrow_lbl   : Label      = null
+var _nav_title_lbl   : Label      = null
+var _nav_dist_lbl    : Label      = null
+var _nav_target      : Vector3    = Vector3.ZERO
+var _nav_radius      : float      = 3.0
+var _nav_active      : bool       = false
+signal nav_reached
+
 # ユーザーとコメントのデータ
 const CHAT_LINES: Array[String] = [
 	"wwwww", "こわすぎｗｗｗ", "うわあああ", "まじかよ",
@@ -197,6 +207,10 @@ func _process(delta: float) -> void:
 	# ── 出口方向矢印の回転更新 ──
 	if _exit_arrow_active and is_instance_valid(_exit_arrow) and is_instance_valid(_player_ref):
 		_update_exit_arrow()
+
+	# ── ナビ矢印の更新 ──
+	if _nav_active and is_instance_valid(_nav_arrow) and is_instance_valid(_player_ref):
+		_update_nav_arrow()
 
 	# ── トラッキングノイズ（ビデオカメラ） ──
 	_update_tracking_noise(delta)
@@ -437,6 +451,113 @@ func _show_exit_guide() -> void:
 
 	# 出口方向矢印を有効化
 	_activate_exit_arrow()
+
+
+# ════════════════════════════════════════════════════════════════
+# ナビ矢印（イベントナビ — ソシャゲ風の目的地誘導）
+# ════════════════════════════════════════════════════════════════
+
+func start_nav(target: Vector3, label_text: String = "NEXT", radius: float = 3.0) -> void:
+	_nav_target = target
+	_nav_radius = radius
+	if not is_instance_valid(_nav_arrow):
+		_build_nav_arrow()
+	if is_instance_valid(_nav_title_lbl):
+		_nav_title_lbl.text = label_text
+	_nav_active = true
+	_nav_arrow.visible = true
+	_nav_arrow.modulate.a = 0.0
+	var tw := create_tween()
+	tw.tween_property(_nav_arrow, "modulate:a", 1.0, 0.4)
+
+
+func stop_nav() -> void:
+	_nav_active = false
+	if is_instance_valid(_nav_arrow):
+		_nav_arrow.visible = false
+
+
+func _build_nav_arrow() -> void:
+	_nav_arrow = Control.new()
+	_nav_arrow.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_nav_arrow.position = Vector2(60, -100)
+	_nav_arrow.custom_minimum_size = Vector2(120, 80)
+	_nav_arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_nav_arrow.visible = false
+	add_child(_nav_arrow)
+
+	var bg := PanelContainer.new()
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.0, 0.0, 0.0, 0.55)
+	style.border_color = Color(0.2, 0.6, 1.0, 0.85)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(8)
+	style.set_content_margin_all(6)
+	bg.add_theme_stylebox_override("panel", style)
+	_nav_arrow.add_child(bg)
+
+	var vbox := VBoxContainer.new()
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.add_theme_constant_override("separation", 0)
+	bg.add_child(vbox)
+
+	_nav_title_lbl = Label.new()
+	_nav_title_lbl.text = "NEXT"
+	_nav_title_lbl.add_theme_font_size_override("font_size", 12)
+	_nav_title_lbl.add_theme_color_override("font_color", Color(0.3, 0.7, 1.0))
+	_nav_title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(_nav_title_lbl)
+
+	_nav_arrow_lbl = Label.new()
+	_nav_arrow_lbl.text = "▲"
+	_nav_arrow_lbl.add_theme_font_size_override("font_size", 30)
+	_nav_arrow_lbl.add_theme_color_override("font_color", Color(0.3, 0.7, 1.0))
+	_nav_arrow_lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.3, 0.8, 0.6))
+	_nav_arrow_lbl.add_theme_constant_override("shadow_offset_x", 0)
+	_nav_arrow_lbl.add_theme_constant_override("shadow_offset_y", 2)
+	_nav_arrow_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_nav_arrow_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	vbox.add_child(_nav_arrow_lbl)
+
+	_nav_dist_lbl = Label.new()
+	_nav_dist_lbl.text = "-- m"
+	_nav_dist_lbl.add_theme_font_size_override("font_size", 11)
+	_nav_dist_lbl.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85))
+	_nav_dist_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(_nav_dist_lbl)
+
+
+func _update_nav_arrow() -> void:
+	var player_pos := _player_ref.global_position
+	var to_target := _nav_target - player_pos
+	to_target.y = 0.0
+	var dist := to_target.length()
+
+	if is_instance_valid(_nav_dist_lbl):
+		_nav_dist_lbl.text = "%dm" % int(dist)
+
+	# 到達判定
+	if dist < _nav_radius:
+		stop_nav()
+		nav_reached.emit()
+		return
+
+	# 矢印回転
+	var player_yaw := _player_ref.rotation.y
+	var target_angle := atan2(to_target.x, to_target.z)
+	var rel_angle := target_angle - player_yaw
+	rel_angle = fmod(rel_angle + PI, TAU) - PI
+
+	if is_instance_valid(_nav_arrow_lbl):
+		_nav_arrow_lbl.pivot_offset = _nav_arrow_lbl.size / 2.0
+		_nav_arrow_lbl.rotation = -rel_angle
+
+	# 距離に応じて色変化（近づくと緑に）
+	var color_t := clampf(1.0 - dist / 30.0, 0.0, 1.0)
+	var arrow_color := Color(0.3, 0.7, 1.0).lerp(Color(0.3, 1.0, 0.4), color_t)
+	if is_instance_valid(_nav_arrow_lbl):
+		_nav_arrow_lbl.add_theme_color_override("font_color", arrow_color)
 
 
 # ════════════════════════════════════════════════════════════════

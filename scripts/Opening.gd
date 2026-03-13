@@ -934,8 +934,8 @@ const CHAPTER_INFO : Array[Dictionary] = [
 		{"name": "CP1-3  公衆トイレ", "sub": "みゆき遭遇〜脱出", "section": 2},
 		{"name": "CP1-4  逃走と反転", "sub": "バス停へ逃走→村の奥へ", "section": 3},
 	]},
-	{"name": "CP2  村長の屋敷", "sub": "Kの日記と鏡の向こう", "icon": "🏛"},
-	{"name": "CP3  廃倉庫", "sub": "事件の痕跡", "icon": "🏚"},
+	{"name": "CP2  廃倉庫", "sub": "証拠のVHSテープ", "icon": "🏚"},
+	{"name": "CP3  廃民家", "sub": "民家探索", "icon": "🏠"},
 	{"name": "CP4  桐原神社", "sub": "白い木箱の秘密", "icon": "⛩"},
 	{"name": "CP5  脱出", "sub": "最終分岐・3エンディング", "icon": "🚌"},
 ]
@@ -1274,11 +1274,17 @@ func _show_stage_select() -> void:
 	for i in range(CHAPTER_INFO.size()):
 		var card := _chapter_card(i)
 		list.add_child(card)
-		# CP1のサブセクションカードを直下に追加
+		# サブセクションがあれば折りたたみコンテナに入れる（初期非表示）
 		if CHAPTER_INFO[i].has("sections"):
+			var sec_container := VBoxContainer.new()
+			sec_container.add_theme_constant_override("separation", 6)
+			sec_container.visible = false
 			for sec_info in CHAPTER_INFO[i]["sections"]:
 				var sec_card := _section_card(i, sec_info)
-				list.add_child(sec_card)
+				sec_container.add_child(sec_card)
+			list.add_child(sec_container)
+			# カード参照をボタンに紐付け（_chapter_card内で接続）
+			card.set_meta("sec_container", sec_container)
 
 	var bot_pad := Control.new()
 	bot_pad.custom_minimum_size = Vector2(0, 8)
@@ -1560,13 +1566,14 @@ func _chapter_card(index: int) -> Control:
 	if not info.has("sections"):
 		btn.pressed.connect(func() -> void: _go_to_chapter(index))
 	else:
-		# サブセクションがある場合はボタン無効化（親は見出し扱い）
-		btn.disabled = true
-		var disabled_sb : StyleBoxFlat = normal_sb.duplicate()
-		disabled_sb.bg_color = Color(0.12, 0.08, 0.06, 0.9)
-		disabled_sb.border_color = _PANEL_ACCENT.darkened(0.4)
-		btn.add_theme_stylebox_override("disabled", disabled_sb)
-		arrow.text = "▼"
+		# サブセクションがある場合はクリックで開閉
+		arrow.text = "▶"
+		btn.pressed.connect(func() -> void:
+			var cont : Control = wrapper.get_meta("sec_container") if wrapper.has_meta("sec_container") else null
+			if cont:
+				cont.visible = not cont.visible
+				arrow.text = "▼" if cont.visible else "▶"
+		)
 
 	return wrapper
 

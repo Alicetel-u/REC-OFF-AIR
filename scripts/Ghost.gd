@@ -62,6 +62,8 @@ var _lean_current : float = 0.0
 var _is_alive     : bool  = true
 var _growl_timer    : float = 0.0
 var _growl_interval : float = 5.0
+var custom_model_path : String = ""
+var custom_model_scale : Vector3 = Vector3(0.3, 0.3, 0.3)
 
 signal ghost_spotted_player
 signal ghost_lost_player
@@ -102,6 +104,20 @@ func _init_visuals() -> void:
 	_flicker_next = randf_range(4.0, 12.0)
 
 	if not _ghost_body:
+		return
+
+	# カスタムモデル指定がある場合はそちらを使う（みゆき等）
+	if not custom_model_path.is_empty():
+		var custom_scene : PackedScene = load(custom_model_path) as PackedScene
+		if custom_scene:
+			var model_inst := custom_scene.instantiate()
+			model_inst.name = "Model"
+			model_inst.scale = custom_model_scale
+			model_inst.rotation_degrees.y = 180.0
+			_ghost_body.add_child(model_inst)
+			_apply_standard_material(model_inst, null)
+		else:
+			_create_fallback_mesh()
 		return
 
 	# ランダムに1体のMonsterモデルをロード
