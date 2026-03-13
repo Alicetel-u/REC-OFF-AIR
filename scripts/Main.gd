@@ -12,8 +12,6 @@ const _DANK_ROW_H     = 44
 
 # 演出終了後に自動で次チャプターへ進むチャプターID一覧（CP2・CP3は手動＝プレイアブル）
 const AUTO_PROGRESS_CHAPTERS : Array[String] = [
-	"ch04_jinja",
-	"ch05_dasshutsu",
 ]
 
 @onready var player       : CharacterBody3D = $Player
@@ -136,9 +134,8 @@ func _ready() -> void:
 		return
 
 	# プレイアブルチャプター（CP2・CP3）はJSON演出なし → 即プレイ開始
-	# シネマティックチャプター（CP4・CP5）はJSON演出 → 自動遷移
 	var is_cinematic : bool = cur_chapter != null and cur_chapter.chapter_id in AUTO_PROGRESS_CHAPTERS
-	var is_playable : bool = cur_chapter != null and cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku", "ch03_minka"]
+	var is_playable : bool = cur_chapter != null and cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku"]
 
 	if is_playable:
 		# CP2廃倉庫: start_section==1 → CP2-2紙芝居へ直接遷移

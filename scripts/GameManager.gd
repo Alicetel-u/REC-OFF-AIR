@@ -20,6 +20,7 @@ var playback_speed: float = 1.0
 var start_section: int = 0
 
 var _hit_invincible : bool = false
+var ghost_grace     : bool = false   ## ゴースト有効化直後の無敵時間
 const HIT_MAX       : int  = 3
 
 ## ── エンディング分岐 ──
@@ -35,11 +36,8 @@ var chapter_index: int = 0
 
 var chapter_order: Array[String] = [
 	"res://chapters/ch01_haison_iriguchi.tres",   # CP1: 廃村入口→トイレ
-	"res://chapters/ch01_haison_souko.tres",      # CP1.5: 廃倉庫 ─ 保存された絶叫
-	"res://chapters/ch02_mura_tansaku.tres",      # CP2: 村の探索 ─ 10FPSの呪い
-	"res://chapters/ch03_minka.tres",             # CP3: 民家探索（プレイアブル）
-	"res://chapters/ch04_jinja.tres",             # CP4: 桐原神社 ─ 10万人の視線
-	"res://chapters/ch05_dasshutsu.tres",         # CP5: 終焉のログアウト ─ 3分岐
+	"res://chapters/ch02_haison_souko.tres",      # CP2: 廃倉庫 ─ 保存された絶叫
+	"res://chapters/ch02_mura_tansaku.tres",      # CP3: 村の探索（マップのみ）
 ]
 
 ## ── エンディング集 ──
@@ -89,7 +87,7 @@ func trigger_hit() -> void:
 
 
 func trigger_caught() -> void:
-	if state != State.PLAYING:
+	if state != State.PLAYING or ghost_grace:
 		return
 	state = State.CAUGHT
 	player_caught.emit()
@@ -117,7 +115,7 @@ func restart() -> void:
 	hit_count   = 0
 	_hit_invincible = false
 	ending_route = -1
-	ofuda_count  = 2
+	ofuda_count  = 3
 	get_tree().reload_current_scene()
 
 

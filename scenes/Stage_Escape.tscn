@@ -1,6 +1,0 @@
-[gd_scene format=3 uid="uid://stage_escape"]
-
-[ext_resource type="Script" path="res://scripts/StageEscape.gd" id="1_script"]
-
-[node name="Stage_Escape" type="Node3D"]
-script = ExtResource("1_script")

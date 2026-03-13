@@ -1,5 +1,6 @@
 {
   "chapter": "ch01_haison_iriguchi",
+  "voice_dir": "res://assets/audio/voice/ch01/",
   "_note": "CP1 公衆トイレの首無し少女 — 配信開始→解説ウォーク→トイレ→脱出→商店街ゲート",
   "events": [
     {

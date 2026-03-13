@@ -941,9 +941,6 @@ const CHAPTER_INFO : Array[Dictionary] = [
 		{"name": "CP2-2  ブラウン管の恐怖", "sub": "VHS映像→神社への動機", "section": 1},
 	]},
 	{"name": "CP3  村の探索", "sub": "10FPSの呪い", "icon": "🏘", "order_index": 2},
-	{"name": "CP4  民家探索", "sub": "プレイアブル", "icon": "🏠", "order_index": 3},
-	{"name": "CP5  桐原神社", "sub": "白い木箱の秘密", "icon": "⛩", "order_index": 4},
-	{"name": "CP6  脱出", "sub": "最終分岐・3エンディング", "icon": "🚌", "order_index": 5},
 ]
 
 

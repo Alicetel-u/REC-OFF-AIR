@@ -638,16 +638,19 @@ func _glitch_burst(intensity: float = 8.0, count: int = 3) -> void:
 func _show_ending_title(title: String) -> void:
 	var vp_size := Vector2(1280, 720)
 
-	# 画面を暗転
+	# テキスト類だけ消す（背景画像は残す）
 	var tw_dark := create_tween().set_parallel(true)
 	tw_dark.tween_property(_text_label, "modulate:a", 0.0, 1.0)
 	tw_dark.tween_property(_center_big, "theme_override_colors/font_color:a", 0.0, 1.0)
 	tw_dark.tween_property(_section_lbl, "theme_override_colors/font_color:a", 0.0, 1.0)
-	tw_dark.tween_property(_bg_rect, "modulate:a", 0.0, 2.0)
-	tw_dark.tween_property(_bg_color, "color", Color(0, 0, 0, 1), 2.0)
+	# 背景画像があれば暗めにして残す、なければ黒に
+	if _bg_rect.modulate.a > 0.1:
+		tw_dark.tween_property(_bg_rect, "modulate", Color(0.3, 0.25, 0.3, 0.7), 2.0)
+	else:
+		tw_dark.tween_property(_bg_color, "color", Color(0, 0, 0, 1), 2.0)
 	await tw_dark.finished
 
-	await get_tree().create_timer(1.5).timeout
+	await get_tree().create_timer(1.0).timeout
 
 	# BAD END ラベル（小さめ、上）
 	var bad_lbl := Label.new()

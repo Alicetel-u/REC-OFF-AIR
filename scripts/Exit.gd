@@ -37,10 +37,17 @@ func _on_item_collected(count: int, total: int) -> void:
 		exit_light.light_energy = 3.0
 
 
+## ゴール到達時の演出コールバック（Main.gd から設定）
+## 設定されている場合、演出完了後に遷移する
+var on_exit_callback : Callable = Callable()
+
 func _on_body_entered(body: Node3D) -> void:
 	if not body.is_in_group("player"):
 		return
 	if active:
+		active = false  # 二重トリガー防止
+		if on_exit_callback.is_valid():
+			await on_exit_callback.call()
 		GameManager.advance_to_next_chapter()
 	else:
 		_show_locked_message()

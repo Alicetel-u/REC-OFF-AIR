@@ -107,11 +107,11 @@ func _draw_map(container, rng):
 		for y in range(grid_size.y):
 			var pos = Vector3((x - grid_size.x/2) * cell_size, 0, (y - grid_size.y/2) * cell_size)
 			if grid[Vector2i(x, y)] == 1:
-				_create_path(pos, container)
+				_create_path(pos, container, rng)
 			else:
 				_spawn_scatter(pos, container, rng)
 
-func _create_path(pos, container):
+func _create_path(pos, container, rng):
 	var p = CSGBox3D.new()
 	p.size = Vector3(cell_size, 0.1, path_width)
 	p.position = pos
@@ -120,10 +120,8 @@ func _create_path(pos, container):
 	p.material = m
 	container.add_child(p)
 	if Engine.is_editor_hint(): p.owner = get_tree().edited_scene_root
-	
+
 	# --- 電信柱の配置 (道の脇) ---
-	var rng = RandomNumberGenerator.new()
-	rng.randomize()
 	if utility_pole_model and rng.randf() < 0.15: # 15%の確率
 		var pole = utility_pole_model.instantiate()
 		container.add_child(pole)
@@ -143,7 +141,7 @@ func _spawn_scatter(pos, container, rng):
 		h.position = pos
 		h.rotation.y = rng.randf() * PI * 2
 		if Engine.is_editor_hint(): h.owner = get_tree().edited_scene_root
-	elif r < 0.4:
+	elif r < 0.4 and tree_model:
 		var t = tree_model.instantiate()
 		container.add_child(t)
 		t.position = pos + Vector3(rng.randf_range(-2,2), 0, rng.randf_range(-2,2))
