@@ -1054,16 +1054,6 @@ func _open_stage_menu() -> void:
 			# id = 10 + i（10〜14）→ 通常チャプター
 			_stage_popup.add_item(label, 10 + i)
 	# テスト用チャプターも追加
-	var test_chapters : Array[String] = [
-		"res://chapters/ch_test_toilet.tres",
-	]
-	if test_chapters.size() > 0:
-		_stage_popup.add_separator("── テスト ──")
-	for tc in test_chapters:
-		if ResourceLoader.exists(tc):
-			var ch := load(tc) as Resource
-			var label : String = ch.chapter_name if ch else tc.get_file()
-			_stage_popup.add_item(label, 100 + test_chapters.find(tc))
 	_stage_popup.id_pressed.connect(_on_stage_selected)
 	add_child(_stage_popup)
 	# ボタンの上にポップアップ表示
@@ -1087,16 +1077,7 @@ func _on_stage_selected(id: int) -> void:
 		GameManager.load_chapter(id - 10)
 		get_tree().reload_current_scene()
 	else:
-		# テスト用チャプター
-		var test_chapters : Array[String] = [
-			"res://chapters/ch_test_toilet.tres",
-		]
-		var tc_idx : int = id - 100
-		if tc_idx < test_chapters.size():
-			var ch := load(test_chapters[tc_idx]) as Resource
-			if ch:
-				GameManager.start_section = 0
-				GameManager.current_chapter = ch
+		pass
 				GameManager.chapter_index = -1
 				get_tree().reload_current_scene()
 
