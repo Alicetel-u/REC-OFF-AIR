@@ -940,6 +940,7 @@ const CHAPTER_INFO : Array[Dictionary] = [
 		{"name": "CP2-1  廃倉庫探索", "sub": "VHS収集＋ゴースト", "section": 0},
 		{"name": "CP2-2  ブラウン管の恐怖", "sub": "VHS映像→神社への動機", "section": 1},
 	]},
+	{"name": "CP3  村の探索", "sub": "マップのみ", "icon": "🏘", "order_index": 2},
 ]
 
 
