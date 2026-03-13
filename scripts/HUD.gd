@@ -55,22 +55,15 @@ var _tracking_active   : bool          = false
 var _tracking_y        : float         = 0.0
 var _focus_brackets    : Array[ColorRect] = []
 
-# ── 出口方向矢印 ──
-var _exit_arrow     : Control    = null
-var _exit_arrow_lbl : Label      = null
-var _exit_dist_lbl  : Label      = null
+# ── ナビ矢印（目的地誘導 — 1系統のみ） ──
 var _player_ref     : Node3D     = null
-var _exit_position  : Vector3    = Vector3.ZERO
-var _exit_arrow_active : bool    = false
-
-# ── ナビ矢印（イベントナビ） ──
-var _nav_arrow       : Control    = null
-var _nav_arrow_lbl   : Label      = null
-var _nav_title_lbl   : Label      = null
-var _nav_dist_lbl    : Label      = null
-var _nav_target      : Vector3    = Vector3.ZERO
-var _nav_radius      : float      = 3.0
-var _nav_active      : bool       = false
+var _nav_layer      : CanvasLayer = null
+var _nav_poly       : Polygon2D  = null
+var _nav_title_lbl  : Label      = null
+var _nav_dist_lbl   : Label      = null
+var _nav_target     : Vector3    = Vector3.ZERO
+var _nav_active     : bool       = false
+var _nav_color      : Color      = Color(0.2, 0.85, 0.3)
 signal nav_reached
 
 # ユーザーとコメントのデータ
@@ -199,17 +192,10 @@ func _process(delta: float) -> void:
 		scare_t -= delta * 1.8
 		scare_flash.modulate.a = clamp(scare_t, 0.0, 0.65)
 
-	# ── 出口ガイド点滅 ──
-	if is_instance_valid(_exit_guide) and _exit_guide.visible:
-		_exit_blink_t += delta * 2.2
-		_exit_guide.modulate.a = 0.6 + sin(_exit_blink_t) * 0.4
-
-	# ── 出口方向矢印の回転更新 ──
-	if _exit_arrow_active and is_instance_valid(_exit_arrow) and is_instance_valid(_player_ref):
-		_update_exit_arrow()
+	# ── 出口ガイド（点滅なし・固定表示） ──
 
 	# ── ナビ矢印の更新 ──
-	if _nav_active and is_instance_valid(_nav_arrow) and is_instance_valid(_player_ref):
+	if _nav_active and is_instance_valid(_nav_poly) and is_instance_valid(_player_ref):
 		_update_nav_arrow()
 
 	# ── トラッキングノイズ（ビデオカメラ） ──
@@ -449,83 +435,93 @@ func _show_exit_guide() -> void:
 	var tw := create_tween()
 	tw.tween_property(_exit_guide, "modulate:a", 1.0, 0.5)
 
-	# 出口方向矢印を有効化
-	_activate_exit_arrow()
+	# 出口方向矢印を有効化（ナビ矢印を使用）
+	if is_instance_valid(_player_ref):
+		var exit_pos : Vector3 = GameManager.current_chapter.exit_position if GameManager.current_chapter else Vector3(23, 1.5, 15)
+		start_nav(exit_pos, "EXIT", Color(0.9, 0.2, 0.1), _player_ref)
 
 
 # ════════════════════════════════════════════════════════════════
-# ナビ矢印（イベントナビ — ソシャゲ風の目的地誘導）
+# ナビ矢印（目的地誘導 — CanvasLayer で確実に最前面表示）
 # ════════════════════════════════════════════════════════════════
 
-func start_nav(target: Vector3, label_text: String = "NEXT", radius: float = 3.0) -> void:
+func start_nav(target: Vector3, label_text: String = "EXIT", color: Color = Color(0.2, 0.85, 0.3), player_node: Node3D = null) -> void:
+	if player_node:
+		_player_ref = player_node
 	_nav_target = target
-	_nav_radius = radius
-	if not is_instance_valid(_nav_arrow):
+	_nav_color = color
+	if not is_instance_valid(_nav_layer):
 		_build_nav_arrow()
 	if is_instance_valid(_nav_title_lbl):
 		_nav_title_lbl.text = label_text
+		_nav_title_lbl.add_theme_color_override("font_color", color)
+	if is_instance_valid(_nav_poly):
+		_nav_poly.color = color
 	_nav_active = true
-	_nav_arrow.visible = true
-	_nav_arrow.modulate.a = 0.0
-	var tw := create_tween()
-	tw.tween_property(_nav_arrow, "modulate:a", 1.0, 0.4)
+
+
+func retarget_nav(target: Vector3, label_text: String = "") -> void:
+	_nav_target = target
+	if label_text != "" and is_instance_valid(_nav_title_lbl):
+		_nav_title_lbl.text = label_text
 
 
 func stop_nav() -> void:
 	_nav_active = false
-	if is_instance_valid(_nav_arrow):
-		_nav_arrow.visible = false
+	if is_instance_valid(_nav_layer):
+		_nav_layer.queue_free()
+		_nav_layer = null
+		_nav_poly = null
+		_nav_title_lbl = null
+		_nav_dist_lbl = null
 
 
 func _build_nav_arrow() -> void:
-	_nav_arrow = Control.new()
-	_nav_arrow.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	_nav_arrow.position = Vector2(60, -100)
-	_nav_arrow.custom_minimum_size = Vector2(120, 80)
-	_nav_arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_nav_arrow.visible = false
-	add_child(_nav_arrow)
+	# CanvasLayer（layer=120 で最前面に確実に表示）
+	_nav_layer = CanvasLayer.new()
+	_nav_layer.layer = 120
+	add_child(_nav_layer)
 
-	var bg := PanelContainer.new()
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.0, 0.0, 0.0, 0.55)
-	style.border_color = Color(0.2, 0.6, 1.0, 0.85)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(6)
-	bg.add_theme_stylebox_override("panel", style)
-	_nav_arrow.add_child(bg)
+	var vp := get_viewport().get_visible_rect().size
+	var cx : float = 60.0    # 画面左端から60px
+	var cy : float = vp.y * 0.5  # 画面縦中央
 
-	var vbox := VBoxContainer.new()
-	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vbox.add_theme_constant_override("separation", 0)
-	bg.add_child(vbox)
+	# Polygon2D 矢印（上向き=0度、回転で方向を示す）
+	_nav_poly = Polygon2D.new()
+	_nav_poly.polygon = PackedVector2Array([
+		Vector2(0, -28), Vector2(-16, 12), Vector2(-6, 4),
+		Vector2(-6, 28), Vector2(6, 28), Vector2(6, 4),
+		Vector2(16, 12)
+	])
+	_nav_poly.color = _nav_color
+	_nav_poly.position = Vector2(cx, cy)
+	_nav_layer.add_child(_nav_poly)
 
+	# ラベル（「EXIT」等）
 	_nav_title_lbl = Label.new()
-	_nav_title_lbl.text = "NEXT"
-	_nav_title_lbl.add_theme_font_size_override("font_size", 12)
-	_nav_title_lbl.add_theme_color_override("font_color", Color(0.3, 0.7, 1.0))
+	_nav_title_lbl.text = "EXIT"
+	_nav_title_lbl.position = Vector2(cx - 40, cy + 36)
+	_nav_title_lbl.size = Vector2(80, 22)
+	_nav_title_lbl.add_theme_font_size_override("font_size", 14)
+	_nav_title_lbl.add_theme_color_override("font_color", _nav_color)
+	_nav_title_lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+	_nav_title_lbl.add_theme_constant_override("shadow_offset_x", 1)
+	_nav_title_lbl.add_theme_constant_override("shadow_offset_y", 1)
 	_nav_title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(_nav_title_lbl)
+	_nav_layer.add_child(_nav_title_lbl)
 
-	_nav_arrow_lbl = Label.new()
-	_nav_arrow_lbl.text = "▲"
-	_nav_arrow_lbl.add_theme_font_size_override("font_size", 30)
-	_nav_arrow_lbl.add_theme_color_override("font_color", Color(0.3, 0.7, 1.0))
-	_nav_arrow_lbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.3, 0.8, 0.6))
-	_nav_arrow_lbl.add_theme_constant_override("shadow_offset_x", 0)
-	_nav_arrow_lbl.add_theme_constant_override("shadow_offset_y", 2)
-	_nav_arrow_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_nav_arrow_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	vbox.add_child(_nav_arrow_lbl)
-
+	# 距離ラベル
 	_nav_dist_lbl = Label.new()
-	_nav_dist_lbl.text = "-- m"
-	_nav_dist_lbl.add_theme_font_size_override("font_size", 11)
+	_nav_dist_lbl.text = ""
+	_nav_dist_lbl.position = Vector2(cx - 40, cy + 54)
+	_nav_dist_lbl.size = Vector2(80, 20)
+	_nav_dist_lbl.add_theme_font_size_override("font_size", 12)
 	_nav_dist_lbl.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85))
+	_nav_dist_lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+	_nav_dist_lbl.add_theme_constant_override("shadow_offset_x", 1)
+	_nav_dist_lbl.add_theme_constant_override("shadow_offset_y", 1)
 	_nav_dist_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(_nav_dist_lbl)
+	_nav_layer.add_child(_nav_dist_lbl)
 
 
 func _update_nav_arrow() -> void:
@@ -537,137 +533,14 @@ func _update_nav_arrow() -> void:
 	if is_instance_valid(_nav_dist_lbl):
 		_nav_dist_lbl.text = "%dm" % int(dist)
 
-	# 到達判定
-	if dist < _nav_radius:
-		stop_nav()
-		nav_reached.emit()
-		return
-
 	# 矢印回転
 	var player_yaw := _player_ref.rotation.y
 	var target_angle := atan2(to_target.x, to_target.z)
 	var rel_angle := target_angle - player_yaw
 	rel_angle = fmod(rel_angle + PI, TAU) - PI
 
-	if is_instance_valid(_nav_arrow_lbl):
-		_nav_arrow_lbl.pivot_offset = _nav_arrow_lbl.size / 2.0
-		_nav_arrow_lbl.rotation = -rel_angle
-
-	# 距離に応じて色変化（近づくと緑に）
-	var color_t := clampf(1.0 - dist / 30.0, 0.0, 1.0)
-	var arrow_color := Color(0.3, 0.7, 1.0).lerp(Color(0.3, 1.0, 0.4), color_t)
-	if is_instance_valid(_nav_arrow_lbl):
-		_nav_arrow_lbl.add_theme_color_override("font_color", arrow_color)
-
-
-# ════════════════════════════════════════════════════════════════
-# 出口方向矢印（VHS全回収後にプレイヤーの視点に対して出口方向を示す）
-# ════════════════════════════════════════════════════════════════
-
-func setup_exit_arrow(player_node: Node3D, exit_pos: Vector3) -> void:
-	_player_ref = player_node
-	_exit_position = exit_pos
-	_build_exit_arrow()
-
-
-func _build_exit_arrow() -> void:
-	# 画面中央下に配置する方向矢印UI
-	_exit_arrow = Control.new()
-	_exit_arrow.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	_exit_arrow.position = Vector2(-60, -100)
-	_exit_arrow.custom_minimum_size = Vector2(120, 80)
-	_exit_arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_exit_arrow.visible = false
-	add_child(_exit_arrow)
-
-	# 背景パネル
-	var bg := PanelContainer.new()
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.0, 0.0, 0.0, 0.55)
-	style.border_color = Color(0.9, 0.15, 0.05, 0.85)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(6)
-	bg.add_theme_stylebox_override("panel", style)
-	_exit_arrow.add_child(bg)
-
-	var vbox := VBoxContainer.new()
-	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vbox.add_theme_constant_override("separation", 0)
-	bg.add_child(vbox)
-
-	# EXIT ラベル
-	var title_lbl := Label.new()
-	title_lbl.text = "EXIT"
-	title_lbl.add_theme_font_size_override("font_size", 12)
-	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.3, 0.2))
-	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(title_lbl)
-
-	# 矢印（大きめ、回転で方向を示す）
-	_exit_arrow_lbl = Label.new()
-	_exit_arrow_lbl.text = "▲"
-	_exit_arrow_lbl.add_theme_font_size_override("font_size", 30)
-	_exit_arrow_lbl.add_theme_color_override("font_color", Color(1.0, 0.4, 0.2))
-	_exit_arrow_lbl.add_theme_color_override("font_shadow_color", Color(0.8, 0.0, 0.0, 0.6))
-	_exit_arrow_lbl.add_theme_constant_override("shadow_offset_x", 0)
-	_exit_arrow_lbl.add_theme_constant_override("shadow_offset_y", 2)
-	_exit_arrow_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_exit_arrow_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	vbox.add_child(_exit_arrow_lbl)
-
-	# 距離ラベル
-	_exit_dist_lbl = Label.new()
-	_exit_dist_lbl.text = "-- m"
-	_exit_dist_lbl.add_theme_font_size_override("font_size", 11)
-	_exit_dist_lbl.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85))
-	_exit_dist_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(_exit_dist_lbl)
-
-
-func _activate_exit_arrow() -> void:
-	if is_instance_valid(_exit_arrow):
-		_exit_arrow_active = true
-		_exit_arrow.visible = true
-		_exit_arrow.modulate.a = 0.0
-		var tw := create_tween()
-		tw.tween_property(_exit_arrow, "modulate:a", 1.0, 0.6)
-
-
-func _update_exit_arrow() -> void:
-	# プレイヤーのY回転（水平向き）から出口方向への角度差を計算
-	var player_pos := _player_ref.global_position
-	var to_exit := _exit_position - player_pos
-	to_exit.y = 0.0
-	var dist := to_exit.length()
-
-	# 距離表示更新
-	if is_instance_valid(_exit_dist_lbl):
-		_exit_dist_lbl.text = "%dm" % int(dist)
-
-	if dist < 0.5:
-		return
-
-	# プレイヤーが向いている方向（-Z が前方）
-	var player_yaw := _player_ref.rotation.y
-	# 出口方向の角度（atan2: X/Z平面）
-	var exit_angle := atan2(to_exit.x, to_exit.z)
-	# プレイヤー視点からの相対角度
-	var rel_angle := exit_angle - player_yaw
-	# -PI〜PI に正規化
-	rel_angle = fmod(rel_angle + PI, TAU) - PI
-
-	# 矢印ラベルを回転（▲ は上向きなので、relAngle=0 → 前方 → rotation=0）
-	if is_instance_valid(_exit_arrow_lbl):
-		_exit_arrow_lbl.pivot_offset = _exit_arrow_lbl.size / 2.0
-		_exit_arrow_lbl.rotation = -rel_angle
-
-	# 距離に応じて色変化（近づくと緑に）
-	var color_t := clampf(1.0 - dist / 30.0, 0.0, 1.0)
-	var arrow_color := Color(1.0, 0.4, 0.2).lerp(Color(0.3, 1.0, 0.4), color_t)
-	if is_instance_valid(_exit_arrow_lbl):
-		_exit_arrow_lbl.add_theme_color_override("font_color", arrow_color)
+	if is_instance_valid(_nav_poly):
+		_nav_poly.rotation = PI - rel_angle
 
 
 # ════════════════════════════════════════════════════════════════

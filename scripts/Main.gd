@@ -1,6 +1,7 @@
 extends Node3D
 
 const EntranceDirectorScript := preload("res://scripts/EntranceDirector.gd")
+const EndingPlayerScript := preload("res://scripts/EndingPlayer.gd")
 
 # ── 弾幕レイヤー定数（YouTubeChrome と同じ座標系）──────────────
 const _DANK_VIDEO_W   = 940
@@ -86,11 +87,9 @@ func _ready() -> void:
 		ghost.ghost_spotted_player.connect(_on_ghost_spotted)
 		ghost.ghost_lost_player.connect(_on_ghost_lost)
 		if cp2_immediate_ghost:
-			# CP2: みゆきは最初からアクティブ
 			ghost.process_mode = Node.PROCESS_MODE_INHERIT
 			ghost.visible = true
 		else:
-			# CP3等: イントロ中は停止＋透明化（VHS2個回収で出現）
 			ghost.process_mode = Node.PROCESS_MODE_DISABLED
 			ghost.visible = false
 
@@ -139,12 +138,15 @@ func _ready() -> void:
 	# プレイアブルチャプター（CP2・CP3）はJSON演出なし → 即プレイ開始
 	# シネマティックチャプター（CP4・CP5）はJSON演出 → 自動遷移
 	var is_cinematic : bool = cur_chapter != null and cur_chapter.chapter_id in AUTO_PROGRESS_CHAPTERS
-	var is_playable : bool = cur_chapter != null and cur_chapter.chapter_id in ["ch02_mura_tansaku", "ch03_minka"]
+	var is_playable : bool = cur_chapter != null and cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku", "ch03_minka"]
 
 	if is_playable:
-		# プレイアブル: JSON演出スキップ、即操作可能
+		# プレイアブル: 即操作可能
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		player.input_disabled = false
+		# CP2廃倉庫: 動きながらセリフ・コメントが流れるバックグラウンド演出
+		if cur_chapter.chapter_id == "ch02_haison_souko":
+			_run_chapter_opening_background(cur_chapter.chapter_id)
 	elif cur_chapter:
 		# シネマティック: JSON演出を実行
 		await _run_chapter_opening(cur_chapter.chapter_id)
@@ -165,17 +167,20 @@ func _ready() -> void:
 
 	hud.play_monologue()
 
-	# シナリオシステム接続
-	ScenarioManager.scenario_triggered.connect(_on_scenario_triggered)
-	ScenarioManager.trigger("game_start")
+	# シナリオシステム（視聴者アンケート）は現在無効
+	#ScenarioManager.scenario_triggered.connect(_on_scenario_triggered)
+	#ScenarioManager.trigger("game_start")
 
 	# ゴーストはVHS2個回収で有効化（_on_ghosts_awaken で処理）
 	GameManager.item_collected.connect(_on_item_for_ghost_awaken)
 	GameManager.item_collected.connect(_on_item_collected_warehouse)
 
-	# 出口方向矢印用: プレイヤーと出口位置をHUDに渡す
-	var exit_pos : Vector3 = chapter.exit_position if chapter else Vector3(23, 1.5, 15)
-	hud.setup_exit_arrow(player, exit_pos)
+	# CP2廃倉庫: ゴール到達時にv103,v104演出を挟んでから遷移
+	if cur_chapter and cur_chapter.chapter_id == "ch02_haison_souko":
+		stage_gen.exit_node.on_exit_callback = Callable(self, "_play_souko_exit")
+
+	# ナビ矢印用: プレイヤー参照をHUDに渡す
+	hud._player_ref = player
 
 
 ## シーン再ロード後に root 直下に残った孤立 CanvasLayer を削除
@@ -205,6 +210,22 @@ func _run_entrance_sequence() -> void:
 	remove_child(director)
 	director.queue_free()
 	GameManager.advance_to_next_chapter()
+
+
+func _run_chapter_opening_background(chapter_id: String) -> void:
+	## プレイアブルチャプター用: セリフ・コメントをバックグラウンドで流す（操作を止めない）
+	var path := "res://dialogue/%s.json" % chapter_id
+	if not FileAccess.file_exists(path):
+		return
+	var director: Node = EntranceDirectorScript.new()
+	director.set("player", player)
+	director.set("hud", hud)
+	add_child(director)
+	await director.run_from_path(path)
+	if is_instance_valid(director):
+		director.cleanup()
+		remove_child(director)
+		director.queue_free()
 
 
 func _run_chapter_opening(chapter_id: String) -> void:
@@ -585,34 +606,44 @@ func _on_player_moved() -> void:
 
 var _ghosts_awakened : bool = false
 
-func _on_item_for_ghost_awaken(count: int, _total: int) -> void:
-	if _ghosts_awakened or count < 2:
+func _on_item_for_ghost_awaken(count: int, total: int) -> void:
+	if _ghosts_awakened:
+		return
+	if count < total or total <= 0:
 		return
 	_ghosts_awakened = true
-	# VHS2個目取得 → ゴーストが姿を現して動き出す
-	hud.show_monologue("…なんだ？　空気が変わった気がする…")
+	GameManager.ghost_grace = true
+	# ゴーストをプレイヤーから離れた位置にテレポートしてから有効化
+	var player_pos := player.global_position
 	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		var gpos : Vector3 = ghost.global_position
+		var dist : float = gpos.distance_to(player_pos)
+		if dist < 15.0:
+			var away_dir : Vector3 = (gpos - player_pos)
+			away_dir.y = 0
+			if away_dir.length() < 0.1:
+				away_dir = Vector3(-1, 0, -1)
+			ghost.global_position = player_pos + away_dir.normalized() * 18.0
+			ghost.global_position.y = gpos.y
 		ghost.visible = true
-		ghost.modulate = Color(1, 1, 1, 0) if ghost.has_method("set") else Color.WHITE
 		ghost.process_mode = Node.PROCESS_MODE_INHERIT
-		# 3Dノードは modulate が無いので _ghost_body のフェードで対応
 		_fade_in_ghost(ghost)
-	await get_tree().create_timer(3.0).timeout
-	if is_instance_valid(hud):
-		hud.hide_monologue()
+	# ghost_grace はみゆき遭遇演出（_run_escape_nav_sequence）終了後に解除
 
 
 func _fade_in_ghost(ghost: Node) -> void:
-	# Ghost (CharacterBody3D) の GhostBody を透明→不透明にフェードイン
+	# Ghost の GhostBody を dissolve=1→0 でフェードイン
 	var body : Node3D = ghost.get_node_or_null("GhostBody")
 	if not body:
 		return
-	# 全 MeshInstance3D のマテリアルを透明開始 → フェードイン
 	var meshes : Array[MeshInstance3D] = []
 	_collect_meshes(body, meshes)
+	# dissolve=1（完全透明）から開始
 	for mi in meshes:
 		var mat := mi.material_override
-		if mat is StandardMaterial3D:
+		if mat is ShaderMaterial:
+			(mat as ShaderMaterial).set_shader_parameter("dissolve", 1.0)
+		elif mat is StandardMaterial3D:
 			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			mat.albedo_color.a = 0.0
 	# GhostLight も暗くしておく
@@ -625,12 +656,15 @@ func _fade_in_ghost(ghost: Node) -> void:
 	tw.set_parallel(true)
 	for mi in meshes:
 		var mat := mi.material_override
-		if mat is StandardMaterial3D:
+		if mat is ShaderMaterial:
+			tw.tween_method(func(v: float) -> void:
+				(mat as ShaderMaterial).set_shader_parameter("dissolve", v)
+			, 1.0, 0.0, 2.0)
+		elif mat is StandardMaterial3D:
 			tw.tween_property(mat, "albedo_color:a", 1.0, 2.0)
 	if light:
 		tw.tween_property(light, "light_energy", orig_energy, 2.0)
 	await tw.finished
-	# フェード完了後にtransparencyを無効化（パフォーマンス回復）
 	for mi in meshes:
 		var mat := mi.material_override
 		if mat is StandardMaterial3D:
@@ -644,45 +678,618 @@ func _collect_meshes(node: Node, out: Array[MeshInstance3D]) -> void:
 		_collect_meshes(child, out)
 
 
+var _ghost_alert_shown := false
+
 func _on_ghost_spotted() -> void:
 	hud.trigger_chat_event("ghost_spotted")
 	ScenarioManager.trigger("ghost_spotted")
+	if not _ghost_alert_shown:
+		_ghost_alert_shown = true
+		_show_ghost_alert()
+
+
+func _show_ghost_alert() -> void:
+	## みゆき遭遇時のリッチなアラート演出（操作は止めない）
+	SoundManager.play_sfx_file("metal/impactMetal_heavy_000.ogg")
+	player.start_camera_shake(0.8, 0.5)
+
+	# HUDのScareFlash（赤）
+	if is_instance_valid(hud):
+		hud._do_scare_flash(Color(0.8, 0.0, 0.0))
+
+	var vp_size := get_viewport().get_visible_rect().size
+	var alert_canvas := CanvasLayer.new()
+	alert_canvas.layer = 150
+	get_tree().root.add_child(alert_canvas)
+
+	# ── 赤い枠フラッシュ（画面端が赤く光る） ──
+	var border_top := ColorRect.new()
+	border_top.size = Vector2(vp_size.x, 6)
+	border_top.position = Vector2.ZERO
+	border_top.color = Color(0.9, 0.1, 0.0, 0.9)
+	border_top.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	alert_canvas.add_child(border_top)
+
+	var border_bot := ColorRect.new()
+	border_bot.size = Vector2(vp_size.x, 6)
+	border_bot.position = Vector2(0, vp_size.y - 6)
+	border_bot.color = Color(0.9, 0.1, 0.0, 0.9)
+	border_bot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	alert_canvas.add_child(border_bot)
+
+	var border_left := ColorRect.new()
+	border_left.size = Vector2(6, vp_size.y)
+	border_left.color = Color(0.9, 0.1, 0.0, 0.9)
+	border_left.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	alert_canvas.add_child(border_left)
+
+	var border_right := ColorRect.new()
+	border_right.size = Vector2(6, vp_size.y)
+	border_right.position = Vector2(vp_size.x - 6, 0)
+	border_right.color = Color(0.9, 0.1, 0.0, 0.9)
+	border_right.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	alert_canvas.add_child(border_right)
+
+	# ── 赤オーバーレイ（画面全体が一瞬赤く）──
+	var red_flash := ColorRect.new()
+	red_flash.size = vp_size
+	red_flash.color = Color(0.5, 0.0, 0.0, 0.3)
+	red_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	alert_canvas.add_child(red_flash)
+
+	# ── 警告テキスト（画面中央・巨大） ──
+	var warn_lbl := Label.new()
+	warn_lbl.text = "逃 げ ろ"
+	warn_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	warn_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	warn_lbl.size = vp_size
+	warn_lbl.add_theme_font_size_override("font_size", 64)
+	warn_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.1, 0.0))
+	warn_lbl.add_theme_color_override("font_shadow_color", Color(0.6, 0.0, 0.0, 0.9))
+	warn_lbl.add_theme_constant_override("shadow_offset_x", 3)
+	warn_lbl.add_theme_constant_override("shadow_offset_y", 3)
+	warn_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	alert_canvas.add_child(warn_lbl)
+
+	# ── 三角警告アイコン（テキスト上） ──
+	var icon_lbl := Label.new()
+	icon_lbl.text = "⚠"
+	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	icon_lbl.size = Vector2(vp_size.x, 80)
+	icon_lbl.position = Vector2(0, vp_size.y * 0.3)
+	icon_lbl.add_theme_font_size_override("font_size", 52)
+	icon_lbl.add_theme_color_override("font_color", Color(1.0, 0.8, 0.0, 0.0))
+	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	alert_canvas.add_child(icon_lbl)
+
+	# ── アニメーション ──
+	# テキスト: グリッチ点滅→表示→フェードアウト
+	var tw := create_tween()
+	tw.tween_property(warn_lbl, "theme_override_colors/font_color:a", 0.9, 0.03)
+	tw.tween_property(warn_lbl, "theme_override_colors/font_color:a", 0.0, 0.03)
+	tw.tween_property(warn_lbl, "theme_override_colors/font_color:a", 0.7, 0.03)
+	tw.tween_property(warn_lbl, "theme_override_colors/font_color:a", 0.0, 0.04)
+	tw.tween_property(warn_lbl, "theme_override_colors/font_color:a", 1.0, 0.1)
+	tw.parallel().tween_property(icon_lbl, "theme_override_colors/font_color:a", 1.0, 0.15)
+
+	# 赤フラッシュの点滅
+	var tw_flash := create_tween().set_loops(3)
+	tw_flash.tween_property(red_flash, "color:a", 0.35, 0.08)
+	tw_flash.tween_property(red_flash, "color:a", 0.05, 0.12)
+
+	await tw.finished
+
+	# 1.2秒表示
+	await get_tree().create_timer(1.2).timeout
+
+	# フェードアウト
+	var tw_out := create_tween().set_parallel(true)
+	tw_out.tween_property(warn_lbl, "theme_override_colors/font_color:a", 0.0, 0.4)
+	tw_out.tween_property(icon_lbl, "theme_override_colors/font_color:a", 0.0, 0.4)
+	tw_out.tween_property(red_flash, "color:a", 0.0, 0.5)
+	tw_out.tween_property(border_top, "color:a", 0.0, 0.5)
+	tw_out.tween_property(border_bot, "color:a", 0.0, 0.5)
+	tw_out.tween_property(border_left, "color:a", 0.0, 0.5)
+	tw_out.tween_property(border_right, "color:a", 0.0, 0.5)
+	await tw_out.finished
+
+	alert_canvas.queue_free()
+
+	# ── 「逃げろ」後の入口→出口ナビ演出（CP2廃倉庫のみ） ──
+	if GameManager.current_chapter and GameManager.current_chapter.chapter_id == "ch02_haison_souko":
+		_run_escape_nav_sequence()
+
+
+func _run_escape_nav_sequence() -> void:
+	var voice_dir : String = "res://assets/audio/voice/ch02_souko/"
+	GameManager.ghost_grace = true
+
+	# みゆきに気づく
+	SoundManager.play_voice(voice_dir + "v109.wav")
+	hud.show_monologue("……急に空気が冷たくなった……？")
+	await get_tree().create_timer(2.5).timeout
+
+	if is_instance_valid(hud):
+		SoundManager.play_voice(voice_dir + "v110.wav")
+		hud.show_monologue("え……みゆき、ちゃん……？　なんで動いて……")
+	await get_tree().create_timer(3.0).timeout
+
+	if is_instance_valid(hud):
+		SoundManager.play_voice(voice_dir + "v111.wav")
+		hud.show_monologue("こっち見てる……！　うそでしょ、来ないで！！")
+	await get_tree().create_timer(3.5).timeout
+	if is_instance_valid(hud):
+		hud.hide_monologue()
+
+	await get_tree().create_timer(2.0).timeout
+
+	# セリフ: 入口から逃げようとする
+	if is_instance_valid(hud):
+		SoundManager.play_voice(voice_dir + "v112.wav")
+		hud.show_monologue("入口！　入口から逃げないと……！")
+	await get_tree().create_timer(3.0).timeout
+
+	# セリフ: 入口が塞がっている
+	if is_instance_valid(hud):
+		SoundManager.play_voice(voice_dir + "v113.wav")
+		hud.show_monologue("嘘……入口が塞がってる！？　来た道がない！！")
+	await get_tree().create_timer(4.0).timeout
+
+	# 出口ナビ矢印（緑）→ 最初から出口を指して一度だけ表示
+	var exit_pos : Vector3 = GameManager.current_chapter.exit_position if GameManager.current_chapter else Vector3(23, 1.5, 15)
+	if is_instance_valid(hud):
+		SoundManager.play_voice(voice_dir + "v114.wav")
+		hud.show_monologue("別の出口を探さなきゃ……！！")
+		hud.start_nav(exit_pos, "EXIT", Color(0.2, 0.85, 0.3), player)
+	await get_tree().create_timer(2.5).timeout
+
+	if is_instance_valid(hud):
+		hud.hide_monologue()
+	await get_tree().create_timer(3.0).timeout
+	GameManager.ghost_grace = false
 
 
 func _on_ghost_lost() -> void:
 	hud.trigger_chat_event("ghost_lost")
 
 
-func _on_item_collected_warehouse(count: int, _total: int) -> void:
-	## 廃倉庫チャプター専用：VHS発見時に不気味な映像演出を再生
-	if GameManager.current_chapter and GameManager.current_chapter.chapter_id == "ch01_haison_souko":
-		if count >= 1:
-			player.input_disabled = true
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-			await _run_chapter_opening("ch01_haison_souko_found")
-			
-			# 演出終了後、操作を戻して自力で脱出させる
-			player.input_disabled = false
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-			hud.show_monologue("やばい、ここを出ないと……！出口へ急ごう！")
-			await get_tree().create_timer(3.0).timeout
-			if is_instance_valid(hud):
-				hud.hide_monologue()
+func _on_item_collected_warehouse(count: int, total: int) -> void:
+	## 廃倉庫チャプター専用：VHS発見時
+	if not (GameManager.current_chapter and GameManager.current_chapter.chapter_id == "ch02_haison_souko"):
+		return
+	# ポラロイド演出を先に完了させてからセリフを流す
+	await _show_item_acquired(count, total)
+	# 最初の1個だけセリフ演出を流す（ポラロイド後）
+	if count == 1:
+		_run_chapter_opening_background("ch02_haison_souko_found")
+	# 全VHS回収で脱出演出
+	if count >= total and total > 0:
+		hud.show_monologue("全部見つけた……！ ここを出ないと！")
+		await get_tree().create_timer(3.0).timeout
+		if is_instance_valid(hud):
+			hud.hide_monologue()
+
+
+func _show_item_acquired(count: int, total: int) -> void:
+	## VHS入手 — ポラロイド風演出（1秒停止・画面中央）
+	player.input_disabled = true
+	SoundManager.play_sfx_file("metal/impactMetal_heavy_001.ogg")
+
+	var vp_size := get_viewport().get_visible_rect().size
+	var canvas := CanvasLayer.new()
+	canvas.layer = 140
+	get_tree().root.add_child(canvas)
+
+	# ── 背景暗幕 ──
+	var dim := ColorRect.new()
+	dim.size = vp_size
+	dim.color = Color(0, 0, 0, 0)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	canvas.add_child(dim)
+
+	# ── ポラロイドカード ──
+	var card_w : float = 260.0
+	var card_h : float = 340.0
+	var card_x : float = (vp_size.x - card_w) * 0.5
+	var card_y : float = (vp_size.y - card_h) * 0.5
+
+	# ポラロイド内の影（立体感、先にadd）
+	var shadow := ColorRect.new()
+	shadow.size = Vector2(card_w, card_h)
+	shadow.position = Vector2(card_x + 4, card_y + 44.0)
+	shadow.color = Color(0, 0, 0, 0.3)
+	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	shadow.modulate.a = 0.0
+	canvas.add_child(shadow)
+
+	# 白枠（ポラロイド風）
+	var polaroid := ColorRect.new()
+	polaroid.size = Vector2(card_w, card_h)
+	polaroid.position = Vector2(card_x, card_y + 40.0)
+	polaroid.color = Color(0.92, 0.90, 0.85, 1.0)
+	polaroid.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	polaroid.modulate.a = 0.0
+	polaroid.pivot_offset = Vector2(card_w * 0.5, card_h * 0.5)
+	canvas.add_child(polaroid)
+
+	# VHS画像（ポラロイド内の写真部分）
+	var img_margin : float = 18.0
+	var img_w : float = card_w - img_margin * 2
+	var img_h : float = 170.0
+	var vhs_tex := load("res://assets/textures/item_vhs.jpg") as Texture2D
+	if vhs_tex:
+		var img_rect := TextureRect.new()
+		img_rect.texture = vhs_tex
+		img_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		img_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		img_rect.custom_minimum_size = Vector2(img_w, img_h)
+		img_rect.size = Vector2(img_w, img_h)
+		img_rect.position = Vector2(img_margin, img_margin)
+		img_rect.clip_contents = true
+		img_rect.modulate = Color(0.95, 0.9, 0.85, 1.0)
+		img_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		polaroid.add_child(img_rect)
+
+	# 「証拠VHS」タイトル（手書き風）
+	var title_lbl := Label.new()
+	title_lbl.text = "証拠VHS"
+	title_lbl.size = Vector2(card_w, 36)
+	title_lbl.position = Vector2(0, img_h + img_margin + 12)
+	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title_lbl.add_theme_font_size_override("font_size", 24)
+	title_lbl.add_theme_color_override("font_color", Color(0.15, 0.12, 0.1, 1.0))
+	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	polaroid.add_child(title_lbl)
+
+	# 「1994_10_記録」サブテキスト
+	var sub_lbl := Label.new()
+	sub_lbl.text = "1994_10_記録"
+	sub_lbl.size = Vector2(card_w, 24)
+	sub_lbl.position = Vector2(0, img_h + img_margin + 44)
+	sub_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sub_lbl.add_theme_font_size_override("font_size", 14)
+	sub_lbl.add_theme_color_override("font_color", Color(0.35, 0.3, 0.28, 1.0))
+	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	polaroid.add_child(sub_lbl)
+
+	# カウンター
+	var count_lbl := Label.new()
+	count_lbl.text = "%d / %d" % [count, total]
+	count_lbl.size = Vector2(card_w, 28)
+	count_lbl.position = Vector2(0, card_h - 38)
+	count_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	count_lbl.add_theme_font_size_override("font_size", 18)
+	count_lbl.add_theme_color_override("font_color", Color(0.5, 0.4, 0.35, 1.0))
+	count_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	polaroid.add_child(count_lbl)
+
+	# プログレスドット（●○○○○）
+	var dots_lbl := Label.new()
+	var dots_text := ""
+	for i in range(total):
+		dots_text += "●  " if i < count else "○  "
+	dots_lbl.text = dots_text.strip_edges()
+	dots_lbl.size = Vector2(card_w, 24)
+	dots_lbl.position = Vector2(0, card_h - 18)
+	dots_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	dots_lbl.add_theme_font_size_override("font_size", 12)
+	dots_lbl.add_theme_color_override("font_color", Color(0.6, 0.5, 0.4, 1.0))
+	dots_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	polaroid.add_child(dots_lbl)
+
+	# ── 画面上部「VHS を入手」テキスト（ポラロイドの外）──
+	var header := Label.new()
+	header.text = "VHS を入手"
+	header.size = Vector2(vp_size.x, 40)
+	header.position = Vector2(0, card_y - 50)
+	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	header.add_theme_font_size_override("font_size", 22)
+	header.add_theme_color_override("font_color", Color(1.0, 0.93, 0.7, 0.0))
+	header.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+	header.add_theme_constant_override("shadow_offset_x", 2)
+	header.add_theme_constant_override("shadow_offset_y", 2)
+	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	canvas.add_child(header)
+
+	# ══════════════════════════════════════════════
+	#  アニメーション
+	# ══════════════════════════════════════════════
+
+	# Phase 1: 暗幕 + ポラロイドがスッと現れる（微回転付き）
+	polaroid.rotation_degrees = randf_range(-4.0, 4.0)  # 微妙に傾いてるのがポラロイドっぽい
+	var tw_in := create_tween().set_parallel(true)
+	tw_in.tween_property(dim, "color:a", 0.55, 0.25)
+	tw_in.tween_property(polaroid, "modulate:a", 1.0, 0.3)
+	tw_in.tween_property(polaroid, "position:y", card_y, 0.35)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw_in.tween_property(shadow, "modulate:a", 1.0, 0.3)
+	tw_in.tween_property(shadow, "position:y", card_y + 4.0, 0.35)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw_in.tween_property(header, "theme_override_colors/font_color:a", 1.0, 0.3).set_delay(0.15)
+	await tw_in.finished
+
+	# Phase 2: カメラのシャッター音風SFX
+	SoundManager.play_sfx_file("metal/impactMetal_heavy_000.ogg")
+
+	# 白フラッシュ（カメラのフラッシュ風）
+	var flash := ColorRect.new()
+	flash.size = vp_size
+	flash.color = Color(1, 1, 1, 0.4)
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	canvas.add_child(flash)
+	var tw_flash := create_tween()
+	tw_flash.tween_property(flash, "color:a", 0.0, 0.3)
+	await tw_flash.finished
+	flash.queue_free()
+
+	# Phase 3: 1秒停止（じっくり見せる）
+	await get_tree().create_timer(1.0).timeout
+
+	# 全回収時: ポラロイドが金色に光る
+	if count >= total and total > 0:
+		var tw_glow := create_tween().set_loops(3)
+		tw_glow.tween_property(polaroid, "modulate", Color(1.2, 1.1, 0.8, 1.0), 0.12)
+		tw_glow.tween_property(polaroid, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
+		await tw_glow.finished
+
+	# Phase 4: フェードアウト（上に浮いて消える）
+	var tw_out := create_tween().set_parallel(true)
+	tw_out.tween_property(dim, "color:a", 0.0, 0.35)
+	tw_out.tween_property(polaroid, "modulate:a", 0.0, 0.3)
+	tw_out.tween_property(polaroid, "position:y", card_y - 30.0, 0.35)\
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tw_out.tween_property(polaroid, "scale", Vector2(0.9, 0.9), 0.35)
+	tw_out.tween_property(shadow, "modulate:a", 0.0, 0.3)
+	tw_out.tween_property(header, "theme_override_colors/font_color:a", 0.0, 0.25)
+	await tw_out.finished
+
+	canvas.queue_free()
+	player.input_disabled = false
+
+
+func _play_souko_exit() -> void:
+	## CP2廃倉庫ゴール到達時の演出（v103, v104）
+	player.input_disabled = true
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	await _run_chapter_opening("ch02_haison_souko_exit")
+	player.input_disabled = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
 func _show_caught() -> void:
-	# デバッグ: 自動リスタートは _DEBUG_AUTO_RESTART = true で有効
-	const _DEBUG_AUTO_RESTART := false
-	if _DEBUG_AUTO_RESTART:
-		await get_tree().create_timer(1.5).timeout
-		GameManager.restart()
-		return
 	_close_inventory()
-	caught_label.visible  = true
-	win_label.visible     = false
-	sub_label.text        = "カメラの電源が切れた..."
-	overlay_layer.visible = true
+	player.input_disabled = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+	# ── ゲーム世界を完全停止（音漏れ・3D描画を遮断）──
+	SoundManager.stop_all()
+	# YouTubeChrome・HUD・ScenarioUIのプロセスを止める
+	var chrome_node := get_node_or_null("YouTubeChrome")
+	if chrome_node:
+		chrome_node.process_mode = Node.PROCESS_MODE_DISABLED
+		chrome_node.visible = false
+	if is_instance_valid(hud):
+		hud.visible = false
+	if is_instance_valid(scenario_ui):
+		scenario_ui.visible = false
+	# ゴースト・プレイヤーのプロセス停止
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		ghost.process_mode = Node.PROCESS_MODE_DISABLED
+	player.process_mode = Node.PROCESS_MODE_DISABLED
+	# 3Dカメラの描画を止める（カメラを無効化）
+	var cam := player.get_node_or_null("Head/Camera3D")
+	if cam:
+		cam.current = false
+
+	var vp_size := get_viewport().get_visible_rect().size
+
+	# ══════════════════════════════════════════════════════════
+	#  Phase 0: 捕獲ショック（おばけ顔アップ演出）
+	# ══════════════════════════════════════════════════════════
+	SoundManager.play_sfx_file("metal/impactMetal_heavy_000.ogg")
+	await get_tree().create_timer(0.15).timeout
+
+	SoundManager.play_sfx_file("monster/Monster Growl (3).mp3")
+	await get_tree().create_timer(0.25).timeout
+
+	# ── おばけ顔レイヤー構築 ──
+	var face_canvas := CanvasLayer.new()
+	face_canvas.layer = 199
+	get_tree().root.add_child(face_canvas)
+
+	# 背景: 真っ黒
+	var bg_black := ColorRect.new()
+	bg_black.size = vp_size
+	bg_black.color = Color(0, 0, 0, 1)
+	bg_black.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	face_canvas.add_child(bg_black)
+
+	# おばけ顔画像
+	var face_tex : Texture2D = load("res://assets/textures/ghost_face.jpg")
+	var face_rect := TextureRect.new()
+	face_rect.texture = face_tex
+	face_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	face_rect.size = vp_size
+	face_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	face_rect.modulate = Color(0.7, 0.5, 0.6, 0)
+	face_rect.pivot_offset = vp_size * 0.5
+	face_canvas.add_child(face_rect)
+
+	# 赤オーバーレイ（恐怖感増幅）
+	var red_over := ColorRect.new()
+	red_over.size = vp_size
+	red_over.color = Color(0.4, 0, 0, 0)
+	red_over.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	face_canvas.add_child(red_over)
+
+	# スキャンライン（縞模様オーバーレイ）
+	var scanlines := ColorRect.new()
+	scanlines.size = vp_size
+	scanlines.color = Color(0, 0, 0, 0.15)
+	scanlines.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	face_canvas.add_child(scanlines)
+
+	# ── Phase 0a: 赤フラッシュ数回（顔はまだ見えない）──
+	for i in range(3):
+		if not is_inside_tree(): return
+		red_over.color = Color(0.6 + randf() * 0.3, 0, 0, 0.6)
+		SoundManager.play_sfx_file("metal/impactMetal_heavy_00%d.ogg" % (i % 3))
+		player.start_camera_shake(1.8, 0.12)
+		await get_tree().create_timer(0.07).timeout
+		red_over.color.a = 0.0
+		await get_tree().create_timer(0.08).timeout
+
+	# ── Phase 0b: おばけ顔ドーン！（グリッチ点滅）──
+	SoundManager.play_sfx_file("metal/impactMetal_heavy_002.ogg")
+	player.start_camera_shake(3.0, 0.4)
+
+	# グリッチ点滅: 顔が一瞬映って消える×3
+	for j in range(3):
+		if not is_inside_tree(): return
+		face_rect.modulate.a = 0.6 + randf() * 0.4
+		face_rect.position = Vector2(randf_range(-15, 15), randf_range(-10, 10))
+		red_over.color.a = 0.2 + randf() * 0.15
+		await get_tree().create_timer(0.04).timeout
+		face_rect.modulate.a = 0.0
+		face_rect.position = Vector2.ZERO
+		await get_tree().create_timer(0.06 - float(j) * 0.01).timeout
+
+	# ── Phase 0c: 顔が完全に表示（ネガポジ反転＋ズームイン）──
+	face_rect.modulate = Color(0.8, 0.6, 0.7, 1.0)
+	face_rect.position = Vector2.ZERO
+	red_over.color = Color(0.3, 0, 0, 0.25)
+	SoundManager.play_sfx_file("monster/Monster Growl (3).mp3")
+
+	# ズームイン + 微振動しながら1.5秒表示
+	var tw_zoom := create_tween()
+	tw_zoom.tween_property(face_rect, "scale", Vector2(1.3, 1.3), 1.5).set_ease(Tween.EASE_IN)
+
+	var face_t : float = 0.0
+	while face_t < 1.5:
+		if not is_inside_tree(): return
+		var dt : float = get_process_delta_time()
+		face_t += dt
+		# 微振動
+		face_rect.position = Vector2(randf_range(-4, 4), randf_range(-3, 3))
+		# 色揺らぎ（不安感）
+		var r : float = 0.7 + sin(face_t * 12.0) * 0.15
+		var g : float = 0.5 + sin(face_t * 8.0) * 0.1
+		face_rect.modulate = Color(r, g, 0.65, 1.0)
+		# 赤オーバーレイ脈動
+		red_over.color.a = 0.2 + sin(face_t * 6.0) * 0.1
+		await get_tree().process_frame
+
+	tw_zoom.kill()
+
+	# ── Phase 0d: ネガポジ反転フラッシュ → 暗転 ──
+	SoundManager.play_sfx_file("metal/impactMetal_heavy_001.ogg")
+	# 一瞬白飛び
+	face_rect.modulate = Color(2.0, 2.0, 2.0, 1.0)
+	red_over.color = Color(1, 1, 1, 0.5)
+	await get_tree().create_timer(0.06).timeout
+	# ネガポジ反転風（暗くて青）
+	face_rect.modulate = Color(0.2, 0.3, 0.5, 1.0)
+	red_over.color = Color(0, 0, 0.1, 0.4)
+	await get_tree().create_timer(0.08).timeout
+	# もう一回白
+	face_rect.modulate = Color(1.5, 1.2, 1.5, 0.8)
+	await get_tree().create_timer(0.05).timeout
+
+	# 暗転
+	face_rect.modulate.a = 0.0
+	red_over.color = Color(0, 0, 0, 0)
+	bg_black.color = Color(0, 0, 0, 1)
+	await get_tree().create_timer(0.6).timeout
+	face_canvas.queue_free()
+
+	# ══════════════════════════════════════════════════════════
+	#  Phase 1: EndingPlayerで「永遠の配信」を再生
+	# ══════════════════════════════════════════════════════════
+
+	# バッドエンドデータ（直接定義 — JSONに入れるとCP3開始時に強制発動するため）
+	var ending_title := "永遠の配信"
+	var sections : Array = [
+		{
+			"title": "", "mood": "dark", "wait": 0.8,
+			"lines": [
+				{"text": "視聴者A: しゅっち？", "pause": 1.0},
+				{"text": "配信民99: 映像止まったんだけど", "pause": 0.8},
+				{"text": "ゆきんこ77: 回線落ちた？", "pause": 0.8},
+				{"text": "まっちゃん: 画面真っ暗", "pause": 1.0},
+			]
+		},
+		{
+			"title": "", "mood": "fear",
+			"image": "res://assets/textures/bad_end_eternal.jpg",
+			"wait": 0.8,
+			"lines": [
+				{"text": "視聴者A: あ、映った", "pause": 0.8},
+				{"text": "配信民99: しゅっち映ってるけど……動かなくない？", "pause": 1.0},
+				{"text": "ゆきんこ77: 目が……こっち見てる", "pause": 1.0},
+				{"text": "まっちゃん: なんで笑ってるの", "pause": 1.2},
+				{"text": "配信民99: コメント読まないの初めてじゃね", "pause": 1.0},
+				{"text": "まっちゃん: え……泣いてる？", "pause": 1.2},
+				{"text": "ゆきんこ77: 「たすけて」って言ってない？", "pause": 1.2},
+				{"text": "視聴者A: 配信閉じれないんだけど", "pause": 1.0},
+				{"text": "配信民99: ブラウザ落ちない 何これ", "pause": 1.5},
+			]
+		},
+		{
+			"title": "", "mood": "fear",
+			"image": "res://assets/textures/bad_end_eternal.jpg",
+			"wait": 1.5,
+			"lines": [
+				{"text": "K: 止まらないよ", "pause": 2.5, "emphasis": true},
+				{"text": "K: 望んだのは君だろう", "pause": 2.5, "emphasis": true},
+				{"text": "K: 永遠に、見てもらえるよ", "pause": 3.0, "emphasis": true},
+			]
+		},
+	]
+
+	# EndingPlayerで再生
+	var ep := CanvasLayer.new()
+	ep.set_script(EndingPlayerScript)
+	get_tree().root.add_child(ep)
+	await ep.play(sections, ending_title)
+
+	# 再生完了 → タイトルに戻るボタン
+	await get_tree().create_timer(1.0).timeout
+
+	var btn_canvas := CanvasLayer.new()
+	btn_canvas.layer = 160
+	get_tree().root.add_child(btn_canvas)
+
+	var retry_btn := Button.new()
+	retry_btn.text = "タイトルに戻る"
+	retry_btn.add_theme_font_size_override("font_size", 18)
+	retry_btn.size = Vector2(220, 44)
+	retry_btn.position = Vector2((vp_size.x - 220) * 0.5, vp_size.y * 0.70)
+	retry_btn.modulate.a = 0.0
+	btn_canvas.add_child(retry_btn)
+
+	var tw_btn := create_tween()
+	tw_btn.tween_property(retry_btn, "modulate:a", 1.0, 0.5)
+	await tw_btn.finished
+
+	retry_btn.pressed.connect(func() -> void:
+		await ep.fade_out(1.5)
+		btn_canvas.queue_free()
+		get_tree().change_scene_to_file("res://scenes/Opening.tscn")
+	)
+
+
+# ── バッドエンド補助関数 ──────────────────────────────────
+
+func _format_number(n: int) -> String:
+	var s := str(n)
+	var result := ""
+	var count := 0
+	for i in range(s.length() - 1, -1, -1):
+		if count > 0 and count % 3 == 0:
+			result = "," + result
+		result = s[i] + result
+		count += 1
+	return result
 
 
 func _show_win() -> void:
@@ -758,21 +1365,8 @@ func _close_inventory() -> void:
 		inv_ui.close_inventory()
 
 
-func _on_player_hit(count: int) -> void:
-	## ゴーストに当たった時のリアクション（3回目は trigger_caught に移行）
-	hud.trigger_chat_event("ghost_spotted")
-	match count:
-		1:
-			hud.show_monologue("なっ…なんだこの人形は！？動いてる！？逃げろ！！")
-			await get_tree().create_timer(2.8).timeout
-			hud.hide_monologue()
-			hud.show_monologue("…大丈夫。まだ大丈夫。あと2回は耐えられる")
-			await get_tree().create_timer(2.0).timeout
-			hud.hide_monologue()
-		2:
-			hud.show_monologue("また来た！！もう一回当たったら終わりだ！！")
-			await get_tree().create_timer(2.5).timeout
-			hud.hide_monologue()
+func _on_player_hit(_count: int) -> void:
+	pass
 
 
 func _on_scenario_triggered(scenario: Dictionary) -> void:

@@ -113,6 +113,7 @@ func run_from_path(json_path: String) -> void:
 
 	var data   : Dictionary = json.get_data()
 	var events : Array      = data.get("events", [])
+	var _voice_dir : String = data.get("voice_dir", "res://assets/audio/voice/ch01/")
 
 	# ラベル → インデックスのマップを事前構築
 	var label_map : Dictionary = {}
@@ -178,7 +179,7 @@ func run_from_path(json_path: String) -> void:
 				var _vname : String = ev.get("voice", "")
 				if not _vname.is_empty():
 					SoundManager.play_voice(
-						"res://assets/audio/voice/ch01/" + _vname + ".wav")
+						_voice_dir + _vname + ".wav")
 				# ボイス再生はノンブロッキング → wait イベント側で吸収
 
 			"say_clear":
@@ -285,11 +286,10 @@ func run_from_path(json_path: String) -> void:
 						float(ev.get("z", 0.0))
 					)
 					var nav_label : String = ev.get("label", "NEXT")
-					var nav_radius : float = float(ev.get("radius", 3.0))
 					# プレイヤー操作を有効化
 					player.input_disabled = false
 					Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-					hud.start_nav(nav_pos, nav_label, nav_radius)
+					hud.start_nav(nav_pos, nav_label, Color(0.2, 0.85, 0.3), player)
 					await hud.nav_reached
 					# 到達後、セリフ等のためにwaitを挟まない
 
