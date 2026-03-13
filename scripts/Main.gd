@@ -139,6 +139,10 @@ func _ready() -> void:
 		return
 
 	# マップ上でキャラのセリフによる状況説明（CP3のみここに到達）
+	if not is_cinematic:
+		player.input_disabled = false
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
 	hud.play_monologue()
 
 	# シナリオシステム接続
