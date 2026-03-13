@@ -28,6 +28,6 @@ fog_light_color = Color(0.08, 0.06, 0.10, 1)
 fog_aerial_perspective = 1.0
 volumetric_fog_enabled = true
 volumetric_fog_density = 0.03
-vhs_overlay = true
+vhs_overlay = false
 monologue_lines = PackedStringArray()
 next_chapter_id = "ch03_minka"

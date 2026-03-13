@@ -33,7 +33,8 @@ input, select, textarea { font-family: var(--font); font-size: inherit }
 /* ── ヘッダー ── */
 .header { background: var(--ff-panel-bg); padding: 0 20px; display: flex; align-items: center; height: 54px; border-bottom: 2px solid var(--ff-border-outer); box-shadow: inset 0 -1px 0 var(--ff-border-inner); flex-shrink: 0; gap: 12px }
 .logo { font-size: 1.25rem; font-weight: 800; background: var(--accent-g); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -.5px; white-space: nowrap }
-.header select { background: rgba(0,0,0,.3); color: var(--tx0); border: 1px solid var(--ff-border-inner); border-radius: 4px; padding: 6px 12px; font-size: 1rem }
+.header select { background: rgba(0,0,0,.3); color: var(--tx0); border: 1px solid var(--ff-border-inner); border-radius: 4px; padding: 6px 12px; font-size: .95rem; min-width: 260px }
+.header select option { padding: 4px 8px }
 .header select:focus { outline: none; border-color: var(--accent) }
 .chapter-name { color: var(--tx2); font-size: .95rem }
 .spacer { flex: 1 }
@@ -360,6 +361,23 @@ let currentSectionIdx=-1; // -1 = 全表示
 let clipboard=[]; // コピーしたイベントのディープコピー
 let _lastClickIdx=-1; // Shift選択用
 
+// ファイル名→日本語表示名マッピング
+const FILE_LABELS={
+  'opening.json':'オープニング',
+  'ch01_entrance.json':'CP1 — 配信開始・廃村入口',
+  'ch01_haison_souko.json':'CP1 — 廃倉庫',
+  'ch_test_toilet.json':'CP1 — トイレ（テスト）',
+  'ch02_haison_naibu.json':'CP2 — 廃村内部',
+  'ch02_yashiki.json':'CP2 — 村長の屋敷',
+  'ch03_minka.json':'CP3 — 民家探索',
+  'ch04_haison_naibu_event.json':'CP4 — 廃村内部（真実）',
+  'ch04_jinja.json':'CP4 — 神社',
+  'ch04_kirihara_jinja.json':'CP4 — 桐原神社',
+  'ch05_dasshutsu.json':'CP5 — 脱出・エンディング',
+  'ch05_haison_dasshutsu.json':'CP5 — 最終分岐・追跡'
+};
+function fileLabel(f){return FILE_LABELS[f]||f.replace('.json','')}
+
 const CATS=[
   {id:'say',label:'セリフ',color:'#e8a430',cls:'say',types:['say','say_clear']},
   {id:'chat',label:'チャット',color:'#4a8fd4',cls:'chat',types:['chat','superchat']},
@@ -392,7 +410,7 @@ async function loadFileList(){
     const { files } = await r.json();
     files.forEach(f => {
       const o = document.createElement('option');
-      o.value = f; o.textContent = f.replace('.json','');
+      o.value = f; o.textContent = fileLabel(f);
       sel.appendChild(o);
     });
     if (sel.options.length) {
@@ -404,7 +422,7 @@ async function loadFileList(){
     try {
       const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${DIR}?ref=${BR}`);
       if (!r.ok) throw new Error(r.status);
-      (await r.json()).filter(f=>f.name.endsWith('.json')).forEach(f=>{const o=document.createElement('option');o.value=f.name;o.textContent=f.name.replace('.json','');sel.appendChild(o)});
+      (await r.json()).filter(f=>f.name.endsWith('.json')).forEach(f=>{const o=document.createElement('option');o.value=f.name;o.textContent=fileLabel(f.name);sel.appendChild(o)});
       if(sel.options.length) await loadFile(sel.options[0].value);
       else { setStatus('JSONなし'); $('#loadingView').innerHTML='<div class="empty-state">JSONがありません</div>'; }
     } catch(e2) {

@@ -415,9 +415,6 @@
       "sec": 0.4
     },
     {
-      "type": "flashlight_flicker"
-    },
-    {
       "type": "wait",
       "sec": 0.5
     },
@@ -606,11 +603,6 @@
       "sound": "door_creak"
     },
     {
-      "type": "horror_glitch",
-      "intensity": 2,
-      "count": 1
-    },
-    {
       "type": "chat",
       "msg": "日記！！やばいやつ！！",
       "user": "ホラー好き太郎",
@@ -722,11 +714,6 @@
     {
       "type": "wait",
       "sec": 2.0
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 3,
-      "count": 1
     },
     {
       "type": "chat",
@@ -1038,11 +1025,6 @@
       "sec": 0.4
     },
     {
-      "type": "horror_glitch",
-      "intensity": 3,
-      "count": 2
-    },
-    {
       "type": "wait",
       "sec": 0.3
     },
@@ -1216,11 +1198,6 @@
     {
       "type": "wait",
       "sec": 2.5
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 5,
-      "count": 3
     },
     {
       "type": "sfx",
@@ -1551,21 +1528,9 @@
       "_": "── 鏡の恐怖演出 ──"
     },
     {
-      "type": "horror_tint"
-    },
-    {
       "type": "sfx",
       "sound": "monster_growl",
       "vol": -8
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 8,
-      "count": 5
-    },
-    {
-      "type": "scare_flash",
-      "color": "red"
     },
     {
       "type": "wait",
@@ -1580,13 +1545,6 @@
     {
       "type": "wait",
       "sec": 2.0
-    },
-    {
-      "type": "flashlight_flicker"
-    },
-    {
-      "type": "horror_flash",
-      "dur": 0.3
     },
     {
       "type": "chat",
@@ -1628,11 +1586,6 @@
       "sec": 0.5
     },
     {
-      "type": "horror_glitch",
-      "intensity": 6,
-      "count": 3
-    },
-    {
       "type": "say",
       "text": "一人じゃない……鏡の中に何人もいる！！全員首がない！！全員鎌を持ってる！！",
       "reading": "一人じゃない……鏡の中に何人もいる！！全員くびがない！！全員鎌を持ってる！！",
@@ -1646,9 +1599,6 @@
       "type": "sfx",
       "sound": "monster_growl",
       "vol": -6
-    },
-    {
-      "type": "flashlight_flicker"
     },
     {
       "type": "chat",
@@ -1702,10 +1652,6 @@
       "dur": 0.4
     },
     {
-      "type": "horror_flash",
-      "dur": 0.2
-    },
-    {
       "type": "wait",
       "sec": 0.5
     },
@@ -1717,15 +1663,6 @@
     {
       "type": "wait",
       "sec": 1.5
-    },
-    {
-      "type": "horror_glitch",
-      "intensity": 10,
-      "count": 4
-    },
-    {
-      "type": "scare_flash",
-      "color": "red"
     },
     {
       "type": "sfx",
@@ -1761,9 +1698,6 @@
     {
       "type": "wait",
       "sec": 0.5
-    },
-    {
-      "type": "horror_tint_clear"
     },
     {
       "type": "say_clear"
@@ -1873,11 +1807,6 @@
       "sec": 0.4
     },
     {
-      "type": "horror_glitch",
-      "intensity": 4,
-      "count": 2
-    },
-    {
       "type": "chat",
       "msg": "鎌を研いでいる",
       "user": "K",
@@ -1934,9 +1863,6 @@
     {
       "type": "wait",
       "sec": 0.5
-    },
-    {
-      "type": "flashlight_flicker"
     },
     {
       "type": "say",
