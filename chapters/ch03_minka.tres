@@ -80,5 +80,5 @@ background_color = Color(0.15, 0.15, 0.22, 1)
 fog_enabled = false
 fog_density = 0.01
 vhs_overlay = true
-monologue_lines = PackedStringArray("ここが村の奥の民家か……", "儀式の道具を全部見つけないと神社の門は開かない", "案山子に見つからないように……慎重に探そう")
+monologue_lines = PackedStringArray("ここが村の奥の民家か……。神社の封印を解くための、あの不気味な道具を探さないと", "『眼球の頭』に『錆びた鎌』……それに『写し鏡の御札』だったっけ。おばあちゃん、なんであんな不気味な物を持ってこさせたんだろ……", "……変な視線を感じる。案山子に見つからないように、慎重に奥まで調べよう")
 next_chapter_id = "ch04_jinja"
