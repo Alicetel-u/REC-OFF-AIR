@@ -1126,6 +1126,7 @@ body.light .preset-custom-input input { background:rgba(255,255,255,.85); border
       <option value="">-- チャプター選択 --</option>
       <optgroup label="── 本編 (現行フロー) ──">
         <option value="ch01_entrance">CP1: 廃村入口</option>
+        <option value="ch02_mura_tansaku">CP2: 村の探索</option>
         <option value="ch03_minka">CP3: 民家探索</option>
         <option value="ch04_jinja">CP4: 桐原神社</option>
         <option value="ch05_dasshutsu">CP5: 脱出</option>
@@ -3113,9 +3114,35 @@ cv.addEventListener("contextmenu", (e) => e.preventDefault());
 // ═══════════════════════════════════════════════════
 // ファイル入出力
 // ═══════════════════════════════════════════════════
+// マップ→本編チャプター逆引き（本編優先）
+const MAP_TO_CHAPTER = {
+  stage_iriguchi: "ch01_entrance",
+  kirihara_village: "ch02_mura_tansaku",
+  stage_naibu: "ch03_minka",
+  stage_escape: "ch05_dasshutsu",
+  stage_yashiki: "ch02_yashiki",
+  stage_souko: "ch01_haison_souko",
+  public_toilet: "ch_test_toilet",
+};
 function onMapChange() {
-  currentMap = MAPS[document.getElementById("map-select").value] || MAPS.empty;
+  const mapVal = document.getElementById("map-select").value;
+  currentMap = MAPS[mapVal] || MAPS.empty;
   restoreSpawnFromJson();
+  // マップ切替時にチャプターも連動
+  const autoChapter = MAP_TO_CHAPTER[mapVal];
+  if (autoChapter) {
+    const dSel = document.getElementById("dialogue-select");
+    if (dSel.value !== autoChapter) {
+      dSel.value = autoChapter;
+      onDialogueSelect().then(() => {
+        const ceSel = document.getElementById("ce-chapter-select");
+        if (ceSel) ceSel.value = autoChapter;
+        if (typeof ceSyncMonitorSelects === "function") ceSyncMonitorSelects();
+        if (typeof ceRender === "function") ceRender();
+      });
+      return;
+    }
+  }
   // セクション分割をリセットして全イベント表示
   events = allEvents;
   sections = [];
@@ -3651,6 +3678,7 @@ async function onDialogueSelect() {
   const autoMap = {
     // 本編
     ch01_entrance: "stage_iriguchi",
+    ch02_mura_tansaku: "kirihara_village",
     ch03_minka: "stage_naibu",
     ch04_jinja: "stage_naibu",
     ch05_dasshutsu: "stage_escape",
@@ -3681,6 +3709,7 @@ async function onDialogueSelect() {
 const CHAPTER_LABELS = {
   // 本編
   ch01_entrance:"CP1: 廃村入口",
+  ch02_mura_tansaku:"CP2: 村の探索",
   ch03_minka:"CP3: 民家探索",
   ch04_jinja:"CP4: 桐原神社",
   ch05_dasshutsu:"CP5: 脱出",
