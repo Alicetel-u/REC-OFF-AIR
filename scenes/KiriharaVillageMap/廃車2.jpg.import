@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://caivndhn8lkib"
-path="res://scenes/KiriharaVillageMap/.godot/imported/廃車2.jpg-8d454de0f007418fad19e644033e1c46.ctex"
+path="res://.godot/imported/廃車2.jpg-0a411c6301ab502ee3a7085d5909f278.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://scenes/KiriharaVillageMap/廃車2.jpg"
-dest_files=["res://scenes/KiriharaVillageMap/.godot/imported/廃車2.jpg-8d454de0f007418fad19e644033e1c46.ctex"]
+dest_files=["res://.godot/imported/廃車2.jpg-0a411c6301ab502ee3a7085d5909f278.ctex"]
 
 [params]
 

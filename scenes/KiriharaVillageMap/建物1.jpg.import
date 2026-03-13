@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://br5mwmnt0l22x"
-path="res://scenes/KiriharaVillageMap/.godot/imported/建物1.jpg-cb94f124d6528616b3afaf9dbc146535.ctex"
+path="res://.godot/imported/建物1.jpg-53e16b49a9d32d647f3b35e4800c311b.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://scenes/KiriharaVillageMap/建物1.jpg"
-dest_files=["res://scenes/KiriharaVillageMap/.godot/imported/建物1.jpg-cb94f124d6528616b3afaf9dbc146535.ctex"]
+dest_files=["res://.godot/imported/建物1.jpg-53e16b49a9d32d647f3b35e4800c311b.ctex"]
 
 [params]
 

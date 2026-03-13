@@ -9,7 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://b38bhc6yuvl2f" path="res://scenes/KiriharaVillageMap/草むら.glb" id="7_grass"]
 [ext_resource type="PackedScene" uid="uid://sp7r2d81ik8i" path="res://scenes/KiriharaVillageMap/仏像.glb" id="8_buddha"]
 [ext_resource type="PackedScene" uid="uid://bsdkj8qdskxow" path="res://scenes/KiriharaVillageMap/コンクリオブジェクトl.glb" id="9_con"]
-[ext_resource type="Script" uid="uid://d2pkskogdy3lt" path="res://scenes/KiriharaVillageMap/Player.gd" id="10_script"]
 [ext_resource type="PackedScene" uid="uid://bi5sxldlunfjx" path="res://scenes/KiriharaVillageMap/建物5.glb" id="11"]
 [ext_resource type="PackedScene" uid="uid://chw5txmfr7mke" path="res://scenes/KiriharaVillageMap/建物6.glb" id="12"]
 [ext_resource type="PackedScene" uid="uid://baehp5ofx6wvb" path="res://scenes/KiriharaVillageMap/建物7.glb" id="13"]
@@ -24,31 +23,6 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
 size = Vector3(1000, 5, 1000)
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_dark"]
-sky_top_color = Color(0.01, 0.01, 0.02, 1)
-sky_horizon_color = Color(0.02, 0.02, 0.05, 1)
-ground_bottom_color = Color(0, 0, 0.01, 1)
-
-[sub_resource type="Sky" id="Sky_night"]
-sky_material = SubResource("ProceduralSkyMaterial_dark")
-
-[sub_resource type="Environment" id="Environment_horror"]
-background_mode = 2
-background_color = Color(0.5, 0.5, 0.5, 1)
-sky = SubResource("Sky_night")
-ambient_light_source = 2
-ambient_light_color = Color(0.02, 0.02, 0.05, 1)
-ambient_light_energy = 0.2
-fog_enabled = true
-fog_light_color = Color(0.01, 0.01, 0.02, 1)
-fog_density = 0.08
-volumetric_fog_enabled = true
-volumetric_fog_density = 0.06
-volumetric_fog_albedo = Color(0.1, 0.1, 0.15, 1)
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
-radius = 0.4
-height = 1.8
 
 [node name="VillageMap" type="Node3D" unique_id=1245464996]
 script = ExtResource("1_script")
@@ -64,35 +38,6 @@ utility_pole_model = ExtResource("17_pole")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.5, 0)
 shape = SubResource("BoxShape3D_ground")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2029924684]
-transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 20, 0)
-light_color = Color(0.7, 0.8, 1, 1)
-light_energy = 0.15
-shadow_enabled = true
-shadow_opacity = 0.8
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1591833974]
-environment = SubResource("Environment_horror")
-
-[node name="Player" type="CharacterBody3D" parent="." unique_id=1005480877]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-script = ExtResource("10_script")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=1426679933]
-shape = SubResource("CapsuleShape3D_player")
-
-[node name="Head" type="Node3D" parent="Player" unique_id=42435264]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
-
-[node name="Camera3D" type="Camera3D" parent="Player/Head" unique_id=1114357078]
-transform = Transform3D(-1, 0, 1.22465e-16, 0, 1, 0, -1.22465e-16, 0, -1, 0, 0, 0)
-
-[node name="SpotLight3D" type="SpotLight3D" parent="Player/Head/Camera3D" unique_id=321654971]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3313551, 6.1742573, -1.7693293)
-light_energy = 5.0
-shadow_enabled = true
-spot_range = 40.0
-spot_angle = 40.0
 
 [node name="ManualBuilding_House1" parent="." unique_id=1602491166 instance=ExtResource("2_b1")]
 transform = Transform3D(44.058136, 0, 0, 0, 44.058136, 0, 0, 0, 44.058136, -16.63717, 3.734393, -0.0115)

@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://by458ady4bv1p"
-path="res://scenes/KiriharaVillageMap/.godot/imported/幸福通り.png-6c5b1dbcda793247977f339e86d5aecb.ctex"
+path="res://.godot/imported/幸福通り.png-fd451edc2e96079a0256b5c2905c65b7.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://scenes/KiriharaVillageMap/幸福通り.png"
-dest_files=["res://scenes/KiriharaVillageMap/.godot/imported/幸福通り.png-6c5b1dbcda793247977f339e86d5aecb.ctex"]
+dest_files=["res://.godot/imported/幸福通り.png-fd451edc2e96079a0256b5c2905c65b7.ctex"]
 
 [params]
 

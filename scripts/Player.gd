@@ -72,14 +72,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	if input_disabled:
 		return
 
-	# マウスルックはCAPTUREDモード時のみ（VISIBLEモードでは無効）
+	if event.is_action_pressed("toggle_flashlight"):
+		_toggle_flashlight()
+
+
+func _input(event: InputEvent) -> void:
+	# マウスルックは _input で処理（GUI Controlに消費されないように）
+	if GameManager.state != GameManager.State.PLAYING:
+		return
+	if input_disabled:
+		return
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * MOUSE_SENS)
 		head.rotate_x(-event.relative.y * MOUSE_SENS)
 		head.rotation.x = clamp(head.rotation.x, HEAD_PITCH_MIN, HEAD_PITCH_MAX)
-
-	if event.is_action_pressed("toggle_flashlight"):
-		_toggle_flashlight()
 
 
 func _toggle_flashlight() -> void:

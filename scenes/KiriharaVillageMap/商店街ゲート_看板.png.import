@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bucxfyvvuj4dm"
-path="res://scenes/KiriharaVillageMap/.godot/imported/商店街ゲート_看板.png-b1f20f2ba79ed2655e32256b95abebbc.ctex"
+path="res://.godot/imported/商店街ゲート_看板.png-40c546db1212810c85b3895bc85a58a0.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://scenes/KiriharaVillageMap/商店街ゲート_看板.png"
-dest_files=["res://scenes/KiriharaVillageMap/.godot/imported/商店街ゲート_看板.png-b1f20f2ba79ed2655e32256b95abebbc.ctex"]
+dest_files=["res://.godot/imported/商店街ゲート_看板.png-40c546db1212810c85b3895bc85a58a0.ctex"]
 
 [params]
 

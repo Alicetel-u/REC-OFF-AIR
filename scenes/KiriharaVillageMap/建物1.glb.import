@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://yjwxcxm70ccq"
-path="res://scenes/KiriharaVillageMap/.godot/imported/建物1.glb-b6bd7a1d1dc41d46357945390a4d40fd.scn"
+path="res://.godot/imported/建物1.glb-614264a531ea82bb3e7d3b11936fdc91.scn"
 
 [deps]
 
 source_file="res://scenes/KiriharaVillageMap/建物1.glb"
-dest_files=["res://scenes/KiriharaVillageMap/.godot/imported/建物1.glb-b6bd7a1d1dc41d46357945390a4d40fd.scn"]
+dest_files=["res://.godot/imported/建物1.glb-614264a531ea82bb3e7d3b11936fdc91.scn"]
 
 [params]
 

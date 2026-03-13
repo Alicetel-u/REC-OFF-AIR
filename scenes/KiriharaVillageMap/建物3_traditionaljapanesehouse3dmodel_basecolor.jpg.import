@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c853wp5wv6v4b"
-path.s3tc="res://scenes/KiriharaVillageMap/.godot/imported/建物3_traditionaljapanesehouse3dmodel_basecolor.jpg-36aa4180b3365e9eab483b6f17431df1.s3tc.ctex"
+path.s3tc="res://.godot/imported/建物3_traditionaljapanesehouse3dmodel_basecolor.jpg-060dc015c499f1d1f907aab1f3a18be6.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -15,7 +15,7 @@ generator_parameters={
 [deps]
 
 source_file="res://scenes/KiriharaVillageMap/建物3_traditionaljapanesehouse3dmodel_basecolor.jpg"
-dest_files=["res://scenes/KiriharaVillageMap/.godot/imported/建物3_traditionaljapanesehouse3dmodel_basecolor.jpg-36aa4180b3365e9eab483b6f17431df1.s3tc.ctex"]
+dest_files=["res://.godot/imported/建物3_traditionaljapanesehouse3dmodel_basecolor.jpg-060dc015c499f1d1f907aab1f3a18be6.s3tc.ctex"]
 
 [params]
 

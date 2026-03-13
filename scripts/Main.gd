@@ -11,7 +11,7 @@ const _DANK_ROW_H     = 44
 
 # 演出終了後に自動で次チャプターへ進むチャプターID一覧（CP3のみ手動＝プレイアブル）
 const AUTO_PROGRESS_CHAPTERS : Array[String] = [
-	"ch02_mura_tansaku",
+	#"ch02_mura_tansaku",  # CP2作り直し中のため一時無効化
 	"ch04_jinja",
 	"ch05_dasshutsu",
 ]

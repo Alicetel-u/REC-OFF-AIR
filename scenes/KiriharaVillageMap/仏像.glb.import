@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://sp7r2d81ik8i"
-path="res://scenes/KiriharaVillageMap/.godot/imported/仏像.glb-05368c1f5a3b2c53445fbd25d59c4d2e.scn"
+path="res://.godot/imported/仏像.glb-4d9e29544a028abf584561c56c0f1172.scn"
 
 [deps]
 
 source_file="res://scenes/KiriharaVillageMap/仏像.glb"
-dest_files=["res://scenes/KiriharaVillageMap/.godot/imported/仏像.glb-05368c1f5a3b2c53445fbd25d59c4d2e.scn"]
+dest_files=["res://.godot/imported/仏像.glb-4d9e29544a028abf584561c56c0f1172.scn"]
 
 [params]
 

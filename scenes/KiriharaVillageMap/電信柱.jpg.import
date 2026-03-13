@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bqjdwb1h6se6a"
-path="res://scenes/KiriharaVillageMap/.godot/imported/電信柱.jpg-78b11bbf9c0aaa96147e28f9e24fa5ad.ctex"
+path="res://.godot/imported/電信柱.jpg-1d9a3755f3f435b23485775dcb4d1a59.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://scenes/KiriharaVillageMap/電信柱.jpg"
-dest_files=["res://scenes/KiriharaVillageMap/.godot/imported/電信柱.jpg-78b11bbf9c0aaa96147e28f9e24fa5ad.ctex"]
+dest_files=["res://.godot/imported/電信柱.jpg-1d9a3755f3f435b23485775dcb4d1a59.ctex"]
 
 [params]
 

@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://bnmi7mhc0qkrq"
-path="res://scenes/KiriharaVillageMap/.godot/imported/廃車2.glb-8a4c6f800a8714bbdde437b015dd6447.scn"
+path="res://.godot/imported/廃車2.glb-4a095a6381e01fc59d00715ed86658e3.scn"
 
 [deps]
 
 source_file="res://scenes/KiriharaVillageMap/廃車2.glb"
-dest_files=["res://scenes/KiriharaVillageMap/.godot/imported/廃車2.glb-8a4c6f800a8714bbdde437b015dd6447.scn"]
+dest_files=["res://.godot/imported/廃車2.glb-4a095a6381e01fc59d00715ed86658e3.scn"]
 
 [params]
 
