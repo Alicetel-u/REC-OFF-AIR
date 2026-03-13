@@ -93,5 +93,5 @@ directional_light_energy = 0.0
 background_color = Color(0.3, 0.35, 0.5, 1)
 fog_enabled = false
 fog_density = 0.01
-monologue_lines = PackedStringArray("DMの情報通り、倉庫に証拠のテープがあった", "でも様子がおかしい…自分が30年前のビデオに映ってるなんて", "急いでここを出よう。神社なら上映できるはずだ")
+monologue_lines = PackedStringArray("倉庫の中のどこかに「証拠」があるはずだ", "懐中電灯で照らして探してみよう")
 next_chapter_id = "ch02_mura_tansaku"

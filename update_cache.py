@@ -9,6 +9,7 @@ def update_cache():
     files = [
         'ch01_entrance.json',
         'ch01_haison_souko.json',
+        'ch01_haison_souko_found.json',
         'ch02_haison_naibu.json',
         'ch02_yashiki.json',
         'ch03_minka.json',

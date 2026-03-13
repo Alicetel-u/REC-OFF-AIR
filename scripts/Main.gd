@@ -11,7 +11,6 @@ const _DANK_ROW_H     = 44
 
 # 演出終了後に自動で次チャプターへ進むチャプターID一覧（CP2・CP3は手動＝プレイアブル）
 const AUTO_PROGRESS_CHAPTERS : Array[String] = [
-	"ch01_haison_souko",
 	"ch04_jinja",
 	"ch05_dasshutsu",
 ]
@@ -172,6 +171,7 @@ func _ready() -> void:
 
 	# ゴーストはVHS2個回収で有効化（_on_ghosts_awaken で処理）
 	GameManager.item_collected.connect(_on_item_for_ghost_awaken)
+	GameManager.item_collected.connect(_on_item_collected_warehouse)
 
 	# 出口方向矢印用: プレイヤーと出口位置をHUDに渡す
 	var exit_pos : Vector3 = chapter.exit_position if chapter else Vector3(23, 1.5, 15)
@@ -651,6 +651,23 @@ func _on_ghost_spotted() -> void:
 
 func _on_ghost_lost() -> void:
 	hud.trigger_chat_event("ghost_lost")
+
+
+func _on_item_collected_warehouse(count: int, _total: int) -> void:
+	## 廃倉庫チャプター専用：VHS発見時に不気味な映像演出を再生
+	if GameManager.current_chapter and GameManager.current_chapter.chapter_id == "ch01_haison_souko":
+		if count >= 1:
+			player.input_disabled = true
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			await _run_chapter_opening("ch01_haison_souko_found")
+			
+			# 演出終了後、操作を戻して自力で脱出させる
+			player.input_disabled = false
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			hud.show_monologue("やばい、ここを出ないと……！出口へ急ごう！")
+			await get_tree().create_timer(3.0).timeout
+			if is_instance_valid(hud):
+				hud.hide_monologue()
 
 
 func _show_caught() -> void:
