@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3 uid="uid://c7v6p5x8m2q3r"]
+
+[ext_resource type="Script" path="res://scenes/KiriharaVillageMap/UtilityPole.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://giklcd0d6i5c" path="res://scenes/KiriharaVillageMap/電信柱_basecolor.png" id="2_tex"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pole_large"]
+top_radius = 0.28
+bottom_radius = 0.35
+height = 10.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mat_rusty"]
+albedo_texture = ExtResource("2_tex")
+uv1_scale = Vector3(1, 6, 1)
+uv1_triplanar = true
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_crossarm_large"]
+size = Vector3(2.5, 0.25, 0.25)
+
+[node name="UtilityPole" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="PoleMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+mesh = SubResource("CylinderMesh_pole_large")
+surface_material_override/0 = SubResource("StandardMaterial3D_mat_rusty")
+
+[node name="CrossArm" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.5, 0)
+mesh = SubResource("BoxMesh_crossarm_large")
+surface_material_override/0 = SubResource("StandardMaterial3D_mat_rusty")
