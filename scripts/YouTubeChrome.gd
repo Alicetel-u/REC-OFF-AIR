@@ -1078,8 +1078,6 @@ func _on_stage_selected(id: int) -> void:
 		get_tree().reload_current_scene()
 	else:
 		pass
-				GameManager.chapter_index = -1
-				get_tree().reload_current_scene()
 
 
 func _hbox(parent: Node, sep: int) -> HBoxContainer:
