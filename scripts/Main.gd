@@ -55,6 +55,15 @@ func _ready() -> void:
 		push_error("Main: chapter data failed to load — aborting _ready()")
 		return
 
+	# CP2: .tresがGodotエディタに上書きされるためコードで強制設定
+	if chapter.chapter_id == "ch02_mura_tansaku":
+		chapter.stage_scene_path = "res://scenes/KiriharaVillageMap/VillageMap.tscn"
+		chapter.player_spawn = Vector3(0.0, 1.0, 7.5)
+		var vhs_positions := PackedVector3Array()
+		vhs_positions.append(Vector3(-24.25, 1, -11.25))
+		chapter.item_positions = vhs_positions
+		chapter.exit_position = Vector3(0.25, 1.5, 17.5)
+
 	# items_total を generate() より前に設定（Exit._ready() が参照するため）
 	GameManager.items_total = chapter.item_positions.size()
 	var result: Dictionary = stage_gen.generate(chapter)
@@ -72,12 +81,19 @@ func _ready() -> void:
 	GameManager.player_won.connect(_show_win)
 	GameManager.player_hit.connect(_on_player_hit)
 
-	# ゴーストをイントロ中は停止＋透明化（VHS2個回収で出現）
+	# ゴースト初期化
+	var cp2_immediate_ghost : bool = chapter.chapter_id == "ch02_mura_tansaku"
 	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
 		ghost.ghost_spotted_player.connect(_on_ghost_spotted)
 		ghost.ghost_lost_player.connect(_on_ghost_lost)
-		ghost.process_mode = Node.PROCESS_MODE_DISABLED
-		ghost.visible = false
+		if cp2_immediate_ghost:
+			# CP2: みゆきは最初からアクティブ
+			ghost.process_mode = Node.PROCESS_MODE_INHERIT
+			ghost.visible = true
+		else:
+			# CP3等: イントロ中は停止＋透明化（VHS2個回収で出現）
+			ghost.process_mode = Node.PROCESS_MODE_DISABLED
+			ghost.visible = false
 
 	overlay_layer.visible = false
 
@@ -121,16 +137,17 @@ func _ready() -> void:
 		await _run_entrance_sequence()
 		return
 
-	# CP2/CP4/CP5 は映像演出（プレイヤー移動無効）。CP3 だけ操作可能。
+	# プレイアブルチャプター（CP2・CP3）はJSON演出なし → 即プレイ開始
+	# シネマティックチャプター（CP4・CP5）はJSON演出 → 自動遷移
 	var is_cinematic : bool = cur_chapter != null and cur_chapter.chapter_id in AUTO_PROGRESS_CHAPTERS
+	var is_playable : bool = cur_chapter != null and cur_chapter.chapter_id in ["ch02_mura_tansaku", "ch03_minka"]
 
-	# チャプターオープニング演出（JSON駆動。映像演出中はプレイヤー動作なし）
-	if cur_chapter:
-		# 民家探索（!is_cinematic）なら演出開始前に一度マウスを奪う
-		if not is_cinematic:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-			player.input_disabled = false
-		
+	if is_playable:
+		# プレイアブル: JSON演出スキップ、即操作可能
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		player.input_disabled = false
+	elif cur_chapter:
+		# シネマティック: JSON演出を実行
 		await _run_chapter_opening(cur_chapter.chapter_id)
 
 	# 映像演出チャプター: 演出完了後に自動で次チャプターへ
@@ -143,11 +160,9 @@ func _ready() -> void:
 		GameManager.advance_to_next_chapter()
 		return
 
-	# マップ上でキャラのセリフによる状況説明（CP3のみここに到達）
-	# 演出終了後に再度確実に設定（演出中にVISIBLEに戻される可能性があるため）
-	if not is_cinematic:
-		player.input_disabled = false
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	# プレイアブルチャプター: 操作可能にしてゲーム開始
+	player.input_disabled = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 	hud.play_monologue()
 
