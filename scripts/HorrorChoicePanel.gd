@@ -102,6 +102,10 @@ func _danger_warning() -> void:
 
 	# Phase 2: 1文字ずつ「選択を誤ると——」を表示
 	var line1 := "選 択 を 誤 る と ——"
+	warn.anchors_preset = Control.PRESET_CENTER
+	warn.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	warn.grow_vertical = Control.GROW_DIRECTION_BOTH
+	warn.size = Vector2.ZERO
 	warn.add_theme_color_override("font_color", Color(0.95, 0.08, 0.05, 1.0))
 	for i in range(line1.length()):
 		warn.text = line1.substr(0, i + 1)

@@ -737,6 +737,8 @@ func _show_caption() -> void:
 			for ch in str(line):
 				if _skipped: break
 				cap_label.text += ch
+				if ch != " " and ch != "\n":
+					_play_sfx("metal/metalClick.ogg", -14.0)
 				await get_tree().create_timer(c.get("char_speed", 0.08)).timeout
 			cap_label.text += "\n"
 			await get_tree().create_timer(c.get("line_wait", 0.4)).timeout

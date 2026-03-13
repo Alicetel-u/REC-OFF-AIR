@@ -25,8 +25,8 @@ const HIT_MAX       : int  = 3
 ## ── エンディング分岐 ──
 ## -1=未選択, 0=NORMAL(鈴), 1=TRUE(スマホ), 2=BAD(使わない)
 var ending_route: int = -1
-## お札の残数 (初期2枚)
-var ofuda_count: int = 2
+## お札の残数 (初期3枚)
+var ofuda_count: int = 3
 
 ## ── チャプターシステム ──
 const ChapterDataScript := preload("res://scripts/ChapterData.gd")
@@ -35,6 +35,7 @@ var chapter_index: int = 0
 
 var chapter_order: Array[String] = [
 	"res://chapters/ch01_haison_iriguchi.tres",   # CP1: 廃村入口→トイレ
+	"res://chapters/ch01_haison_souko.tres",      # CP1.5: 廃倉庫 ─ 保存された絶叫
 	"res://chapters/ch02_mura_tansaku.tres",      # CP2: 村の探索 ─ 10FPSの呪い
 	"res://chapters/ch03_minka.tres",             # CP3: 民家探索（プレイアブル）
 	"res://chapters/ch04_jinja.tres",             # CP4: 桐原神社 ─ 10万人の視線

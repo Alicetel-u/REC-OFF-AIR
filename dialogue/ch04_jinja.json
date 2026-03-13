@@ -131,16 +131,78 @@
       "on": true
     },
     {
-      "type": "pos_z",
-      "target": 15.0,
-      "dur": 4.0,
+      "type": "pos_z_await",
       "id": "approach_altar"
     },
     {
+      "type": "walk_set",
+      "on": false
+    },
+    {
+      "type": "say",
+      "text": "祭壇の上に白木の箱がある。これ……開けてみるね",
+      "voice": "v403_alt"
+    },
+    {
+      "type": "wait",
+      "sec": 3.5
+    },
+    {
+      "type": "sfx",
+      "sound": "box_open"
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.05,
+      "dur": 1.0
+    },
+    {
+      "type": "say",
+      "text": "これ……みゆきちゃんの首。……生きてる？ 生きてカメラを見てる。……あ。同接、10万、いった。……いったよ！！ 見て、私が、私が世界で一番の……！",
+      "voice": "v404"
+    },
+    {
+      "type": "wait",
+      "sec": 12.0
+    },
+    {
+      "type": "chat_horror_mode",
+      "dur": 20
+    },
+    {
+      "type": "set_viewers",
+      "count": 100000
+    },
+    {
       "type": "chat",
-      "msg": "開けるな開けるな開けるな",
-      "user": "ホラー好き太郎",
-      "utype": "member"
+      "msg": "藁",
+      "user": "視聴者A"
+    },
+    {
+      "type": "chat",
+      "msg": "藁藁藁藁藁",
+      "user": "配信民99"
+    },
+    {
+      "type": "chat",
+      "msg": "首ヲ置ケ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "chat",
+      "msg": "案山子ニ成レ",
+      "user": "K",
+      "utype": "horror"
+    },
+    {
+      "type": "say",
+      "text": "何これ、コメントが全部『藁』！？ 身体がまた止まりそう……。でも、最後のお札が見つかった。これさえあれば……これさえあれば勝てる！",
+      "voice": "v405"
+    },
+    {
+      "type": "wait",
+      "sec": 8.5
     },
     {
       "type": "wait",

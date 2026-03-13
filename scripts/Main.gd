@@ -11,6 +11,7 @@ const _DANK_ROW_H     = 44
 
 # 演出終了後に自動で次チャプターへ進むチャプターID一覧（CP2・CP3は手動＝プレイアブル）
 const AUTO_PROGRESS_CHAPTERS : Array[String] = [
+	"ch01_haison_souko",
 	"ch04_jinja",
 	"ch05_dasshutsu",
 ]
