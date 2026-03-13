@@ -241,6 +241,16 @@ func stop_voice() -> void:
 	_voice.stop()
 
 
+## 全音声を即停止（バッドエンド遷移等）
+func stop_all() -> void:
+	_ambient.stop()
+	_voice.stop()
+	_bgm.stop()
+	_step.stop()
+	_monster.stop()
+	_door.stop()
+
+
 ## BGM を再生（ループ再生）
 func play_bgm(path: String, vol_db: float = -10.0, pitch: float = 1.0) -> void:
 	var s := _load_audio(path)

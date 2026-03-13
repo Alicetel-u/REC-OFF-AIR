@@ -4668,8 +4668,8 @@ const DIALOGUE_CACHE = {
       "z": 3
     }
   },
-  "ch01_haison_souko": {
-    "chapter": "ch01_haison_souko",
+  "ch02_haison_souko": {
+    "chapter": "ch02_haison_souko",
     "_note": "第1.5章：廃倉庫 ─ 保存された絶叫 ─",
     "events": [
       {
@@ -4737,8 +4737,8 @@ const DIALOGUE_CACHE = {
       }
     ]
   },
-  "ch01_haison_souko_found": {
-    "chapter": "ch01_haison_souko_found",
+  "ch02_haison_souko_found": {
+    "chapter": "ch02_haison_souko_found",
     "_note": "VHS発見時の演出",
     "events": [
       {

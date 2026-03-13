@@ -1,65 +1,19 @@
 {
-    "chapter": "ch01_haison_souko_found",
-    "_note": "VHS発見時の演出",
+    "chapter": "ch02_haison_souko_found",
+    "voice_dir": "res://assets/audio/voice/ch02_souko/",
+    "_note": "VHS発見時の演出（v102のみ）",
     "events": [
         {
             "type": "say",
-            "text": "うわ、カビ臭い……。あ、あった！ ラベルに『1994_10_記録』って書いてある。これ、私が生まれた年にみゆきちゃんが……。",
+            "text": "あ、あった！ ラベルに『1994_10_記録』って書いてある。これ、私が生まれた年にみゆきちゃんが……。",
             "voice": "v102"
         },
         {
             "type": "wait",
-            "sec": 6.0
-        },
-        {
-            "type": "_comment",
-            "_": "── 演出：モニターが勝手に起動 ──"
-        },
-        {
-            "type": "sfx",
-            "sound": "static_noise"
-        },
-        {
-            "type": "vhs_glitch",
-            "intensity": 2.0,
-            "dur": 1.5
-        },
-        {
-            "type": "say",
-            "text": "これ、私！？ なんで30年前のビデオに『今の私』が映ってるの！？ やだ、消して！ 消してよ！！",
-            "voice": "v103"
-        },
-        {
-            "type": "wait",
-            "sec": 5.5
-        },
-        {
-            "type": "set_viewers",
-            "count": 78000
-        },
-        {
-            "type": "say",
-            "text": "……これで世界が変わる。でも、これをどこかで流さなきゃ。……神社！ 神社なら上映できる場所があるはず！！",
-            "voice": "v104"
-        },
-        {
-            "type": "wait",
-            "sec": 6.5
-        },
-        {
-            "type": "fade_black",
-            "dur": 1.0
-        },
-        {
-            "type": "wait",
-            "sec": 1.0
+            "sec": 8.0
         },
         {
             "type": "say_clear"
-        },
-        {
-            "type": "fade_clear",
-            "dur": 1.5
         }
     ]
 }

@@ -364,6 +364,13 @@ func run_from_path(json_path: String) -> void:
 				if is_instance_valid(hud):
 					hud._do_scare_flash(sf_col)
 
+			"horror_typewriter":
+				if is_instance_valid(hud):
+					await hud.horror_typewriter(
+						ev.get("text", ""),
+						float(ev.get("delay", 0.12)),
+						bool(ev.get("sfx", true)))
+
 			"horror_red":
 				if is_instance_valid(hud):
 					hud.start_horror_red(float(ev.get("dur", 8.0)))

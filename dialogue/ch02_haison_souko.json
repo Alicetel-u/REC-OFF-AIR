@@ -1,22 +1,40 @@
 {
-  "chapter": "ch01_haison_souko",
-  "_note": "第1.5章：廃倉庫 ─ 保存された絶叫 ─",
+  "chapter": "ch02_haison_souko",
+  "voice_dir": "res://assets/audio/voice/ch02_souko/",
+  "_note": "第2章：廃倉庫 ─ 保存された絶叫 ─",
   "events": [
     {
       "type": "set_viewers",
       "count": 52000
     },
     {
+      "type": "sfx",
+      "sound": "door_creak"
+    },
+    {
       "type": "flashlight_on"
     },
     {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
       "type": "say",
-      "text": "ハァ、ハァ……トイレからなんとか逃げた。……見て、あの建物。DMで言ってた『証拠의VHS』がある廃倉庫だ。配信的には、ここで証拠をゲットするのがセオリ―だよね。",
-      "voice": "v101"
+      "text": "ハァ、ハァ……トイレからなんとか逃げた。",
+      "voice": "v101a"
     },
     {
       "type": "wait",
-      "sec": 4.5
+      "sec": 3.0
+    },
+    {
+      "type": "say",
+      "text": "DMで言ってた『証拠VHS』がある廃倉庫だ。配信的には、ここで証拠をゲットするのがセオリーだよね。",
+      "voice": "v101b"
+    },
+    {
+      "type": "wait",
+      "sec": 7.5
     },
     {
       "type": "chat",
@@ -58,12 +76,8 @@
       "sec": 1.5
     },
     {
-      "type": "sfx",
-      "sound": "door_creak"
-    },
-    {
-      "type": "wait",
-      "sec": 1.0
+      "type": "_comment",
+      "_": "play_ending(bad_eien)は削除済み — バッドエンドはゴーストCAUGHTのみ（Main.gdに直接定義）"
     }
   ]
 }

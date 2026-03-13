@@ -1,0 +1,52 @@
+{
+  "chapter": "bad_eien",
+  "_note": "バッドエンド2：永遠の配信（Main.gdのCAUGHT時 + ギャラリー再生用）",
+  "events": [
+    {
+      "type": "play_ending",
+      "id": "bad_eien",
+      "ending_title": "永遠の配信",
+      "sections": [
+        {
+          "title": "",
+          "mood": "dark",
+          "wait": 0.8,
+          "lines": [
+            {"text": "視聴者A: しゅっち？", "pause": 1.0},
+            {"text": "配信民99: 映像止まったんだけど", "pause": 0.8},
+            {"text": "ゆきんこ77: 回線落ちた？", "pause": 0.8},
+            {"text": "まっちゃん: 画面真っ暗", "pause": 1.0}
+          ]
+        },
+        {
+          "title": "",
+          "mood": "fear",
+          "image": "res://assets/textures/bad_end_eternal.jpg",
+          "wait": 0.8,
+          "lines": [
+            {"text": "視聴者A: あ、映った", "pause": 0.8},
+            {"text": "配信民99: しゅっち映ってるけど……動かなくない？", "pause": 1.0},
+            {"text": "ゆきんこ77: 目が……こっち見てる", "pause": 1.0},
+            {"text": "まっちゃん: なんで笑ってるの", "pause": 1.2},
+            {"text": "配信民99: コメント読まないの初めてじゃね", "pause": 1.0},
+            {"text": "まっちゃん: え……泣いてる？", "pause": 1.2},
+            {"text": "ゆきんこ77: 「たすけて」って言ってない？", "pause": 1.2},
+            {"text": "視聴者A: 配信閉じれないんだけど", "pause": 1.0},
+            {"text": "配信民99: ブラウザ落ちない 何これ", "pause": 1.5}
+          ]
+        },
+        {
+          "title": "",
+          "mood": "fear",
+          "image": "res://assets/textures/bad_end_eternal.jpg",
+          "wait": 1.5,
+          "lines": [
+            {"text": "K: 止まらないよ", "pause": 2.5, "emphasis": true},
+            {"text": "K: 望んだのは君だろう", "pause": 2.5, "emphasis": true},
+            {"text": "K: 永遠に、見てもらえるよ", "pause": 3.0, "emphasis": true}
+          ]
+        }
+      ]
+    }
+  ]
+}

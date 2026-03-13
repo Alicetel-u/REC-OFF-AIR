@@ -930,16 +930,20 @@ const _BTN_BG_HOVER := Color(0.18, 0.08, 0.08, 1.0)
 const _BTN_BORDER := Color(0.30, 0.12, 0.12, 0.6)
 
 const CHAPTER_INFO : Array[Dictionary] = [
-	{"name": "CP1  廃村入口", "sub": "公衆トイレの首無し少女", "icon": "🏚", "sections": [
+	{"name": "CP1  廃村入口", "sub": "公衆トイレの首無し少女", "icon": "🏚", "order_index": 0, "sections": [
 		{"name": "CP1-1  廃村入口", "sub": "配信開始〜村門", "section": 0},
 		{"name": "CP1-2  商店街", "sub": "懐中電灯で探索", "section": 1},
 		{"name": "CP1-3  公衆トイレ", "sub": "みゆき遭遇〜脱出", "section": 2},
 		{"name": "CP1-4  逃走と反転", "sub": "バス停へ逃走→村の奥へ", "section": 3},
 	]},
-	{"name": "CP2  廃倉庫", "sub": "証拠のVHSテープ", "icon": "🏚"},
-	{"name": "CP3  廃民家", "sub": "民家探索", "icon": "🏠"},
-	{"name": "CP4  桐原神社", "sub": "白い木箱の秘密", "icon": "⛩"},
-	{"name": "CP5  脱出", "sub": "最終分岐・3エンディング", "icon": "🚌"},
+	{"name": "CP2  廃倉庫", "sub": "証拠のVHSテープ", "icon": "🏚", "order_index": 1, "sections": [
+		{"name": "CP2-1  廃倉庫探索", "sub": "VHS収集＋ゴースト", "section": 0},
+		{"name": "CP2-2  ブラウン管の恐怖", "sub": "VHS映像→神社への動機", "section": 1},
+	]},
+	{"name": "CP3  村の探索", "sub": "10FPSの呪い", "icon": "🏘", "order_index": 2},
+	{"name": "CP4  民家探索", "sub": "プレイアブル", "icon": "🏠", "order_index": 3},
+	{"name": "CP5  桐原神社", "sub": "白い木箱の秘密", "icon": "⛩", "order_index": 4},
+	{"name": "CP6  脱出", "sub": "最終分岐・3エンディング", "icon": "🚌", "order_index": 5},
 ]
 
 
@@ -1115,6 +1119,9 @@ func _show_ending_gallery() -> void:
 		{"id": "bad_hikikomori", "name": "ひきこもり", "chapter": "CP1", "type": "BAD END",
 		 "desc": "恐怖に負けて逃げ出した配信者の末路",
 		 "source_json": "res://dialogue/ch01_entrance.json"},
+		{"id": "bad_eien", "name": "永遠の配信", "chapter": "CP3", "type": "BAD END",
+		 "desc": "配信にとらわれ、永遠に視聴者の前から消えない",
+		 "source_json": "res://dialogue/bad_eien.json"},
 	]
 
 	for ed in endings:
@@ -1566,7 +1573,8 @@ func _chapter_card(index: int) -> Control:
 	wrapper.add_child(btn)
 
 	if not info.has("sections"):
-		btn.pressed.connect(func() -> void: _go_to_chapter(index))
+		var oi : int = info["order_index"]
+		btn.pressed.connect(func() -> void: _go_to_chapter(oi))
 	else:
 		# サブセクションがある場合はクリックで開閉
 		arrow.text = "▶"
@@ -1665,9 +1673,10 @@ func _section_card(chapter_index: int, sec_info: Dictionary) -> Control:
 	wrapper.add_child(btn)
 
 	var sec_idx : int = sec_info["section"]
+	var oi : int = CHAPTER_INFO[chapter_index]["order_index"]
 	btn.pressed.connect(func() -> void:
 		GameManager.start_section = sec_idx
-		_go_to_chapter(chapter_index)
+		_go_to_chapter(oi)
 	)
 
 	return wrapper

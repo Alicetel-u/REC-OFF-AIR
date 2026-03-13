@@ -141,6 +141,12 @@ func _ready() -> void:
 	var is_playable : bool = cur_chapter != null and cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku", "ch03_minka"]
 
 	if is_playable:
+		# CP2廃倉庫: start_section==1 → CP2-2紙芝居へ直接遷移
+		if cur_chapter.chapter_id == "ch02_haison_souko" and GameManager.start_section == 1:
+			GameManager.start_section = 0
+			await _play_souko_exit()
+			GameManager.advance_to_next_chapter()
+			return
 		# プレイアブル: 即操作可能
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		player.input_disabled = false

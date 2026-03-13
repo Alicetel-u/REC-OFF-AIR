@@ -8,9 +8,11 @@ enum GhostState { PATROL, ALERT, CHASE, CAUGHT }
 
 const PATROL_SPEED : float = 0.5
 const ALERT_SPEED  : float = 0.9
-const CHASE_SPEED  : float = 1.4
+const CHASE_SPEED  : float = 1.6
+const CHASE_BURST  : float = 4.5   # 瞬間ダッシュ速度
+const CHASE_STRAFE : float = 2.5   # 横移動の速さ
 const GRAVITY      : float = 9.8
-const SIGHT_RANGE  : float = 18.0
+const SIGHT_RANGE  : float = 25.0
 const PROX_DETECT  : float = 4.5
 const CATCH_DIST   : float = 1.5
 const ALERT_TIME   : float = 7.0
@@ -62,8 +64,16 @@ var _lean_current : float = 0.0
 var _is_alive     : bool  = true
 var _growl_timer    : float = 0.0
 var _growl_interval : float = 5.0
+# ── フェイクラッシュ演出用 ──
+var _fake_rush_timer : float = 0.0
+var _fake_rush_next  : float = 8.0
+var _fake_rushing     : bool  = false
+# ── 不規則追跡用 ──
+var _erratic_timer  : float = 0.0   # 次の行動切替までのタイマー
+var _erratic_mode   : int   = 0     # 0=直進 1=横移動 2=急停止 3=バースト
+var _erratic_dir    : Vector3 = Vector3.ZERO  # 不規則方向
 var custom_model_path : String = ""
-var custom_model_scale : Vector3 = Vector3(0.3, 0.3, 0.3)
+var custom_model_scale : Vector3 = Vector3(1.2, 1.2, 1.2)
 
 signal ghost_spotted_player
 signal ghost_lost_player
@@ -113,9 +123,10 @@ func _init_visuals() -> void:
 			var model_inst := custom_scene.instantiate()
 			model_inst.name = "Model"
 			model_inst.scale = custom_model_scale
-			model_inst.rotation_degrees.y = 180.0
+			model_inst.rotation_degrees.y = 0.0
 			_ghost_body.add_child(model_inst)
-			_apply_standard_material(model_inst, null)
+			# カスタムモデルは元のマテリアルを維持（MeshInstance3Dだけ追跡）
+			_collect_mesh_parts(model_inst)
 		else:
 			_create_fallback_mesh()
 		return
@@ -126,8 +137,8 @@ func _init_visuals() -> void:
 	if model_scene:
 		var model_inst := model_scene.instantiate()
 		model_inst.name = "Model"
-		model_inst.scale = Vector3(0.3, 0.3, 0.3)
-		model_inst.rotation_degrees.y = 180.0
+		model_inst.scale = Vector3(1.2, 1.2, 1.2)
+		model_inst.rotation_degrees.y = 0.0
 		_ghost_body.add_child(model_inst)
 
 		# テクスチャをロード
@@ -141,6 +152,13 @@ func _init_visuals() -> void:
 	else:
 		_create_fallback_mesh()
 
+
+
+func _collect_mesh_parts(node: Node) -> void:
+	if node is MeshInstance3D:
+		_mesh_parts.append(node as MeshInstance3D)
+	for child in node.get_children():
+		_collect_mesh_parts(child)
 
 
 func _apply_standard_material(node: Node, tex: Texture2D) -> void:
@@ -254,7 +272,10 @@ func _do_patrol(delta: float) -> void:
 
 
 # ---- 警戒(最後の位置へ移動) ----
+const ALERT_MIN_TIME : float = 3.0  # CHASEに遷移するまでの最低警戒時間
+
 func _do_alert(delta: float) -> void:
+	alert_t += delta
 	var tgt := last_known
 	tgt.y = global_position.y
 	var dist := global_position.distance_to(tgt)
@@ -262,7 +283,6 @@ func _do_alert(delta: float) -> void:
 	if dist < 1.5:
 		velocity.x = 0.0
 		velocity.z = 0.0
-		alert_t += delta
 		if alert_t >= ALERT_TIME:
 			alert_t = 0.0
 			ghost_state = GhostState.PATROL
@@ -273,20 +293,25 @@ func _do_alert(delta: float) -> void:
 		velocity.z = dir.z * ALERT_SPEED
 		_face(tgt)
 
-	if _can_see_player():
-		ghost_state = GhostState.CHASE
-		alert_t = 0.0
-		ghost_spotted_player.emit()
-		SoundManager.play_monster_growl(-6.0)
+	# 最低3秒警戒してからCHASEに遷移
+	if alert_t >= ALERT_MIN_TIME:
+		var chase_dist := global_position.distance_to(player.global_position)
+		if chase_dist <= SIGHT_RANGE:
+			ghost_state = GhostState.CHASE
+			_erratic_timer = 0.0  # CHASE開始時にすぐモード選択
+			alert_t = 0.0
+			ghost_spotted_player.emit()
+			SoundManager.play_monster_growl(-6.0)
 
 
-# ---- 追跡 ----
+# ---- 追跡（不規則挙動）----
+# 常にプレイヤーに向かうが、速度・横ブレ・急停止が不規則
 func _do_chase(delta: float) -> void:
 	# 定期的な唸り声
 	_growl_timer += delta
 	if _growl_timer >= _growl_interval:
 		_growl_timer = 0.0
-		_growl_interval = randf_range(4.0, 8.0)
+		_growl_interval = randf_range(3.0, 6.0)
 		var dist := global_position.distance_to(player.global_position)
 		SoundManager.play_monster_growl(-3.0 if dist < 8.0 else -10.0)
 
@@ -294,22 +319,54 @@ func _do_chase(delta: float) -> void:
 	var tgt := player.global_position
 	tgt.y = global_position.y
 
-	if global_position.distance_to(player.global_position) <= CATCH_DIST:
+	# 接触判定: Y軸を無視した水平距離
+	var ghost_xz := Vector2(global_position.x, global_position.z)
+	var player_xz := Vector2(player.global_position.x, player.global_position.z)
+	if ghost_xz.distance_to(player_xz) <= CATCH_DIST:
 		ghost_state = GhostState.CAUGHT
-		GameManager.trigger_hit()
-		# ヒット後は PATROL に戻って距離を取る（無敵時間中は再接触しない）
-		await get_tree().create_timer(1.2).timeout
-		if is_instance_valid(self) and GameManager.state == GameManager.State.PLAYING:
-			ghost_state = GhostState.PATROL
+		GameManager.trigger_caught()
 		return
 
-	var dir := (tgt - global_position).normalized()
-	velocity.x = dir.x * CHASE_SPEED
-	velocity.z = dir.z * CHASE_SPEED
+	var to_player := (tgt - global_position).normalized()
+	var strafe := Vector3(-to_player.z, 0, to_player.x)
+
+	# ── 不規則ブレ（常時）──
+	_erratic_timer -= delta
+	if _erratic_timer <= 0.0:
+		# 新しいブレパターンを生成
+		_erratic_timer = randf_range(0.08, 0.3)
+		var roll := randf()
+		if roll < 0.15:
+			# 急停止（ピタッと止まる不気味さ）
+			_erratic_mode = 2
+		elif roll < 0.35:
+			# バースト（超高速で詰める）
+			_erratic_mode = 3
+		else:
+			# 横ブレ付き前進
+			_erratic_mode = 1
+			_erratic_dir = strafe * randf_range(-1.0, 1.0)
+
+	# ── 常にプレイヤー方向へ移動 + 不規則な味付け ──
+	var speed : float = CHASE_SPEED
+	var lateral : float = 0.0  # 横方向の追加速度
+
+	match _erratic_mode:
+		1:  # 横ブレ（前進しつつ横に揺れる）
+			lateral = _erratic_dir.length() * CHASE_STRAFE
+			speed = CHASE_SPEED * randf_range(0.8, 1.3)
+		2:  # 急停止
+			speed = 0.0
+		3:  # バースト
+			speed = CHASE_BURST
+
+	velocity.x = to_player.x * speed + strafe.x * lateral
+	velocity.z = to_player.z * speed + strafe.z * lateral
+
+	# 常にプレイヤーの方を向く
 	_face(tgt)
 
-	if not _can_see_player() and \
-	   global_position.distance_to(player.global_position) > PROX_DETECT * 1.5:
+	if global_position.distance_to(player.global_position) > SIGHT_RANGE:
 		ghost_state = GhostState.ALERT
 		alert_t = 0.0
 
@@ -320,7 +377,9 @@ func _sense_player() -> void:
 		return
 	var dist := global_position.distance_to(player.global_position)
 	if dist <= PROX_DETECT or (dist <= SIGHT_RANGE and _can_see_player()):
-		ghost_state = GhostState.CHASE
+		# まずALERTに遷移（いきなりCHASE→即CATCHを防ぐ）
+		ghost_state = GhostState.ALERT
+		alert_t = 0.0
 		last_known = player.global_position
 		ghost_spotted_player.emit()
 		SoundManager.play_monster_growl(-4.0)
@@ -347,6 +406,7 @@ func _face(target: Vector3) -> void:
 	t.y = global_position.y
 	if t.distance_to(global_position) > 0.1:
 		look_at(t, Vector3.UP)
+		rotation.y += PI * 0.5
 
 
 # ════════════════════════════════════════════════════════════════
@@ -402,12 +462,80 @@ func _update_visuals(delta: float) -> void:
 		_do_flicker()
 
 	# ── 接近膨張 ──
-	if is_instance_valid(player):
+	if is_instance_valid(player) and not _fake_rushing:
 		var dist := global_position.distance_to(player.global_position)
 		var swell : float = clampf(1.0 + (1.0 - dist / SIGHT_RANGE) * 0.25, 1.0, 1.3)
 		if ghost_state == GhostState.CAUGHT:
 			swell = 2.0
 		_ghost_body.scale = Vector3(swell, swell, swell)
+
+	# ── フェイクラッシュ（CHASE/ALERT中にランダム発動）──
+	if ghost_state in [GhostState.CHASE, GhostState.ALERT] and not _fake_rushing:
+		_fake_rush_timer += delta
+		if _fake_rush_timer >= _fake_rush_next:
+			_fake_rush_timer = 0.0
+			_fake_rush_next = randf_range(6.0, 14.0)
+			_do_fake_rush()
+
+
+func _do_fake_rush() -> void:
+	## フェイクラッシュ — 見た目だけ超高速でプレイヤーに突っ込む演出
+	## 実際のCharacterBody3D位置は一切変わらない
+	if not _ghost_body or not is_instance_valid(player):
+		return
+	_fake_rushing = true
+	SoundManager.play_monster_growl(-1.0)
+
+	# プレイヤー方向のローカルベクトル
+	var rush_local := global_transform.basis.inverse() * (player.global_position - global_position).normalized()
+	rush_local.y = 0.0
+	if rush_local.length() < 0.01:
+		rush_local = Vector3(0, 0, -1)
+	rush_local = rush_local.normalized()
+
+	var orig_pos := _ghost_body.position
+	var orig_scale := _ghost_body.scale
+
+	# Phase 1: 一瞬消える（溜め）
+	_ghost_body.visible = false
+	await get_tree().create_timer(0.08).timeout
+	if not _is_alive or not is_instance_valid(_ghost_body):
+		_fake_rushing = false
+		return
+
+	# Phase 2: 遠くから超高速で突っ込む（巨大化しながら）
+	_ghost_body.visible = true
+	_ghost_body.position = orig_pos + rush_local * 8.0
+	_ghost_body.scale = orig_scale * 0.5
+
+	var tw := create_tween().set_parallel(true)
+	tw.tween_property(_ghost_body, "position", orig_pos + rush_local * -1.5, 0.18)\
+		.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
+	tw.tween_property(_ghost_body, "scale", orig_scale * 2.8, 0.18)\
+		.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
+	await tw.finished
+	if not _is_alive or not is_instance_valid(_ghost_body):
+		_fake_rushing = false
+		return
+
+	# Phase 3: 一瞬画面いっぱい + 金属音
+	SoundManager.play_sfx_file("metal/impactMetal_heavy_002.ogg")
+	await get_tree().create_timer(0.06).timeout
+	if not _is_alive or not is_instance_valid(_ghost_body):
+		_fake_rushing = false
+		return
+
+	# Phase 4: パッと消えて元に戻る
+	_ghost_body.visible = false
+	await get_tree().create_timer(0.12).timeout
+	if not _is_alive or not is_instance_valid(_ghost_body):
+		_fake_rushing = false
+		return
+
+	_ghost_body.position = orig_pos
+	_ghost_body.scale = orig_scale
+	_ghost_body.visible = true
+	_fake_rushing = false
 
 
 func _do_flicker() -> void:

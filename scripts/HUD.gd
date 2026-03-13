@@ -349,14 +349,83 @@ const STORY_KEYWORDS : Array[String] = [
 ]
 
 
+var _mono_tween : Tween = null
+
 func show_monologue(text: String) -> void:
 	if not is_instance_valid(_mono_panel):
 		return
+	if _mono_tween and _mono_tween.is_valid():
+		_mono_tween.kill()
 	var styled := _highlight_keywords(_colorize_usernames(text))
-	_mono_text.bbcode_text = "[shake rate=20 level=1]%s[/shake]" % styled
+	_mono_text.text = "[shake rate=20 level=1]%s[/shake]" % styled
 	_mono_panel.visible = true
-	var tw := create_tween()
-	tw.tween_property(_mono_panel, "modulate:a", 1.0, 0.2)
+	_mono_tween = create_tween()
+	_mono_tween.tween_property(_mono_panel, "modulate:a", 1.0, 0.2)
+
+
+## ホラータイプライター演出 — 画面中央に1文字ずつ赤く震えながら表示
+func horror_typewriter(text: String, char_delay: float = 0.12, sfx_tick: bool = true) -> void:
+	_clear_horror_typewriter()
+	# 中央に専用ラベルを動的生成
+	var lbl := RichTextLabel.new()
+	lbl.bbcode_enabled = true
+	lbl.fit_content = true
+	lbl.scroll_active = false
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lbl.add_theme_font_size_override("normal_font_size", 42)
+	# YouTube枠内の中心に配置
+	var cx : float = (VIDEO_LEFT + VIDEO_RIGHT) / 2.0
+	var cy : float = (VIDEO_TOP + VIDEO_BOTTOM) / 2.0
+	lbl.position = Vector2(cx - 300, cy - 40)
+	lbl.size = Vector2(600, 80)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.text = ""
+	add_child(lbl)
+
+	# 背景グロー（黒い半透明の後光）
+	var glow := ColorRect.new()
+	glow.color = Color(0.0, 0.0, 0.0, 0.6)
+	var gcx : float = (VIDEO_LEFT + VIDEO_RIGHT) / 2.0
+	var gcy : float = (VIDEO_TOP + VIDEO_BOTTOM) / 2.0
+	glow.position = Vector2(gcx - 350, gcy - 60)
+	glow.size = Vector2(700, 120)
+	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	glow.modulate.a = 0.0
+	add_child(glow)
+	move_child(glow, lbl.get_index())  # glowをlblの後ろに
+
+	# グローをフェードイン
+	var tw_glow := create_tween()
+	tw_glow.tween_property(glow, "modulate:a", 1.0, 0.3)
+
+	# 1文字ずつタイプライター表示
+	var displayed := ""
+	for i in range(text.length()):
+		var ch := text[i]
+		displayed += ch
+		lbl.text = "[shake rate=40 level=6][color=#ff1010]%s[/color][/shake]" % displayed
+		if sfx_tick and ch != " " and ch != "　":
+			SoundManager.play_sfx_file("metal/impactMetal_heavy_004.ogg", -14.0)
+		if is_inside_tree():
+			await get_tree().create_timer(char_delay).timeout
+
+	# 完成後：最大震動 + 赤さ増し + グローパルス
+	lbl.text = "[shake rate=80 level=10][color=#ff0000]%s[/color][/shake]" % displayed
+	var tw_pulse := create_tween()
+	tw_pulse.tween_property(glow, "color", Color(0.3, 0.0, 0.0, 0.7), 0.2)
+	tw_pulse.tween_property(glow, "color", Color(0.0, 0.0, 0.0, 0.6), 0.3)
+
+	# horror_typewriterはawaitで待つので、呼び出し側がwaitで持続時間を制御
+	# clean upはsay_clearまたは次のhorror_typewriterで行う
+	lbl.set_meta("horror_tw", true)
+	glow.set_meta("horror_tw", true)
+
+
+## horror_typewriterで生成した中央ラベルを削除
+func _clear_horror_typewriter() -> void:
+	for child in get_children():
+		if child.has_meta("horror_tw"):
+			child.queue_free()
 
 
 func _highlight_keywords(text: String) -> String:
@@ -384,11 +453,14 @@ func _colorize_usernames(text: String) -> String:
 
 
 func hide_monologue() -> void:
+	_clear_horror_typewriter()
 	if not is_instance_valid(_mono_panel) or not _mono_panel.visible:
 		return
-	var tw := create_tween()
-	tw.tween_property(_mono_panel, "modulate:a", 0.0, 0.35)
-	tw.tween_callback(func() -> void: _mono_panel.visible = false)
+	if _mono_tween and _mono_tween.is_valid():
+		_mono_tween.kill()
+	_mono_tween = create_tween()
+	_mono_tween.tween_property(_mono_panel, "modulate:a", 0.0, 0.35)
+	_mono_tween.tween_callback(func() -> void: _mono_panel.visible = false)
 
 
 func _show_exit_guide() -> void:

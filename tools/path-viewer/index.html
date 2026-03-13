@@ -1134,7 +1134,7 @@ body.light .preset-custom-input input { background:rgba(255,255,255,.85); border
       <optgroup label="── 旧チャプター ──">
         <option value="ch02_yashiki">旧CP2: 廃屋敷</option>
         <option value="ch02_haison_naibu">旧CP2: 廃村内部</option>
-        <option value="ch01_haison_souko">旧CP3: 廃倉庫</option>
+        <option value="ch02_haison_souko">旧CP3: 廃倉庫</option>
         <option value="ch04_kirihara_jinja">旧CP4: 桐原神社</option>
         <option value="ch04_haison_naibu_event">旧CP4: 内部イベント</option>
         <option value="ch05_haison_dasshutsu">旧CP5: 脱出</option>
@@ -1788,7 +1788,7 @@ async function initDialogueList() {
     sel.innerHTML = '<option value="">-- チャプター選択 --</option>';
     const LABELS = {
       ch01_entrance:"CP1: 廃村入口", ch02_yashiki:"CP2: 廃屋敷",
-      ch01_haison_souko:"CP3: 廃倉庫", ch04_kirihara_jinja:"CP4: 桐原神社",
+      ch02_haison_souko:"CP3: 廃倉庫", ch04_kirihara_jinja:"CP4: 桐原神社",
       ch05_haison_dasshutsu:"CP5: 脱出", ch_test_toilet:"テスト: 公衆トイレ",
       opening:"オープニング",
     };
@@ -3121,7 +3121,7 @@ const MAP_TO_CHAPTER = {
   stage_naibu: "ch03_minka",
   stage_escape: "ch05_dasshutsu",
   stage_yashiki: "ch02_yashiki",
-  stage_souko: "ch01_haison_souko",
+  stage_souko: "ch02_haison_souko",
   public_toilet: "ch_test_toilet",
 };
 function onMapChange() {
@@ -3685,7 +3685,7 @@ async function onDialogueSelect() {
     // 旧チャプター
     ch02_yashiki: "stage_yashiki",
     ch02_haison_naibu: "stage_naibu",
-    ch01_haison_souko: "stage_souko",
+    ch02_haison_souko: "stage_souko",
     ch04_kirihara_jinja: "stage_naibu",
     ch04_haison_naibu_event: "stage_naibu",
     ch05_haison_dasshutsu: "stage_escape",
@@ -3716,7 +3716,7 @@ const CHAPTER_LABELS = {
   // 旧チャプター
   ch02_yashiki:"旧CP2: 廃屋敷",
   ch02_haison_naibu:"旧CP2: 廃村内部",
-  ch01_haison_souko:"旧CP3: 廃倉庫",
+  ch02_haison_souko:"旧CP3: 廃倉庫",
   ch04_kirihara_jinja:"旧CP4: 桐原神社",
   ch04_haison_naibu_event:"旧CP4: 内部イベント",
   ch05_haison_dasshutsu:"旧CP5: 脱出",

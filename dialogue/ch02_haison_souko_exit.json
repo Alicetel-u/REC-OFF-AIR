@@ -1,0 +1,252 @@
+{
+    "chapter": "ch02_haison_souko_exit",
+    "voice_dir": "res://assets/audio/voice/ch02_souko/",
+    "_note": "CP2-2 廃倉庫脱出（紙芝居演出） — 裏口脱出→全力逃走→安堵→ブラウン管ホラー→VHS映像→自分が映る恐怖→神社決意",
+    "events": [
+
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 1 — 裏口発見・脱出"},
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+
+        {"type": "fade_black", "dur": 0.3},
+        {"type": "wait", "sec": 0.4},
+        {"type": "flashlight_on"},
+        {
+            "type": "bg_image",
+            "file": "souko.jpg",
+            "dur": 2.5,
+            "brightness": 0.45,
+            "radius": 0.25,
+            "softness": 0.3,
+            "center": [0.45, 0.55]
+        },
+        {
+            "type": "bg_walk_start",
+            "speed": 0.8,
+            "zoom_end": 1.15,
+            "zoom_dur": 12.0,
+            "radius": 0.25,
+            "softness": 0.3
+        },
+        {"type": "fade_clear", "dur": 2.5, "target": 0.85},
+        {"type": "wait", "sec": 1.5},
+
+        {"type": "say", "text": "……裏口？　こんなとこに出口あったんだ。外の空気が流れてくる……今のうちに！", "voice": "v109"},
+        {"type": "wait", "sec": 6.5},
+
+        {"type": "chat", "msg": "逃げろ！！", "user": "ゆきんこ77", "utype": "moderator"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "今しかない", "user": "視聴者A"},
+        {"type": "wait", "sec": 0.5},
+
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 2 — 全力逃走（緊迫感MAX）"},
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+
+        {"type": "sfx", "sound": "door_creak"},
+        {"type": "camera_shake", "intensity": 0.4, "dur": 0.6},
+        {
+            "type": "bg_walk_start",
+            "speed": 3.0,
+            "zoom_end": 1.7,
+            "zoom_dur": 7.0,
+            "radius": 0.12,
+            "softness": 0.15
+        },
+        {"type": "horror_glitch", "intensity": 0.8, "dur": 0.3},
+
+        {"type": "say", "text": "はぁっ……はぁっ……！　振り返るな、振り返ったら終わる——走れ走れ走れ……", "voice": "v110"},
+        {"type": "wait", "sec": 2.5},
+
+        {"type": "camera_shake", "intensity": 0.25, "dur": 0.3},
+        {"type": "horror_glitch", "intensity": 1.0, "dur": 0.4},
+        {"type": "wait", "sec": 1.0},
+
+        {"type": "sfx", "sound": "static_noise"},
+        {"type": "horror_glitch", "intensity": 1.5, "dur": 0.5},
+        {"type": "wait", "sec": 1.0},
+
+        {"type": "chat", "msg": "走れ走れ走れ", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 0.2},
+        {"type": "chat", "msg": "後ろ見るなよ絶対", "user": "ゆきんこ77", "utype": "moderator"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "息切れやばい", "user": "まっちゃん"},
+        {"type": "wait", "sec": 0.2},
+        {"type": "chat", "msg": "心拍数やべえだろこれ", "user": "視聴者A"},
+        {"type": "wait", "sec": 0.5},
+
+        {"type": "horror_glitch", "intensity": 1.2, "dur": 0.3},
+        {"type": "camera_shake", "intensity": 0.3, "dur": 0.4},
+
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 3 — 安堵（一転、静寂）"},
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+
+        {
+            "type": "bg_walk_start",
+            "speed": 0.2,
+            "zoom_end": 1.1,
+            "zoom_dur": 40.0,
+            "radius": 0.22,
+            "softness": 0.35
+        },
+        {"type": "wait", "sec": 1.0},
+
+        {"type": "say", "text": "……はぁ……はぁ……。追ってきてない……よね？　足音、自分のだけ。……大丈夫。もう大丈夫だから。", "voice": "v111"},
+        {"type": "wait", "sec": 8.5},
+
+        {"type": "chat", "msg": "生きてたｗ", "user": "視聴者A"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "心臓もたん", "user": "ゆきんこ77", "utype": "moderator"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "よかった……", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 1.5},
+
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 4 — ブラウン管テレビ発見（恐怖の転換点）"},
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+
+        {
+            "type": "bg_walk_start",
+            "speed": 0.0,
+            "zoom_end": 1.0,
+            "zoom_dur": 1.0,
+            "radius": 0.22,
+            "softness": 0.35
+        },
+        {"type": "wait", "sec": 0.5},
+
+        {
+            "type": "bg_image",
+            "file": "braunkan.jpg",
+            "dur": 1.0,
+            "brightness": 0.3,
+            "radius": 0.25,
+            "softness": 0.3,
+            "center": [0.5, 0.45]
+        },
+        {"type": "sfx", "sound": "static_noise"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "horror_glitch", "intensity": 1.5, "dur": 0.8},
+        {"type": "camera_shake", "intensity": 0.2, "dur": 0.5},
+
+        {"type": "say", "text": "——え？　なにこれ、ブラウン管テレビ……コンセントどこにも刺さってないのに勝手についてる！？　うわっ、砂嵐——！", "voice": "v112"},
+        {"type": "wait", "sec": 8.0},
+
+        {"type": "chat", "msg": "コンセントないのに映ってるの怖すぎ", "user": "まっちゃん"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "逃げろ逃げろ逃げろ", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "え、待ってなんか映ってない？", "user": "視聴者A"},
+        {"type": "wait", "sec": 0.8},
+
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 5 — VHS映像が勝手に再生"},
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+
+        {"type": "horror_glitch", "intensity": 2.5, "dur": 1.5},
+        {"type": "sfx", "sound": "static_noise"},
+        {"type": "camera_shake", "intensity": 0.35, "dur": 0.8},
+
+        {"type": "say", "text": "映像が流れてる……さっきのVHSの中身？　これ……神社だ。霧原神社で誰かが儀式をしてる……", "voice": "v104"},
+        {"type": "wait", "sec": 8.5},
+
+        {"type": "chat", "msg": "1994年の映像……？", "user": "ゆきんこ77", "utype": "moderator"},
+        {"type": "wait", "sec": 0.5},
+        {"type": "chat", "msg": "見ている", "user": "K", "utype": "horror"},
+        {"type": "wait", "sec": 1.0},
+
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 6 — 自分が映っている（最大恐怖）"},
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+
+        {"type": "horror_glitch", "intensity": 3.5, "dur": 2.5},
+        {"type": "sfx", "sound": "scare_hit"},
+        {"type": "camera_shake", "intensity": 0.7, "dur": 1.5},
+        {"type": "scare_flash"},
+
+        {"type": "say", "text": "これ、私！？　なんで30年前のビデオに『今の私』が映ってるの！？　やだ……やだやだやだ！！", "voice": "v105"},
+        {"type": "wait", "sec": 7.5},
+
+        {"type": "set_viewers", "count": 78000},
+        {"type": "chat", "msg": "同じ顔じゃん", "user": "まっちゃん"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "時空越えてて草", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "これガチでやばいやつ", "user": "ゆきんこ77", "utype": "moderator"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "見ている", "user": "K", "utype": "horror"},
+        {"type": "wait", "sec": 1.0},
+
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 7 — 封印解カレタ（ホラータイプライター演出）"},
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+
+        {"type": "say_clear"},
+        {"type": "wait", "sec": 2.0},
+
+        {"type": "sfx", "sound": "static_noise"},
+        {"type": "horror_glitch", "intensity": 1.5, "dur": 0.8},
+        {"type": "camera_shake", "intensity": 0.3, "dur": 0.5},
+
+        {"type": "_comment", "_": "── タイプライター：封印解カレタ ──"},
+        {"type": "horror_typewriter", "text": "封印解カレタ", "delay": 0.15},
+        {"type": "wait", "sec": 1.5},
+
+        {"type": "say", "text": "画面に文字が……『封印解カレタ』……？", "reading": "画面に文字が……ふういんとかれた……？", "voice": "v106a"},
+        {"type": "wait", "sec": 3.0},
+
+        {"type": "_comment", "_": "── タイプライター：霧原神社ニ返セ ──"},
+        {"type": "say_clear"},
+        {"type": "sfx", "sound": "scare_hit"},
+        {"type": "camera_shake", "intensity": 0.8, "dur": 0.8},
+        {"type": "horror_glitch", "intensity": 4.0, "dur": 2.0},
+        {"type": "scare_flash"},
+
+        {"type": "horror_typewriter", "text": "霧原神社ニ返セ", "delay": 0.12},
+        {"type": "wait", "sec": 1.0},
+
+        {"type": "say", "text": "『霧原神社ニ返セ』……！！　何を……何を返せって言ってるの……！？", "voice": "v106b"},
+        {"type": "wait", "sec": 5.0},
+
+        {"type": "chat", "msg": "呪いのメッセージだろこれ", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "神社行くしかないじゃん", "user": "視聴者A"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "行くな", "user": "K", "utype": "horror"},
+        {"type": "wait", "sec": 0.4},
+        {"type": "chat", "msg": "行くな行くな行くな行くな行くな", "user": "K", "utype": "horror"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "Kこわい", "user": "まっちゃん"},
+        {"type": "wait", "sec": 1.0},
+
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 8 — 覚悟（配信者の意地）"},
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+
+        {"type": "say_clear"},
+        {"type": "horror_glitch", "intensity": 0.5, "dur": 0.3},
+        {"type": "wait", "sec": 0.3},
+
+        {"type": "say", "text": "……みんな見てるよね。同接7万超えてる。……行くしかないでしょ、霧原神社。配信者なめんな。", "reading": "……みんな見てるよね。どうせつ7万超えてる。……行くしかないでしょ、霧原神社。配信者なめんな。", "voice": "v107"},
+        {"type": "wait", "sec": 7.5},
+
+        {"type": "chat", "msg": "しゅっちならやると思った", "user": "ゆきんこ77", "utype": "moderator"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "承認欲求の化物", "user": "まっちゃん"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "いや行くなって", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 0.8},
+
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+        {"type": "_comment", "_": "  END — 暗転"},
+        {"type": "_comment", "_": "════════════════════════════════════════"},
+
+        {"type": "horror_glitch", "intensity": 1.0, "dur": 0.5},
+        {"type": "bg_image_clear", "dur": 1.5},
+        {"type": "fade_black", "dur": 1.5},
+        {"type": "wait", "sec": 1.5},
+        {"type": "say_clear"},
+        {"type": "fade_clear", "dur": 1.5}
+    ]
+}
