@@ -8,10 +8,10 @@ extends Node
 ##   SoundManager.play_door_creak()
 
 # チャプター別の足音カテゴリ（chapter_index → フォルダ名）
-const STEP_CATS : Array = ["concrete", "wooden", "wooden", "gravel", "gravel"]
+const STEP_CATS : Array = ["concrete", "wooden", "wooden"]
 
 # チャプター別のアンビエント音量 dB
-const AMBIENT_VOLS : Array = [-8.0, -14.0, -12.0, -10.0, -6.0]
+const AMBIENT_VOLS : Array = [-8.0, -14.0, -12.0]
 
 var _ambient : AudioStreamPlayer = null
 var _step    : AudioStreamPlayer = null
