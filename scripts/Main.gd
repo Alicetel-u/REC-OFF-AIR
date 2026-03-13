@@ -135,7 +135,7 @@ func _ready() -> void:
 
 	# プレイアブルチャプター（CP2・CP3）はJSON演出なし → 即プレイ開始
 	var is_cinematic : bool = cur_chapter != null and cur_chapter.chapter_id in AUTO_PROGRESS_CHAPTERS
-	var is_playable : bool = cur_chapter != null and cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku"]
+	var is_playable : bool = cur_chapter != null and cur_chapter.chapter_id in ["ch02_haison_souko"]
 
 	if is_playable:
 		# CP2廃倉庫: start_section==1 → CP2-2紙芝居へ直接遷移
