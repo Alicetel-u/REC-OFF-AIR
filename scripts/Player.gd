@@ -56,7 +56,12 @@ func _ready() -> void:
 	flashlight.visible = true
 
 
-var input_disabled : bool = false  # trueの間は移動・視点入力を無効化
+var input_disabled : bool = false:
+	set(v):
+		input_disabled = v
+		if not v and is_inside_tree() and GameManager.state == GameManager.State.PLAYING:
+			# 操作有効化時に自らマウスをキャプチャしに行く（保険）
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _unhandled_input(event: InputEvent) -> void:
 	# ESCはMain._input()で処理済み（set_input_as_handled）

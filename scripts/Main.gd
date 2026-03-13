@@ -119,13 +119,14 @@ func _ready() -> void:
 
 	# CP2/CP4/CP5 は映像演出（プレイヤー移動無効）。CP3 だけ操作可能。
 	var is_cinematic : bool = cur_chapter != null and cur_chapter.chapter_id in AUTO_PROGRESS_CHAPTERS
-	if not is_cinematic:
-		player.input_disabled = false
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	# シネマティック中はカーソル表示のまま（操作不要＋ウィンドウ閉じられるように）
 
 	# チャプターオープニング演出（JSON駆動。映像演出中はプレイヤー動作なし）
 	if cur_chapter:
+		# 民家探索（!is_cinematic）なら演出開始前に一度マウスを奪う
+		if not is_cinematic:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			player.input_disabled = false
+		
 		await _run_chapter_opening(cur_chapter.chapter_id)
 
 	# 映像演出チャプター: 演出完了後に自動で次チャプターへ
@@ -139,6 +140,7 @@ func _ready() -> void:
 		return
 
 	# マップ上でキャラのセリフによる状況説明（CP3のみここに到達）
+	# 演出終了後に再度確実に設定（演出中にVISIBLEに戻される可能性があるため）
 	if not is_cinematic:
 		player.input_disabled = false
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
