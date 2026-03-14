@@ -14,27 +14,21 @@ var _locked_msg_cooldown : float = 0.0
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	GameManager.item_collected.connect(_on_item_collected)
-	if GameManager.items_total == 0:
-		active = true
-		exit_light.light_energy = 3.0
-	else:
-		active = false
-		exit_light.light_energy = 0.5
+	# 演出の邪魔にならないよう、ライトは無効化（必要に応じて復帰可能）
+	exit_light.light_energy = 0.0
+	active = (GameManager.items_total == 0)
 
 
 func _process(delta: float) -> void:
 	if _locked_msg_cooldown > 0.0:
 		_locked_msg_cooldown -= delta
-	if not active:
-		return
-	pulse_t += delta * 3.0
-	exit_light.light_energy = 2.5 + sin(pulse_t) * 0.8
+	# パルス（明滅）演出は廃止
+	pass
 
 
 func _on_item_collected(count: int, total: int) -> void:
 	if count >= total:
 		active = true
-		exit_light.light_energy = 3.0
 
 
 ## ゴール到達時の演出コールバック（Main.gd から設定）
