@@ -207,7 +207,7 @@ func run_from_path(json_path: String) -> void:
 					# ボイス再生中なら先にボイスを待ち、残り時間のみ追加待機
 					if SoundManager.is_voice_playing():
 						var _t0 := Time.get_ticks_msec()
-						await SoundManager.await_voice(_sec + 5.0)
+						await SoundManager.await_voice(_sec + 30.0)
 						if not _skip_to_next_say:
 							_sec = max(_sec - (Time.get_ticks_msec() - _t0) / 1000.0, 0.0)
 							await _skippable_wait(_sec)  # playback_speed は _skippable_wait 内で適用
