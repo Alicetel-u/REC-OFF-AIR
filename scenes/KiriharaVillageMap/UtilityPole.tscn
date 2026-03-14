@@ -1,7 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://c7v6p5x8m2q3r"]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/KiriharaVillageMap/UtilityPole.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://giklcd0d6i5c" path="res://scenes/KiriharaVillageMap/電信柱_basecolor.png" id="2_tex"]
+[ext_resource type="Texture2D" path="res://scenes/KiriharaVillageMap/電信柱_basecolor.png" id="2_tex"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_pole_large"]
 top_radius = 0.28

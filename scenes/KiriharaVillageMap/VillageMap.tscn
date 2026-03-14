@@ -1,23 +1,23 @@
-[gd_scene format=3 uid="uid://bw2ji3gdstj40"]
+[gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://ek575i5dnh0k" path="res://scenes/KiriharaVillageMap/MapGenerator.gd" id="1_script"]
-[ext_resource type="PackedScene" uid="uid://yjwxcxm70ccq" path="res://scenes/KiriharaVillageMap/建物1.glb" id="2_b1"]
-[ext_resource type="PackedScene" uid="uid://cg75f40h2xsl4" path="res://scenes/KiriharaVillageMap/建物2.glb" id="3_b2"]
-[ext_resource type="PackedScene" uid="uid://dpsnm5ou36dbf" path="res://scenes/KiriharaVillageMap/建物3.glb" id="4_b3"]
-[ext_resource type="PackedScene" uid="uid://bc0fdxow43oik" path="res://scenes/KiriharaVillageMap/建物4.glb" id="5_b4"]
-[ext_resource type="PackedScene" uid="uid://cifjojn2rd2qm" path="res://scenes/KiriharaVillageMap/木.glb" id="6_tree"]
-[ext_resource type="PackedScene" uid="uid://b38bhc6yuvl2f" path="res://scenes/KiriharaVillageMap/草むら.glb" id="7_grass"]
-[ext_resource type="PackedScene" uid="uid://sp7r2d81ik8i" path="res://scenes/KiriharaVillageMap/仏像.glb" id="8_buddha"]
-[ext_resource type="PackedScene" uid="uid://bsdkj8qdskxow" path="res://scenes/KiriharaVillageMap/コンクリオブジェクトl.glb" id="9_con"]
-[ext_resource type="PackedScene" uid="uid://bi5sxldlunfjx" path="res://scenes/KiriharaVillageMap/建物5.glb" id="11"]
-[ext_resource type="PackedScene" uid="uid://chw5txmfr7mke" path="res://scenes/KiriharaVillageMap/建物6.glb" id="12"]
-[ext_resource type="PackedScene" uid="uid://baehp5ofx6wvb" path="res://scenes/KiriharaVillageMap/建物7.glb" id="13"]
-[ext_resource type="PackedScene" uid="uid://hdasjof7m8ip" path="res://scenes/KiriharaVillageMap/廃車1.glb" id="14"]
-[ext_resource type="PackedScene" uid="uid://bnmi7mhc0qkrq" path="res://scenes/KiriharaVillageMap/廃車2.glb" id="15"]
-[ext_resource type="PackedScene" uid="uid://dbe8dd3ek0abf" path="res://scenes/KiriharaVillageMap/建物8.glb" id="16"]
-[ext_resource type="PackedScene" uid="uid://c7v6p5x8m2q3r" path="res://scenes/KiriharaVillageMap/UtilityPole.tscn" id="17_pole"]
-[ext_resource type="PackedScene" uid="uid://b5v6k8q2m1r5p" path="res://scenes/KiriharaVillageMap/ShoppingStreetGate.tscn" id="18_gate"]
-[ext_resource type="PackedScene" uid="uid://coon8g1helx01" path="res://scenes/KiriharaVillageMap/建物9.glb" id="19_b9"]
+[ext_resource type="Script" path="res://scenes/KiriharaVillageMap/MapGenerator.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/建物1.glb" id="2_b1"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/建物2.glb" id="3_b2"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/建物3.glb" id="4_b3"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/建物4.glb" id="5_b4"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/木.glb" id="6_tree"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/草むら.glb" id="7_grass"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/仏像.glb" id="8_buddha"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/コンクリオブジェクトl.glb" id="9_con"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/建物5.glb" id="11_b5"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/建物6.glb" id="12_b6"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/建物7.glb" id="13_b7"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/廃車1.glb" id="14_car1"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/廃車2.glb" id="15_car2"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/建物8.glb" id="16_b8"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/UtilityPole.tscn" id="17_pole"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/ShoppingStreetGate.tscn" id="18_gate"]
+[ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/建物9.glb" id="19_b9"]
 [ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/Mountains.tscn" id="20_mts"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
@@ -26,7 +26,7 @@ size = Vector3(1000, 5, 1000)
 
 [node name="VillageMap" type="Node3D" unique_id=1245464996]
 script = ExtResource("1_script")
-house_models = Array[PackedScene]([ExtResource("2_b1"), ExtResource("3_b2"), ExtResource("4_b3"), ExtResource("5_b4"), ExtResource("11"), ExtResource("12"), ExtResource("13"), ExtResource("14"), ExtResource("15"), ExtResource("16"), ExtResource("19_b9")])
+house_models = Array[PackedScene]([ExtResource("2_b1"), ExtResource("3_b2"), ExtResource("4_b3"), ExtResource("5_b4"), ExtResource("11_b5"), ExtResource("12_b6"), ExtResource("13_b7"), ExtResource("14_car1"), ExtResource("15_car2"), ExtResource("16_b8"), ExtResource("19_b9")])
 tree_model = ExtResource("6_tree")
 grass_model = ExtResource("7_grass")
 statue_model = ExtResource("8_buddha")
@@ -173,10 +173,10 @@ transform = Transform3D(-0.094944455, 0, -5.78049, 0, 5.7812696, 0, 5.78049, 0, 
 [node name="Concrete_38" parent="." unique_id=1103177143 instance=ExtResource("9_con")]
 transform = Transform3D(-0.094944455, 0, -5.78049, 0, 5.7812696, 0, 5.78049, 0, -0.094944455, 27.046906, 1.8543928, -23.675003)
 
-[node name="ManualBuilding_House5" parent="." unique_id=12345678 instance=ExtResource("11")]
+[node name="ManualBuilding_House5" parent="." unique_id=12345678 instance=ExtResource("11_b5")]
 transform = Transform3D(-0.21394365, 0, 14.540003, 0, 14.541576, 0, -14.540003, 0, -0.21394365, 33.03945, 7.709605, -14.561542)
 
-[node name="ManualBuilding_House6" parent="." unique_id=98765432 instance=ExtResource("12")]
+[node name="ManualBuilding_House6" parent="." unique_id=98765432 instance=ExtResource("12_b6")]
 transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 70.03993, 9.165542, -19.675636)
 
 [node name="Concrete_39" parent="." unique_id=909719313 instance=ExtResource("9_con")]
@@ -521,7 +521,7 @@ transform = Transform3D(28.019058, 0, 0, 0, 28.019058, 0, 0, 0, 28.019058, -51.6
 [node name="Tree_Manual_7" parent="." unique_id=701281065 instance=ExtResource("6_tree")]
 transform = Transform3D(28.019058, 0, 0, 0, 28.019058, 0, 0, 0, 28.019058, -51.67301, 13.96529, 79.72102)
 
-[node name="ManualBuilding_House7" parent="." unique_id=77778888 instance=ExtResource("13")]
+[node name="ManualBuilding_House7" parent="." unique_id=77778888 instance=ExtResource("13_b7")]
 transform = Transform3D(-58.420155, 0, -1.2686151, 0, 58.43392, 0, 1.2686151, 0, -58.420155, 45.886074, 7.702821, -70.25837)
 
 [node name="Concrete_145" parent="." unique_id=869929544 instance=ExtResource("9_con")]
@@ -755,13 +755,13 @@ transform = Transform3D(28.019058, 0, 0, 0, 28.019058, 0, 0, 0, 28.019058, -28.4
 [node name="Tree_Manual_21" parent="." unique_id=988748898 instance=ExtResource("6_tree")]
 transform = Transform3D(28.019058, 0, 0, 0, 28.019058, 0, 0, 0, 28.019058, -28.453672, 13.96529, -64.08397)
 
-[node name="Manual_Car1" parent="." unique_id=99112233 instance=ExtResource("14")]
+[node name="Manual_Car1" parent="." unique_id=99112233 instance=ExtResource("14_car1")]
 transform = Transform3D(3.7235618, 0, 9.280899, 0, 10, 0, -9.280899, 0, 3.7235618, -14.463651, 2, -44.05195)
 
-[node name="Manual_Car2" parent="." unique_id=99223344 instance=ExtResource("15")]
+[node name="Manual_Car2" parent="." unique_id=99223344 instance=ExtResource("15_car2")]
 transform = Transform3D(6.188746, 0, -7.854898, 0, 10, 0, 7.854898, 0, 6.188746, 25.425335, 1.1409531, 37.9327)
 
-[node name="ManualBuilding_House8" parent="." unique_id=88887777 instance=ExtResource("16")]
+[node name="ManualBuilding_House8" parent="." unique_id=88887777 instance=ExtResource("16_b8")]
 transform = Transform3D(-29.990341, 0, -0.76123464, 0, 30, 0, 0.76123464, 0, -29.990341, 33.72203, 5.043502, 50)
 
 [node name="Grass_Manual_4" parent="." unique_id=1382924876 instance=ExtResource("7_grass")]

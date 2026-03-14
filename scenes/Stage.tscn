@@ -1,1134 +1,1004 @@
-[gd_scene load_steps=18 format=3 uid="uid://gs_stage"]
+[gd_scene format=3 uid="uid://cxdbx7rpvbd2"]
 
-[ext_resource type="PackedScene" path="res://assets/models/Industrial_exterior_v2.glb" id="1_building"]
-[ext_resource type="Texture2D" path="res://assets/models/Industrial_exterior_v2_Wall.png" id="tex_wall"]
-[ext_resource type="Texture2D" path="res://assets/models/Industrial_exterior_v2_Concrete.png" id="tex_concrete"]
-[ext_resource type="Texture2D" path="res://assets/models/Industrial_exterior_v2_Metal_cabinet_1.png" id="tex_cabinet"]
-[ext_resource type="Texture2D" path="res://assets/models/Industrial_exterior_v2_Barrel_1.png" id="tex_barrel"]
-[ext_resource type="Texture2D" path="res://assets/models/Industrial_exterior_v2_Box_wood.png" id="tex_wood"]
-[ext_resource type="Texture2D" path="res://assets/models/Industrial_exterior_v2_Cargo_1.png" id="tex_cargo"]
-[ext_resource type="Texture2D" path="res://assets/models/Industrial_exterior_v2_Pipes.png" id="tex_pipes"]
-[ext_resource type="Texture2D" path="res://assets/models/Industrial_exterior_v2_Palet.png" id="tex_palet"]
+[ext_resource type="PackedScene" uid="uid://bccd2fkrix6pc" path="res://assets/models/Industrial_exterior_v2.glb" id="1_building"]
+[ext_resource type="PackedScene" uid="uid://fy4vtna357j1" path="res://assets/models/廃ドア.glb" id="exit_door_model"]
+[ext_resource type="Texture2D" uid="uid://rge23dau3aet" path="res://assets/models/Industrial_exterior_v2_Barrel_1.png" id="tex_barrel"]
+[ext_resource type="Texture2D" uid="uid://c4qmi3mwqhs0a" path="res://assets/models/Industrial_exterior_v2_Metal_cabinet_1.png" id="tex_cabinet"]
+[ext_resource type="Texture2D" uid="uid://ck6woarscad3t" path="res://assets/models/Industrial_exterior_v2_Cargo_1.png" id="tex_cargo"]
+[ext_resource type="Texture2D" uid="uid://dt324wpbyxian" path="res://assets/models/Industrial_exterior_v2_Concrete.png" id="tex_concrete"]
+[ext_resource type="Texture2D" uid="uid://dwo3o6f4hj2ff" path="res://assets/models/Industrial_exterior_v2_Palet.png" id="tex_palet"]
+[ext_resource type="Texture2D" uid="uid://dad4fdgkglrnr" path="res://assets/models/Industrial_exterior_v2_Pipes.png" id="tex_pipes"]
+[ext_resource type="Texture2D" uid="uid://b2jr01oybgtcw" path="res://assets/models/Industrial_exterior_v2_Wall.png" id="tex_wall"]
+[ext_resource type="Texture2D" uid="uid://dg15628qkka3g" path="res://assets/models/Industrial_exterior_v2_Box_wood.png" id="tex_wood"]
 
-; ── マテリアル ──
-; 壁・天井・仕切り・柱: Wall テクスチャ
-[sub_resource type="StandardMaterial3D" id="Mat_Concrete"]
-albedo_color = Color(1.0, 1.0, 1.0, 1)
-albedo_texture = ExtResource("tex_wall")
-uv1_scale = Vector3(3.0, 2.0, 3.0)
-roughness = 0.92
-
-; 床: Concrete テクスチャ
 [sub_resource type="StandardMaterial3D" id="Mat_Floor"]
-albedo_color = Color(1.0, 1.0, 1.0, 1)
 albedo_texture = ExtResource("tex_concrete")
-uv1_scale = Vector3(8.0, 8.0, 8.0)
 roughness = 0.96
+uv1_scale = Vector3(8, 8, 8)
 
-; 金属小道具・棚・ロッカー
-[sub_resource type="StandardMaterial3D" id="Mat_Metal"]
-albedo_color = Color(1.0, 1.0, 1.0, 1)
-albedo_texture = ExtResource("tex_cabinet")
-uv1_scale = Vector3(2.0, 2.0, 2.0)
-roughness = 0.72
-metallic = 0.28
-
-; ドラム缶・バレル
-[sub_resource type="StandardMaterial3D" id="Mat_Barrel"]
-albedo_color = Color(1.0, 1.0, 1.0, 1)
-albedo_texture = ExtResource("tex_barrel")
-uv1_scale = Vector3(2.0, 2.0, 2.0)
-roughness = 0.75
-metallic = 0.2
-
-; 木箱
-[sub_resource type="StandardMaterial3D" id="Mat_Wood"]
-albedo_color = Color(1.0, 1.0, 1.0, 1)
-albedo_texture = ExtResource("tex_wood")
-uv1_scale = Vector3(2.0, 2.0, 2.0)
+[sub_resource type="StandardMaterial3D" id="Mat_Concrete"]
+albedo_texture = ExtResource("tex_wall")
 roughness = 0.92
+uv1_scale = Vector3(3, 2, 3)
 
-; カーゴコンテナ
-[sub_resource type="StandardMaterial3D" id="Mat_Cargo"]
-albedo_color = Color(1.0, 1.0, 1.0, 1)
-albedo_texture = ExtResource("tex_cargo")
-uv1_scale = Vector3(2.0, 2.0, 2.0)
-roughness = 0.82
+[sub_resource type="StandardMaterial3D" id="Mat_Metal"]
+albedo_texture = ExtResource("tex_cabinet")
+metallic = 0.28
+roughness = 0.72
+uv1_scale = Vector3(2, 2, 2)
 
-; 配管
 [sub_resource type="StandardMaterial3D" id="Mat_Pipes"]
-albedo_color = Color(1.0, 1.0, 1.0, 1)
 albedo_texture = ExtResource("tex_pipes")
-uv1_scale = Vector3(2.0, 2.0, 2.0)
-roughness = 0.62
 metallic = 0.45
+roughness = 0.62
+uv1_scale = Vector3(2, 2, 2)
 
-; パレット
+[sub_resource type="StandardMaterial3D" id="Mat_Barrel"]
+albedo_texture = ExtResource("tex_barrel")
+metallic = 0.2
+roughness = 0.75
+uv1_scale = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="Mat_Wood"]
+albedo_texture = ExtResource("tex_wood")
+roughness = 0.92
+uv1_scale = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="Mat_Cargo"]
+albedo_texture = ExtResource("tex_cargo")
+roughness = 0.82
+uv1_scale = Vector3(2, 2, 2)
+
 [sub_resource type="StandardMaterial3D" id="Mat_Pallet"]
-albedo_color = Color(1.0, 1.0, 1.0, 1)
 albedo_texture = ExtResource("tex_palet")
-uv1_scale = Vector3(2.0, 2.0, 2.0)
 roughness = 0.94
+uv1_scale = Vector3(2, 2, 2)
 
-; ============================================================
-;  マップレイアウト (top-down)  50m × 36m
-;
-;  x: -25〜+25   z: -18〜+18   天井高: 4.5m
-;
-;  z=-18 ████████████████████████████████████████████████████
-;         █ NW機械室           │  NE制御室              █
-;         █ (Ghost1/Item4)     │  (Item3/MonsterDeco)   █
-;  z=-10 ██[扉]██████[扉]██[扉]████████[扉]████████[扉]██████
-;         █ W通路    │   中央ハブ      │  E通路           █
-;  z=+6  ██[扉]██████████[扉]██████████[扉]████████[扉]███████
-;         █ SW倉庫   │ 南ホール(スタート)│ SE荷物エリア    █
-;  z=+18 ████████████████████████████████████████████████████
-; ============================================================
+[node name="Stage" type="Node3D" unique_id=63920351]
 
-[node name="Stage" type="Node3D"]
-
-; ── 床・天井 ──
-[node name="Floor" type="CSGBox3D" parent="."]
+[node name="Floor" type="CSGBox3D" parent="." unique_id=1436449770]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
-size = Vector3(50, 0.3, 36)
 use_collision = true
+size = Vector3(50, 0.3, 36)
 material = SubResource("Mat_Floor")
 
-[node name="Ceiling" type="CSGBox3D" parent="."]
+[node name="Ceiling" type="CSGBox3D" parent="." unique_id=1805896933]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.65, 0)
+use_collision = true
 size = Vector3(50, 0.3, 36)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-; ── 外壁 ──
-[node name="Wall_N" type="CSGBox3D" parent="."]
+[node name="Wall_N" type="CSGBox3D" parent="." unique_id=548569634]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, -18)
-size = Vector3(50, 4.5, 0.3)
 use_collision = true
+size = Vector3(50, 4.5, 0.3)
 material = SubResource("Mat_Concrete")
 
-[node name="Wall_S" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 18)
-size = Vector3(50, 4.5, 0.3)
+[node name="Wall_S" type="CSGBox3D" parent="." unique_id=993796863]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.002213478, 2.2633855, 17.994946)
 use_collision = true
+size = Vector3(50, 4.5, 0.3)
 material = SubResource("Mat_Concrete")
 
-[node name="Wall_E" type="CSGBox3D" parent="."]
+[node name="Wall_E" type="CSGBox3D" parent="." unique_id=1688822203]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 2.25, 0)
-size = Vector3(0.3, 4.5, 36)
 use_collision = true
+size = Vector3(0.3, 4.5, 36)
 material = SubResource("Mat_Concrete")
 
-[node name="Wall_W" type="CSGBox3D" parent="."]
+[node name="Wall_W" type="CSGBox3D" parent="." unique_id=1825809206]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 2.25, 0)
+use_collision = true
 size = Vector3(0.3, 4.5, 36)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-; ── 北仕切り (z=-10) ──
-[node name="NDivider_W" type="CSGBox3D" parent="."]
+[node name="NDivider_W" type="CSGBox3D" parent="." unique_id=81553612]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 2.25, -10)
-size = Vector3(8, 4.5, 0.3)
 use_collision = true
+size = Vector3(8, 4.5, 0.3)
 material = SubResource("Mat_Concrete")
 
-[node name="NDivider_CW" type="CSGBox3D" parent="."]
+[node name="NDivider_CW" type="CSGBox3D" parent="." unique_id=1719681754]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 2.25, -10)
+use_collision = true
 size = Vector3(9, 4.5, 0.3)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-[node name="NDivider_C" type="CSGBox3D" parent="."]
+[node name="NDivider_C" type="CSGBox3D" parent="." unique_id=1114786421]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.25, -10)
+use_collision = true
 size = Vector3(5, 4.5, 0.3)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-[node name="NDivider_CE" type="CSGBox3D" parent="."]
+[node name="NDivider_CE" type="CSGBox3D" parent="." unique_id=51888601]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 2.25, -10)
+use_collision = true
 size = Vector3(10, 4.5, 0.3)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-[node name="NDivider_E" type="CSGBox3D" parent="."]
+[node name="NDivider_E" type="CSGBox3D" parent="." unique_id=2087239049]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 2.25, -10)
+use_collision = true
 size = Vector3(6, 4.5, 0.3)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-; ── 南仕切り (z=+6) ──
-[node name="SDivider_W" type="CSGBox3D" parent="."]
+[node name="SDivider_W" type="CSGBox3D" parent="." unique_id=1532241117]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.5, 2.25, 6)
+use_collision = true
 size = Vector3(7, 4.5, 0.3)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-[node name="SDivider_CW" type="CSGBox3D" parent="."]
+[node name="SDivider_CW" type="CSGBox3D" parent="." unique_id=941883645]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 2.25, 6)
-size = Vector3(8, 4.5, 0.3)
 use_collision = true
+size = Vector3(8, 4.5, 0.3)
 material = SubResource("Mat_Concrete")
 
-[node name="SDivider_C" type="CSGBox3D" parent="."]
+[node name="SDivider_C" type="CSGBox3D" parent="." unique_id=503583902]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 6)
+use_collision = true
 size = Vector3(8, 4.5, 0.3)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-[node name="SDivider_CE" type="CSGBox3D" parent="."]
+[node name="SDivider_CE" type="CSGBox3D" parent="." unique_id=1959229613]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 2.25, 6)
+use_collision = true
 size = Vector3(11, 4.5, 0.3)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-[node name="SDivider_E" type="CSGBox3D" parent="."]
+[node name="SDivider_E" type="CSGBox3D" parent="." unique_id=1428193911]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 2.25, 6)
+use_collision = true
 size = Vector3(4, 4.5, 0.3)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-; ── 北ゾーン NW/NE 縦仕切り (x=0) ──
-[node name="NZone_Div_N" type="CSGBox3D" parent="."]
+[node name="NZone_Div_N" type="CSGBox3D" parent="." unique_id=1801208174]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, -16.5)
+use_collision = true
 size = Vector3(0.3, 4.5, 3)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-[node name="NZone_Div_S" type="CSGBox3D" parent="."]
+[node name="NZone_Div_S" type="CSGBox3D" parent="." unique_id=1719910476]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, -11)
-size = Vector3(0.3, 4.5, 2)
 use_collision = true
+size = Vector3(0.3, 4.5, 2)
 material = SubResource("Mat_Concrete")
 
-; ── 中央ゾーン 西内壁 (x=-12) ──
-[node name="MZone_WDiv_N" type="CSGBox3D" parent="."]
+[node name="MZone_WDiv_N" type="CSGBox3D" parent="." unique_id=356627261]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.25, -7)
+use_collision = true
 size = Vector3(0.3, 4.5, 6)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-[node name="MZone_WDiv_S" type="CSGBox3D" parent="."]
+[node name="MZone_WDiv_S" type="CSGBox3D" parent="." unique_id=17342593]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.25, 2.5)
-size = Vector3(0.3, 4.5, 7)
 use_collision = true
+size = Vector3(0.3, 4.5, 7)
 material = SubResource("Mat_Concrete")
 
-; ── 中央ゾーン 東内壁 (x=+12) ──
-[node name="MZone_EDiv_N" type="CSGBox3D" parent="."]
+[node name="MZone_EDiv_N" type="CSGBox3D" parent="." unique_id=1307447280]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2.25, -6)
+use_collision = true
 size = Vector3(0.3, 4.5, 8)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-[node name="MZone_EDiv_S" type="CSGBox3D" parent="."]
+[node name="MZone_EDiv_S" type="CSGBox3D" parent="." unique_id=291923023]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2.25, 3.5)
-size = Vector3(0.3, 4.5, 5)
 use_collision = true
+size = Vector3(0.3, 4.5, 5)
 material = SubResource("Mat_Concrete")
 
-; ── 南ゾーン SW内壁 (x=-12) ──
-[node name="SZone_WDiv_N" type="CSGBox3D" parent="."]
+[node name="SZone_WDiv_N" type="CSGBox3D" parent="." unique_id=671058483]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.25, 7)
+use_collision = true
 size = Vector3(0.3, 4.5, 2)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-[node name="SZone_WDiv_S" type="CSGBox3D" parent="."]
+[node name="SZone_WDiv_S" type="CSGBox3D" parent="." unique_id=1926061681]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.25, 14.5)
+use_collision = true
 size = Vector3(0.3, 4.5, 7)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-; ── 南ゾーン SE内壁 (x=+12) ──
-[node name="SZone_EDiv_N" type="CSGBox3D" parent="."]
+[node name="SZone_EDiv_N" type="CSGBox3D" parent="." unique_id=1935505829]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2.25, 8)
+use_collision = true
 size = Vector3(0.3, 4.5, 4)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-[node name="SZone_EDiv_S" type="CSGBox3D" parent="."]
+[node name="SZone_EDiv_S" type="CSGBox3D" parent="." unique_id=576013789]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2.25, 15.5)
+use_collision = true
 size = Vector3(0.3, 4.5, 5)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-; ── 柱 ──
-[node name="Pillar_CW1" type="CSGBox3D" parent="."]
+[node name="Pillar_CW1" type="CSGBox3D" parent="." unique_id=1136175446]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.25, -2)
-size = Vector3(0.9, 4.5, 0.9)
 use_collision = true
+size = Vector3(0.9, 4.5, 0.9)
 material = SubResource("Mat_Concrete")
 
-[node name="Pillar_CE1" type="CSGBox3D" parent="."]
+[node name="Pillar_CE1" type="CSGBox3D" parent="." unique_id=2110629434]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.25, -2)
-size = Vector3(0.9, 4.5, 0.9)
 use_collision = true
+size = Vector3(0.9, 4.5, 0.9)
 material = SubResource("Mat_Concrete")
 
-[node name="Pillar_CW2" type="CSGBox3D" parent="."]
+[node name="Pillar_CW2" type="CSGBox3D" parent="." unique_id=1501699362]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.25, 3)
-size = Vector3(0.9, 4.5, 0.9)
 use_collision = true
+size = Vector3(0.9, 4.5, 0.9)
 material = SubResource("Mat_Concrete")
 
-[node name="Pillar_CE2" type="CSGBox3D" parent="."]
+[node name="Pillar_CE2" type="CSGBox3D" parent="." unique_id=1455042133]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.25, 3)
-size = Vector3(0.9, 4.5, 0.9)
 use_collision = true
+size = Vector3(0.9, 4.5, 0.9)
 material = SubResource("Mat_Concrete")
 
-[node name="Pillar_NW1" type="CSGBox3D" parent="."]
+[node name="Pillar_NW1" type="CSGBox3D" parent="." unique_id=65144404]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 2.25, -14)
-size = Vector3(0.9, 4.5, 0.9)
 use_collision = true
+size = Vector3(0.9, 4.5, 0.9)
 material = SubResource("Mat_Concrete")
 
-[node name="Pillar_NE1" type="CSGBox3D" parent="."]
+[node name="Pillar_NE1" type="CSGBox3D" parent="." unique_id=359902635]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 2.25, -14)
-size = Vector3(0.9, 4.5, 0.9)
 use_collision = true
+size = Vector3(0.9, 4.5, 0.9)
 material = SubResource("Mat_Concrete")
 
-[node name="Pillar_SW1" type="CSGBox3D" parent="."]
+[node name="Pillar_SW1" type="CSGBox3D" parent="." unique_id=1696079706]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 2.25, 12)
-size = Vector3(0.9, 4.5, 0.9)
 use_collision = true
+size = Vector3(0.9, 4.5, 0.9)
 material = SubResource("Mat_Concrete")
 
-[node name="Pillar_SE1" type="CSGBox3D" parent="."]
+[node name="Pillar_SE1" type="CSGBox3D" parent="." unique_id=1077984183]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 2.25, 12)
-size = Vector3(0.9, 4.5, 0.9)
 use_collision = true
+size = Vector3(0.9, 4.5, 0.9)
 material = SubResource("Mat_Concrete")
 
-; ================================================================
-;  ドアフレーム — 各開口部の両サイドと上部
-; ================================================================
-
-; 北仕切り (z=-10) 開口1: x=-17〜-14
-[node name="DFrame_N1_L" type="CSGBox3D" parent="."]
+[node name="DFrame_N1_L" type="CSGBox3D" parent="." unique_id=1208986258]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.1, 2.15, -10)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_N1_R" type="CSGBox3D" parent="."]
+[node name="DFrame_N1_R" type="CSGBox3D" parent="." unique_id=1534884964]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.9, 2.15, -10)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_N1_T" type="CSGBox3D" parent="."]
+[node name="DFrame_N1_T" type="CSGBox3D" parent="." unique_id=1489408038]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.5, 4.35, -10)
-size = Vector3(3.4, 0.3, 0.28)
 use_collision = true
+size = Vector3(3.4, 0.3, 0.28)
 material = SubResource("Mat_Metal")
 
-; 北仕切り (z=-10) 開口2: x=-5〜-2
-[node name="DFrame_N2_L" type="CSGBox3D" parent="."]
+[node name="DFrame_N2_L" type="CSGBox3D" parent="." unique_id=2080809536]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 2.15, -10)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_N2_R" type="CSGBox3D" parent="."]
+[node name="DFrame_N2_R" type="CSGBox3D" parent="." unique_id=1880271961]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9, 2.15, -10)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_N2_T" type="CSGBox3D" parent="."]
+[node name="DFrame_N2_T" type="CSGBox3D" parent="." unique_id=1029446568]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 4.35, -10)
-size = Vector3(3.4, 0.3, 0.28)
 use_collision = true
+size = Vector3(3.4, 0.3, 0.28)
 material = SubResource("Mat_Metal")
 
-; 北仕切り (z=-10) 開口3: x=+3〜+6
-[node name="DFrame_N3_L" type="CSGBox3D" parent="."]
+[node name="DFrame_N3_L" type="CSGBox3D" parent="." unique_id=509468874]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 2.15, -10)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_N3_R" type="CSGBox3D" parent="."]
+[node name="DFrame_N3_R" type="CSGBox3D" parent="." unique_id=1519332309]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1, 2.15, -10)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_N3_T" type="CSGBox3D" parent="."]
+[node name="DFrame_N3_T" type="CSGBox3D" parent="." unique_id=1219804312]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 4.35, -10)
-size = Vector3(3.4, 0.3, 0.28)
 use_collision = true
+size = Vector3(3.4, 0.3, 0.28)
 material = SubResource("Mat_Metal")
 
-; 北仕切り (z=-10) 開口4: x=+16〜+19
-[node name="DFrame_N4_L" type="CSGBox3D" parent="."]
+[node name="DFrame_N4_L" type="CSGBox3D" parent="." unique_id=1096696693]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.9, 2.15, -10)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_N4_R" type="CSGBox3D" parent="."]
+[node name="DFrame_N4_R" type="CSGBox3D" parent="." unique_id=81248414]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.1, 2.15, -10)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_N4_T" type="CSGBox3D" parent="."]
+[node name="DFrame_N4_T" type="CSGBox3D" parent="." unique_id=1651629044]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.5, 4.35, -10)
-size = Vector3(3.4, 0.3, 0.28)
 use_collision = true
+size = Vector3(3.4, 0.3, 0.28)
 material = SubResource("Mat_Metal")
 
-; 南仕切り (z=+6) 開口1: x=-18〜-15
-[node name="DFrame_S1_L" type="CSGBox3D" parent="."]
+[node name="DFrame_S1_L" type="CSGBox3D" parent="." unique_id=1253507678]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.1, 2.15, 6)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_S1_R" type="CSGBox3D" parent="."]
+[node name="DFrame_S1_R" type="CSGBox3D" parent="." unique_id=1782852684]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.9, 2.15, 6)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_S1_T" type="CSGBox3D" parent="."]
+[node name="DFrame_S1_T" type="CSGBox3D" parent="." unique_id=1856189951]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.5, 4.35, 6)
-size = Vector3(3.4, 0.3, 0.28)
 use_collision = true
+size = Vector3(3.4, 0.3, 0.28)
 material = SubResource("Mat_Metal")
 
-; 南仕切り (z=+6) 開口2: x=-7〜-4
-[node name="DFrame_S2_L" type="CSGBox3D" parent="."]
+[node name="DFrame_S2_L" type="CSGBox3D" parent="." unique_id=1420456951]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1, 2.15, 6)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_S2_R" type="CSGBox3D" parent="."]
+[node name="DFrame_S2_R" type="CSGBox3D" parent="." unique_id=109970523]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.9, 2.15, 6)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_S2_T" type="CSGBox3D" parent="."]
+[node name="DFrame_S2_T" type="CSGBox3D" parent="." unique_id=2085674947]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 4.35, 6)
-size = Vector3(3.4, 0.3, 0.28)
 use_collision = true
+size = Vector3(3.4, 0.3, 0.28)
 material = SubResource("Mat_Metal")
 
-; 南仕切り (z=+6) 開口3: x=+4〜+7
-[node name="DFrame_S3_L" type="CSGBox3D" parent="."]
+[node name="DFrame_S3_L" type="CSGBox3D" parent="." unique_id=617634186]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9, 2.15, 6)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_S3_R" type="CSGBox3D" parent="."]
+[node name="DFrame_S3_R" type="CSGBox3D" parent="." unique_id=1275738664]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1, 2.15, 6)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_S3_T" type="CSGBox3D" parent="."]
+[node name="DFrame_S3_T" type="CSGBox3D" parent="." unique_id=1584400996]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 4.35, 6)
-size = Vector3(3.4, 0.3, 0.28)
 use_collision = true
+size = Vector3(3.4, 0.3, 0.28)
 material = SubResource("Mat_Metal")
 
-; 南仕切り (z=+6) 開口4: x=+18〜+21
-[node name="DFrame_S4_L" type="CSGBox3D" parent="."]
+[node name="DFrame_S4_L" type="CSGBox3D" parent="." unique_id=1707782305]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.9, 2.15, 6)
-size = Vector3(0.22, 4.3, 0.28)
 use_collision = true
+size = Vector3(0.22, 4.3, 0.28)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_S4_R" type="CSGBox3D" parent="."]
+[node name="DFrame_S4_R" type="CSGBox3D" parent="." unique_id=106833995]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.1, 2.15, 6)
+use_collision = true
 size = Vector3(0.22, 4.3, 0.28)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_S4_T" type="CSGBox3D" parent="."]
+[node name="DFrame_S4_T" type="CSGBox3D" parent="." unique_id=1981093980]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.5, 4.35, 6)
+use_collision = true
 size = Vector3(3.4, 0.3, 0.28)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-; 縦仕切り: NW/NE 境界 (x=0, z=-15〜-12)
-[node name="DFrame_NWE_N" type="CSGBox3D" parent="."]
+[node name="DFrame_NWE_N" type="CSGBox3D" parent="." unique_id=1886898322]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.15, -15.1)
-size = Vector3(0.28, 4.3, 0.22)
 use_collision = true
+size = Vector3(0.28, 4.3, 0.22)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_NWE_S" type="CSGBox3D" parent="."]
+[node name="DFrame_NWE_S" type="CSGBox3D" parent="." unique_id=2012928038]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.15, -11.9)
-size = Vector3(0.28, 4.3, 0.22)
 use_collision = true
+size = Vector3(0.28, 4.3, 0.22)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_NWE_T" type="CSGBox3D" parent="."]
+[node name="DFrame_NWE_T" type="CSGBox3D" parent="." unique_id=513502667]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.35, -13.5)
-size = Vector3(0.28, 0.3, 3.4)
 use_collision = true
+size = Vector3(0.28, 0.3, 3.4)
 material = SubResource("Mat_Metal")
 
-; 縦仕切り: 中央W (x=-12, z=-4〜-1)
-[node name="DFrame_MW_N" type="CSGBox3D" parent="."]
+[node name="DFrame_MW_N" type="CSGBox3D" parent="." unique_id=1883767880]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.15, -4.1)
-size = Vector3(0.28, 4.3, 0.22)
 use_collision = true
+size = Vector3(0.28, 4.3, 0.22)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_MW_S" type="CSGBox3D" parent="."]
+[node name="DFrame_MW_S" type="CSGBox3D" parent="." unique_id=594054213]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.15, -0.9)
-size = Vector3(0.28, 4.3, 0.22)
 use_collision = true
+size = Vector3(0.28, 4.3, 0.22)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_MW_T" type="CSGBox3D" parent="."]
+[node name="DFrame_MW_T" type="CSGBox3D" parent="." unique_id=534552550]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 4.35, -2.5)
-size = Vector3(0.28, 0.3, 3.4)
 use_collision = true
+size = Vector3(0.28, 0.3, 3.4)
 material = SubResource("Mat_Metal")
 
-; 縦仕切り: 中央E (x=+12, z=-2〜+1)
-[node name="DFrame_ME_N" type="CSGBox3D" parent="."]
+[node name="DFrame_ME_N" type="CSGBox3D" parent="." unique_id=931631778]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2.15, -2.1)
-size = Vector3(0.28, 4.3, 0.22)
 use_collision = true
+size = Vector3(0.28, 4.3, 0.22)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_ME_S" type="CSGBox3D" parent="."]
+[node name="DFrame_ME_S" type="CSGBox3D" parent="." unique_id=451052938]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2.15, 1.1)
-size = Vector3(0.28, 4.3, 0.22)
 use_collision = true
+size = Vector3(0.28, 4.3, 0.22)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_ME_T" type="CSGBox3D" parent="."]
+[node name="DFrame_ME_T" type="CSGBox3D" parent="." unique_id=2023325516]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 4.35, -0.5)
-size = Vector3(0.28, 0.3, 3.4)
 use_collision = true
+size = Vector3(0.28, 0.3, 3.4)
 material = SubResource("Mat_Metal")
 
-; 縦仕切り: 南W (x=-12, z=+8〜+11)
-[node name="DFrame_SW_N" type="CSGBox3D" parent="."]
+[node name="DFrame_SW_N" type="CSGBox3D" parent="." unique_id=528368936]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.15, 7.9)
-size = Vector3(0.28, 4.3, 0.22)
 use_collision = true
+size = Vector3(0.28, 4.3, 0.22)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_SW_S" type="CSGBox3D" parent="."]
+[node name="DFrame_SW_S" type="CSGBox3D" parent="." unique_id=794055489]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.15, 11.1)
-size = Vector3(0.28, 4.3, 0.22)
 use_collision = true
+size = Vector3(0.28, 4.3, 0.22)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_SW_T" type="CSGBox3D" parent="."]
+[node name="DFrame_SW_T" type="CSGBox3D" parent="." unique_id=1825483612]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 4.35, 9.5)
-size = Vector3(0.28, 0.3, 3.4)
 use_collision = true
+size = Vector3(0.28, 0.3, 3.4)
 material = SubResource("Mat_Metal")
 
-; 縦仕切り: 南E (x=+12, z=+10〜+13)
-[node name="DFrame_SE_N" type="CSGBox3D" parent="."]
+[node name="DFrame_SE_N" type="CSGBox3D" parent="." unique_id=278572746]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2.15, 9.9)
-size = Vector3(0.28, 4.3, 0.22)
 use_collision = true
+size = Vector3(0.28, 4.3, 0.22)
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_SE_S" type="CSGBox3D" parent="."]
+[node name="DFrame_SE_S" type="CSGBox3D" parent="." unique_id=231752603]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2.15, 13.1)
+use_collision = true
 size = Vector3(0.28, 4.3, 0.22)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-[node name="DFrame_SE_T" type="CSGBox3D" parent="."]
+[node name="DFrame_SE_T" type="CSGBox3D" parent="." unique_id=1636557553]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 4.35, 11.5)
-size = Vector3(0.28, 0.3, 3.4)
 use_collision = true
+size = Vector3(0.28, 0.3, 3.4)
 material = SubResource("Mat_Metal")
 
-; ================================================================
-;  天井配管 — 工業感の演出
-; ================================================================
-
-; 中央ハブ E-W 主管
-[node name="CPipe_Hub_EW" type="CSGBox3D" parent="."]
+[node name="CPipe_Hub_EW" type="CSGBox3D" parent="." unique_id=576561930]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.05, -3)
 size = Vector3(24, 0.28, 0.28)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-; 中央ハブ N-S 主管
-[node name="CPipe_Hub_NS" type="CSGBox3D" parent="."]
+[node name="CPipe_Hub_NS" type="CSGBox3D" parent="." unique_id=1511248275]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 4.05, -2)
 size = Vector3(0.28, 0.28, 16)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-; NW機械室 横管
-[node name="CPipe_NW_EW" type="CSGBox3D" parent="."]
+[node name="CPipe_NW_EW" type="CSGBox3D" parent="." unique_id=87678138]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 4.05, -14)
 size = Vector3(24.5, 0.28, 0.28)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-; NE制御室 横管
-[node name="CPipe_NE_EW" type="CSGBox3D" parent="."]
+[node name="CPipe_NE_EW" type="CSGBox3D" parent="." unique_id=1204616096]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 4.05, -14)
 size = Vector3(24.5, 0.28, 0.28)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-; W通路 縦管
-[node name="CPipe_W_NS" type="CSGBox3D" parent="."]
+[node name="CPipe_W_NS" type="CSGBox3D" parent="." unique_id=801961239]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.5, 4.05, -2)
 size = Vector3(0.28, 0.28, 16)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-; E通路 縦管
-[node name="CPipe_E_NS" type="CSGBox3D" parent="."]
+[node name="CPipe_E_NS" type="CSGBox3D" parent="." unique_id=577006154]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.5, 4.05, -2)
 size = Vector3(0.28, 0.28, 16)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-; SW倉庫 縦管
-[node name="CPipe_SW_NS" type="CSGBox3D" parent="."]
+[node name="CPipe_SW_NS" type="CSGBox3D" parent="." unique_id=2077036731]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.5, 4.05, 12)
 size = Vector3(0.28, 0.28, 12)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-; SE荷物 縦管
-[node name="CPipe_SE_NS" type="CSGBox3D" parent="."]
+[node name="CPipe_SE_NS" type="CSGBox3D" parent="." unique_id=1504611004]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.5, 4.05, 12)
 size = Vector3(0.28, 0.28, 12)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-; 垂直支持管 (ハブ)
-[node name="CPipe_Supp_W" type="CSGBox3D" parent="."]
+[node name="CPipe_Supp_W" type="CSGBox3D" parent="." unique_id=503029460]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.8, -3)
 size = Vector3(0.2, 2.6, 0.2)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-[node name="CPipe_Supp_E" type="CSGBox3D" parent="."]
+[node name="CPipe_Supp_E" type="CSGBox3D" parent="." unique_id=1070435524]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.8, -3)
 size = Vector3(0.2, 2.6, 0.2)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-; ================================================================
-;  小道具 — NW 機械室 (x:-25〜0, z:-18〜-10)
-; ================================================================
-[node name="Machine_NW1" type="CSGBox3D" parent="."]
+[node name="Machine_NW1" type="CSGBox3D" parent="." unique_id=1375272243]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 1.5, -16)
-size = Vector3(5, 3.0, 2.5)
 use_collision = true
+size = Vector3(5, 3, 2.5)
 material = SubResource("Mat_Metal")
 
-[node name="Machine_NW2" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 1.0, -16)
-size = Vector3(3, 2.0, 2.0)
+[node name="Machine_NW2" type="CSGBox3D" parent="." unique_id=1941838150]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 1, -16)
 use_collision = true
+size = Vector3(3, 2, 2)
 material = SubResource("Mat_Metal")
 
-; 発電機 (北壁際)
-[node name="Generator_NW" type="CSGBox3D" parent="."]
+[node name="Generator_NW" type="CSGBox3D" parent="." unique_id=721835718]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.2, -17.6)
+use_collision = true
 size = Vector3(3.5, 2.4, 0.8)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-; 制御ボックス (北壁)
-[node name="CtrlBox_NW" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1.0, -17.7)
-size = Vector3(2.5, 2.0, 0.35)
+[node name="CtrlBox_NW" type="CSGBox3D" parent="." unique_id=1557095704]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, -17.7)
 use_collision = true
+size = Vector3(2.5, 2, 0.35)
 material = SubResource("Mat_Metal")
 
-; ドラム缶列 (北壁)
-[node name="Barrel_NW1" type="CSGBox3D" parent="."]
+[node name="Barrel_NW1" type="CSGBox3D" parent="." unique_id=346146722]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0.55, -17.5)
-size = Vector3(0.65, 1.1, 0.65)
 use_collision = true
+size = Vector3(0.65, 1.1, 0.65)
 material = SubResource("Mat_Barrel")
 
-[node name="Barrel_NW2" type="CSGBox3D" parent="."]
+[node name="Barrel_NW2" type="CSGBox3D" parent="." unique_id=414173389]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.8, 0.55, -17.5)
-size = Vector3(0.65, 1.1, 0.65)
 use_collision = true
+size = Vector3(0.65, 1.1, 0.65)
 material = SubResource("Mat_Barrel")
 
-[node name="Barrel_NW3" type="CSGBox3D" parent="."]
+[node name="Barrel_NW3" type="CSGBox3D" parent="." unique_id=603037700]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.6, 0.55, -17.5)
-size = Vector3(0.65, 1.1, 0.65)
 use_collision = true
+size = Vector3(0.65, 1.1, 0.65)
 material = SubResource("Mat_Barrel")
 
-[node name="Crate_NW1" type="CSGBox3D" parent="."]
+[node name="Crate_NW1" type="CSGBox3D" parent="." unique_id=245661019]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.6, -12)
-size = Vector3(1.6, 1.2, 1.6)
 use_collision = true
+size = Vector3(1.6, 1.2, 1.6)
 material = SubResource("Mat_Wood")
 
-[node name="Crate_NW2" type="CSGBox3D" parent="."]
+[node name="Crate_NW2" type="CSGBox3D" parent="." unique_id=1317960093]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1.8, -12)
+use_collision = true
 size = Vector3(1.6, 1.2, 1.6)
-use_collision = true
 material = SubResource("Mat_Wood")
 
-[node name="Crate_NW3" type="CSGBox3D" parent="."]
+[node name="Crate_NW3" type="CSGBox3D" parent="." unique_id=1916759773]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0.6, -11)
-size = Vector3(2, 1.2, 1.0)
 use_collision = true
+size = Vector3(2, 1.2, 1)
 material = SubResource("Mat_Wood")
 
-; 作業台 (機械室内)
-[node name="WorkTable_NW" type="CSGBox3D" parent="."]
+[node name="WorkTable_NW" type="CSGBox3D" parent="." unique_id=1656429354]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.45, -11.3)
+use_collision = true
 size = Vector3(3, 0.9, 0.7)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-[node name="Shelf_NW_A" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.7, 1.0, -14)
+[node name="Shelf_NW_A" type="CSGBox3D" parent="." unique_id=1912731441]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.7, 1, -14)
+use_collision = true
 size = Vector3(0.3, 0.15, 8)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-[node name="Shelf_NW_B" type="CSGBox3D" parent="."]
+[node name="Shelf_NW_B" type="CSGBox3D" parent="." unique_id=2101580442]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.7, 2.4, -14)
-size = Vector3(0.3, 0.15, 8)
 use_collision = true
+size = Vector3(0.3, 0.15, 8)
 material = SubResource("Mat_Metal")
 
-; 棚の上のカーゴ
-[node name="Cargo_NW_Shelf1" type="CSGBox3D" parent="."]
+[node name="Cargo_NW_Shelf1" type="CSGBox3D" parent="." unique_id=2008288125]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.5, 1.5, -15)
-size = Vector3(0.8, 0.8, 1.2)
 use_collision = true
+size = Vector3(0.8, 0.8, 1.2)
 material = SubResource("Mat_Cargo")
 
-[node name="Cargo_NW_Shelf2" type="CSGBox3D" parent="."]
+[node name="Cargo_NW_Shelf2" type="CSGBox3D" parent="." unique_id=180582038]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.5, 1.5, -12.5)
-size = Vector3(0.8, 0.8, 1.2)
 use_collision = true
+size = Vector3(0.8, 0.8, 1.2)
 material = SubResource("Mat_Cargo")
 
-; 壁パイプ (西壁)
-[node name="WallPipe_NW_V" type="CSGBox3D" parent="."]
+[node name="WallPipe_NW_V" type="CSGBox3D" parent="." unique_id=2105315812]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.7, 2.25, -12)
 size = Vector3(0.22, 4.5, 0.22)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-; ================================================================
-;  小道具 — NE 制御室 (x:0〜+25, z:-18〜-10)
-; ================================================================
-[node name="ControlPanel" type="CSGBox3D" parent="."]
+[node name="ControlPanel" type="CSGBox3D" parent="." unique_id=1814160512]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0.75, -17.7)
+use_collision = true
 size = Vector3(6, 1.5, 0.4)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-[node name="ControlPanel2" type="CSGBox3D" parent="."]
+[node name="ControlPanel2" type="CSGBox3D" parent="." unique_id=583665092]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.7, 0.75, -14)
+use_collision = true
 size = Vector3(0.4, 1.5, 6)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-; サーバーラック列
-[node name="Server_NE1" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 1.0, -17.7)
-size = Vector3(1.0, 2.0, 0.6)
+[node name="Server_NE1" type="CSGBox3D" parent="." unique_id=571802235]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 1, -17.7)
 use_collision = true
+size = Vector3(1, 2, 0.6)
 material = SubResource("Mat_Metal")
 
-[node name="Server_NE2" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1.0, -17.7)
-size = Vector3(1.0, 2.0, 0.6)
+[node name="Server_NE2" type="CSGBox3D" parent="." unique_id=781866207]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, -17.7)
 use_collision = true
+size = Vector3(1, 2, 0.6)
 material = SubResource("Mat_Metal")
 
-[node name="Server_NE3" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.0, -17.7)
-size = Vector3(1.0, 2.0, 0.6)
+[node name="Server_NE3" type="CSGBox3D" parent="." unique_id=1700855295]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1, -17.7)
 use_collision = true
+size = Vector3(1, 2, 0.6)
 material = SubResource("Mat_Metal")
 
-; ボイラー
-[node name="Boiler_NE1" type="CSGBox3D" parent="."]
+[node name="Boiler_NE1" type="CSGBox3D" parent="." unique_id=13036936]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1.5, -16)
-size = Vector3(4, 3.0, 2.5)
 use_collision = true
+size = Vector3(4, 3, 2.5)
 material = SubResource("Mat_Metal")
 
-[node name="Boiler_NE2" type="CSGBox3D" parent="."]
+[node name="Boiler_NE2" type="CSGBox3D" parent="." unique_id=1296788286]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0.75, -15)
-size = Vector3(2.5, 1.5, 2.0)
 use_collision = true
+size = Vector3(2.5, 1.5, 2)
 material = SubResource("Mat_Metal")
 
-; オペレーター机
-[node name="Desk_NE" type="CSGBox3D" parent="."]
+[node name="Desk_NE" type="CSGBox3D" parent="." unique_id=201153643]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0.45, -12.5)
-size = Vector3(3, 0.9, 1.0)
 use_collision = true
+size = Vector3(3, 0.9, 1)
 material = SubResource("Mat_Metal")
 
-; 椅子ヒント (倒れたもの)
-[node name="Chair_NE" type="CSGBox3D" parent="."]
+[node name="Chair_NE" type="CSGBox3D" parent="." unique_id=8354128]
 transform = Transform3D(0.9, 0, 0.44, 0, 1, 0, -0.44, 0, 0.9, 19, 0.35, -11.2)
-size = Vector3(0.55, 0.7, 0.55)
 use_collision = true
+size = Vector3(0.55, 0.7, 0.55)
 material = SubResource("Mat_Metal")
 
-; パイプ
-[node name="Pipe_NE1" type="CSGBox3D" parent="."]
+[node name="Pipe_NE1" type="CSGBox3D" parent="." unique_id=1797546628]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 3.5, -12)
 size = Vector3(8, 0.3, 0.3)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-[node name="Pipe_NE2" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 2.0, -11)
+[node name="Pipe_NE2" type="CSGBox3D" parent="." unique_id=487963258]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 2, -11)
 size = Vector3(0.3, 3.5, 0.3)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-[node name="Pipe_NE3" type="CSGBox3D" parent="."]
+[node name="Pipe_NE3" type="CSGBox3D" parent="." unique_id=2131301954]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3.2, -14)
 size = Vector3(0.3, 2.5, 0.3)
-use_collision = false
 material = SubResource("Mat_Pipes")
 
-; ================================================================
-;  小道具 — 中央ハブ (x:-12〜+12, z:-10〜+6)
-; ================================================================
-[node name="WorkBench" type="CSGBox3D" parent="."]
+[node name="WorkBench" type="CSGBox3D" parent="." unique_id=2144905420]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, -5)
-size = Vector3(3, 0.9, 0.7)
 use_collision = true
+size = Vector3(3, 0.9, 0.7)
 material = SubResource("Mat_Metal")
 
-[node name="WorkBench2" type="CSGBox3D" parent="."]
+[node name="WorkBench2" type="CSGBox3D" parent="." unique_id=668574847]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.45, -8)
-size = Vector3(3, 0.9, 0.7)
 use_collision = true
+size = Vector3(3, 0.9, 0.7)
 material = SubResource("Mat_Metal")
 
-[node name="WorkBench3" type="CSGBox3D" parent="."]
+[node name="WorkBench3" type="CSGBox3D" parent="." unique_id=1231650285]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.45, 2)
+use_collision = true
 size = Vector3(3, 0.9, 0.7)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-; 工具キャビネット (西壁際)
-[node name="ToolCabinet_C" type="CSGBox3D" parent="."]
+[node name="ToolCabinet_C" type="CSGBox3D" parent="." unique_id=1455095115]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.7, 1.2, -5)
+use_collision = true
 size = Vector3(0.28, 2.4, 1.8)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-[node name="Drum_C1" type="CSGBox3D" parent="."]
+[node name="Drum_C1" type="CSGBox3D" parent="." unique_id=2120828360]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.55, -1)
-size = Vector3(0.65, 1.1, 0.65)
 use_collision = true
+size = Vector3(0.65, 1.1, 0.65)
 material = SubResource("Mat_Barrel")
 
-[node name="Drum_C2" type="CSGBox3D" parent="."]
+[node name="Drum_C2" type="CSGBox3D" parent="." unique_id=1577331423]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0.55, -0.2)
-size = Vector3(0.65, 1.1, 0.65)
 use_collision = true
+size = Vector3(0.65, 1.1, 0.65)
 material = SubResource("Mat_Barrel")
 
-[node name="Drum_C3" type="CSGBox3D" parent="."]
+[node name="Drum_C3" type="CSGBox3D" parent="." unique_id=595287425]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.55, -7)
-size = Vector3(0.65, 1.1, 0.65)
 use_collision = true
+size = Vector3(0.65, 1.1, 0.65)
 material = SubResource("Mat_Barrel")
 
-; ガレキ
-[node name="Rubble_C1" type="CSGBox3D" parent="."]
+[node name="Rubble_C1" type="CSGBox3D" parent="." unique_id=98804969]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.2, 2)
+use_collision = true
 size = Vector3(2.5, 0.4, 1.2)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-[node name="Rubble_C2" type="CSGBox3D" parent="."]
+[node name="Rubble_C2" type="CSGBox3D" parent="." unique_id=1466698917]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.15, -8)
-size = Vector3(1.5, 0.3, 2.0)
 use_collision = true
+size = Vector3(1.5, 0.3, 2)
 material = SubResource("Mat_Concrete")
 
-[node name="Rubble_C3" type="CSGBox3D" parent="."]
+[node name="Rubble_C3" type="CSGBox3D" parent="." unique_id=1067355439]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.2, -7)
+use_collision = true
 size = Vector3(2.5, 0.4, 1.5)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-; ================================================================
-;  小道具 — W 通路 (x:-25〜-12, z:-10〜+6)
-; ================================================================
-[node name="Locker_W1" type="CSGBox3D" parent="."]
+[node name="Locker_W1" type="CSGBox3D" parent="." unique_id=613973097]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0.9, -8)
-size = Vector3(0.6, 1.8, 1.8)
 use_collision = true
+size = Vector3(0.6, 1.8, 1.8)
 material = SubResource("Mat_Metal")
 
-[node name="Locker_W2" type="CSGBox3D" parent="."]
+[node name="Locker_W2" type="CSGBox3D" parent="." unique_id=548109863]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0.9, -5.8)
-size = Vector3(0.6, 1.8, 1.8)
 use_collision = true
+size = Vector3(0.6, 1.8, 1.8)
 material = SubResource("Mat_Metal")
 
-[node name="Locker_W3" type="CSGBox3D" parent="."]
+[node name="Locker_W3" type="CSGBox3D" parent="." unique_id=2098951337]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0.9, -3.6)
-size = Vector3(0.6, 1.8, 1.8)
 use_collision = true
+size = Vector3(0.6, 1.8, 1.8)
 material = SubResource("Mat_Metal")
 
-[node name="Locker_W4" type="CSGBox3D" parent="."]
+[node name="Locker_W4" type="CSGBox3D" parent="." unique_id=2001302562]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0.9, -1.4)
+use_collision = true
 size = Vector3(0.6, 1.8, 1.8)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-; ベンチ (西壁)
-[node name="Bench_W" type="CSGBox3D" parent="."]
+[node name="Bench_W" type="CSGBox3D" parent="." unique_id=2006073796]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.7, 0.3, 3)
+use_collision = true
 size = Vector3(0.28, 0.6, 4)
-use_collision = true
 material = SubResource("Mat_Wood")
 
-[node name="Drum_W1" type="CSGBox3D" parent="."]
+[node name="Drum_W1" type="CSGBox3D" parent="." unique_id=2011801696]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.55, 2)
-size = Vector3(0.65, 1.1, 0.65)
 use_collision = true
+size = Vector3(0.65, 1.1, 0.65)
 material = SubResource("Mat_Barrel")
 
-[node name="Drum_W2" type="CSGBox3D" parent="."]
+[node name="Drum_W2" type="CSGBox3D" parent="." unique_id=778727029]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19, 0.55, 3)
-size = Vector3(0.65, 1.1, 0.65)
 use_collision = true
+size = Vector3(0.65, 1.1, 0.65)
 material = SubResource("Mat_Barrel")
 
-; ================================================================
-;  小道具 — E 通路 (x:+12〜+25, z:-10〜+6)
-; ================================================================
-[node name="Crate_E1" type="CSGBox3D" parent="."]
+[node name="Crate_E1" type="CSGBox3D" parent="." unique_id=1360621955]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0.6, -7)
-size = Vector3(2.0, 1.2, 1.5)
 use_collision = true
+size = Vector3(2, 1.2, 1.5)
 material = SubResource("Mat_Cargo")
 
-[node name="Crate_E2" type="CSGBox3D" parent="."]
+[node name="Crate_E2" type="CSGBox3D" parent="." unique_id=2090256245]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1.8, -7)
-size = Vector3(2.0, 1.2, 1.5)
 use_collision = true
+size = Vector3(2, 1.2, 1.5)
 material = SubResource("Mat_Cargo")
 
-[node name="Crate_E3" type="CSGBox3D" parent="."]
+[node name="Crate_E3" type="CSGBox3D" parent="." unique_id=1683584036]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0.6, -4.5)
-size = Vector3(2.0, 1.2, 1.5)
 use_collision = true
+size = Vector3(2, 1.2, 1.5)
 material = SubResource("Mat_Wood")
 
-[node name="Shelf_E1" type="CSGBox3D" parent="."]
+[node name="Shelf_E1" type="CSGBox3D" parent="." unique_id=1743258568]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.7, 1.2, -3)
-size = Vector3(0.3, 0.15, 6)
 use_collision = true
+size = Vector3(0.3, 0.15, 6)
 material = SubResource("Mat_Metal")
 
-[node name="Shelf_E2" type="CSGBox3D" parent="."]
+[node name="Shelf_E2" type="CSGBox3D" parent="." unique_id=298337184]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.7, 2.6, -3)
+use_collision = true
 size = Vector3(0.3, 0.15, 6)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-; 棚の上のカーゴ
-[node name="Cargo_E_S1" type="CSGBox3D" parent="."]
+[node name="Cargo_E_S1" type="CSGBox3D" parent="." unique_id=1292309523]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.5, 1.5, -4.5)
-size = Vector3(0.8, 0.8, 1.2)
 use_collision = true
+size = Vector3(0.8, 0.8, 1.2)
 material = SubResource("Mat_Cargo")
 
-[node name="Cargo_E_S2" type="CSGBox3D" parent="."]
+[node name="Cargo_E_S2" type="CSGBox3D" parent="." unique_id=1116718158]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.5, 1.5, -2)
-size = Vector3(0.8, 0.8, 1.2)
 use_collision = true
+size = Vector3(0.8, 0.8, 1.2)
 material = SubResource("Mat_Cargo")
 
-; ================================================================
-;  小道具 — SW 倉庫 (x:-25〜-12, z:+6〜+18)
-; ================================================================
-[node name="Crate_SW1" type="CSGBox3D" parent="."]
+[node name="Crate_SW1" type="CSGBox3D" parent="." unique_id=1056624596]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.6, 10)
-size = Vector3(2.5, 1.2, 2.5)
 use_collision = true
+size = Vector3(2.5, 1.2, 2.5)
 material = SubResource("Mat_Wood")
 
-[node name="Crate_SW2" type="CSGBox3D" parent="."]
+[node name="Crate_SW2" type="CSGBox3D" parent="." unique_id=369359464]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1.8, 10)
-size = Vector3(2.5, 1.2, 2.5)
 use_collision = true
+size = Vector3(2.5, 1.2, 2.5)
 material = SubResource("Mat_Wood")
 
-[node name="Crate_SW3" type="CSGBox3D" parent="."]
+[node name="Crate_SW3" type="CSGBox3D" parent="." unique_id=1710313578]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0.6, 15)
+use_collision = true
 size = Vector3(1.5, 1.2, 1.5)
-use_collision = true
 material = SubResource("Mat_Cargo")
 
-; パレット + 積み荷
-[node name="Pallet_SW1" type="CSGBox3D" parent="."]
+[node name="Pallet_SW1" type="CSGBox3D" parent="." unique_id=719163079]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19, 0.1, 15)
-size = Vector3(3.0, 0.2, 3.0)
 use_collision = true
+size = Vector3(3, 0.2, 3)
 material = SubResource("Mat_Pallet")
 
-[node name="Crate_SW4" type="CSGBox3D" parent="."]
+[node name="Crate_SW4" type="CSGBox3D" parent="." unique_id=1703942730]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19, 0.85, 15)
+use_collision = true
 size = Vector3(2.5, 1.2, 2.5)
-use_collision = true
 material = SubResource("Mat_Cargo")
 
-; 棚 (西壁)
-[node name="Shelf_SW1" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.7, 1.0, 10)
-size = Vector3(0.3, 0.15, 8)
+[node name="Shelf_SW1" type="CSGBox3D" parent="." unique_id=1424796033]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.7, 1, 10)
 use_collision = true
+size = Vector3(0.3, 0.15, 8)
 material = SubResource("Mat_Metal")
 
-[node name="Shelf_SW2" type="CSGBox3D" parent="."]
+[node name="Shelf_SW2" type="CSGBox3D" parent="." unique_id=892696819]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.7, 2.4, 10)
+use_collision = true
 size = Vector3(0.3, 0.15, 8)
-use_collision = true
 material = SubResource("Mat_Metal")
 
-[node name="Cargo_SW_S1" type="CSGBox3D" parent="."]
+[node name="Cargo_SW_S1" type="CSGBox3D" parent="." unique_id=831231372]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.5, 1.5, 8)
-size = Vector3(0.8, 0.8, 1.2)
 use_collision = true
+size = Vector3(0.8, 0.8, 1.2)
 material = SubResource("Mat_Cargo")
 
-[node name="Cargo_SW_S2" type="CSGBox3D" parent="."]
+[node name="Cargo_SW_S2" type="CSGBox3D" parent="." unique_id=457424282]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.5, 1.5, 11)
+use_collision = true
 size = Vector3(0.8, 0.8, 1.2)
-use_collision = true
 material = SubResource("Mat_Cargo")
 
-; ================================================================
-;  小道具 — 南ホール (x:-12〜+12, z:+6〜+18)
-; ================================================================
-[node name="Pallet_S1" type="CSGBox3D" parent="."]
+[node name="Pallet_S1" type="CSGBox3D" parent="." unique_id=1453652033]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.1, 12)
+use_collision = true
 size = Vector3(4, 0.2, 4)
-use_collision = true
 material = SubResource("Mat_Pallet")
 
-[node name="Crate_S1" type="CSGBox3D" parent="."]
+[node name="Crate_S1" type="CSGBox3D" parent="." unique_id=839316178]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.8, 12)
-size = Vector3(3.5, 1.2, 3.5)
 use_collision = true
+size = Vector3(3.5, 1.2, 3.5)
 material = SubResource("Mat_Cargo")
 
-[node name="Pallet_S2" type="CSGBox3D" parent="."]
+[node name="Pallet_S2" type="CSGBox3D" parent="." unique_id=109899449]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.1, 9)
-size = Vector3(3.0, 0.2, 2.0)
 use_collision = true
+size = Vector3(3, 0.2, 2)
 material = SubResource("Mat_Pallet")
 
-[node name="Drum_S1" type="CSGBox3D" parent="."]
+[node name="Drum_S1" type="CSGBox3D" parent="." unique_id=393816885]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.55, 15)
-size = Vector3(0.65, 1.1, 0.65)
 use_collision = true
+size = Vector3(0.65, 1.1, 0.65)
 material = SubResource("Mat_Barrel")
 
-[node name="Drum_S2" type="CSGBox3D" parent="."]
+[node name="Drum_S2" type="CSGBox3D" parent="." unique_id=1293987149]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.55, 16)
-size = Vector3(0.65, 1.1, 0.65)
 use_collision = true
+size = Vector3(0.65, 1.1, 0.65)
 material = SubResource("Mat_Barrel")
 
-[node name="Drum_S3" type="CSGBox3D" parent="."]
+[node name="Drum_S3" type="CSGBox3D" parent="." unique_id=600733293]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 9.5)
-size = Vector3(0.65, 1.1, 0.65)
 use_collision = true
+size = Vector3(0.65, 1.1, 0.65)
 material = SubResource("Mat_Barrel")
 
-[node name="Rubble_S1" type="CSGBox3D" parent="."]
+[node name="Rubble_S1" type="CSGBox3D" parent="." unique_id=1466468312]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.2, 16)
+use_collision = true
 size = Vector3(2, 0.4, 1.2)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-; ================================================================
-;  小道具 — SE 荷物エリア (x:+12〜+25, z:+6〜+18)
-; ================================================================
-; ローディングドック
-[node name="LoadingDock" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0.25, 16)
+[node name="LoadingDock" type="CSGBox3D" parent="." unique_id=345430963]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.589753, 0.25, 16)
+use_collision = true
 size = Vector3(8, 0.5, 4)
-use_collision = true
 material = SubResource("Mat_Concrete")
 
-; 大型コンテナ
-[node name="ShippingCont_SE" type="CSGBox3D" parent="."]
+[node name="ShippingCont_SE" type="CSGBox3D" parent="." unique_id=1930595823]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1.25, 9)
+use_collision = true
 size = Vector3(6, 2.5, 3)
-use_collision = true
 material = SubResource("Mat_Cargo")
 
-[node name="Crate_SE1" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0.85, 13)
-size = Vector3(2, 1.2, 2)
+[node name="Crate_SE1" type="CSGBox3D" parent="." unique_id=1662432511]
+transform = Transform3D(0.68276656, 0, 0, 0, 0.68276656, 0, 0, 0, 0.68276656, 19.206541, 0.39482272, 13.369858)
 use_collision = true
+size = Vector3(2, 1.2, 2)
 material = SubResource("Mat_Wood")
 
-[node name="Crate_SE2" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 2.0, 13)
-size = Vector3(2, 1.2, 2)
+[node name="Crate_SE2" type="CSGBox3D" parent="." unique_id=1853506438]
+transform = Transform3D(0.67111665, 0, 0, 0, 0.67111665, 0, 0, 0, 0.67111665, 19.199886, 1.1915604, 13.372473)
 use_collision = true
+size = Vector3(2, 1.2, 2.0166016)
 material = SubResource("Mat_Wood")
 
-[node name="Crate_SE3" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.6, 14)
-size = Vector3(2, 1.2, 1.5)
+[node name="Crate_SE3" type="CSGBox3D" parent="." unique_id=2126771962]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.6, 11.782373)
 use_collision = true
+size = Vector3(2, 1.2, 1.5)
 material = SubResource("Mat_Cargo")
 
-[node name="Crate_SE4" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1.8, 14)
-size = Vector3(2, 1.2, 1.5)
+[node name="Crate_SE4" type="CSGBox3D" parent="." unique_id=653977394]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1.8, 11.778914)
 use_collision = true
+size = Vector3(2, 1.2, 1.5)
 material = SubResource("Mat_Cargo")
 
-[node name="Drum_SE1" type="CSGBox3D" parent="."]
+[node name="Drum_SE1" type="CSGBox3D" parent="." unique_id=1082656807]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.55, 8)
-size = Vector3(0.65, 1.1, 0.65)
 use_collision = true
+size = Vector3(0.65, 1.1, 0.65)
 material = SubResource("Mat_Barrel")
 
-; フォークリフトヒント
-[node name="Forklift_SE" type="CSGBox3D" parent="."]
+[node name="Forklift_SE" type="CSGBox3D" parent="." unique_id=1139150571]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0.6, 7)
-size = Vector3(2.5, 1.2, 4)
 use_collision = true
+size = Vector3(2.5, 1.2, 4)
 material = SubResource("Mat_Metal")
 
-; ================================================================
-;  建物外観 (背景)
-; ================================================================
-[node name="Building_Backdrop" parent="." instance=ExtResource("1_building")]
+[node name="Building_Backdrop" parent="." unique_id=1442224590 instance=ExtResource("1_building")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -38)
 visible = false
 
+[node name="ExitDoor" parent="." unique_id=1061412047 instance=ExtResource("exit_door_model")]
+transform = Transform3D(-0.113353066, 0, 3.9422433, 0, 3.943873, 0, -3.9422433, 0, -0.113353066, 22.44581, 1.800586, 18.323454)

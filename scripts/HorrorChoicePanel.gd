@@ -76,7 +76,7 @@ func _danger_warning() -> void:
 	warn.add_theme_constant_override("shadow_offset_y", 3)
 	warn.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	warn.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	warn.anchors_preset = Control.PRESET_FULL_RECT
+	warn.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	warn.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(warn)
 
@@ -102,10 +102,6 @@ func _danger_warning() -> void:
 
 	# Phase 2: 1文字ずつ「選択を誤ると——」を表示
 	var line1 := "選 択 を 誤 る と ——"
-	warn.anchors_preset = Control.PRESET_CENTER
-	warn.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	warn.grow_vertical = Control.GROW_DIRECTION_BOTH
-	warn.size = Vector2.ZERO
 	warn.add_theme_color_override("font_color", Color(0.95, 0.08, 0.05, 1.0))
 	for i in range(line1.length()):
 		warn.text = line1.substr(0, i + 1)
@@ -122,19 +118,22 @@ func _danger_warning() -> void:
 
 	# Phase 3: グリッチ振動（強め）
 	var shake_time : float = 0.0
+	var warn_orig_pos := warn.position
 	while shake_time < 2.0:
 		var d : float = get_process_delta_time()
 		shake_time += d
 		var intensity : float = shake_time * 3.0  # 時間と共に激化
-		warn.position.x = sin(shake_time * 30.0) * intensity
-		warn.position.y = cos(shake_time * 23.0) * (intensity * 0.6)
+		warn.position = warn_orig_pos + Vector2(
+			sin(shake_time * 30.0) * intensity,
+			cos(shake_time * 23.0) * (intensity * 0.6)
+		)
 		# ノイズラインも連動
 		for nl in noise_lines:
 			nl.color.a = randf_range(0.0, 0.2 + shake_time * 0.1)
 			nl.position.y += sin(shake_time * 50.0) * 2.0
 		await get_tree().process_frame
 
-	warn.position = Vector2.ZERO
+	warn.position = warn_orig_pos
 
 	# Phase 4: 一瞬暗転してテキスト切り替え
 	warn.add_theme_color_override("font_color", Color(0.95, 0.08, 0.05, 0.0))
@@ -175,7 +174,7 @@ func _danger_warning() -> void:
 	flash.queue_free()
 	for nl in noise_lines:
 		nl.queue_free()
-	visible = false
+	# ここで visible = false にせず、そのまま _build_ui へ繋ぐ
 
 
 func _build_ui(prompt: String, choices: Array, title_text: String = "") -> void:
@@ -209,9 +208,10 @@ func _build_ui(prompt: String, choices: Array, title_text: String = "") -> void:
 
 	# ── メインパネル ──
 	_panel = PanelContainer.new()
-	_panel.position = Vector2(170, 110)
-	_panel.custom_minimum_size = Vector2(600, 0)
-	_panel.size = Vector2(600, 500)
+	_panel.custom_minimum_size = Vector2(600, 500)
+	_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = COL_PANEL
 	panel_style.border_color = COL_BORDER
@@ -409,7 +409,8 @@ func _process(delta: float) -> void:
 		if ratio < 0.2:
 			_glitch_label.modulate.a = 0.25 + sin(_glitch_timer * 12.0) * 0.15
 			if is_instance_valid(_panel):
-				_panel.position.x = 170 + sin(_glitch_timer * 20.0) * (2.0 if ratio < 0.1 else 1.0)
+				var base_x = (get_viewport().get_visible_rect().size.x - _panel.size.x) / 2
+				_panel.position.x = base_x + sin(_glitch_timer * 20.0) * (2.0 if ratio < 0.1 else 1.0)
 
 	# タイムアウト → BAD END(C)を自動選択
 	if _timer_elapsed >= VOTE_DURATION:

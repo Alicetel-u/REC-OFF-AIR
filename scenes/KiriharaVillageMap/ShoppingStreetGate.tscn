@@ -1,7 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://b5v6k8q2m1r5p"]
+[gd_scene load_steps=7 format=3]
 
-[ext_resource type="Texture2D" uid="uid://giklcd0d6i5c" path="res://scenes/KiriharaVillageMap/電信柱_basecolor.png" id="1_rusty"]
-[ext_resource type="Texture2D" uid="uid://happy_sign_id" path="res://scenes/KiriharaVillageMap/happy_street_sign.png" id="2_happy"]
+[ext_resource type="Texture2D" path="res://scenes/KiriharaVillageMap/電信柱_basecolor.png" id="1_rusty"]
+[ext_resource type="Texture2D" path="res://scenes/KiriharaVillageMap/happy_street_sign.png" id="2_happy"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rusty"]
 albedo_texture = ExtResource("1_rusty")

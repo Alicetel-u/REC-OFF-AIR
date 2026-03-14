@@ -74,7 +74,7 @@
     },
     {
       "type": "wait",
-      "sec": 10.37
+      "sec": 1.2
     },
     {
       "type": "chat",
@@ -103,26 +103,7 @@
     },
     {
       "type": "wait",
-      "sec": 0.5
-    },
-    {
-      "type": "_comment",
-      "_": "── 空撮カット：村全体を俯瞰 ──"
-    },
-    {
-      "type": "pos_y",
-      "target": 20,
-      "dur": 3,
-      "id": "aerial"
-    },
-    {
-      "type": "head_x",
-      "target": -1,
-      "dur": 2.5
-    },
-    {
-      "type": "wait",
-      "sec": 3
+      "sec": 1.0
     },
     {
       "type": "say",
@@ -176,9 +157,8 @@
       "sec": 0.5
     },
     {
-      "type": "head_x",
-      "target": 0,
-      "dur": 2
+      "type": "wait",
+      "sec": 0.5
     },
     {
       "type": "rot_y",
@@ -186,10 +166,8 @@
       "dur": 1.5
     },
     {
-      "type": "pos_y",
-      "target": 1,
-      "dur": 2.5,
-      "id": "aerial_down"
+      "type": "wait",
+      "sec": 0.5
     },
     {
       "type": "wait",
@@ -4487,6 +4465,30 @@
     {
       "type": "wait",
       "sec": 1.0
+    },
+    {
+      "type": "choice",
+      "title": "▼  引き返せますか？  ▼",
+      "danger": true,
+      "prompt": "5万5千人が見ている。ここで、帰る……？",
+      "choices": [
+        {
+          "text": "……帰るべき。命が大事。",
+          "sub": ""
+        },
+        {
+          "text": "……行く。みんなが待ってる。",
+          "sub": ""
+        }
+      ],
+      "targets": [
+        "cp4_obsession",
+        "cp4_obsession"
+      ]
+    },
+    {
+      "type": "label",
+      "name": "cp4_obsession"
     },
     {
       "type": "_comment",
