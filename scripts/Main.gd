@@ -178,11 +178,13 @@ func _ready() -> void:
 			# Encoding Error ゲージ
 			var enc_err := preload("res://scripts/EncodingError.gd").new()
 			enc_err.name = "EncodingError"
-			enc_err.setup(player, vhs_mat)
+			var chrome_ref := get_node_or_null("YouTubeChrome")
+			enc_err.setup(player, vhs_mat, chrome_ref)
 			add_child(enc_err)
 			enc_err.gauge_changed.connect(hud.on_encoding_error_changed)
-			enc_err.gauge_maxed.connect(func() -> void:
-				GameManager.trigger_caught())
+			enc_err.gauge_maxed.connect(_on_encoding_error_maxed)
+			# CP3開始時のセリフ・チャット演出（バックグラウンド）
+			_run_cp3_opening_lines()
 		# CP2廃倉庫: 動きながらセリフ・コメントが流れるバックグラウンド演出
 		if cur_chapter.chapter_id == "ch02_haison_souko":
 			_run_chapter_opening_background(cur_chapter.chapter_id)
@@ -1112,6 +1114,67 @@ func _play_souko_exit() -> void:
 	await _run_chapter_opening("ch02_haison_souko_exit")
 	player.input_disabled = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+
+## CP3: 開始時のしゅっちセリフ＋チャット（バックグラウンド、操作を止めない）
+func _run_cp3_opening_lines() -> void:
+	await get_tree().create_timer(3.0).timeout
+	if GameManager.state != GameManager.State.PLAYING:
+		return
+	hud.show_monologue("やばい……この村、なんか空気が重い……")
+	_add_chat_safe("きたきた廃村！", "視聴者A")
+	await get_tree().create_timer(4.0).timeout
+	if GameManager.state != GameManager.State.PLAYING:
+		return
+	hud.hide_monologue()
+	_add_chat_safe("画質やばくない？", "配信民99")
+	await get_tree().create_timer(2.0).timeout
+	if GameManager.state != GameManager.State.PLAYING:
+		return
+	hud.show_monologue("アイテムを3つ集めないと出口が開かない……\nあと、お札も必要みたい")
+	_add_chat_safe("がんばれ！", "ゆきんこ77")
+	await get_tree().create_timer(5.0).timeout
+	if GameManager.state != GameManager.State.PLAYING:
+		return
+	hud.hide_monologue()
+	_add_chat_safe("後ろなんかいない？", "幽霊ガチ勢")
+
+
+func _add_chat_safe(msg: String, user: String) -> void:
+	if is_instance_valid(hud) and hud.has_method("_add_chat"):
+		hud._add_chat(msg, user)
+
+
+## CP3: Encoding Error 100%到達 — 「配信が終了しました」画面を表示してからBAD END
+func _on_encoding_error_maxed() -> void:
+	player.input_disabled = true
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	# 画面を真っ暗にする
+	var blackout := ColorRect.new()
+	blackout.set_anchors_preset(Control.PRESET_FULL_RECT)
+	blackout.color = Color(0, 0, 0, 0)
+	blackout.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# HUDの上に表示
+	var canvas := CanvasLayer.new()
+	canvas.layer = 10
+	add_child(canvas)
+	canvas.add_child(blackout)
+	# モザイク → 暗転
+	var tw := create_tween()
+	tw.tween_property(blackout, "color:a", 1.0, 1.5)
+	await tw.finished
+	# 「配信が終了しました」テキスト
+	var label := Label.new()
+	label.text = "配信が終了しました"
+	label.add_theme_font_size_override("font_size", 28)
+	label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	canvas.add_child(label)
+	await get_tree().create_timer(3.0).timeout
+	canvas.queue_free()
+	GameManager.trigger_caught()
 
 
 func _show_caught() -> void:

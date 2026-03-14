@@ -30,8 +30,9 @@ func _on_body_entered(body: Node3D) -> void:
 	if has_item:
 		_used = true
 		Inventory.remove_item(required_item)
-		_show_message(use_message)
 		_play_use_effect()
+		_show_message(use_message)
+		_play_visual_effect(body)
 	else:
 		_cooldown = 5.0
 		_show_message(locked_message)
@@ -43,6 +44,43 @@ func _play_use_effect() -> void:
 			SoundManager.play_sfx_file("metal/impactMetal_heavy_003.ogg")
 		"mon":
 			SoundManager.play_sfx_file("door/creak1.ogg")
+
+
+func _play_visual_effect(player: Node3D) -> void:
+	# 画面フラッシュ + カメラシェイク
+	var hud := _find_hud()
+	if not hud:
+		return
+
+	# カメラシェイク
+	if player.has_method("start_camera_shake"):
+		player.start_camera_shake(0.04, 0.6)
+
+	match point_id:
+		"kakashi":
+			# 案山子: 赤い閃光 → 結界解除の不気味な光
+			_flash_screen(hud, Color(0.6, 0.05, 0.05, 0.5), 0.8)
+		"mon":
+			# 門: 白い閃光 → 切断の鋭い光
+			_flash_screen(hud, Color(0.9, 0.9, 1.0, 0.6), 0.4)
+
+	# 使用ポイントのライトを消す
+	var light := get_node_or_null("PointLight")
+	if light:
+		var tw := create_tween()
+		tw.tween_property(light, "light_energy", 0.0, 1.0)
+
+
+func _flash_screen(hud: Control, color: Color, duration: float) -> void:
+	var flash := ColorRect.new()
+	flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	flash.color = color
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hud.add_child(flash)
+	var tw := hud.create_tween()
+	tw.tween_property(flash, "color:a", 0.0, duration)\
+		.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	tw.tween_callback(flash.queue_free)
 
 
 func _show_message(msg: String) -> void:
