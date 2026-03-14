@@ -42,6 +42,8 @@ var _log_timer    : float = 0.0
 var _log_prev_nodes : float = 0.0
 var _log_prev_mem   : float = 0.0
 
+var _input_lag : float = 1.0    # 1.0=通常, 0.3=最鈍化（EncodingError制御）
+
 signal player_moved
 signal flashlight_toggled(on: bool)
 signal battery_changed(level: float)
@@ -83,14 +85,19 @@ func _input(event: InputEvent) -> void:
 	if input_disabled:
 		return
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		rotate_y(-event.relative.x * MOUSE_SENS)
-		head.rotate_x(-event.relative.y * MOUSE_SENS)
+		var sens : float = MOUSE_SENS * _input_lag
+		rotate_y(-event.relative.x * sens)
+		head.rotate_x(-event.relative.y * sens)
 		head.rotation.x = clamp(head.rotation.x, HEAD_PITCH_MIN, HEAD_PITCH_MAX)
 
 
 func _toggle_flashlight() -> void:
 	# TODO: バッテリーシステム実装後に有効化
 	pass
+
+
+func set_input_lag(factor: float) -> void:
+	_input_lag = clampf(factor, 0.1, 1.0)
 
 
 func _physics_process(delta: float) -> void:
@@ -140,6 +147,8 @@ func _physics_process(delta: float) -> void:
 		dir = (transform.basis * Vector3(input.x, 0.0, input.y)).normalized()
 		spd = DASH_SPEED if Input.is_action_pressed("dash") else WALK_SPEED
 
+	# EncodingError による操作鈍化を移動速度に反映
+	spd *= _input_lag
 	if dir != Vector3.ZERO:
 		velocity.x = dir.x * spd
 		velocity.z = dir.z * spd

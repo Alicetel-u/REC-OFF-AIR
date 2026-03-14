@@ -9,6 +9,7 @@ extends Area3D
 var active  : bool  = false
 var pulse_t : float = 0.0
 var _locked_msg_cooldown : float = 0.0
+var _requires_ofuda : bool = false
 
 
 func _ready() -> void:
@@ -39,7 +40,13 @@ func _on_body_entered(body: Node3D) -> void:
 	if not body.is_in_group("player"):
 		return
 	if active:
+		# お札が必要なチャプター（CP3）: お札なしでは脱出不可
+		if _requires_ofuda and GameManager.ofuda_count <= 0:
+			_show_ofuda_message()
+			return
 		active = false  # 二重トリガー防止
+		if _requires_ofuda:
+			GameManager.ofuda_count -= 1
 		if on_exit_callback.is_valid():
 			await on_exit_callback.call()
 		GameManager.advance_to_next_chapter()
@@ -55,6 +62,20 @@ func _show_locked_message() -> void:
 	if hud and hud.has_method("show_monologue"):
 		hud.show_monologue("扉がなぜか開かない！どうしよう！")
 		# 3秒後に自動で消す
+		var tree := get_tree()
+		if tree:
+			await tree.create_timer(3.0).timeout
+			if is_instance_valid(hud) and hud.has_method("hide_monologue"):
+				hud.hide_monologue()
+
+
+func _show_ofuda_message() -> void:
+	if _locked_msg_cooldown > 0.0:
+		return
+	_locked_msg_cooldown = 5.0
+	var hud := _find_hud()
+	if hud and hud.has_method("show_monologue"):
+		hud.show_monologue("お札がない！ ここを通るにはお札が必要みたい……！")
 		var tree := get_tree()
 		if tree:
 			await tree.create_timer(3.0).timeout

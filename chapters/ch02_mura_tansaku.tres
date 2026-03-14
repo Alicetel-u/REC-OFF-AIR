@@ -1,12 +1,28 @@
-[gd_resource type="Resource" script_class="ChapterData" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="ChapterData" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/ChapterData.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/GhostConfig.gd" id="2"]
 
-; ── みゆき（追跡ゴースト・専用モデル） ──
+; ── みゆき1（南西エリア巡回） ──
 [sub_resource type="Resource" id="miyuki_1"]
 script = ExtResource("2")
-position = Vector3(4.75, 0.5, -10.0)
+position = Vector3(-14.25, 0.5, -40.25)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(3, 3, 3)
+
+; ── みゆき2（北東エリア巡回） ──
+[sub_resource type="Resource" id="miyuki_2"]
+script = ExtResource("2")
+position = Vector3(52.75, 0.5, 51.75)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(3, 3, 3)
+
+; ── みゆき3（北西エリア巡回） ──
+[sub_resource type="Resource" id="miyuki_3"]
+script = ExtResource("2")
+position = Vector3(-35.25, 0.5, 52.75)
 patrol_points = PackedVector3Array()
 model_path = "res://assets/models/characters/Miyuki.glb"
 model_scale = Vector3(3, 3, 3)
@@ -15,14 +31,14 @@ model_scale = Vector3(3, 3, 3)
 [resource]
 script = ExtResource("1")
 chapter_id = "ch02_mura_tansaku"
-chapter_name = "村の探索"
-location_text = "霧原村　廃倉庫"
+chapter_name = "10FPSの呪い"
+location_text = "霧原村　村内"
 date_text = "2026/02/25  00:15"
 stage_scene_path = "res://scenes/KiriharaVillageMap/VillageMap.tscn"
-player_spawn = Vector3(0.0, 1.0, 7.5)
-ghost_configs = [SubResource("miyuki_1")]
-item_positions = PackedVector3Array(-24.25, 1, -11.25)
-exit_position = Vector3(0.25, 1.5, 17.5)
+player_spawn = Vector3(13.50, 1.0, -23.50)
+ghost_configs = [SubResource("miyuki_1"), SubResource("miyuki_2"), SubResource("miyuki_3")]
+item_positions = PackedVector3Array(-30.0, 1.0, 20.0, 70.0, 1.0, -10.0, 61.25, 1.0, 3.50)
+exit_position = Vector3(8.75, 1.5, 80.25)
 ambient_light_energy = 0.1
 directional_light_energy = 0.04
 background_color = Color(0.03, 0.03, 0.06, 1)

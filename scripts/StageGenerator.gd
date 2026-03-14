@@ -4,7 +4,9 @@ extends Node
 
 const GhostScene := preload("res://scenes/Ghost.tscn")
 const ItemScene  := preload("res://scenes/Item.tscn")
-const ExitScript := preload("res://scripts/Exit.gd")
+const VillageItemScene := preload("res://scenes/VillageItem.tscn")
+const ExitScript   := preload("res://scripts/Exit.gd")
+const UsePointScript := preload("res://scripts/UsePoint.gd")
 const ChapterDataScript := preload("res://scripts/ChapterData.gd")
 const GhostConfigScript := preload("res://scripts/GhostConfig.gd")
 const LightConfigScript := preload("res://scripts/LightConfig.gd")
@@ -46,14 +48,19 @@ func generate(chapter: Resource) -> Dictionary:
 
 	# 3. アイテムをスポーン
 	item_count = chapter.item_positions.size()
-	for i in range(item_count):
-		var item := ItemScene.instantiate()
-		item.name = "Item_%d" % (i + 1)
-		item.position = chapter.item_positions[i]
-		parent.add_child(item)
+	if chapter.chapter_id == "ch02_mura_tansaku":
+		_spawn_village_items(chapter, parent)
+	else:
+		for i in range(item_count):
+			var item := ItemScene.instantiate()
+			item.name = "Item_%d" % (i + 1)
+			item.position = chapter.item_positions[i]
+			parent.add_child(item)
 
 	# 4. 出口を生成
 	exit_node = _create_exit(chapter.exit_position)
+	if chapter.chapter_id == "ch02_mura_tansaku":
+		exit_node._requires_ofuda = true
 	parent.add_child(exit_node)
 
 	# 5. エリアライトを生成
@@ -95,3 +102,76 @@ func _create_exit(pos: Vector3) -> Area3D:
 	exit.add_child(light)
 
 	return exit
+
+
+## CP3 村の探索: 固有アイテム3種 + 使用ポイント2箇所を生成
+func _spawn_village_items(chapter: Resource, parent: Node) -> void:
+	# アイテム定義: [item_id, display_name, description, glow_color]
+	var item_defs := [
+		["kibori_head", "木彫りの頭",
+			"眼球の嵌め込まれた木彫りの頭。視線がカメラを追ってくる。",
+			Color(0.6, 0.2, 0.1)],
+		["sabi_kama", "錆びた鎌",
+			"刃こぼれした錆びた鎌。誰かの恨みがこもっている。",
+			Color(0.8, 0.15, 0.1)],
+		["utsushi_ofuda", "写し鏡の御札",
+			"鏡のように光を反射する特殊な御札。",
+			Color(0.9, 0.85, 0.5)],
+	]
+
+	for i in range(mini(item_defs.size(), chapter.item_positions.size())):
+		var vi := VillageItemScene.instantiate()
+		vi.name = "VillageItem_%d" % (i + 1)
+		vi.position = chapter.item_positions[i]
+		vi.item_id = item_defs[i][0]
+		vi.item_display_name = item_defs[i][1]
+		vi.item_description = item_defs[i][2]
+		vi.glow_color = item_defs[i][3]
+		parent.add_child(vi)
+
+	# 使用ポイント: 案山子（木彫りの頭を載せる）
+	var kakashi := _create_use_point(
+		Vector3(24.50, 1.0, -68.25),
+		"kakashi",
+		"木彫りの頭",
+		"頭を案山子に載せた……封印が、解けていく……！",
+		"首のない案山子がある……何か載せるものが必要みたい。"
+	)
+	parent.add_child(kakashi)
+
+	# 使用ポイント: 門（錆びた鎌で髪の紐を切る）
+	var mon := _create_use_point(
+		Vector3(87.75, 1.0, 45.75),
+		"mon",
+		"錆びた鎌",
+		"髪の毛のような紐を……切った！ 門が開く！",
+		"門に髪の毛のような紐が絡みついている……切るものが必要だ。"
+	)
+	parent.add_child(mon)
+
+
+func _create_use_point(pos: Vector3, pid: String, req_item: String, use_msg: String, locked_msg: String) -> Area3D:
+	var point := Area3D.new()
+	point.name = "UsePoint_%s" % pid
+	point.position = pos
+	point.set_script(UsePointScript)
+	point.point_id = pid
+	point.required_item = req_item
+	point.use_message = use_msg
+	point.locked_message = locked_msg
+
+	var col := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = Vector3(3.0, 3.0, 3.0)
+	col.shape = shape
+	point.add_child(col)
+
+	# 目印の光
+	var light := OmniLight3D.new()
+	light.name = "PointLight"
+	light.light_color = Color(0.4, 0.1, 0.1)
+	light.light_energy = 0.8
+	light.omni_range = 8.0
+	point.add_child(light)
+
+	return point

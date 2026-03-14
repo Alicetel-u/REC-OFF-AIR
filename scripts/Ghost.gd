@@ -74,6 +74,7 @@ var _erratic_mode   : int   = 0     # 0=直進 1=横移動 2=急停止 3=バー�
 var _erratic_dir    : Vector3 = Vector3.ZERO  # 不規則方向
 var custom_model_path : String = ""
 var custom_model_scale : Vector3 = Vector3(1.2, 1.2, 1.2)
+var _physics_ready : bool = false
 
 signal ghost_spotted_player
 signal ghost_lost_player
@@ -226,7 +227,6 @@ func _physics_process(delta: float) -> void:
 		return
 	if not is_instance_valid(player):
 		return
-
 	if not is_on_floor():
 		velocity.y -= GRAVITY * delta
 
@@ -243,7 +243,10 @@ func _physics_process(delta: float) -> void:
 			velocity.z = 0.0
 			_face(player.global_position)
 
-	move_and_slide()
+	if _physics_ready:
+		move_and_slide()
+	elif is_inside_tree():
+		_physics_ready = true
 	_update_visuals(delta)
 
 

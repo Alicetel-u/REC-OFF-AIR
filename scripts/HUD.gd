@@ -55,6 +55,12 @@ var _tracking_active   : bool          = false
 var _tracking_y        : float         = 0.0
 var _focus_brackets    : Array[ColorRect] = []
 
+# ── Encoding Error ゲージ（CP3専用） ──
+var _enc_container : Control     = null
+var _enc_bar       : ColorRect   = null
+var _enc_label     : Label       = null
+var _enc_warn_t    : float       = 0.0
+
 # ── ナビ矢印（目的地誘導 — 1系統のみ） ──
 var _player_ref     : Node3D     = null
 var _nav_layer      : CanvasLayer = null
@@ -890,3 +896,64 @@ func _add_chat(msg: String, user: String = "", user_type: String = "") -> void:
 		_chrome.add_message(msg, user, user_type)
 	if danmaku_func.is_valid():
 		danmaku_func.call(msg, user_type)
+
+
+# ════════════════════════════════════════════════════════════════
+# Encoding Error ゲージ（CP3 専用）
+# ════════════════════════════════════════════════════════════════
+
+func _build_encoding_error_gauge() -> void:
+	if is_instance_valid(_enc_container):
+		return
+	# RECラベルの下に配置（右上エリア）
+	_enc_container = Control.new()
+	_enc_container.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_enc_container.offset_left = -180
+	_enc_container.offset_top = 80
+	_enc_container.offset_right = -VIDEO_LEFT
+	_enc_container.offset_bottom = 110
+	add_child(_enc_container)
+
+	# ラベル
+	_enc_label = Label.new()
+	_enc_label.text = "ENCODING ERROR"
+	_enc_label.add_theme_font_size_override("font_size", 10)
+	_enc_label.add_theme_color_override("font_color", Color(1.0, 0.2, 0.2, 0.8))
+	_enc_label.position = Vector2(0, 0)
+	_enc_container.add_child(_enc_label)
+
+	# 背景バー
+	var bg := ColorRect.new()
+	bg.color = Color(0.15, 0.05, 0.05, 0.5)
+	bg.position = Vector2(0, 16)
+	bg.size = Vector2(160, 8)
+	_enc_container.add_child(bg)
+
+	# 前景バー
+	_enc_bar = ColorRect.new()
+	_enc_bar.color = Color(0.3, 0.8, 0.3)
+	_enc_bar.position = Vector2(0, 16)
+	_enc_bar.size = Vector2(0, 8)
+	_enc_container.add_child(_enc_bar)
+
+
+func on_encoding_error_changed(value: float) -> void:
+	if not is_instance_valid(_enc_container):
+		_build_encoding_error_gauge()
+	if not is_instance_valid(_enc_bar):
+		return
+	# バー幅更新
+	_enc_bar.size.x = (value / 100.0) * 160.0
+	# 段階に応じて色変化
+	if value < 40.0:
+		_enc_bar.color = Color(0.3, 0.8, 0.3)
+		_enc_label.add_theme_color_override("font_color", Color(1.0, 0.2, 0.2, 0.5))
+	elif value < 70.0:
+		_enc_bar.color = Color(0.9, 0.7, 0.1)
+		_enc_label.add_theme_color_override("font_color", Color(1.0, 0.4, 0.1, 0.8))
+	else:
+		# 70%以上: 赤く点滅
+		_enc_warn_t += get_process_delta_time() * 6.0
+		var alpha : float = 0.6 + sin(_enc_warn_t) * 0.4
+		_enc_bar.color = Color(0.9, 0.15, 0.1, alpha)
+		_enc_label.add_theme_color_override("font_color", Color(1.0, 0.1, 0.05, alpha))

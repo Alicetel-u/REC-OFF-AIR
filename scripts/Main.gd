@@ -53,14 +53,36 @@ func _ready() -> void:
 		push_error("Main: chapter data failed to load — aborting _ready()")
 		return
 
-	# CP2: .tresがGodotエディタに上書きされるためコードで強制設定
+	# CP3 村の探索: .tresがGodotエディタに上書きされるためコードで強制設定
 	if chapter.chapter_id == "ch02_mura_tansaku":
 		chapter.stage_scene_path = "res://scenes/KiriharaVillageMap/VillageMap.tscn"
-		chapter.player_spawn = Vector3(0.0, 1.0, 7.5)
-		var vhs_positions := PackedVector3Array()
-		vhs_positions.append(Vector3(-24.25, 1, -11.25))
-		chapter.item_positions = vhs_positions
-		chapter.exit_position = Vector3(0.25, 1.5, 17.5)
+		chapter.player_spawn = Vector3(13.50, 1.0, -23.50)
+		chapter.exit_position = Vector3(8.75, 1.5, 80.25)
+		# 3アイテム: A=木彫りの頭, B=錆びた鎌, C=写し鏡の御札
+		var village_items := PackedVector3Array()
+		village_items.append(Vector3(-30.0, 1.0, 20.0))    # A: 木彫りの頭（仮座標）
+		village_items.append(Vector3(70.0, 1.0, -10.0))    # B: 錆びた鎌（仮座標）
+		village_items.append(Vector3(61.25, 1.0, 3.50))    # C: 写し鏡の御札
+		chapter.item_positions = village_items
+		# ゴースト3体（みゆき）
+		var GhostConfigScript := preload("res://scripts/GhostConfig.gd")
+		var miyuki_configs : Array[Resource] = []
+		var m1 := GhostConfigScript.new()
+		m1.position = Vector3(-14.25, 0.5, -40.25)
+		m1.model_path = "res://assets/models/characters/Miyuki.glb"
+		m1.model_scale = Vector3(3, 3, 3)
+		miyuki_configs.append(m1)
+		var m2 := GhostConfigScript.new()
+		m2.position = Vector3(52.75, 0.5, 51.75)
+		m2.model_path = "res://assets/models/characters/Miyuki.glb"
+		m2.model_scale = Vector3(3, 3, 3)
+		miyuki_configs.append(m2)
+		var m3 := GhostConfigScript.new()
+		m3.position = Vector3(-35.25, 0.5, 52.75)
+		m3.model_path = "res://assets/models/characters/Miyuki.glb"
+		m3.model_scale = Vector3(3, 3, 3)
+		miyuki_configs.append(m3)
+		chapter.ghost_configs = miyuki_configs
 
 	# items_total を generate() より前に設定（Exit._ready() が参照するため）
 	GameManager.items_total = chapter.item_positions.size()
@@ -79,17 +101,12 @@ func _ready() -> void:
 	GameManager.player_won.connect(_show_win)
 	GameManager.player_hit.connect(_on_player_hit)
 
-	# ゴースト初期化
-	var cp2_immediate_ghost : bool = chapter.chapter_id == "ch02_mura_tansaku"
+	# ゴースト初期化（CP3は LoadingScreen.fade_out() 後に有効化するため、ここでは全て無効）
 	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
 		ghost.ghost_spotted_player.connect(_on_ghost_spotted)
 		ghost.ghost_lost_player.connect(_on_ghost_lost)
-		if cp2_immediate_ghost:
-			ghost.process_mode = Node.PROCESS_MODE_INHERIT
-			ghost.visible = true
-		else:
-			ghost.process_mode = Node.PROCESS_MODE_DISABLED
-			ghost.visible = false
+		ghost.process_mode = Node.PROCESS_MODE_DISABLED
+		ghost.visible = false
 
 	overlay_layer.visible = false
 
@@ -147,6 +164,25 @@ func _ready() -> void:
 		# プレイアブル: 即操作可能
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		player.input_disabled = false
+		# CP3 村の探索: ゴースト有効化 + Encoding Error ゲージ初期化
+		if cur_chapter.chapter_id == "ch02_mura_tansaku":
+			# ゴースト有効化（grace付き）
+			GameManager.ghost_grace = true
+			for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+				ghost.process_mode = Node.PROCESS_MODE_INHERIT
+				ghost.visible = true
+			get_tree().create_timer(15.0).timeout.connect(func() -> void:
+				GameManager.ghost_grace = false)
+			# VHSエフェクトオーバーレイ（EncodingError制御用）
+			var vhs_mat := _setup_encoding_vhs_overlay()
+			# Encoding Error ゲージ
+			var enc_err := preload("res://scripts/EncodingError.gd").new()
+			enc_err.name = "EncodingError"
+			enc_err.setup(player, vhs_mat)
+			add_child(enc_err)
+			enc_err.gauge_changed.connect(hud.on_encoding_error_changed)
+			enc_err.gauge_maxed.connect(func() -> void:
+				GameManager.trigger_caught())
 		# CP2廃倉庫: 動きながらセリフ・コメントが流れるバックグラウンド演出
 		if cur_chapter.chapter_id == "ch02_haison_souko":
 			_run_chapter_opening_background(cur_chapter.chapter_id)
@@ -366,6 +402,25 @@ func _apply_environment(chapter: Resource) -> void:
 
 var _vhs_layer : CanvasLayer = null
 var _vhs_rect  : ColorRect   = null   # シェーダーパラメータ制御用
+var _enc_vhs_layer : CanvasLayer = null  # CP3 EncodingError 用VHSエフェクト
+
+## CP3 Encoding Error 用: vhs_effect.gdshader でオーバーレイを作成
+func _setup_encoding_vhs_overlay() -> ShaderMaterial:
+	var shader := load("res://shaders/vhs_effect.gdshader") as Shader
+	if not shader:
+		return null
+	_enc_vhs_layer = CanvasLayer.new()
+	_enc_vhs_layer.layer = 1
+	add_child(_enc_vhs_layer)
+	var rect := ColorRect.new()
+	rect.anchor_right = 1.0
+	rect.anchor_bottom = 1.0
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	rect.material = mat
+	_enc_vhs_layer.add_child(rect)
+	return mat
+
 
 func _setup_vhs_overlay() -> void:
 	if _vhs_layer:
