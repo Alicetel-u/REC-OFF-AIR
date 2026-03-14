@@ -708,7 +708,7 @@ function buildFields(box,ev,idx){
     case 'goto': bRow(box,[['ラベル',selIn(ev,'label',idx,labelOpts(),'mid')]]);break;
     case 'goto_route': bGotoRoute(box,ev);break;
     case 'set_route': bRow(box,[['ルート',selIn(ev,'route',idx,[{v:'0',l:'0 — ノーマル'},{v:'1',l:'1 — トゥルー'},{v:'2',l:'2 — バッド'}],'mid')]]);break;
-    case 'stage_swap': bRow(box,[['シーン',selIn(ev,'scene',idx,[{v:'res://assets/models/public_toilet/PublicToilet.tscn',l:'🚻 公衆トイレ'},{v:'res://scenes/Stage_Village.tscn',l:'🏘 廃村'}],'mid')]]);if(ev.spawn){const r=document.createElement('div');r.className='ev-fields';r.innerHTML=`<span class="ev-field-label">出現位置</span><span style="font-size:.9rem;font-family:monospace;color:rgba(255,255,255,.4)">[${ev.spawn.join(', ')}]</span>`;box.appendChild(r);}break;
+    case 'stage_swap': bRow(box,[['シーン',selIn(ev,'scene',idx,[{v:'res://scenes/PublicToiletStage.tscn',l:'🚻 公衆トイレ'},{v:'res://scenes/Stage_Village.tscn',l:'🏘 廃村'}],'mid')]]);if(ev.spawn){const r=document.createElement('div');r.className='ev-fields';r.innerHTML=`\u003cspan class=\"ev-field-label\"\u003e出現位置\u003c/span\u003e\u003cspan style=\"font-size:.9rem;font-family:monospace;color:rgba(255,255,255,.4)\"\u003e[${ev.spawn.join(', ')}]\u003c/span\u003e`;box.appendChild(r);}break;
     default: {const p=document.createElement('pre');p.style.cssText='font-size:.85rem;color:rgba(255,255,255,.25);white-space:pre-wrap;margin-top:3px';p.textContent=JSON.stringify(ev,null,2);box.appendChild(p);}
   }
 }

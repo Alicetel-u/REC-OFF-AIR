@@ -5,7 +5,7 @@ func _init():
 	root.name = "TestPublicToilet"
 
 	# トイレマップの読み込み
-	var toilet_scene = load("res://assets/models/public_toilet/PublicToilet.tscn")
+	var toilet_scene = load("res://scenes/PublicToiletStage.tscn")
 	var toilet = toilet_scene.instantiate()
 	root.add_child(toilet)
 	toilet.owner = root
@@ -13,7 +13,7 @@ func _init():
 	# プレイヤーの代わりとなるカメラ
 	var camera = Camera3D.new()
 	camera.name = "Camera3D"
-	camera.position = Vector3(0, 1.5, 4.0) # トイレの入り口付近
+	camera.position = Vector3(-1.5, 1.5, -3.75) # トイレの入り口付近
 	camera.rotation_degrees.y = 180 # 奥を向く
 	
 	# HandheldCamera.gd（手持ちカメラ＆歩行スクリプト）をアタッチ
@@ -27,7 +27,7 @@ func _init():
 	# 懐中電灯（カメラ用）
 	var flashlight = SpotLight3D.new()
 	flashlight.name = "Flashlight"
-	flashlight.position = Vector3(0, 1.5, 4.0)
+	flashlight.position = Vector3(-1.5, 1.5, -3.75)
 	flashlight.light_energy = 5.0
 	flashlight.spot_range = 15.0
 	flashlight.spot_angle = 50.0
