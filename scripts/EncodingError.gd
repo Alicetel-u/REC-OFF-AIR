@@ -181,16 +181,16 @@ func _apply_visual_effects(delta: float) -> void:
 
 	var pct := gauge / STAGE_MAX
 
-	# ── noise_strength: 0.035 → 0.15 ──
-	var noise : float = lerpf(0.035, 0.15, pct)
+	# ── noise_strength: 0.01 → 0.15 ──
+	var noise : float = lerpf(0.01, 0.15, pct)
 	_vhs_material.set_shader_parameter("noise_strength", noise)
 
-	# ── chroma_offset: 0.0025 → 0.012 ──
-	var chroma : float = lerpf(0.0025, 0.012, pct)
+	# ── chroma_offset: 0.001 → 0.012 ──
+	var chroma : float = lerpf(0.001, 0.012, pct)
 	_vhs_material.set_shader_parameter("chroma_offset", chroma)
 
-	# ── scanline_intensity: 0.10 → 0.40 ──
-	var scanline : float = lerpf(0.10, 0.40, pct)
+	# ── scanline_intensity: 0.0 → 0.30（低ゲージ時はスキャンライン無し） ──
+	var scanline : float = lerpf(0.0, 0.30, pct)
 	_vhs_material.set_shader_parameter("scanline_intensity", scanline)
 
 	# ── block_noise: 0.0 → 0.8（70%以上で発動） ──

@@ -1,10 +1,10 @@
 shader_type canvas_item;
 
 uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;
-uniform float scanline_intensity : hint_range(0.0, 1.0) = 0.10;
-uniform float noise_strength     : hint_range(0.0, 0.3) = 0.035;
-uniform float vignette_power     : hint_range(0.0, 2.0) = 0.9;
-uniform float chroma_offset      : hint_range(0.0, 0.02) = 0.0025;
+uniform float scanline_intensity : hint_range(0.0, 1.0) = 0.0;
+uniform float noise_strength     : hint_range(0.0, 0.3) = 0.01;
+uniform float vignette_power     : hint_range(0.0, 2.0) = 0.5;
+uniform float chroma_offset      : hint_range(0.0, 0.02) = 0.001;
 uniform float block_noise        : hint_range(0.0, 1.0) = 0.0;
 
 float hash(vec2 p) {
