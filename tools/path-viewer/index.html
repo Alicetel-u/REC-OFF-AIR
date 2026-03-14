@@ -1126,18 +1126,18 @@ body.light .preset-custom-input input { background:rgba(255,255,255,.85); border
       <option value="">-- チャプター選択 --</option>
       <optgroup label="── 本編 (現行フロー) ──">
         <option value="ch01_entrance">CP1: 廃村入口</option>
-        <option value="ch02_mura_tansaku">CP2: 村の探索</option>
-        <option value="ch03_minka">CP3: 民家探索</option>
-        <option value="ch04_jinja">CP4: 桐原神社</option>
-        <option value="ch05_dasshutsu">CP5: 脱出</option>
+        <option value="ch02_haison_souko">CP2: 廃倉庫</option>
+        <option value="ch02_mura_tansaku">CP3: 村の探索</option>
+        <option value="ch03_minka">CP4: 民家探索</option>
+        <option value="ch04_jinja">CP5: 桐原神社</option>
+        <option value="ch05_dasshutsu">CP6: 脱出</option>
       </optgroup>
       <optgroup label="── 旧チャプター ──">
-        <option value="ch02_yashiki">旧CP2: 廃屋敷</option>
-        <option value="ch02_haison_naibu">旧CP2: 廃村内部</option>
-        <option value="ch02_haison_souko">旧CP3: 廃倉庫</option>
-        <option value="ch04_kirihara_jinja">旧CP4: 桐原神社</option>
-        <option value="ch04_haison_naibu_event">旧CP4: 内部イベント</option>
-        <option value="ch05_haison_dasshutsu">旧CP5: 脱出</option>
+        <option value="ch02_yashiki">旧: 廃屋敷</option>
+        <option value="ch02_haison_naibu">旧: 廃村内部</option>
+        <option value="ch04_kirihara_jinja">旧: 桐原神社</option>
+        <option value="ch04_haison_naibu_event">旧: 内部イベント</option>
+        <option value="ch05_haison_dasshutsu">旧: 脱出</option>
       </optgroup>
       <optgroup label="── その他 ──">
         <option value="opening">オープニング</option>
@@ -1148,12 +1148,12 @@ body.light .preset-custom-input input { background:rgba(255,255,255,.85); border
     <select id="map-select">
       <optgroup label="── 本編マップ ──">
         <option value="stage_iriguchi">CP1: 廃村入口</option>
-        <option value="stage_souko">CP2/CP3: 廃倉庫</option>
+        <option value="stage_souko">CP2: 廃倉庫</option>
+        <option value="kirihara_village">CP3: 霧原村</option>
         <option value="stage_naibu">CP4: 廃村内部</option>
         <option value="stage_escape">CP5: 脱出路</option>
       </optgroup>
       <optgroup label="── その他 ──">
-        <option value="kirihara_village">霧原村</option>
         <option value="stage_yashiki">廃屋敷</option>
         <option value="public_toilet">公衆トイレ</option>
         <option value="empty">空</option>
@@ -1570,7 +1570,7 @@ const MAPS = {
     ]
   },
   stage_souko: {
-    name: "CP2/CP3: 廃倉庫", spawn: { x: 0, z: 15 },
+    name: "CP2: 廃倉庫", spawn: { x: 0, z: 15 },
     bounds: { xMin: -28, xMax: 28, zMin: -20, zMax: 20 },
     rects: [
       { x: -25, z: -18, w: 50, h: 36, color: "#222", label: "" },
@@ -1648,7 +1648,7 @@ const MAPS = {
     ]
   },
   kirihara_village: {
-    name: "CP2: 霧原村", spawn: { x: 12.25, z: -40.0, rot: -Math.PI/2 },
+    name: "CP3: 霧原村", spawn: { x: 12.25, z: -40.0, rot: -Math.PI/2 },
     bounds: { xMin: -60, xMax: 100, zMin: -110, zMax: 90 },
     rects: [
       // === 建物（手動配置） ===
@@ -3678,14 +3678,14 @@ async function onDialogueSelect() {
   const autoMap = {
     // 本編
     ch01_entrance: "stage_iriguchi",
-    ch02_mura_tansaku: "stage_souko",
+    ch02_haison_souko: "stage_souko",
+    ch02_mura_tansaku: "kirihara_village",
     ch03_minka: "stage_souko",
     ch04_jinja: "stage_naibu",
     ch05_dasshutsu: "stage_escape",
     // 旧チャプター
     ch02_yashiki: "stage_yashiki",
     ch02_haison_naibu: "stage_naibu",
-    ch02_haison_souko: "stage_souko",
     ch04_kirihara_jinja: "stage_naibu",
     ch04_haison_naibu_event: "stage_naibu",
     ch05_haison_dasshutsu: "stage_escape",
@@ -3709,17 +3709,17 @@ async function onDialogueSelect() {
 const CHAPTER_LABELS = {
   // 本編
   ch01_entrance:"CP1: 廃村入口",
-  ch02_mura_tansaku:"CP2: 村の探索",
-  ch03_minka:"CP3: 民家探索",
-  ch04_jinja:"CP4: 桐原神社",
-  ch05_dasshutsu:"CP5: 脱出",
+  ch02_haison_souko:"CP2: 廃倉庫",
+  ch02_mura_tansaku:"CP3: 村の探索",
+  ch03_minka:"CP4: 民家探索",
+  ch04_jinja:"CP5: 桐原神社",
+  ch05_dasshutsu:"CP6: 脱出",
   // 旧チャプター
-  ch02_yashiki:"旧CP2: 廃屋敷",
-  ch02_haison_naibu:"旧CP2: 廃村内部",
-  ch02_haison_souko:"旧CP3: 廃倉庫",
-  ch04_kirihara_jinja:"旧CP4: 桐原神社",
-  ch04_haison_naibu_event:"旧CP4: 内部イベント",
-  ch05_haison_dasshutsu:"旧CP5: 脱出",
+  ch02_yashiki:"旧: 廃屋敷",
+  ch02_haison_naibu:"旧: 廃村内部",
+  ch04_kirihara_jinja:"旧: 桐原神社",
+  ch04_haison_naibu_event:"旧: 内部イベント",
+  ch05_haison_dasshutsu:"旧: 脱出",
   // その他
   opening:"オープニング",
   ch_test_toilet:"テスト: 公衆トイレ",
