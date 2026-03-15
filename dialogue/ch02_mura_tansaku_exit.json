@@ -209,12 +209,19 @@
         {"type": "camera_shake", "intensity": 1.5, "dur": 2.0},
         {"type": "horror_glitch", "intensity": 5.0, "dur": 3.0},
         {"type": "sfx", "sound": "scare_hit"},
-        {"type": "wait", "sec": 1.0},
+        {"type": "wait", "sec": 1.5},
+
+        {"type": "_comment", "_": "── タイプライター：同接1 ──"},
+        {"type": "horror_typewriter", "text": "同接1", "delay": 0.3},
+        {"type": "wait", "sec": 2.5},
 
         {"type": "say", "text": "消えた……全員……同接1……", "reading": "消えた……全員……どうせつ1……", "voice": "v424"},
         {"type": "wait", "sec": 4.0},
 
         {"type": "say_clear"},
+        {"type": "horror_typewriter", "text": "ダレガミテイル？", "delay": 0.12},
+        {"type": "wait", "sec": 2.0},
+
         {"type": "say", "text": "私は……誰に向けて配信してたの……", "voice": "v425"},
         {"type": "wait", "sec": 5.0},
 
@@ -432,16 +439,16 @@
 
         {"type": "play_ending", "id": "bad_dare", "ending_title": "わたしはだあれ", "return_label": "cp3_choice",
          "sections": [
-            {"title": "", "mood": "dark", "image": "res://assets/textures/bad_dare.jpg", "wait": 1.5, "lines": [
+            {"title": "", "mood": "dark", "image": "res://assets/textures/bad_dare_watashi.jpg", "wait": 1.5, "lines": [
                 {"text": "配信を止めた。", "voice": "res://assets/audio/voice/ch02_mura/v451.wav", "pause": 3.0},
                 {"text": "……あれ、手が透けてる……？", "voice": "res://assets/audio/voice/ch02_mura/v452.wav", "pause": 3.5}
             ]},
-            {"title": "", "mood": "fear", "image": "res://assets/textures/bad_dare.jpg", "wait": 1.0, "lines": [
+            {"title": "", "mood": "fear", "image": "res://assets/textures/bad_dare_watashi.jpg", "wait": 1.0, "lines": [
                 {"text": "足も見えなくなってきた。", "voice": "res://assets/audio/voice/ch02_mura/v453.wav", "pause": 3.0},
                 {"text": "配信してないと……消えるの……？", "voice": "res://assets/audio/voice/ch02_mura/v454.wav", "pause": 3.5},
                 {"text": "やだ……誰か……見て……お願い誰か見て……！", "voice": "res://assets/audio/voice/ch02_mura/v455.wav", "pause": 3.5, "emphasis": true}
             ]},
-            {"title": "", "mood": "fear", "image": "res://assets/textures/bad_dare.jpg", "wait": 1.5, "lines": [
+            {"title": "", "mood": "fear", "image": "res://assets/textures/bad_dare_watashi.jpg", "wait": 1.5, "lines": [
                 {"text": "「誰？」", "pause": 2.0},
                 {"text": "「誰の配信だっけ」", "pause": 2.5},
                 {"text": "「知らない子だね」", "pause": 3.0},

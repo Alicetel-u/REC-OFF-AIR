@@ -41,11 +41,11 @@ utility_pole_model = ExtResource("17_pole")
 [node name="GroundStaticBody" type="StaticBody3D" parent="." unique_id=547187146]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="GroundStaticBody" unique_id=578127493]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.0, 0)
 shape = SubResource("BoxShape3D_ground")
 
 [node name="GroundMesh" type="MeshInstance3D" parent="GroundStaticBody"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.49, 0)
 mesh = SubResource("PlaneMesh_ground")
 material_override = SubResource("Mat_ground")
 

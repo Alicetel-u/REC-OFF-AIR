@@ -1273,7 +1273,17 @@ func _bad_end(title_text: String, return_label: String, fade_dur: float, display
 		await _fade_clear(0.8, 0.0)
 		_bad_end_return_label = return_label
 	else:
-		# タイトルに戻る
+		# フローチャート表示 → タイトルに戻る
+		var fc := CanvasLayer.new()
+		fc.set_script(preload("res://scripts/EndingFlowchart.gd"))
+		get_tree().root.add_child(fc)
+		# 直前のplay_endingで解放されたending_idを渡す
+		var last_id : String = ""
+		if GameManager.unlocked_endings.size() > 0:
+			for k in GameManager.unlocked_endings.keys():
+				last_id = k
+		fc.show_flowchart(last_id)
+		await fc.closed
 		get_tree().change_scene_to_file("res://scenes/Opening.tscn")
 
 ## _bad_end から戻るためのラベル（空なら戻らない）

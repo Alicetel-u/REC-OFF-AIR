@@ -56,29 +56,29 @@ func _ready() -> void:
 	# CP3 村の探索: .tresがGodotエディタに上書きされるためコードで強制設定
 	if chapter.chapter_id == "ch02_mura_tansaku":
 		chapter.stage_scene_path = "res://scenes/KiriharaVillageMap/VillageMap.tscn"
-		chapter.player_spawn = Vector3(13.50, 1.0, -23.50)
+		chapter.player_spawn = Vector3(13.50, 0.0, -23.50)
 		chapter.exit_position = Vector3(8.75, 1.5, 80.25)
 		# 3アイテム: A=木彫りの頭, B=錆びた鎌, C=写し鏡の御札
 		var village_items := PackedVector3Array()
-		village_items.append(Vector3(103.97, 1.0, 8.64))    # A: 木彫りの頭
-		village_items.append(Vector3(-14.0, 1.0, 36.0))    # B: 錆びた鎌（建物3/民家の縁側付近）
-		village_items.append(Vector3(61.25, 1.0, 3.50))    # C: 写し鏡の御札
+		village_items.append(Vector3(103.97, 0.2, 8.64))    # A: 木彫りの頭
+		village_items.append(Vector3(-14.0, 0.2, 36.0))    # B: 錆びた鎌（建物3/民家の縁側付近）
+		village_items.append(Vector3(61.25, 0.2, 3.50))    # C: 写し鏡の御札
 		chapter.item_positions = village_items
 		# ゴースト3体（みゆき）
 		var GhostConfigScript := preload("res://scripts/GhostConfig.gd")
 		var miyuki_configs : Array[Resource] = []
 		var m1 := GhostConfigScript.new()
-		m1.position = Vector3(-14.25, 0.5, -40.25)
+		m1.position = Vector3(-14.25, -0.5, -40.25)
 		m1.model_path = "res://assets/models/characters/Miyuki.glb"
 		m1.model_scale = Vector3(3, 3, 3)
 		miyuki_configs.append(m1)
 		var m2 := GhostConfigScript.new()
-		m2.position = Vector3(52.75, 0.5, 51.75)
+		m2.position = Vector3(52.75, -0.5, 51.75)
 		m2.model_path = "res://assets/models/characters/Miyuki.glb"
 		m2.model_scale = Vector3(3, 3, 3)
 		miyuki_configs.append(m2)
 		var m3 := GhostConfigScript.new()
-		m3.position = Vector3(-35.25, 0.5, 52.75)
+		m3.position = Vector3(-35.25, -0.5, 52.75)
 		m3.model_path = "res://assets/models/characters/Miyuki.glb"
 		m3.model_scale = Vector3(3, 3, 3)
 		miyuki_configs.append(m3)
@@ -89,6 +89,10 @@ func _ready() -> void:
 	# つなぎ演出（start_section==1）の場合、ステージ生成をスキップ（GPUメモリ節約）
 	if GameManager.start_section == 1:
 		GameManager.start_section = 0
+		# YouTubeChrome・弾幕をHUDに接続（chatイベント用）
+		hud.set_chrome($YouTubeChrome)
+		_setup_danmaku()
+		hud.danmaku_func = Callable(self, "_spawn_danmaku")
 		await LoadingScreen.fade_out()
 		await _play_mura_exit() if chapter.chapter_id == "ch02_mura_tansaku" else _play_souko_exit()
 		GameManager.advance_to_next_chapter()
@@ -1489,6 +1493,12 @@ func _show_caught() -> void:
 	retry_btn.pressed.connect(func() -> void:
 		await ep.fade_out(1.5)
 		btn_canvas.queue_free()
+		# フローチャート表示
+		var fc := CanvasLayer.new()
+		fc.set_script(preload("res://scripts/EndingFlowchart.gd"))
+		get_tree().root.add_child(fc)
+		fc.show_flowchart("bad_eien")
+		await fc.closed
 		get_tree().change_scene_to_file("res://scenes/Opening.tscn")
 	)
 
