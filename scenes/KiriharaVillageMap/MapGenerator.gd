@@ -1,221 +1,177 @@
 @tool
 extends Node3D
 
-# --- レイアウト設定 ---
-@export_group("Layout Settings")
-@export var grid_size: Vector2i = Vector2i(25, 25)
-@export var cell_size: float = 12.0
-@export var path_width: float = 3.0
+## 霧原村マップ — 手動配置ノードのコリジョン管理 + デバッグ可視化
 
-@export_group("Assets")
-@export var house_models: Array[PackedScene] = []
-@export var tree_model: PackedScene
-@export var grass_model: PackedScene
-@export var statue_model: PackedScene
-@export var utility_pole_model: PackedScene
+# デバッグ: コリジョンを赤い半透明ボックスで可視化（F12キーで切り替え）
+var _debug_show_collision := false
 
 @export_group("Actions")
 @export var edit_mode: bool = true : set = _on_edit_mode_changed
-@export var generate_map: bool = false : set = _on_generate_pressed
-@export var clear_map: bool = false : set = _on_clear_pressed
 
-var grid = {}
 
 func _ready():
 	if not Engine.is_editor_hint():
-		# ゲーム開始時に少し待ってから確実に生成
-		await get_tree().create_timer(0.1).timeout
-		_build()
-		# 手動配置ノードにも当たり判定を追加
 		_add_collisions_to_manual_nodes()
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F12:
+		_debug_show_collision = not _debug_show_collision
+		for body in get_tree().get_nodes_in_group("debug_collision"):
+			var has_mesh := false
+			for child in body.get_children():
+				if child is MeshInstance3D:
+					child.visible = _debug_show_collision
+					has_mesh = true
+			# 初回ON時にメッシュを生成
+			if _debug_show_collision and not has_mesh:
+				for child in body.get_children():
+					if child is CollisionShape3D and child.shape is BoxShape3D:
+						_add_debug_mesh(body, child.shape.size, child.position, true)
+		print("[MapGenerator] コリジョン可視化: ", "ON" if _debug_show_collision else "OFF")
+
 
 func _on_edit_mode_changed(val):
 	edit_mode = val
 	var light = get_node_or_null("DirectionalLight3D")
 	var env_node = get_node_or_null("WorldEnvironment")
-
 	if light:
 		light.light_energy = 4.0 if val else 0.1
 	if env_node and env_node.environment:
 		env_node.environment.fog_enabled = !val
-		env_node.environment.background_mode = 1 # Color
+		env_node.environment.background_mode = 1
 		env_node.environment.background_color = Color(0.1, 0.1, 0.12) if !val else Color(0.8, 0.8, 0.9)
-		env_node.environment.ambient_light_source = 2 # Specified Color
+		env_node.environment.ambient_light_source = 2
 		env_node.environment.ambient_light_color = Color(0.05, 0.05, 0.1) if !val else Color(0.7, 0.7, 0.8)
 		env_node.environment.ambient_light_energy = 3.0 if val else 0.5
 
-func _on_generate_pressed(_v):
-	_build()
-
-func _on_clear_pressed(_v):
-	var container = get_node_or_null("MapContainer")
-	if container:
-		for child in container.get_children():
-			child.queue_free()
-
-func _get_container():
-	var c = get_node_or_null("MapContainer")
-	if not c:
-		c = Node3D.new()
-		c.name = "MapContainer"
-		add_child(c)
-	return c
-
-func _build():
-	_on_clear_pressed(false)
-	var container = _get_container()
-	var rng = RandomNumberGenerator.new()
-	rng.randomize()
-
-	_generate_roads(rng)
-	_draw_map(container, rng)
-
-func _generate_roads(rng):
-	grid.clear()
-	for x in range(grid_size.x):
-		for y in range(grid_size.y):
-			grid[Vector2i(x, y)] = 0
-
-	var cells = [Vector2i(grid_size.x/2, grid_size.y/2)]
-	grid[cells[0]] = 1
-
-	for i in range(200):
-		var curr = cells[rng.randi() % cells.size()]
-		var dirs = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
-		dirs.shuffle()
-		for d in dirs:
-			var n = curr + d
-			if n.x >= 0 and n.x < grid_size.x and n.y >= 0 and n.y < grid_size.y:
-				if grid[n] == 0:
-					grid[n] = 1
-					cells.append(n)
-					break
-
-func _draw_map(container, rng):
-	# 地面
-	var g_mesh = MeshInstance3D.new()
-	var pm = PlaneMesh.new()
-	pm.size = Vector2(500, 500)
-	g_mesh.mesh = pm
-	var mat = StandardMaterial3D.new()
-	mat.albedo_color = Color(0.1, 0.08, 0.05)
-	mat.roughness = 1.0
-	g_mesh.set_surface_override_material(0, mat)
-	container.add_child(g_mesh)
-	if Engine.is_editor_hint(): g_mesh.owner = get_tree().edited_scene_root
-
-	# 各セル
-	for x in range(grid_size.x):
-		for y in range(grid_size.y):
-			var pos = Vector3((x - grid_size.x/2) * cell_size, 0, (y - grid_size.y/2) * cell_size)
-			if grid[Vector2i(x, y)] == 1:
-				_create_path(pos, container, rng)
-			else:
-				_spawn_scatter(pos, container, rng)
-
-func _create_path(pos, container, rng):
-	var p = CSGBox3D.new()
-	p.size = Vector3(cell_size, 0.1, path_width)
-	p.position = pos
-	var m = StandardMaterial3D.new()
-	m.albedo_color = Color(0.2, 0.15, 0.1)
-	p.material = m
-	container.add_child(p)
-	if Engine.is_editor_hint(): p.owner = get_tree().edited_scene_root
-
-	# --- 電信柱の配置 (道の脇) ---
-	if utility_pole_model and rng.randf() < 0.15: # 15%の確率
-		var pole = utility_pole_model.instantiate()
-		container.add_child(pole)
-		# 道の端 (path_width/2) より少し外側に配置
-		var offset_x = (path_width / 2.0 + 0.5) * (1 if rng.randf() > 0.5 else -1)
-		pole.position = pos + Vector3(offset_x, 0, 0)
-		# 傾きをランダムに変えて不気味さを出す
-		if "lean_angle" in pole:
-			pole.lean_angle = rng.randf_range(-5, 5)
-		if Engine.is_editor_hint(): pole.owner = get_tree().edited_scene_root
-		# 電信柱にコリジョン追加
-		_add_box_collision(pole, Vector3(0.3, 6.0, 0.3), Vector3(0, 3.0, 0))
-
-func _spawn_scatter(pos, container, rng):
-	var r = rng.randf()
-	if r < 0.2 and not house_models.is_empty():
-		var h = house_models[rng.randi() % house_models.size()].instantiate()
-		container.add_child(h)
-		h.position = pos
-		h.rotation.y = rng.randf() * PI * 2
-		if Engine.is_editor_hint(): h.owner = get_tree().edited_scene_root
-		# 建物にコリジョン追加
-		_add_box_collision(h, Vector3(4.0, 6.0, 4.0), Vector3(0, 3.0, 0))
-	elif r < 0.4 and tree_model:
-		var t = tree_model.instantiate()
-		container.add_child(t)
-		t.position = pos + Vector3(rng.randf_range(-2,2), 0, rng.randf_range(-2,2))
-		if Engine.is_editor_hint(): t.owner = get_tree().edited_scene_root
-		# 木にコリジョン追加（幹のみ）
-		_add_box_collision(t, Vector3(0.5, 4.0, 0.5), Vector3(0, 2.0, 0))
-
 
 # ════════════════════════════════════════════════════════════════
-# 当たり判定ユーティリティ
+# 当たり判定 — AABBベース自動サイジング
 # ════════════════════════════════════════════════════════════════
 
-## ノードにBoxShape3Dの当たり判定を追加
-func _add_box_collision(node: Node3D, box_size: Vector3, offset: Vector3 = Vector3.ZERO) -> void:
+## ノードのメッシュAABBからコリジョンを自動生成
+func _add_collision_from_aabb(node: Node3D) -> void:
+	var aabb := _get_world_aabb(node)
+	if aabb.size.length() < 0.1:
+		return
+	var box_size : Vector3 = aabb.size
+	box_size.x = maxf(box_size.x, 1.0)
+	box_size.y = maxf(box_size.y, 2.0)
+	box_size.z = maxf(box_size.z, 1.0)
+	var offset : Vector3 = aabb.position + aabb.size * 0.5
+	_add_collision_at(node.global_position, node.global_rotation, box_size, offset)
+
+
+func _get_world_aabb(node: Node3D) -> AABB:
+	var s : Vector3 = node.transform.basis.get_scale()
+	return _find_mesh_aabb(node, s)
+
+
+func _find_mesh_aabb(node: Node, parent_scale: Vector3) -> AABB:
+	if node is MeshInstance3D:
+		var local_aabb : AABB = node.get_aabb()
+		return AABB(local_aabb.position * parent_scale, local_aabb.size * parent_scale)
+	for child in node.get_children():
+		var result : AABB = _find_mesh_aabb(child, parent_scale)
+		if result.size.length() > 0.01:
+			return result
+	return AABB()
+
+
+## グローバル座標でコリジョンを配置（親スケールの影響を完全に回避）
+func _add_collision_at(global_pos: Vector3, euler_rot: Vector3,
+		box_size: Vector3, offset: Vector3 = Vector3.ZERO) -> void:
 	var body := StaticBody3D.new()
-	body.name = "CollisionBody"
+	body.collision_layer = 1
+	body.collision_mask = 1
 	var col := CollisionShape3D.new()
 	var shape := BoxShape3D.new()
 	shape.size = box_size
 	col.shape = shape
 	col.position = offset
 	body.add_child(col)
-	node.add_child(body)
+	add_child(body)
+	body.global_position = global_pos
+	body.rotation = euler_rot
+	body.add_to_group("debug_collision")
+	# デバッグメッシュはF12で初回ON時に生成（GPU メモリ節約）
 
 
-## 手動配置された建物・オブジェクトにコリジョンを追加
+## 手動配置された全ノードにAABBベースでコリジョンを自動追加
 func _add_collisions_to_manual_nodes() -> void:
+	var count : int = 0
+	var _collision_log : Array = []
 	for child in get_children():
-		if child is Node3D and child.name != "GroundStaticBody" and child.name != "MapContainer":
-			# 既にコリジョンがあるノードはスキップ
-			if _has_collision(child):
+		if not (child is Node3D):
+			continue
+		var n : String = child.name
+		if n == "GroundStaticBody" or n == "MapContainer":
+			continue
+		if n.begins_with("Grass"):
+			continue
+		if n.begins_with("WorldEnvironment") or n.begins_with("DirectionalLight"):
+			continue
+		if child is StaticBody3D:
+			continue
+		var aabb := _get_world_aabb(child)
+		if aabb.size.length() < 0.1:
+			continue
+		_add_collision_from_aabb(child)
+		var gpos : Vector3 = child.global_position
+		var box_sz : Vector3 = aabb.size
+		box_sz.x = maxf(box_sz.x, 1.0)
+		box_sz.y = maxf(box_sz.y, 2.0)
+		box_sz.z = maxf(box_sz.z, 1.0)
+		var rot_y : float = child.global_rotation.y
+		_collision_log.append("COL|%s|%.2f|%.2f|%.2f|%.2f|%.2f" % [n, gpos.x, gpos.z, box_sz.x, box_sz.z, rot_y])
+		count += 1
+	# コリジョンの実際のワールド座標4隅を出力（マップエディター用）
+	var f := FileAccess.open("res://collision_data.txt", FileAccess.WRITE)
+	if f:
+		for line in _collision_log:
+			f.store_line(line)
+		f.close()
+	# 4隅データも出力
+	var f2 := FileAccess.open("res://collision_corners.txt", FileAccess.WRITE)
+	if f2:
+		for body in get_tree().get_nodes_in_group("debug_collision"):
+			var col_shape : CollisionShape3D = null
+			for child in body.get_children():
+				if child is CollisionShape3D:
+					col_shape = child
+					break
+			if col_shape == null:
 				continue
-			var node_name : String = child.name
-			if node_name.begins_with("ManualBuilding"):
-				# 建物: スケールに応じたコリジョン
-				var s : float = _get_uniform_scale(child)
-				var box_w : float = maxf(3.0, s * 0.15)
-				var box_h : float = maxf(5.0, s * 0.2)
-				_add_box_collision(child, Vector3(box_w, box_h, box_w), Vector3(0, box_h * 0.5, 0))
-			elif node_name.begins_with("Concrete"):
-				# コンクリート壁: 薄い壁コリジョン
-				var s : float = _get_uniform_scale(child)
-				var wall_w : float = maxf(1.0, s * 0.18)
-				var wall_h : float = maxf(2.0, s * 0.35)
-				_add_box_collision(child, Vector3(wall_w, wall_h, 0.3), Vector3(0, wall_h * 0.5, 0))
-			elif node_name.begins_with("Tree"):
-				_add_box_collision(child, Vector3(0.5, 4.0, 0.5), Vector3(0, 2.0, 0))
-			elif node_name.begins_with("Car") or "廃車" in node_name:
-				var s : float = _get_uniform_scale(child)
-				_add_box_collision(child, Vector3(2.0 * s, 1.5, 4.0 * s), Vector3(0, 0.75, 0))
-			elif node_name.begins_with("Manual_Buddha") or "仏像" in node_name:
-				_add_box_collision(child, Vector3(1.0, 2.0, 1.0), Vector3(0, 1.0, 0))
-			elif node_name.begins_with("Gate") or "Gate" in node_name:
-				var s : float = _get_uniform_scale(child)
-				_add_box_collision(child, Vector3(6.0 * s, 4.0, 0.5), Vector3(0, 2.0, 0))
-			elif node_name.begins_with("Pole") or "Pole" in node_name:
-				_add_box_collision(child, Vector3(0.3, 6.0, 0.3), Vector3(0, 3.0, 0))
+			var shape = col_shape.shape
+			if not (shape is BoxShape3D):
+				continue
+			var half : Vector3 = shape.size * 0.5
+			var t : Transform3D = body.global_transform * Transform3D(Basis.IDENTITY, col_shape.position)
+			# 4隅（上面のXZ平面）
+			var c0 : Vector3 = t * Vector3(-half.x, 0, -half.z)
+			var c1 : Vector3 = t * Vector3(half.x, 0, -half.z)
+			var c2 : Vector3 = t * Vector3(half.x, 0, half.z)
+			var c3 : Vector3 = t * Vector3(-half.x, 0, half.z)
+			f2.store_line("QUAD|%.2f,%.2f|%.2f,%.2f|%.2f,%.2f|%.2f,%.2f" % [c0.x,c0.z,c1.x,c1.z,c2.x,c2.z,c3.x,c3.z])
+		f2.close()
+		print("[MapGenerator] collision_corners.txt 出力")
+	print("[MapGenerator] コリジョン追加: %d 個" % count)
 
 
-func _has_collision(node: Node) -> bool:
-	for child in node.get_children():
-		if child is StaticBody3D or child is CollisionShape3D:
-			return true
-		if _has_collision(child):
-			return true
-	return false
-
-
-func _get_uniform_scale(node: Node3D) -> float:
-	var t : Transform3D = node.transform
-	return t.basis.x.length()
+## デバッグ用: コリジョンを赤い半透明ボックスで可視化
+func _add_debug_mesh(body: StaticBody3D, box_size: Vector3, offset: Vector3, visible_init: bool = false) -> void:
+	var mesh_inst := MeshInstance3D.new()
+	var box_mesh := BoxMesh.new()
+	box_mesh.size = box_size
+	mesh_inst.mesh = box_mesh
+	mesh_inst.position = offset
+	var debug_mat := StandardMaterial3D.new()
+	debug_mat.albedo_color = Color(1.0, 0.0, 0.0, 0.3)
+	debug_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	debug_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	debug_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mesh_inst.set_surface_override_material(0, debug_mat)
+	mesh_inst.visible = visible_init
+	body.add_child(mesh_inst)

@@ -79,7 +79,7 @@
     },
     {
       "type": "wait",
-      "sec": 1.2
+      "sec": 10.37
     },
     {
       "type": "chat",
@@ -239,7 +239,7 @@
     },
     {
       "type": "wait",
-      "sec": 8.38
+      "sec": 7.88
     },
     {
       "type": "chat",
@@ -853,7 +853,7 @@
     },
     {
       "type": "wait",
-      "sec": 6.6
+      "sec": 4.36
     },
     {
       "type": "chat",
@@ -2985,7 +2985,7 @@
     },
     {
       "type": "wait",
-      "sec": 8.01
+      "sec": 9.92
     },
     {
       "type": "chat",

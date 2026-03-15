@@ -375,26 +375,26 @@ func horror_typewriter(text: String, char_delay: float = 0.12, sfx_tick: bool = 
 	# 中央に専用ラベルを動的生成
 	var lbl := RichTextLabel.new()
 	lbl.bbcode_enabled = true
-	lbl.fit_content = true
+	lbl.fit_content = false
 	lbl.scroll_active = false
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lbl.add_theme_font_size_override("normal_font_size", 42)
-	# YouTube枠内の中心に配置
+	lbl.add_theme_font_size_override("normal_font_size", 36)
+	# YouTube枠内の中心に配置（1行確定の広い領域）
 	var cx : float = (VIDEO_LEFT + VIDEO_RIGHT) / 2.0
 	var cy : float = (VIDEO_TOP + VIDEO_BOTTOM) / 2.0
-	lbl.position = Vector2(cx - 300, cy - 40)
-	lbl.size = Vector2(600, 80)
+	lbl.position = Vector2(cx - 400, cy - 25)
+	lbl.size = Vector2(800, 50)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.text = ""
 	add_child(lbl)
 
-	# 背景グロー（黒い半透明の後光）
+	# 背景グロー（透明 — bg_imageが見えるように邪魔しない）
 	var glow := ColorRect.new()
-	glow.color = Color(0.0, 0.0, 0.0, 0.6)
+	glow.color = Color(0.0, 0.0, 0.0, 0.0)
 	var gcx : float = (VIDEO_LEFT + VIDEO_RIGHT) / 2.0
 	var gcy : float = (VIDEO_TOP + VIDEO_BOTTOM) / 2.0
-	glow.position = Vector2(gcx - 350, gcy - 60)
-	glow.size = Vector2(700, 120)
+	glow.position = Vector2(gcx - 400, gcy - 35)
+	glow.size = Vector2(800, 70)
 	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	glow.modulate.a = 0.0
 	add_child(glow)
@@ -415,11 +415,8 @@ func horror_typewriter(text: String, char_delay: float = 0.12, sfx_tick: bool = 
 		if is_inside_tree():
 			await get_tree().create_timer(char_delay).timeout
 
-	# 完成後：最大震動 + 赤さ増し + グローパルス
+	# 完成後：最大震動 + 赤さ増し
 	lbl.text = "[shake rate=80 level=10][color=#ff0000]%s[/color][/shake]" % displayed
-	var tw_pulse := create_tween()
-	tw_pulse.tween_property(glow, "color", Color(0.3, 0.0, 0.0, 0.7), 0.2)
-	tw_pulse.tween_property(glow, "color", Color(0.0, 0.0, 0.0, 0.6), 0.3)
 
 	# horror_typewriterはawaitで待つので、呼び出し側がwaitで持続時間を制御
 	# clean upはsay_clearまたは次のhorror_typewriterで行う
@@ -905,13 +902,11 @@ func _add_chat(msg: String, user: String = "", user_type: String = "") -> void:
 func _build_encoding_error_gauge() -> void:
 	if is_instance_valid(_enc_container):
 		return
-	# RECラベルの下に配置（右上エリア）
+	# バッテリーの下（映像エリア右上、YouTubeChrome に隠れない位置）
 	_enc_container = Control.new()
-	_enc_container.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_enc_container.offset_left = -180
-	_enc_container.offset_top = 80
-	_enc_container.offset_right = -VIDEO_LEFT
-	_enc_container.offset_bottom = 110
+	_enc_container.position = Vector2(VIDEO_RIGHT - 174, VIDEO_TOP + 34)
+	_enc_container.size = Vector2(160, 30)
+	_enc_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_enc_container)
 
 	# ラベル

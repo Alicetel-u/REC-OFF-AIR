@@ -447,6 +447,11 @@ func run_from_path(json_path: String) -> void:
 
 			"play_ending":
 				await _play_ending(ev)
+				# BAD END後に選択肢に戻る
+				var pe_return : String = ev.get("return_label", "")
+				if pe_return != "" and pe_return in label_map:
+					idx = label_map[pe_return]
+					continue
 
 			"bad_end":
 				await _bad_end(

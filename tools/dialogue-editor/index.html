@@ -292,6 +292,33 @@ select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; b
 .pro-line:hover .pro-del { opacity: 1 }
 .pro-add-btn { background: rgba(255,255,255,.04); border: 1px dashed rgba(255,255,255,.1); color: var(--tx2); padding: 6px 14px; border-radius: 5px; cursor: pointer; font-size: .85rem; width: 100%; margin-top: 6px }
 .pro-add-btn:hover { background: rgba(255,255,255,.08); color: var(--tx0) }
+#staleBanner {
+  display:none; padding:8px 20px; background:rgba(212,168,55,.1);
+  border-bottom:1px solid rgba(212,168,55,.3); font-size:.9rem;
+  color:#f0d060; text-align:center; flex-shrink:0;
+}
+#staleBanner button {
+  padding:4px 12px; margin-left:8px; border:1px solid rgba(212,168,55,.4);
+  border-radius:4px; background:rgba(212,168,55,.15); color:#f0d060;
+  font-size:.85rem; cursor:pointer;
+}
+#staleBanner button:hover { background:rgba(212,168,55,.3); }
+#pasteModal {
+  display:none; position:fixed; inset:0; z-index:1000;
+  background:rgba(0,0,0,.6); align-items:center; justify-content:center;
+}
+#pasteModal.show { display:flex; }
+#pasteModal .pm-inner {
+  background:var(--bg1); border:2px solid var(--ff-border-outer);
+  border-radius:var(--radius); padding:20px; width:640px; max-height:80vh;
+  box-shadow:inset 0 0 0 1px var(--ff-border-inner), 0 8px 32px rgba(0,0,0,.5);
+}
+#pasteModal textarea {
+  width:100%; height:300px; background:rgba(0,0,0,.3);
+  color:var(--tx0); border:1px solid var(--ff-border-inner);
+  border-radius:4px; font-family:monospace; font-size:.9rem;
+  padding:10px; resize:vertical; box-sizing:border-box;
+}
 </style>
 </head>
 <body>
@@ -313,9 +340,16 @@ select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; b
     <button class="btn-tab" id="tabPrologue" data-tab="prologue">プロローグ</button>
   </div>
   <button class="btn btn-save" id="btnSave">保存</button>
+  <button class="btn" id="btnPaste">📋 貼り付け</button>
   <button class="btn" id="btnOpen">開く</button>
   <input type="file" id="fileInput" accept=".json" hidden>
 </header>
+<div id="staleBanner">
+  ⚠ サーバー未接続 — データが最新でない可能性があります
+  <button onclick="showPasteModal()">📋 JSONを貼り付け</button>
+  <button onclick="copyRefreshPrompt()">🤖 更新プロンプトをコピー</button>
+  <button onclick="document.getElementById('fileInput').click()">📂 ファイルを開く</button>
+</div>
 
 <main class="tl-scroll">
   <div class="tl-wrap" id="tlWrap">
@@ -346,6 +380,17 @@ select.ev-input { cursor: pointer; appearance: none; -webkit-appearance: none; b
 </div>
 
 <footer class="footer"><span id="statusMsg">起動中...</span><div class="spacer"></div><span>Ctrl+S 保存 / Ctrl+C コピー / Ctrl+V 貼付 / Ctrl+D 複製 / Ctrl+Z 戻す / Del 削除 / Esc 解除</span></footer>
+
+<div id="pasteModal">
+  <div class="pm-inner">
+    <div style="margin-bottom:10px;color:var(--tx1);">JSONを貼り付けてください:</div>
+    <textarea id="pasteArea" placeholder="ここにJSONを貼り付け..."></textarea>
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;">
+      <button class="btn btn-save" onclick="doPasteLoad()">読み込み</button>
+      <button class="btn" onclick="closePasteModal()">キャンセル</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // GitHub API はフォールバック用に残す
@@ -426,9 +471,11 @@ async function loadFileList(){
       (await r.json()).filter(f=>f.name.endsWith('.json')).forEach(f=>{const o=document.createElement('option');o.value=f.name;o.textContent=fileLabel(f.name);sel.appendChild(o)});
       if(sel.options.length) await loadFile(sel.options[0].value);
       else { setStatus('JSONなし'); $('#loadingView').innerHTML='<div class="empty-state">JSONがありません</div>'; }
+      showStaleBanner();
     } catch(e2) {
       setStatus('接続エラー（サーバー: python tools/server.py）');
       $('#loadingView').innerHTML='<div class="empty-state">接続失敗<br><small>python tools/server.py を起動してください</small><br><br><button class="btn btn-save" onclick="document.getElementById(\'fileInput\').click()">ローカルファイルを開く</button></div>';
+      showStaleBanner();
     }
   }
 }
@@ -440,14 +487,14 @@ async function loadFile(f){
     const r = await fetch(`${API_BASE}/load?name=${encodeURIComponent(f)}`);
     if (!r.ok) throw new Error(r.status);
     _useServer = true;
-    applyData(await r.json(), f); return true;
+    applyData(await r.json(), f); hideStaleBanner(); return true;
   } catch(e1) {
     // フォールバック: GitHub raw
     try {
       const r = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BR}/${DIR}/${f}`);
       if (!r.ok) throw new Error(r.status);
       _useServer = false;
-      applyData(await r.json(), f); return true;
+      applyData(await r.json(), f); showStaleBanner(); return true;
     } catch(e2) { setStatus('エラー: ' + e2.message); return false; }
   }
 }
@@ -1092,32 +1139,43 @@ let _fileHandle=null;
 function exportJSON(){const clean={...data,events:data.events.map(e=>{const ev={...e};delete ev._img;return ev})};return JSON.stringify(clean,null,'\t')}
 async function downloadJSON(){
   const content = exportJSON();
-  // サーバーAPI経由で保存（最優先 — dialogue/*.json に直接書き込み）
-  if (_useServer) {
-    try {
-      const r = await fetch(`${API_BASE}/save`, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ filename: fname, content: content })
-      });
-      if (r.ok) { dirty=false; setStatus(fname); toast('保存しました → dialogue/'+fname); return; }
-    } catch(e) { /* フォールバックへ */ }
+  // クリップボードにコピー
+  try {
+    await navigator.clipboard.writeText(content);
+    dirty=false;setStatus(fname);toast('JSONをクリップボードにコピーしました');
+  } catch(e) {
+    // フォールバック: textarea経由でコピー
+    const ta=document.createElement('textarea');ta.value=content;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    dirty=false;setStatus(fname);toast('JSONをクリップボードにコピーしました');
   }
-  // フォールバック: File System Access API（Chrome/Edge）
-  if(window.showSaveFilePicker){
-    try{
-      if(!_fileHandle){
-        _fileHandle=await window.showSaveFilePicker({suggestedName:fname||'dialogue.json',types:[{description:'JSON',accept:{'application/json':['.json']}}]});
-      }
-      const w=await _fileHandle.createWritable();
-      await w.write(content);
-      await w.close();
-      dirty=false;setStatus(_fileHandle.name);toast('保存しました');return;
-    }catch(e){if(e.name==='AbortError')return;}
-  }
-  // 最終フォールバック（ダウンロード）
-  const b=new Blob([content],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fname||'dialogue.json';a.click();URL.revokeObjectURL(a.href);dirty=false;setStatus(fname);toast('保存しました');
 }
-function loadLocal(file){const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.events){alert('"events"が見つかりません');return}applyData(d,file.name);toast('読み込み完了')}catch(err){alert('JSONエラー: '+err.message)}};r.readAsText(file)}
+function loadLocal(file){const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.events){alert('"events"が見つかりません');return}applyData(d,file.name);hideStaleBanner();toast('読み込み完了')}catch(err){alert('JSONエラー: '+err.message)}};r.readAsText(file)}
+
+// ══════════ 鮮度警告 + JSONペースト ══════════
+function showStaleBanner(){ document.getElementById('staleBanner').style.display='block'; }
+function hideStaleBanner(){ document.getElementById('staleBanner').style.display='none'; }
+function showPasteModal(){
+  const m=document.getElementById('pasteModal'); m.classList.add('show');
+  document.getElementById('pasteArea').value='';
+  document.getElementById('pasteArea').focus();
+}
+function closePasteModal(){ document.getElementById('pasteModal').classList.remove('show'); }
+function doPasteLoad(){
+  const text=document.getElementById('pasteArea').value.trim();
+  if(!text)return;
+  try{
+    const d=JSON.parse(text);
+    if(!d.events){alert('"events"が見つかりません');return}
+    applyData(d,fname||'clipboard.json');
+    hideStaleBanner(); closePasteModal();
+    toast('クリップボードから読み込みました');
+  }catch(e){alert('JSONエラー: '+e.message)}
+}
+function copyRefreshPrompt(){
+  const f=$('#fileSel').value||'ch01_entrance.json';
+  const prompt='dialogue/'+f+' の内容をクリップボードにコピーして';
+  navigator.clipboard.writeText(prompt).then(()=>toast('プロンプトをコピーしました — Claude Codeに貼り付けてください',4000));
+}
 
 // ══════════ ユーティリティ ══════════
 function markDirty(){dirty=true;setStatus('● 未保存');try{const bk={data:{...data,events:data.events.map(e=>e._img?{...e,_img:{...e._img,data:'(img)'}}:e)},t:Date.now()};localStorage.setItem('roa_'+fname,JSON.stringify(bk))}catch(e){}}
@@ -1313,6 +1371,7 @@ function closeDetail(){$('#detailPanel').classList.remove('show');}
 function bindAll(){
   $('#fileSel').addEventListener('change',async()=>{if(dirty&&!confirm('未保存の変更があります。切り替えますか？')){$('#fileSel').value=fname;return}await loadFile($('#fileSel').value)});
   $('#btnSave').addEventListener('click',downloadJSON);
+  $('#btnPaste').addEventListener('click',showPasteModal);
   $('#btnOpen').addEventListener('click',async()=>{
     if(window.showOpenFilePicker){
       try{const[h]=await window.showOpenFilePicker({types:[{description:'JSON',accept:{'application/json':['.json']}}]});

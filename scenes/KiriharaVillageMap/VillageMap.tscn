@@ -23,6 +23,12 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
 size = Vector3(1000, 5, 1000)
 
+[sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
+size = Vector2(200, 200)
+
+[sub_resource type="StandardMaterial3D" id="Mat_ground"]
+albedo_color = Color(0.12, 0.08, 0.04, 1)
+roughness = 0.95
 
 [node name="VillageMap" type="Node3D" unique_id=1245464996]
 script = ExtResource("1_script")
@@ -37,6 +43,11 @@ utility_pole_model = ExtResource("17_pole")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="GroundStaticBody" unique_id=578127493]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.5, 0)
 shape = SubResource("BoxShape3D_ground")
+
+[node name="GroundMesh" type="MeshInstance3D" parent="GroundStaticBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+mesh = SubResource("PlaneMesh_ground")
+material_override = SubResource("Mat_ground")
 
 
 [node name="ManualBuilding_House1" parent="." unique_id=1602491166 instance=ExtResource("2_b1")]

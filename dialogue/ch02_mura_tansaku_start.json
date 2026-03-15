@@ -1,0 +1,124 @@
+{
+    "chapter": "ch02_mura_tansaku_start",
+    "voice_dir": "res://assets/audio/voice/ch02_mura/",
+    "_note": "CP3 村の探索「10FPSの呪い」— 開始演出（バックグラウンド）",
+    "events": [
+
+        {"type": "_comment", "_": "══════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 1 — 村に出た（CP2からの接続）"},
+        {"type": "_comment", "_": "══════════════════════════════════════"},
+
+        {"type": "set_viewers", "count": 78000},
+        {"type": "flashlight_on"},
+        {"type": "sfx", "sound": "ambient_wind"},
+        {"type": "wait", "sec": 2.0},
+
+        {"type": "say", "text": "……外に出た。ここが霧原村の中……？　空気が重い、まとわりつくみたい……", "reading": "……外に出た。ここがきりはらむらの中……？　空気が重い、まとわりつくみたい……", "voice": "v401"},
+        {"type": "wait", "sec": 6.0},
+
+        {"type": "chat", "msg": "生きてたｗ", "user": "視聴者A"},
+        {"type": "wait", "sec": 0.4},
+        {"type": "chat", "msg": "廃村の中じゃん", "user": "まっちゃん"},
+        {"type": "wait", "sec": 0.4},
+        {"type": "chat", "msg": "霧やばくない？", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 1.0},
+
+        {"type": "_comment", "_": "══════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 2 — 映像がおかしい（10FPSの伏線）"},
+        {"type": "_comment", "_": "══════════════════════════════════════"},
+
+        {"type": "horror_glitch", "intensity": 0.4, "dur": 0.3},
+        {"type": "sfx", "file": "metal/impactMetal_heavy_001.mp3"},
+        {"type": "flashlight_flicker"},
+        {"type": "wait", "sec": 0.5},
+
+        {"type": "say", "text": "あれ……映像おかしくない？　カクカクしてる。回線じゃないよねこれ……", "voice": "v402"},
+        {"type": "wait", "sec": 5.0},
+
+        {"type": "chat", "msg": "ラグすぎ", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "10FPSで草", "user": "視聴者A"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "フレームレート死んでるやん", "user": "まっちゃん"},
+        {"type": "wait", "sec": 0.4},
+        {"type": "chat", "msg": "見ている", "user": "K", "utype": "horror"},
+        {"type": "wait", "sec": 1.0},
+
+        {"type": "_comment", "_": "══════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 3 — 目的の確認（神社に行く）"},
+        {"type": "_comment", "_": "══════════════════════════════════════"},
+
+        {"type": "say_clear"},
+
+        {"type": "say", "text": "……とにかく、神社を目指さないと。さっきのブラウン管に『霧原神社ニ返セ』って出てたし……", "reading": "……とにかく、神社を目指さないと。さっきのブラウン管に『きりはらじんじゃにかえせ』って出てたし……", "voice": "v403"},
+        {"type": "wait", "sec": 6.5},
+
+        {"type": "chat", "msg": "神社どっちだろ", "user": "ゆきんこ77", "utype": "moderator"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "お札まだ残ってるよね？", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 1.0},
+
+        {"type": "_comment", "_": "══════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 4 — 出口が封鎖されている"},
+        {"type": "_comment", "_": "══════════════════════════════════════"},
+
+        {"type": "say_clear"},
+        {"type": "sfx", "sound": "door_creak"},
+        {"type": "camera_shake", "intensity": 0.2, "dur": 0.4},
+        {"type": "horror_glitch", "intensity": 0.6, "dur": 0.4},
+        {"type": "set_viewers", "count": 82000},
+        {"type": "wait", "sec": 0.5},
+
+        {"type": "say", "text": "……あっちに道があるけど、何かで塞がれてる。通れない……どうしよう", "voice": "v404"},
+        {"type": "wait", "sec": 5.0},
+
+        {"type": "chat", "msg": "詰んでない？", "user": "視聴者A"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "村の中に何かヒントあるんじゃね", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "光ってるとこない？探してみ", "user": "ゆきんこ77", "utype": "moderator"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "探索するしかないっしょ", "user": "まっちゃん"},
+        {"type": "wait", "sec": 1.0},
+
+        {"type": "_comment", "_": "══════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 5 — みゆきの気配"},
+        {"type": "_comment", "_": "══════════════════════════════════════"},
+
+        {"type": "say_clear"},
+        {"type": "sfx", "sound": "scare_hit"},
+        {"type": "scare_flash"},
+        {"type": "camera_shake", "intensity": 0.5, "dur": 0.8},
+        {"type": "horror_glitch", "intensity": 1.5, "dur": 1.0},
+        {"type": "wait", "sec": 0.5},
+
+        {"type": "say", "text": "——っ！？　白い影……！　しかも1体じゃない、3体いる……！？", "voice": "v405"},
+        {"type": "wait", "sec": 5.5},
+
+        {"type": "chat", "msg": "3体wwwww", "user": "視聴者A"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "逃げろ逃げろ", "user": "まっちゃん"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "もう帰れよマジで", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "superchat", "msg": "生きて帰って", "user": "夜桜モカ", "amount": 5000},
+        {"type": "wait", "sec": 1.0},
+
+        {"type": "_comment", "_": "══════════════════════════════════════"},
+        {"type": "_comment", "_": "  PHASE 6 — 覚悟"},
+        {"type": "_comment", "_": "══════════════════════════════════════"},
+
+        {"type": "horror_glitch", "intensity": 0.3, "dur": 0.3},
+        {"type": "wait", "sec": 0.5},
+
+        {"type": "say", "text": "……同接8万。ここまで来て帰れるわけないじゃん。行くよ。", "reading": "……どうせつ8万。ここまで来て帰れるわけないじゃん。行くよ。", "voice": "v406"},
+        {"type": "wait", "sec": 5.0},
+
+        {"type": "chat", "msg": "しゅっちなら行ける", "user": "ゆきんこ77", "utype": "moderator"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "配信者の鑑", "user": "まっちゃん"},
+        {"type": "wait", "sec": 0.8},
+
+        {"type": "say_clear"}
+    ]
+}

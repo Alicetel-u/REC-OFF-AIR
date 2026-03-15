@@ -14,6 +14,7 @@ var glow_color : Color = Color(0.3, 0.8, 0.4)
 
 var bob_t : float = 0.0
 var _item_resource : Resource = null
+var _collected : bool = false
 
 
 func _ready() -> void:
@@ -81,8 +82,11 @@ func _process(delta: float) -> void:
 
 
 func _on_body_entered(body: Node3D) -> void:
+	if _collected:
+		return
 	if not body.is_in_group("player"):
 		return
+	_collected = true
 	GameManager.collect_item()
 	Inventory.collect.emit(_item_resource)
 	# 鎌入手時: EncodingError に通知
@@ -90,24 +94,35 @@ func _on_body_entered(body: Node3D) -> void:
 		var enc := get_tree().current_scene.get_node_or_null("EncodingError")
 		if enc and enc.has_method("notify_kama_acquired"):
 			enc.notify_kama_acquired()
-	# モノローグ表示
-	var hud := _find_hud()
-	if hud and hud.has_method("show_monologue"):
-		var msg := ""
-		match item_id:
-			"kibori_head":
-				msg = "なにこれ……目が、こっち見てる……？"
-			"sabi_kama":
-				msg = "重い……この鎌、誰かの恨みがこもってるみたい……"
-			"utsushi_ofuda":
-				msg = "鏡みたいな御札……スマホに映すと顔が……"
-		if msg != "":
-			hud.show_monologue(msg)
-			var tree := get_tree()
-			if tree:
-				await tree.create_timer(4.0).timeout
-				if is_instance_valid(hud) and hud.has_method("hide_monologue"):
-					hud.hide_monologue()
+	# dialogue JSON 演出を実行
+	var json_name := ""
+	match item_id:
+		"kibori_head": json_name = "ch02_mura_item_a"
+		"sabi_kama":   json_name = "ch02_mura_item_b"
+		"utsushi_ofuda": json_name = "ch02_mura_item_c"
+	if json_name != "":
+		var main : Node = get_tree().current_scene
+		if main and main.has_method("_run_chapter_opening"):
+			# プレイヤー操作停止
+			var player_node : Node = main.get_node_or_null("Player")
+			if player_node:
+				player_node.set("input_disabled", true)
+				player_node.set("velocity", Vector3.ZERO)
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			# EncodingError一時停止
+			var enc_node : Node = main.get_node_or_null("EncodingError")
+			if enc_node:
+				enc_node.set_physics_process(false)
+			# 演出実行
+			await main._run_chapter_opening(json_name)
+			# 復帰（自動テスト中は再開しない）
+			if enc_node and is_instance_valid(enc_node) and not GameManager.autotest_active:
+				enc_node.set_physics_process(true)
+			if is_instance_valid(player_node):
+				player_node.set("input_disabled", false)
+				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	# メッシュを消してからqueue_free（視覚的にすぐ消える）
+	visible = false
 	queue_free()
 
 

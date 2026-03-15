@@ -48,8 +48,38 @@ var _grain_mat : ShaderMaterial
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	# ファイルフラグ: _autotest.txt があればチャプター直行 + 自動プレイ
+	# 内容例: "3" → CP3直行、"all" → 全チャプター走破
+	var at_path := "res://_autotest.txt"
+	if FileAccess.file_exists(at_path):
+		var at_content := FileAccess.open(at_path, FileAccess.READ).get_as_text().strip_edges()
+		# 読み終わったら削除（1回限り）
+		DirAccess.open("res://").remove("_autotest.txt")
+		GameManager.autotest_active = true
+		if at_content == "all":
+			print("[AutoTest] file flag: all chapters (skip mode)")
+			GameManager.autotest_mode = "skip"
+			_go_to_game()
+			return
+		# "3-2" → CP3-2（クリア演出のみ確認）
+		if at_content == "3-2":
+			GameManager.start_section = 1
+			print("[AutoTest] file flag: CP3-2 クリア演出確認")
+			_go_to_chapter(2)
+			return
+		# "3s" → CP3即クリア, "3" → CP3自動プレイ
+		var skip_mode : bool = at_content.ends_with("s")
+		var cp_str : String = at_content.replace("s", "")
+		var cp_idx : int = int(cp_str) - 1
+		if cp_idx >= 0 and cp_idx < GameManager.chapter_order.size():
+			GameManager.autotest_mode = "skip" if skip_mode else "play"
+			print("[AutoTest] file flag: CP%d %s" % [cp_idx + 1, GameManager.autotest_mode])
+			_go_to_chapter(cp_idx)
+			return
 	const _DEBUG_SKIP := false
-	if _DEBUG_SKIP:
+	if _DEBUG_SKIP or GameManager.autotest_active:
+		if GameManager.autotest_active:
+			print("[AutoTest] タイトル画面スキップ → CP1 開始")
 		_go_to_game()
 		return
 	_load_data()
@@ -57,6 +87,35 @@ func _ready() -> void:
 	_build_settings_button()
 	_phase = Phase.TITLE
 	_run_title()
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if not (event is InputEventKey and event.pressed):
+		return
+	var kc : int = event.keycode
+	# F11: 全自動テスト
+	if kc == KEY_F11:
+		get_viewport().set_input_as_handled()
+		GameManager.autotest_active = true
+		print("[AutoTest] ===== F11: タイトルからオートテスト開始 =====")
+		_go_to_game()
+		return
+	# F1〜F3: チャプター直接ジャンプ、F4: CP3-2
+	var idx := -1
+	match kc:
+		KEY_F1: idx = 0
+		KEY_F2: idx = 1
+		KEY_F3: idx = 2
+		KEY_F4:
+			get_viewport().set_input_as_handled()
+			GameManager.start_section = 1
+			print("[Debug] タイトルから CP3-2 へジャンプ")
+			_go_to_chapter(2)
+			return
+	if idx >= 0:
+		get_viewport().set_input_as_handled()
+		print("[Debug] タイトルから CP%d へジャンプ" % (idx + 1))
+		_go_to_chapter(idx)
 
 
 func _process(delta: float) -> void:
@@ -940,7 +999,10 @@ const CHAPTER_INFO : Array[Dictionary] = [
 		{"name": "CP2-1  廃倉庫探索", "sub": "VHS収集＋ゴースト", "section": 0},
 		{"name": "CP2-2  ブラウン管の恐怖", "sub": "VHS映像→神社への動機", "section": 1},
 	]},
-	{"name": "CP3  村の探索", "sub": "マップのみ", "icon": "🏘", "order_index": 2},
+	{"name": "CP3  村の探索", "sub": "10FPSの呪い", "icon": "🏘", "order_index": 2, "sections": [
+		{"name": "CP3-1  村探索", "sub": "3つの道具を集める", "section": 0},
+		{"name": "CP3-2  霧原神社", "sub": "神社の階段〜灯籠の秘密", "section": 1},
+	]},
 ]
 
 
@@ -1119,6 +1181,15 @@ func _show_ending_gallery() -> void:
 		{"id": "bad_eien", "name": "永遠の配信", "chapter": "CP3", "type": "BAD END",
 		 "desc": "配信にとらわれ、永遠に視聴者の前から消えない",
 		 "source_json": "res://dialogue/bad_eien.json"},
+		{"id": "bad_miyuki_caught", "name": "捕獲", "chapter": "CP3", "type": "BAD END",
+		 "desc": "みゆきに捕まった配信者の最期",
+		 "source_json": ""},
+		{"id": "bad_ido", "name": "アナタノカワリニ", "chapter": "CP3-2", "type": "BAD END",
+		 "desc": "スマホを壊した代償 — 井戸の底で自分の代わりを見上げる",
+		 "source_json": "res://dialogue/ch02_mura_tansaku_exit.json"},
+		{"id": "bad_dare", "name": "わたしはだあれ", "chapter": "CP3-2", "type": "BAD END",
+		 "desc": "配信を止めた瞬間、存在そのものが消えていく",
+		 "source_json": "res://dialogue/ch02_mura_tansaku_exit.json"},
 	]
 
 	for ed in endings:

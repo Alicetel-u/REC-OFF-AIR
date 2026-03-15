@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>CP3 Village Map — コリジョンマップ</title>
+<style>
+body{margin:0;background:#111;color:#eee;font-family:monospace}
+canvas{display:block;margin:10px auto;border:1px solid #333;cursor:crosshair}
+#ui{text-align:center;padding:6px;font-size:13px}
+#coords{text-align:center;font-size:15px;color:#0f0;padding:4px}
+</style>
+</head>
+<body>
+<div id="ui">CP3 霧原村 コリジョンマップ（赤=通れない壁、緑=通路）</div>
+<div id="coords">マウスで座標確認</div>
+<canvas id="c" width="1400" height="900"></canvas>
+<script>
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const W=canvas.width,H=canvas.height;
+const MX0=-50,MX1=110,MZ0=-55,MZ1=85;
+
+function w2s(x,z){return[(x-MX0)/(MX1-MX0)*W,(1-(z-MZ0)/(MZ1-MZ0))*H]}
+function s2w(sx,sy){return[sx/W*(MX1-MX0)+MX0,(1-sy/H)*(MZ1-MZ0)+MZ0]}
+
+// COL|name|x|z|w|d|rot_y  → 回転を考慮して矩形描画
+const raw=`COL|ManualBuilding_House1|-16.64|-0.01|28.13|44.06|0.00
+COL|Concrete_1|4.97|-8.55|1.00|5.72|0.00
+COL|Concrete_2|4.99|13.93|1.00|5.78|0.00
+COL|Concrete_6|5.00|-2.80|1.00|5.77|0.00
+COL|Concrete_3|4.99|8.13|1.00|5.78|0.00
+COL|Concrete_4|4.95|19.75|1.00|5.78|0.00
+COL|Concrete_7|4.99|-14.26|1.00|5.70|0.00
+COL|Concrete_8|4.99|-19.92|1.00|5.70|0.00
+COL|Concrete_9|2.40|-23.00|1.00|5.70|1.56
+COL|Concrete_13|-3.30|-23.00|1.00|5.70|1.56
+COL|Concrete_14|-8.98|-23.00|1.00|5.70|1.56
+COL|Concrete_15|-14.68|-23.00|1.00|5.70|1.56
+COL|Concrete_16|-20.42|-23.00|1.00|5.70|1.56
+COL|Concrete_17|-26.12|-23.00|1.00|5.70|1.56
+COL|Concrete_18|-31.96|-23.06|1.00|5.97|1.56
+COL|Concrete_5|2.26|22.86|1.00|5.78|-1.57
+COL|Concrete_10|-3.50|22.86|1.00|5.78|-1.57
+COL|Concrete_11|-9.22|22.86|1.00|5.78|-1.57
+COL|Concrete_12|-14.94|22.86|1.00|5.78|-1.57
+COL|Concrete_19|-20.69|22.86|1.00|5.78|-1.57
+COL|Concrete_20|-26.45|22.86|1.00|5.78|-1.57
+COL|Concrete_21|-32.17|22.86|1.00|5.78|-1.57
+COL|ManualBuilding_House2|35.24|7.26|18.26|26.23|3.14
+COL|Concrete_22|22.13|13.48|1.00|5.78|0.00
+COL|Concrete_23|22.13|2.23|1.00|5.78|0.00
+COL|Concrete_24|22.13|19.24|1.00|5.78|0.00
+COL|Concrete_26|24.88|22.27|1.00|5.78|1.56
+COL|Concrete_27|30.69|22.34|1.00|5.78|1.56
+COL|Concrete_28|36.48|22.36|1.00|5.78|1.56
+COL|Concrete_29|41.14|22.39|1.00|5.78|1.56
+COL|Concrete_25|22.13|-2.95|1.00|5.78|0.00
+COL|Concrete_30|24.91|-6.00|1.00|5.78|-1.60
+COL|Concrete_31|30.36|-5.82|1.00|5.78|-1.60
+COL|Concrete_32|35.65|-5.65|1.00|5.78|-1.60
+COL|Concrete_33|41.08|-5.47|1.00|5.78|-1.60
+COL|Concrete_34|22.13|-9.22|1.00|5.78|0.00
+COL|Concrete_35|22.13|-14.98|1.00|5.78|0.00
+COL|Concrete_36|22.13|-20.68|1.00|5.78|0.00
+COL|Concrete_37|24.82|-23.71|1.00|5.78|-1.59
+COL|Concrete_38|27.05|-23.68|1.00|5.78|-1.59
+COL|ManualBuilding_House5|33.04|-14.56|13.77|14.54|1.59
+COL|ManualBuilding_House6|70.04|-19.68|23.04|30.00|0.00
+COL|Concrete_39|36.94|-23.51|1.00|5.78|-1.59
+COL|Concrete_40|40.65|-23.45|1.00|5.78|-1.59
+COL|Concrete_41|44.19|-5.36|1.00|5.78|-0.01
+COL|Concrete_42|44.27|-10.81|1.00|5.78|-0.01
+COL|Concrete_43|44.34|-16.39|1.00|5.78|-0.01
+COL|Concrete_44|44.40|-20.72|1.00|5.78|-0.01
+COL|Concrete_45|41.84|-23.43|1.00|5.78|-1.59
+COL|Concrete_46|44.26|-0.22|1.00|5.78|-0.01
+COL|Concrete_47|44.05|5.19|1.00|5.78|-0.01
+COL|Concrete_48|43.98|10.73|1.00|5.78|-0.01
+COL|Concrete_49|43.90|16.43|1.00|5.78|-0.01
+COL|Concrete_50|43.86|19.66|1.00|5.78|-0.01
+COL|Concrete_51|56.90|-32.26|1.00|5.78|-0.01
+COL|Concrete_52|56.67|-14.90|1.00|5.78|-0.01
+COL|Concrete_53|56.59|-9.35|1.00|5.78|-0.01
+COL|Concrete_54|56.52|-3.83|1.00|5.78|-0.01
+COL|Concrete_55|56.45|1.69|1.00|5.78|-0.01
+COL|Concrete_56|56.37|7.50|1.00|5.78|-0.01
+COL|Concrete_57|46.50|22.45|1.00|5.78|1.56
+COL|Concrete_58|51.98|22.52|1.00|5.78|1.56
+COL|Concrete_59|57.43|22.58|1.00|5.78|1.56
+COL|Concrete_60|63.06|22.65|1.00|5.78|1.56
+COL|Concrete_61|68.31|22.71|1.00|5.78|1.56
+COL|Concrete_62|71.09|20.05|1.00|5.78|-3.13
+COL|Concrete_63|71.04|14.61|1.00|5.78|-3.13
+COL|Concrete_64|70.99|9.19|1.00|5.78|-3.13
+COL|Manual_Buddha|61.43|-0.78|6.18|10.00|-1.57
+COL|Concrete_65|56.74|-20.55|1.00|5.78|-0.01
+COL|Concrete_66|59.62|-35.31|1.00|5.78|-1.58
+COL|Concrete_67|64.99|-35.24|1.00|5.78|-1.58
+COL|Concrete_68|70.34|-35.17|1.00|5.78|-1.58
+COL|Concrete_69|75.62|-35.11|1.00|5.78|-1.58
+COL|Concrete_70|79.08|-35.06|1.00|5.78|-1.58
+COL|Concrete_71|82.15|-32.32|1.00|5.78|3.13
+COL|Concrete_72|82.11|-26.81|1.00|5.78|3.13
+COL|Concrete_73|82.07|-21.57|1.00|5.78|3.13
+COL|Concrete_74|82.04|-16.37|1.00|5.78|3.13
+COL|Concrete_75|82.00|-11.03|1.00|5.78|3.13
+COL|Concrete_76|81.97|-5.73|1.00|5.78|3.13
+COL|Concrete_77|81.93|-0.55|1.00|5.78|3.13
+COL|Concrete_78|81.90|3.90|1.00|5.78|3.13
+COL|Concrete_79|78.76|6.55|1.00|5.78|1.56
+COL|Concrete_80|74.14|6.52|1.00|5.78|1.56
+COL|Concrete_81|-36.73|22.86|1.00|5.78|-1.57
+COL|Concrete_82|-39.40|26.00|1.00|5.78|0.02
+COL|Concrete_83|-39.31|31.78|1.00|5.78|0.02
+COL|Concrete_84|-39.22|37.45|1.00|5.78|0.02
+COL|Concrete_85|-39.13|42.76|1.00|5.78|0.02
+COL|Concrete_86|-39.05|47.68|1.00|5.78|0.02
+COL|Concrete_87|-38.96|53.31|1.00|5.78|0.02
+COL|Concrete_88|-38.88|58.57|1.00|5.78|0.02
+COL|Concrete_89|-38.79|63.98|1.00|5.78|0.02
+COL|Concrete_90|-38.70|69.51|1.00|5.78|0.02
+COL|Concrete_91|-38.60|75.78|1.00|5.78|0.02
+COL|Concrete_92|3.12|32.59|1.00|5.78|-1.57
+COL|Concrete_93|-3.33|32.59|1.00|5.78|-1.57
+COL|Concrete_94|-9.00|32.59|1.00|5.78|-1.57
+COL|Concrete_95|-14.52|32.59|1.00|5.78|-1.57
+COL|Concrete_96|-20.04|32.60|1.00|5.78|-1.57
+COL|Concrete_97|-24.70|32.60|1.00|5.78|-1.57
+COL|Concrete_98|-29.03|32.60|1.00|5.78|-1.57
+COL|Concrete_134|2.06|71.32|1.00|5.78|-1.57
+COL|Concrete_135|5.93|35.26|1.00|5.78|0.02
+COL|Concrete_136|6.01|40.52|1.00|5.78|0.02
+COL|Concrete_137|6.13|42.14|1.00|5.78|0.02
+COL|Concrete_138|6.21|47.06|1.00|5.78|0.02
+COL|Concrete_139|6.30|52.81|1.00|5.78|0.02
+COL|Concrete_140|6.53|63.42|1.00|5.78|0.02
+COL|Concrete_141|6.63|68.23|1.00|5.78|0.02
+COL|Concrete_142|4.02|71.32|1.00|5.78|-1.57
+COL|Concrete_143|2.17|78.70|1.00|5.78|-1.57
+COL|Concrete_144|4.37|78.70|1.00|5.78|-1.57
+COL|Concrete_99|-3.31|71.32|1.00|5.78|-1.57
+COL|Concrete_100|-8.98|71.32|1.00|5.78|-1.57
+COL|Concrete_101|-14.50|71.33|1.00|5.78|-1.57
+COL|Concrete_102|-20.02|71.33|1.00|5.78|-1.57
+COL|Concrete_103|-24.68|71.33|1.00|5.78|-1.57
+COL|Concrete_104|-28.98|71.31|1.00|5.78|-1.57
+COL|Concrete_105|-32.15|35.36|1.00|5.78|0.02
+COL|Concrete_106|-32.07|40.28|1.00|5.78|0.02
+COL|Concrete_107|-31.98|45.90|1.00|5.78|0.02
+COL|Concrete_108|-31.90|51.16|1.00|5.78|0.02
+COL|Concrete_109|-31.78|52.78|1.00|5.78|0.02
+COL|Concrete_110|-31.70|57.70|1.00|5.78|0.02
+COL|Concrete_111|-31.61|63.45|1.00|5.78|0.02
+COL|Concrete_112|-31.53|68.59|1.00|5.78|-0.01
+COL|Concrete_119|-10.12|78.71|1.00|5.78|-1.57
+COL|Concrete_120|-15.78|78.71|1.00|5.78|-1.57
+COL|Concrete_121|-21.31|78.71|1.00|5.78|-1.57
+COL|Concrete_122|-26.83|78.71|1.00|5.78|-1.57
+COL|Concrete_123|-31.49|78.71|1.00|5.78|-1.57
+COL|Concrete_124|-35.79|78.69|1.00|5.78|-1.57
+COL|Concrete_132|-3.31|78.70|1.00|5.78|-1.57
+COL|Concrete_133|-5.46|78.71|1.00|5.78|-1.57
+COL|ManualBuilding_House3_Manual|-14.25|50.81|30.00|27.44|0.00
+COL|Concrete_208|0.86|32.59|1.00|5.78|-1.57
+COL|Concrete_209|36.56|33.44|1.00|5.78|1.56
+COL|Concrete_210|32.75|19.51|1.00|5.78|-0.01
+COL|Concrete_211|41.92|33.51|1.00|5.78|1.56
+COL|Concrete_212|47.72|33.58|1.00|5.78|1.56
+COL|Concrete_213|50.74|36.23|1.00|5.78|-0.02
+COL|Concrete_214|50.61|41.69|1.00|5.78|-0.02
+COL|Concrete_215|50.48|47.15|1.00|5.78|-0.02
+COL|Concrete_216|50.35|52.34|1.00|5.78|-0.02
+COL|Concrete_217|50.23|57.41|1.00|5.78|-0.02
+COL|Concrete_218|50.11|62.38|1.00|5.78|-0.02
+COL|Concrete_219|50.03|66.01|1.00|5.78|-0.02
+COL|Concrete_220|47.05|68.81|1.00|5.78|1.61
+COL|Concrete_221|41.62|69.01|1.00|5.78|1.61
+COL|Concrete_222|36.44|69.21|1.00|5.78|1.61
+COL|Concrete_223|31.39|69.39|1.00|5.78|1.61
+COL|Concrete_224|26.63|69.57|1.00|5.78|1.61
+COL|Concrete_225|32.11|78.28|1.00|5.78|1.61
+COL|Concrete_226|26.59|78.49|1.00|5.78|1.61
+COL|Concrete_227|37.88|78.07|1.00|5.78|1.61
+COL|Concrete_228|43.27|77.87|1.00|5.78|1.61
+COL|Concrete_229|48.48|77.67|1.00|5.78|1.61
+COL|Concrete_230|54.02|77.47|1.00|5.78|1.61
+COL|Concrete_231|56.51|41.83|1.00|5.78|-0.02
+COL|Concrete_232|56.38|47.29|1.00|5.78|-0.02
+COL|Concrete_233|56.26|52.48|1.00|5.78|-0.02
+COL|Concrete_234|56.14|57.55|1.00|5.78|-0.02
+COL|Concrete_235|56.02|62.52|1.00|5.78|-0.02
+COL|Concrete_236|55.94|65.74|1.00|5.78|-0.02
+COL|Concrete_237|56.64|36.72|1.00|5.78|-0.02
+COL|Concrete_238|59.45|33.57|1.00|5.78|1.56
+COL|Concrete_239|65.08|33.64|1.00|5.78|1.56
+COL|Concrete_240|69.89|33.70|1.00|5.78|1.56
+COL|Concrete_241|74.83|33.76|1.00|5.78|1.56
+COL|Concrete_242|77.78|31.10|1.00|5.78|-3.13
+COL|Concrete_243|77.73|25.59|1.00|5.78|-3.13
+COL|Concrete_244|77.68|20.12|1.00|5.78|-3.13
+COL|Concrete_245|77.64|15.72|1.00|5.78|-3.13
+COL|Concrete_246|80.43|12.81|1.00|5.78|1.58
+COL|Concrete_247|85.14|12.68|1.00|5.78|1.57
+COL|Concrete_248|88.26|9.95|1.00|5.78|-3.14
+COL|Concrete_249|88.24|4.56|1.00|5.78|-3.14
+COL|Concrete_250|88.22|-0.39|1.00|5.78|-3.14
+COL|Concrete_251|84.94|-2.95|1.00|5.78|1.58
+COL|Concrete_252|59.62|77.26|1.00|5.78|1.61
+COL|Concrete_253|65.36|77.04|1.00|5.78|1.61
+COL|Concrete_254|70.59|76.85|1.00|5.78|1.61
+COL|Concrete_255|58.69|68.32|1.00|5.78|1.61
+COL|Concrete_256|64.14|68.12|1.00|5.78|1.61
+COL|Concrete_257|75.35|67.91|1.00|5.78|1.61
+COL|Concrete_258|75.96|76.65|1.00|5.78|1.61
+COL|Concrete_259|81.53|76.44|1.00|5.78|1.61
+COL|Concrete_260|87.10|76.23|1.00|5.78|1.61
+COL|Concrete_261|92.62|76.03|1.00|5.78|1.61
+COL|Concrete_262|98.01|75.83|1.00|5.78|1.61
+COL|ManualBuilding_House8|33.72|50.00|22.90|30.00|-3.12
+COL|ManualBuilding_House9|74.58|52.17|30.00|28.81|0.00
+COL|ShoppingStreetGate_Main|15.72|83.20|9.67|1.00|-3.13
+COL|Concrete_263|69.55|67.91|1.00|5.78|1.61
+COL|Concrete_264|86.67|67.91|1.00|5.78|1.61
+COL|Concrete_265|80.99|67.91|1.00|5.78|1.61
+COL|Concrete_266|90.38|67.91|1.00|5.78|1.61
+COL|Concrete_327|80.95|33.70|1.00|5.78|1.56
+COL|Concrete_328|86.64|33.70|1.00|5.78|1.56
+COL|Concrete_329|90.27|33.70|1.00|5.78|1.56
+COL|Manual_Car1|-14.46|-44.05|5.80|10.00|1.19
+COL|Manual_Car2|25.43|37.93|4.80|10.00|-0.90`;
+
+const collisions=raw.split('\n').map(l=>{
+  const p=l.split('|');
+  return{name:p[1],x:+p[2],z:+p[3],w:+p[4],d:+p[5],rot:+p[6]};
+});
+
+const gamePoints=[
+  {x:13.5,z:-23.5,label:'P',color:'#0f0',name:'START(13.5,-23.5)'},
+  {x:-30,z:20,label:'A',color:'#ff0',name:'ItemA(-30,20)'},
+  {x:70,z:-10,label:'B',color:'#ff0',name:'ItemB(70,-10)'},
+  {x:61.25,z:3.5,label:'C',color:'#ff0',name:'ItemC(61,3.5)'},
+  {x:8.75,z:80.25,label:'E',color:'#f80',name:'EXIT(8.75,80)'},
+];
+
+function drawRotatedRect(cx,cz,w,d,rot,color){
+  const[sx,sy]=w2s(cx,cz);
+  const scaleX=W/(MX1-MX0);
+  const scaleZ=H/(MZ1-MZ0);
+  ctx.save();
+  ctx.translate(sx,sy);
+  ctx.rotate(-rot);// canvas Y is flipped
+  ctx.fillStyle=color;
+  ctx.fillRect(-w/2*scaleX,-d/2*scaleZ,w*scaleX,d*scaleZ);
+  ctx.restore();
+}
+
+function draw(){
+  ctx.fillStyle='#0a0a0a';
+  ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle='#1a1a1a';ctx.lineWidth=0.5;
+  for(let x=MX0;x<=MX1;x+=10){
+    const[sx]=w2s(x,0);
+    ctx.beginPath();ctx.moveTo(sx,0);ctx.lineTo(sx,H);ctx.stroke();
+    if(x%20===0){ctx.fillStyle='#333';ctx.font='10px monospace';ctx.fillText(x,sx+2,H-4);}
+  }
+  for(let z=MZ0;z<=MZ1;z+=10){
+    const[,sy]=w2s(0,z);
+    ctx.beginPath();ctx.moveTo(0,sy);ctx.lineTo(W,sy);ctx.stroke();
+    if(z%20===0){ctx.fillStyle='#333';ctx.font='10px monospace';ctx.fillText('Z='+z,4,sy-2);}
+  }
+
+  // Collisions as rotated rectangles
+  collisions.forEach(c=>{
+    let color='rgba(180,40,40,0.7)';// default red
+    if(c.name.startsWith('ManualBuilding'))color='rgba(200,50,50,0.85)';
+    else if(c.name.startsWith('Tree'))color='rgba(30,120,30,0.5)';
+    else if(c.name.startsWith('Manual_Car'))color='rgba(180,80,180,0.6)';
+    else if(c.name.startsWith('Manual_Buddha'))color='rgba(180,80,180,0.6)';
+    else if(c.name.startsWith('Shopping'))color='rgba(255,150,0,0.6)';
+    else if(c.name.startsWith('Utility'))color='rgba(60,100,200,0.5)';
+    drawRotatedRect(c.x,c.z,c.w,c.d,c.rot,color);
+  });
+
+  // Game points
+  gamePoints.forEach(p=>{
+    const[sx,sy]=w2s(p.x,p.z);
+    ctx.fillStyle=p.color;
+    ctx.beginPath();ctx.arc(sx,sy,8,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#000';ctx.font='bold 11px monospace';
+    ctx.fillText(p.label,sx-4,sy+4);
+    ctx.fillStyle=p.color;ctx.font='11px monospace';
+    ctx.fillText(p.name,sx+12,sy+4);
+  });
+
+  // Route
+  ctx.strokeStyle='rgba(0,255,100,0.5)';ctx.lineWidth=2;ctx.setLineDash([8,4]);
+  ctx.beginPath();
+  const route=[[13.5,-23.5],[-30,20],[70,-10],[61.25,3.5],[8.75,80.25]];
+  route.forEach(([x,z],i)=>{const[sx,sy]=w2s(x,z);if(i===0)ctx.moveTo(sx,sy);else ctx.lineTo(sx,sy);});
+  ctx.stroke();ctx.setLineDash([]);
+}
+
+canvas.addEventListener('mousemove',e=>{
+  const r=canvas.getBoundingClientRect();
+  const sx=(e.clientX-r.left)*(W/r.width),sy=(e.clientY-r.top)*(H/r.height);
+  const[wx,wz]=s2w(sx,sy);
+  coordsEl.textContent=`X=${wx.toFixed(1)}, Z=${wz.toFixed(1)}`;
+});
+
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+    "chapter": "ch02_mura_bad_voices",
+    "voice_dir": "res://assets/audio/voice/ch02_mura/",
+    "_note": "BAD ENDボイス生成用（エンディング集のplay_ending用）",
+    "events": [
+        {"type": "say", "text": "いてて……体中が痛い……", "voice": "v440"},
+        {"type": "say", "text": "出れない。壁がぬるぬるして、手がかりがない。", "voice": "v441"},
+        {"type": "say", "text": "見上げると、丸い空が遠くに見える。", "voice": "v442"},
+        {"type": "say", "text": "誰も来ない。誰も助けてくれない。", "voice": "v443"},
+        {"type": "say", "text": "……上に誰かいる。", "voice": "v444"},
+        {"type": "say", "text": "私だ。私が上から覗いている。", "voice": "v445"},
+        {"type": "say", "text": "笑ってる。なんで笑ってるの。", "voice": "v446"},
+        {"type": "say", "text": "待って！ 助けて！ 行かないで！！", "voice": "v447"},
+        {"type": "say", "text": "行っちゃった。何も言わずに。", "voice": "v448"},
+        {"type": "say", "text": "何時間経ったんだろう。声も出なくなってきた。", "voice": "v449"},
+        {"type": "say", "text": "スマホを壊したから、あの子が私の代わりに上で——", "voice": "v450"},
+        {"type": "say", "text": "配信を止めた。", "voice": "v451"},
+        {"type": "say", "text": "……あれ、手が透けてる……？", "voice": "v452"},
+        {"type": "say", "text": "足も見えなくなってきた。", "voice": "v453"},
+        {"type": "say", "text": "配信してないと……消えるの……？", "reading": "配信してないと……消えるの……？", "voice": "v454"},
+        {"type": "say", "text": "やだ……誰か……見て……お願い誰か見て……！", "voice": "v455"},
+        {"type": "say", "text": "見てくれないと……私って……誰だっけ……", "voice": "v456"}
+    ]
+}

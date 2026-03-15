@@ -12,18 +12,18 @@ var _has_kama : bool = false
 var _chrome : Node = null   # YouTubeChrome（同接数参照用）
 
 # ── 蓄積レート (/sec) ──
-const RATE_GHOST_VISIBLE : float = 5.0   # ゴーストがカメラ方向にいる
-const RATE_STAGNANT      : float = 1.0   # 同エリア滞留
-const RATE_DARKNESS      : float = 0.8   # 暗闇（懐中電灯OFF）
-const RATE_BASE          : float = 0.15  # 基本蓄積（常にじわじわ増える）
-const KAMA_MULTIPLIER    : float = 1.5   # 鎌所持で蓄積率1.5倍
+const RATE_GHOST_VISIBLE : float = 1.5   # ゴーストがカメラ方向にいる（旧5.0→緩和）
+const RATE_STAGNANT      : float = 0.4   # 同エリア滞留（旧1.0→緩和）
+const RATE_DARKNESS      : float = 0.3   # 暗闘（懐中電灯OFF）（旧0.8→緩和）
+const RATE_BASE          : float = 0.05  # 基本蓄積（旧0.15→緩和。約33分で100%）
+const KAMA_MULTIPLIER    : float = 1.2   # 鎌所持で蓄積率（旧1.5→緩和）
 
 # ── 同接数による蓄積ブースト ──
-const VIEWERS_THRESHOLD  : int   = 5000  # この人数を超えると蓄積加速
-const VIEWERS_MAX_MULT   : float = 1.8   # 最大倍率（10000人以上）
+const VIEWERS_THRESHOLD  : int   = 5000
+const VIEWERS_MAX_MULT   : float = 1.3   # 最大倍率（旧1.8→緩和）
 
 # ── 回復レート (/sec) ──
-const RATE_GROUND_LOOK   : float = -3.0  # カメラを地面に向ける
+const RATE_GROUND_LOOK   : float = -5.0  # カメラを地面に向ける（旧-3.0→回復強化）
 
 # ── 段階閾値 ──
 const STAGE_MILD : float = 40.0

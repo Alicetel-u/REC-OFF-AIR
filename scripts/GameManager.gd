@@ -12,6 +12,11 @@ var hit_count  : int   = 0
 ## デバッグ: シナリオ中自由移動フラグ（F9 でトグル）
 var debug_free_move: bool = false
 
+## オートテスト: タイトル→全チャプター自動走破（F11 で起動）
+var autotest_active: bool = false
+var autotest_mode: String = "skip"      # "skip" = 即クリア, "play" = 自動プレイ（歩いて回収）
+var autotest_chapter_wait: float = 5.0  # 各チャプター滞在秒数
+
 ## 演出早送り倍率
 var playback_speed: float = 1.0
 
@@ -98,6 +103,9 @@ func trigger_win() -> void:
 		return
 	state = State.WIN
 	player_won.emit()
+	if autotest_active:
+		print("[AutoTest] ===== all chapters done =====")
+		autotest_active = false
 
 
 func advance_to_next_chapter() -> void:

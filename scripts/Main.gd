@@ -60,8 +60,8 @@ func _ready() -> void:
 		chapter.exit_position = Vector3(8.75, 1.5, 80.25)
 		# 3アイテム: A=木彫りの頭, B=錆びた鎌, C=写し鏡の御札
 		var village_items := PackedVector3Array()
-		village_items.append(Vector3(-30.0, 1.0, 20.0))    # A: 木彫りの頭（仮座標）
-		village_items.append(Vector3(70.0, 1.0, -10.0))    # B: 錆びた鎌（仮座標）
+		village_items.append(Vector3(103.97, 1.0, 8.64))    # A: 木彫りの頭
+		village_items.append(Vector3(-14.0, 1.0, 36.0))    # B: 錆びた鎌（建物3/民家の縁側付近）
 		village_items.append(Vector3(61.25, 1.0, 3.50))    # C: 写し鏡の御札
 		chapter.item_positions = village_items
 		# ゴースト3体（みゆき）
@@ -86,6 +86,13 @@ func _ready() -> void:
 
 	# items_total を generate() より前に設定（Exit._ready() が参照するため）
 	GameManager.items_total = chapter.item_positions.size()
+	# つなぎ演出（start_section==1）の場合、ステージ生成をスキップ（GPUメモリ節約）
+	if GameManager.start_section == 1:
+		GameManager.start_section = 0
+		await LoadingScreen.fade_out()
+		await _play_mura_exit() if chapter.chapter_id == "ch02_mura_tansaku" else _play_souko_exit()
+		GameManager.advance_to_next_chapter()
+		return
 	var result: Dictionary = stage_gen.generate(chapter)
 
 	# プレイヤー位置をチャプターデータに合わせる
@@ -155,16 +162,8 @@ func _ready() -> void:
 	var is_playable : bool = cur_chapter != null and cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku"]
 
 	if is_playable:
-		# CP2廃倉庫: start_section==1 → CP2-2紙芝居へ直接遷移
-		if cur_chapter.chapter_id == "ch02_haison_souko" and GameManager.start_section == 1:
-			GameManager.start_section = 0
-			await _play_souko_exit()
-			GameManager.advance_to_next_chapter()
-			return
-		# プレイアブル: 即操作可能
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-		player.input_disabled = false
-		# CP3 村の探索: ゴースト有効化 + Encoding Error ゲージ初期化
+		# start_section==1 のつなぎ演出は _ready() 冒頭で処理済み
+		# CP3 村の探索: 即プレイアブル + バックグラウンドで演出
 		if cur_chapter.chapter_id == "ch02_mura_tansaku":
 			# ゴースト有効化（grace付き）
 			GameManager.ghost_grace = true
@@ -173,21 +172,25 @@ func _ready() -> void:
 				ghost.visible = true
 			get_tree().create_timer(15.0).timeout.connect(func() -> void:
 				GameManager.ghost_grace = false)
-			# VHSエフェクトオーバーレイ（EncodingError制御用）
-			var vhs_mat := _setup_encoding_vhs_overlay()
-			# Encoding Error ゲージ
-			var enc_err := preload("res://scripts/EncodingError.gd").new()
-			enc_err.name = "EncodingError"
-			var chrome_ref := get_node_or_null("YouTubeChrome")
-			enc_err.setup(player, vhs_mat, chrome_ref)
-			add_child(enc_err)
-			enc_err.gauge_changed.connect(hud.on_encoding_error_changed)
-			enc_err.gauge_maxed.connect(_on_encoding_error_maxed)
-			# CP3開始時のセリフ・チャット演出（バックグラウンド）
-			_run_cp3_opening_lines()
+			# NOTE: CP3エフェクト一時無効化
+			#var vhs_mat := _setup_encoding_vhs_overlay()
+			#var enc_err := preload("res://scripts/EncodingError.gd").new()
+			#enc_err.name = "EncodingError"
+			#var chrome_ref := get_node_or_null("YouTubeChrome")
+			#enc_err.setup(player, vhs_mat, chrome_ref)
+			#add_child(enc_err)
+			#enc_err.gauge_changed.connect(hud.on_encoding_error_changed)
+			#enc_err.gauge_maxed.connect(_on_encoding_error_maxed)
+		# プレイアブル: 即操作可能
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		player.input_disabled = false
 		# CP2廃倉庫: 動きながらセリフ・コメントが流れるバックグラウンド演出
 		if cur_chapter.chapter_id == "ch02_haison_souko":
 			_run_chapter_opening_background(cur_chapter.chapter_id)
+		# CP3村の探索: バックグラウンドで開始演出（操作を止めない）
+		# NOTE: CP3演出一時無効化
+		#if cur_chapter.chapter_id == "ch02_mura_tansaku":
+		#	_run_chapter_opening_background("ch02_mura_tansaku_start")
 	elif cur_chapter:
 		# シネマティック: JSON演出を実行
 		await _run_chapter_opening(cur_chapter.chapter_id)
@@ -219,9 +222,34 @@ func _ready() -> void:
 	# CP2廃倉庫: ゴール到達時にv103,v104演出を挟んでから遷移
 	if cur_chapter and cur_chapter.chapter_id == "ch02_haison_souko":
 		stage_gen.exit_node.on_exit_callback = Callable(self, "_play_souko_exit")
+	# CP3村の探索: ゴール到達時にクリア演出を挟んでから遷移
+	if cur_chapter and cur_chapter.chapter_id == "ch02_mura_tansaku":
+		stage_gen.exit_node.on_exit_callback = Callable(self, "_play_mura_exit")
+
+	# ミニマップ: CP2・CP3のプレイアブルチャプターで表示
+	if cur_chapter and cur_chapter.chapter_id == "ch02_haison_souko":
+		_setup_minimap(Vector2(-25, -18), Vector2(25, 18))
+	if cur_chapter and cur_chapter.chapter_id == "ch02_mura_tansaku":
+		_setup_minimap(Vector2(-50, -60), Vector2(100, 90))
 
 	# ナビ矢印用: プレイヤー参照をHUDに渡す
 	hud._player_ref = player
+
+	# オートテスト継続（シーン再ロード後に自動で次チャプターを走破）
+	if GameManager.autotest_active:
+		# autotest_mode: "play" = 自動プレイ（歩いて回収）, それ以外 = 即クリア
+		if GameManager.autotest_mode == "play":
+			_debug_auto_play_chapter()
+		elif GameManager.autotest_mode == "cp3-2":
+			# CP3-2: アイテム全取得+出口テレポート→クリア演出確認
+			await get_tree().create_timer(1.0).timeout
+			_debug_auto_complete_chapter()
+		elif GameManager.autotest_mode == "skip":
+			# 即クリアモード: アイテム全取得+出口テレポート
+			await get_tree().create_timer(2.0).timeout
+			_debug_auto_complete_chapter()
+		else:
+			_run_autotest(GameManager.autotest_chapter_wait)
 
 
 ## シーン再ロード後に root 直下に残った孤立 CanvasLayer を削除
@@ -308,6 +336,24 @@ func _input(event: InputEvent) -> void:
 	if kc == KEY_F9:
 		_toggle_debug_free_move()
 		get_viewport().set_input_as_handled()
+		return
+
+	# Shift+F10: 現チャプター自動プレイ（アイテム順に歩いて回収→出口）
+	if kc == KEY_F10 and event.shift_pressed:
+		get_viewport().set_input_as_handled()
+		_debug_auto_play_chapter()
+		return
+
+	# F10: 現チャプター即クリア（アイテム全取得＋出口テレポート）
+	if kc == KEY_F10:
+		get_viewport().set_input_as_handled()
+		_debug_auto_complete_chapter()
+		return
+
+	# F11: 全チャプター自動走破テスト開始
+	if kc == KEY_F11:
+		get_viewport().set_input_as_handled()
+		_debug_start_autotest()
 		return
 
 	if not _DEBUG_CHAPTER_SKIP:
@@ -1107,6 +1153,52 @@ func _show_item_acquired(count: int, total: int) -> void:
 	player.input_disabled = false
 
 
+func _setup_minimap(map_min: Vector2, map_max: Vector2) -> void:
+	## プレイアブルチャプター用ミニマップを生成
+	var chapter := GameManager.current_chapter
+	if chapter == null:
+		return
+	# アイテム位置を Array に変換
+	var items : Array = []
+	for v in chapter.item_positions:
+		items.append(v)
+	# ゴーストノード取得
+	var ghosts : Array = get_tree().get_nodes_in_group("ghost")
+	# CanvasLayer (YouTubeChrome=20 の手前)
+	var canvas := CanvasLayer.new()
+	canvas.layer = 19
+	canvas.name = "MinimapLayer"
+	add_child(canvas)
+	# Minimap Control
+	var minimap := preload("res://scripts/Minimap.gd").new()
+	minimap.position = Vector2(686, 344)
+	canvas.add_child(minimap)
+	minimap.setup(player, chapter.exit_position, items, ghosts, map_min, map_max)
+	# 構造物データを追加
+	if chapter.chapter_id == "ch02_haison_souko":
+		minimap.add_warehouse_walls()
+	elif chapter.chapter_id == "ch02_mura_tansaku":
+		# MapGenerator は Main > Stage > MapGenerator にある
+		# _build() が 0.1s遅延で実行されるため、grid完成を待つ
+		_populate_village_minimap(minimap)
+
+
+func _populate_village_minimap(minimap: Control) -> void:
+	## CP3: 手動配置の建物・壁をミニマップに追加
+	await get_tree().create_timer(0.3).timeout
+	if not is_instance_valid(minimap):
+		return
+	var stage_node : Node = get_node_or_null("Stage")
+	if stage_node == null:
+		return
+	var structures : Array = []
+	for child in stage_node.get_children():
+		if child.name.begins_with("ManualBuilding") or child.name.begins_with("Concrete"):
+			structures.append(child)
+	if structures.size() > 0:
+		minimap.add_manual_buildings(structures)
+
+
 func _play_souko_exit() -> void:
 	## CP2廃倉庫ゴール到達時の演出（v103, v104）
 	player.input_disabled = true
@@ -1116,39 +1208,33 @@ func _play_souko_exit() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
-## CP3: 開始時のしゅっちセリフ＋チャット（バックグラウンド、操作を止めない）
-func _run_cp3_opening_lines() -> void:
-	await get_tree().create_timer(3.0).timeout
-	if GameManager.state != GameManager.State.PLAYING:
-		return
-	hud.show_monologue("やばい……この村、なんか空気が重い……")
-	_add_chat_safe("きたきた廃村！", "視聴者A")
-	await get_tree().create_timer(4.0).timeout
-	if GameManager.state != GameManager.State.PLAYING:
-		return
-	hud.hide_monologue()
-	_add_chat_safe("画質やばくない？", "配信民99")
-	await get_tree().create_timer(2.0).timeout
-	if GameManager.state != GameManager.State.PLAYING:
-		return
-	hud.show_monologue("アイテムを3つ集めないと出口が開かない……\nあと、お札も必要みたい")
-	_add_chat_safe("がんばれ！", "ゆきんこ77")
-	await get_tree().create_timer(5.0).timeout
-	if GameManager.state != GameManager.State.PLAYING:
-		return
-	hud.hide_monologue()
-	_add_chat_safe("後ろなんかいない？", "幽霊ガチ勢")
-
-
-func _add_chat_safe(msg: String, user: String) -> void:
-	if is_instance_valid(hud) and hud.has_method("_add_chat"):
-		hud._add_chat(msg, user)
+func _play_mura_exit() -> void:
+	## CP3村の探索ゴール到達時のつなぎ演出（紙芝居）
+	player.input_disabled = true
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	# 3Dカメラ無効化（紙芝居中に3Dモデルが見えないように）
+	var cam := player.get_node_or_null("Head/Camera3D")
+	if cam:
+		cam.current = false
+	# EncodingError停止
+	var enc_err := get_node_or_null("EncodingError")
+	if enc_err:
+		enc_err.set_physics_process(false)
+	# 紙芝居演出
+	await _run_chapter_opening("ch02_mura_tansaku_exit")
+	player.input_disabled = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
 ## CP3: Encoding Error 100%到達 — 「配信が終了しました」画面を表示してからBAD END
 func _on_encoding_error_maxed() -> void:
 	player.input_disabled = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	# デバッグ: 即スキップ（_show_caught内でもスキップされる）
+	if _DEBUG_CHAPTER_SKIP:
+		print("[Debug] Encoding Error BAD END スキップ")
+		GameManager.trigger_caught()
+		return
 	# 画面を真っ暗にする
 	var blackout := ColorRect.new()
 	blackout.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -1181,6 +1267,14 @@ func _show_caught() -> void:
 	_close_inventory()
 	player.input_disabled = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+	# デバッグ: バッドエンド演出スキップ（即タイトルへ戻る）
+	if _DEBUG_CHAPTER_SKIP:
+		print("[Debug] バッドエンド演出スキップ → タイトルへ")
+		SoundManager.stop_all()
+		await get_tree().create_timer(0.5).timeout
+		get_tree().change_scene_to_file("res://scenes/Opening.tscn")
+		return
 
 	# ── ゲーム世界を完全停止（音漏れ・3D描画を遮断）──
 	SoundManager.stop_all()
@@ -1580,7 +1674,7 @@ func _setup_debug_ui() -> void:
 	_debug_label.add_theme_constant_override("shadow_offset_x", 1)
 	_debug_label.add_theme_constant_override("shadow_offset_y", 1)
 	_debug_label.position = Vector2(8, 8)
-	_debug_label.visible = false  # デバッグラベル非表示
+	_debug_label.visible = true  # デバッグラベル表示
 	cl.add_child(_debug_label)
 	_refresh_debug_label()
 
@@ -1591,9 +1685,19 @@ func _refresh_debug_label() -> void:
 	var ch  := GameManager.current_chapter
 	var idx : int    = GameManager.chapter_index + 1
 	var cname: String = ch.chapter_name if ch else "?"
-	var free_str := " | [F9] 自由移動: ON ✓" if GameManager.debug_free_move else " | [F9] 自由移動"
-	var skip_str := "  F1=入口  F2=村探索  F3=民家  F4=神社  F5=脱出" if _DEBUG_CHAPTER_SKIP else ""
-	_debug_label.text = "【DEBUG】CP%d: %s%s%s" % [idx, cname, free_str, skip_str]
+	var pos_str := ""
+	if is_instance_valid(player):
+		var p := player.global_position
+		pos_str = " | pos=(%.1f, %.1f)" % [p.x, p.z]
+	var free_str := " | [F9] 自由移動: ON" if GameManager.debug_free_move else ""
+	var test_str := " | AUTO-TEST" if GameManager.autotest_active else ""
+	_debug_label.text = "CP%d: %s%s%s%s" % [idx, cname, pos_str, free_str, test_str]
+
+
+func _process(_delta: float) -> void:
+	# デバッグラベルのプレイヤー座標をリアルタイム更新
+	if _DEBUG_CHAPTER_SKIP and is_instance_valid(_debug_label) and is_instance_valid(player):
+		_refresh_debug_label()
 
 
 func _debug_skip_to_chapter(idx: int) -> void:
@@ -1603,3 +1707,238 @@ func _debug_skip_to_chapter(idx: int) -> void:
 	GameManager._hit_invincible = false
 	GameManager.load_chapter(idx)
 	get_tree().reload_current_scene()
+
+
+## Shift+F10: 現チャプターを自動プレイ（一筆書きルートで歩いてクリア）
+func _debug_auto_play_chapter() -> void:
+	var ch := GameManager.current_chapter
+	if ch == null:
+		return
+	var cp_num : int = GameManager.chapter_index + 1
+	print("[AutoPlay] CP%d「%s」自動プレイ開始" % [cp_num, ch.chapter_name])
+	# 無敵化
+	GameManager.ghost_grace = true
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		ghost.process_mode = Node.PROCESS_MODE_DISABLED
+		ghost.visible = false
+	var enc_err := get_node_or_null("EncodingError")
+	if enc_err:
+		enc_err.set_physics_process(false)
+	player.input_disabled = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	await get_tree().create_timer(1.0).timeout
+	if not is_inside_tree():
+		return
+
+	# CP3一筆書きルート: START → ItemA(西) → ItemB(東) → ItemC(近) → EXIT(北)
+	# アイテム順を最適化（item_positions[0]=A, [1]=B, [2]=C）
+	var item_order := [0, 1, 2]  # A→B→C
+	var items : Array = []
+	for v in ch.item_positions:
+		items.append(v)
+
+	for idx in item_order:
+		if idx >= items.size():
+			continue
+		var target : Vector3 = items[idx]
+		print("[AutoPlay]   アイテム %d へ移動中 → %s" % [idx + 1, str(target)])
+		await _road_navigate_to(target)
+		if not is_inside_tree():
+			return
+		# アイテム取得演出を待つ（input_disabledがfalseに戻るまで最大30秒）
+		var wait_t : float = 0.0
+		while wait_t < 30.0:
+			await get_tree().create_timer(0.5).timeout
+			if not is_inside_tree():
+				return
+			wait_t += 0.5
+			# 演出が終わった（input_disabled解除）or アイテム取得済み
+			if not player.input_disabled and GameManager.items_found > idx:
+				break
+		if GameManager.items_found > idx:
+			print("[AutoPlay]   アイテム %d 取得OK" % (idx + 1))
+		else:
+			GameManager.items_found = idx + 1
+			GameManager.item_collected.emit(GameManager.items_found, GameManager.items_total)
+			print("[AutoPlay]   アイテム %d 強制取得" % (idx + 1))
+
+	# 出口へ
+	# EncodingError確実停止（アイテム演出で再開されている可能性）
+	var enc2 := get_node_or_null("EncodingError")
+	if enc2:
+		enc2.set_physics_process(false)
+	print("[AutoPlay]   出口へ移動中 → %s" % str(ch.exit_position))
+	await _road_navigate_to(ch.exit_position)
+	if not is_inside_tree():
+		return
+	print("[AutoPlay]   出口到着、イベント待機...")
+	for _w in range(60):
+		await get_tree().create_timer(0.5).timeout
+		if not is_inside_tree():
+			return
+	print("[AutoPlay] CP%d 完了" % cp_num)
+
+
+# ════════════════════════════════════════════════════════════════
+# 自動移動エンジン（道路グラフA* + 直線歩行）
+# ════════════════════════════════════════════════════════════════
+
+var _road_astar: AStar3D = null
+
+func _load_road_graph() -> void:
+	var path := "res://tools/cp3_road_graph.json"
+	if not FileAccess.file_exists(path):
+		print("[AutoPlay] cp3_road_graph.json not found")
+		return
+	var f := FileAccess.open(path, FileAccess.READ)
+	var json := JSON.new()
+	if json.parse(f.get_as_text()) != OK:
+		print("[AutoPlay] cp3_road_graph.json parse error")
+		return
+	var data : Dictionary = json.data
+	_road_astar = AStar3D.new()
+	var nodes : Array = data.get("road_nodes", [])
+	var edges : Array = data.get("road_edges", [])
+	for n in nodes:
+		_road_astar.add_point(int(n["id"]), Vector3(float(n["x"]), 1.0, float(n["z"])))
+	for e in edges:
+		var a : int = int(e[0])
+		var b : int = int(e[1])
+		if _road_astar.has_point(a) and _road_astar.has_point(b):
+			_road_astar.connect_points(a, b)
+	print("[AutoPlay] 道路グラフ: %d nodes, %d edges" % [nodes.size(), edges.size()])
+
+
+## 道路グラフ経由でナビゲーション
+func _road_navigate_to(target: Vector3) -> void:
+	if _road_astar == null:
+		_load_road_graph()
+	if _road_astar == null or _road_astar.get_point_count() == 0:
+		print("[AutoPlay]   グラフなし → 直線")
+		await _auto_walk_direct(target)
+		return
+	var from_id : int = _road_astar.get_closest_point(player.global_position)
+	var to_id : int = _road_astar.get_closest_point(target)
+	if from_id == to_id:
+		await _auto_walk_direct(target)
+		return
+	var path : PackedVector3Array = _road_astar.get_point_path(from_id, to_id)
+	print("[AutoPlay]   道路グラフ: %d WP" % path.size())
+	for i in range(path.size()):
+		await _auto_walk_direct(path[i])
+		if not is_inside_tree():
+			return
+	await _auto_walk_direct(target)
+
+
+## ターゲットまで直線で歩く（move_and_slide使用）
+func _auto_walk_direct(target: Vector3) -> void:
+	var timeout : float = 60.0
+	var elapsed : float = 0.0
+	var spd : float = 7.0
+	var stuck_t : float = 0.0
+	var prev_pos := player.global_position
+
+	while elapsed < timeout:
+		if not is_inside_tree() or not is_instance_valid(player):
+			return
+		var dt : float = get_process_delta_time()
+		elapsed += dt
+		var pos := player.global_position
+		var dx : float = target.x - pos.x
+		var dz : float = target.z - pos.z
+		var dist : float = sqrt(dx * dx + dz * dz)
+		if dist < 0.5:
+			return  # 到着
+
+		# スタック検知（5秒動かない → 少しずらす）
+		var moved : float = Vector2(pos.x - prev_pos.x, pos.z - prev_pos.z).length()
+		if moved < 0.01:
+			stuck_t += dt
+			if stuck_t > 5.0:
+				# 少し横にずらして再開
+				player.global_position += Vector3(randf_range(-2, 2), 0.5, randf_range(-2, 2))
+				stuck_t = 0.0
+				prev_pos = player.global_position
+				print("[AutoPlay]   微調整 pos=%s" % str(player.global_position))
+				await get_tree().process_frame
+				continue
+		else:
+			stuck_t = 0.0
+			prev_pos = pos
+
+		# ターゲット方向に向いて前進
+		player.look_at(Vector3(target.x, pos.y, target.z), Vector3.UP)
+		var fwd := -player.transform.basis.z
+		player.velocity.x = fwd.x * spd
+		player.velocity.z = fwd.z * spd
+		if player.is_on_floor():
+			player.velocity.y = 0.0
+		else:
+			player.velocity.y -= 9.8 * dt
+		player.move_and_slide()
+		await get_tree().process_frame
+
+	print("[AutoPlay]   ⚠ タイムアウト（60秒）")
+
+
+## F10: 現チャプターを即クリア（アイテム全取得 + 出口テレポート）
+func _debug_auto_complete_chapter() -> void:
+	var ch := GameManager.current_chapter
+	if ch == null:
+		return
+	print("[AutoTest] CP%d「%s」即クリア実行" % [GameManager.chapter_index + 1, ch.chapter_name])
+	# アイテムを全取得扱い
+	GameManager.items_found = GameManager.items_total
+	GameManager.item_collected.emit(GameManager.items_found, GameManager.items_total)
+	# ゴースト無効化 + EncodingError停止
+	GameManager.ghost_grace = true
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		ghost.process_mode = Node.PROCESS_MODE_DISABLED
+	var enc_err := get_node_or_null("EncodingError")
+	if enc_err:
+		enc_err.set_physics_process(false)
+	# プレイヤーを出口にテレポート
+	player.input_disabled = false
+	player.global_position = ch.exit_position + Vector3(0, 0.5, 0)
+	print("[AutoTest] テレポート → ", ch.exit_position)
+
+
+## F11: 全チャプター自動走破テスト開始
+func _debug_start_autotest() -> void:
+	if GameManager.autotest_active:
+		GameManager.autotest_active = false
+		print("[AutoTest] ===== 自動テスト停止 =====")
+		return
+	GameManager.autotest_active = true
+	var wait_sec : float = GameManager.autotest_chapter_wait
+	print("[AutoTest] ===== 全チャプター自動走破開始（各%ds滞在） =====" % int(wait_sec))
+	_run_autotest(wait_sec)
+
+
+func _run_autotest(wait_sec: float) -> void:
+	var ch := GameManager.current_chapter
+	if ch == null:
+		return
+	var cp_num : int = GameManager.chapter_index + 1
+	print("[AutoTest] CP%d「%s」開始 — items=%d, exit=%s" % [
+		cp_num, ch.chapter_name, GameManager.items_total, str(ch.exit_position)])
+	# 滞在して動作確認（クラッシュしないことを確認）
+	await get_tree().create_timer(wait_sec).timeout
+	if not GameManager.autotest_active:
+		return
+	if not is_inside_tree():
+		return
+	# チャプターを即クリア
+	print("[AutoTest] CP%d — %ds経過、即クリア実行" % [cp_num, int(wait_sec)])
+	_debug_auto_complete_chapter()
+	# 出口のコリジョンに触れるまで少し待つ
+	await get_tree().create_timer(1.5).timeout
+	if not GameManager.autotest_active:
+		return
+	if not is_inside_tree():
+		return
+	# まだ同じチャプターにいる場合（Exitに到達できなかった等）は強制進行
+	if GameManager.chapter_index + 1 == cp_num:
+		print("[AutoTest] CP%d — Exit未到達、強制進行" % cp_num)
+		GameManager.advance_to_next_chapter()

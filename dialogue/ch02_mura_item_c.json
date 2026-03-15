@@ -1,0 +1,35 @@
+{
+    "chapter": "ch02_mura_item_c",
+    "voice_dir": "res://assets/audio/voice/ch02_mura/",
+    "_note": "CP3 アイテムC「写し鏡の御札」取得演出",
+    "events": [
+        {"type": "bg_image", "file": "item_vhs.jpg", "dur": 0.5, "brightness": 0.5, "radius": 0.3, "softness": 0.3},
+        {"type": "wait", "sec": 0.5},
+
+        {"type": "say", "text": "鏡みたいな御札……仏壇の中に隠してあった。3枚目のお札？", "reading": "かがみみたいなおふだ……仏壇の中に隠してあった。3枚目のおふだ？", "voice": "v434"},
+        {"type": "wait", "sec": 5.5},
+
+        {"type": "chat", "msg": "お札3枚目！", "user": "視聴者A"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "これで全部揃った？", "user": "ゆきんこ77", "utype": "moderator"},
+        {"type": "wait", "sec": 0.5},
+
+        {"type": "horror_glitch", "intensity": 0.6, "dur": 0.4},
+
+        {"type": "say", "text": "……え、スマホに映したら私の顔が案山子の顔になってる！？　やだ……！", "reading": "……え、スマホに映したら私の顔がかかしの顔になってる！？　やだ……！", "voice": "v435"},
+        {"type": "wait", "sec": 5.5},
+
+        {"type": "scare_flash"},
+        {"type": "camera_shake", "intensity": 0.4, "dur": 0.5},
+
+        {"type": "chat", "msg": "顔！！！", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "案山子の顔ｗｗｗ怖すぎ", "user": "まっちゃん"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "見ている", "user": "K", "utype": "horror"},
+        {"type": "wait", "sec": 0.8},
+
+        {"type": "bg_image_clear", "dur": 0.5},
+        {"type": "say_clear"}
+    ]
+}

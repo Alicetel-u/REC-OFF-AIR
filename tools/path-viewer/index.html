@@ -785,6 +785,28 @@ body.light #ce-edit-panel input, body.light #ce-edit-panel textarea {
 #data-source.src-watch { color:#f0c040; border:1px solid rgba(240,192,64,.5); }
 #data-source.src-watch::before { content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:#f0c040; margin-right:4px; animation:watchPulse 1.5s infinite; }
 @keyframes watchPulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+#stale-banner {
+  display:none; padding:6px 10px; margin:4px 0;
+  background:rgba(212,168,55,.12); border:1px solid rgba(212,168,55,.4);
+  border-radius:3px; font-size:10px; color:#f0d060; line-height:1.5;
+}
+#stale-banner .stale-btns { display:flex; gap:4px; margin-top:4px; flex-wrap:wrap; }
+#stale-banner .stale-btns button { font-size:10px; padding:2px 6px; cursor:pointer; }
+#paste-modal {
+  display:none; position:fixed; inset:0; z-index:1000;
+  background:rgba(0,0,0,.6); align-items:center; justify-content:center;
+}
+#paste-modal.show { display:flex; }
+#paste-modal .modal-inner {
+  background:#0d1e42; border:1px solid rgba(130,160,210,.3);
+  border-radius:6px; padding:16px; width:600px; max-height:80vh;
+}
+#paste-modal textarea {
+  width:100%; height:300px; background:rgba(0,0,0,.3);
+  color:var(--pv-tx0); border:1px solid var(--pv-inner);
+  border-radius:3px; font-family:monospace; font-size:12px; resize:vertical;
+  padding:8px; box-sizing:border-box;
+}
 
 /* ── A2: フィルタートグル ── */
 .filter-row { display:flex; align-items:center; gap:8px; }
@@ -1170,6 +1192,7 @@ body.light .preset-custom-input input { background:rgba(255,255,255,.85); border
       <button id="btn-undo" disabled>戻す</button>
       <button id="btn-redo" disabled>やり直す</button>
       <button id="btn-open" title="dialogue/のJSONファイルを開いて編集・保存">ファイルを開く</button>
+      <button id="btn-paste" title="クリップボードのJSONを貼り付けて読み込み">📋 貼り付け</button>
       <button id="theme-btn">Light</button>
     </div>
     <div id="file-info" style="font-size:10px;color:var(--pv-tx2);padding:2px 0;display:none;">
@@ -1177,6 +1200,14 @@ body.light .preset-custom-input input { background:rgba(255,255,255,.85); border
     </div>
     <input type="file" id="json-file" accept=".json" style="font-size:10px;">
     <span id="data-source"></span>
+    <div id="stale-banner">
+      ⚠ サーバー未接続 — データが最新でない可能性があります
+      <div class="stale-btns">
+        <button onclick="showPasteModal()">📋 JSONを貼り付け</button>
+        <button onclick="copyRefreshPrompt()">🤖 更新プロンプトをコピー</button>
+        <button onclick="document.getElementById('btn-open').click()">📂 ファイルを開く</button>
+      </div>
+    </div>
     <div class="filter-row">
       <label><input type="checkbox" id="filter-movement"> 移動のみ</label>
       <label><input type="checkbox" id="show-bubbles"> セリフ表示</label>
@@ -1748,6 +1779,7 @@ function init() {
   document.getElementById("json-file").addEventListener("change", onFileLoad);
   document.getElementById("btn-save").addEventListener("click", onSave);
   document.getElementById("btn-open").addEventListener("click", onOpenAndWatch);
+  document.getElementById("btn-paste").addEventListener("click", showPasteModal);
   document.getElementById("btn-play").addEventListener("click", onPlay);
   document.getElementById("btn-reset").addEventListener("click", resetView);
   document.getElementById("dialogue-select").addEventListener("change", onDialogueSelect);
@@ -3164,6 +3196,7 @@ function onFileLoad(e) {
       undoStack=[]; redoStack=[]; updateUndoButtons();
       currentSection = 0; buildSections(); applySection(0);
       setDataSource("file", file.name);
+      hideStaleBanner();
     }
     catch(err){alert("JSON解析エラー: "+err.message);}
   }; reader.readAsText(file);
@@ -3242,10 +3275,6 @@ function stopWatch() {
 
 async function onSave() {
   if(!jsonData){alert("JSONが読み込まれていません");return;}
-  _savingInProgress = true;
-  // 保存中は監視を一時停止
-  const wasWatching = !!watchTimer;
-  if (watchTimer) { clearInterval(watchTimer); watchTimer = null; }
 
   // セクション分割されている場合、編集済みeventsをallEventsに戻す
   syncEventsToAll();
@@ -3257,36 +3286,21 @@ async function onSave() {
     jsonData._pv_spawn = { x: currentMap.spawn.x, z: currentMap.spawn.z };
   }
   const text=JSON.stringify(jsonData,null,"\t")+"\n";
-  const fileName = getCurrentFileName();
 
-  // サーバー経由で保存（localhost:8090）
+  // クリップボードにコピー
   try {
-    const res = await fetch("/api/save", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ filename: fileName, content: text })
-    });
-    if (res.ok) {
-      showStatus(`✓ 保存完了 → dialogue/${fileName}`, 3000);
-      watchLastText = text;
-      // DIALOGUE_CACHE も更新（チャプター再選択時に古いデータが使われるのを防止）
-      if (typeof DIALOGUE_CACHE !== "undefined") {
-        const cacheKey = fileName.replace(/\.json$/, "");
-        DIALOGUE_CACHE[cacheKey] = JSON.parse(text);
-      }
-      // 監視を再開（1秒後、ファイル書き込み完了を待つ）
-      if (wasWatching) setTimeout(() => { _savingInProgress = false; startWatch(); }, 1000);
-      else _savingInProgress = false;
-      return;
-    }
-    const err = await res.json();
-    showStatus("保存エラー: " + (err.error || res.status));
+    await navigator.clipboard.writeText(text);
+    showStatus("✓ JSONをクリップボードにコピーしました", 3000);
   } catch(e) {
-    showStatus("サーバー未起動です。先に起動してください:\npython tools/server.py", 8000);
+    // フォールバック: textarea経由でコピー
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showStatus("✓ JSONをクリップボードにコピーしました", 3000);
   }
-  // エラー時も監視再開
-  _savingInProgress = false;
-  if (wasWatching) setTimeout(() => startWatch(), 2000);
 }
 
 function updateFileInfo(name) {
@@ -3658,6 +3672,7 @@ async function onDialogueSelect() {
   if (!val) return;
   const fname = val + ".json";
   // サーバー API から直接読み込み
+  let _loadedFromApi = false;
   try {
     const res = await fetch("/api/load?name=" + encodeURIComponent(fname));
     if (!res.ok) throw new Error(res.status);
@@ -3665,14 +3680,18 @@ async function onDialogueSelect() {
     jsonData = data;
     allEvents = jsonData.events || [];
     if (typeof DIALOGUE_CACHE !== "undefined") DIALOGUE_CACHE[val] = JSON.parse(JSON.stringify(data));
+    _loadedFromApi = true;
+    hideStaleBanner();
   } catch (e) {
     // フォールバック: DIALOGUE_CACHE から読み込み
     if (typeof DIALOGUE_CACHE === "undefined" || !DIALOGUE_CACHE[val]) {
       showStatus("読み込み失敗: " + e.message + "（サーバー未起動？ python tools/path-viewer/server.py）");
+      showStaleBanner();
       return;
     }
     jsonData = JSON.parse(JSON.stringify(DIALOGUE_CACHE[val]));
     allEvents = jsonData.events || [];
+    showStaleBanner();
   }
   // マップ自動選択
   const autoMap = {
@@ -3701,7 +3720,7 @@ async function onDialogueSelect() {
   currentSection = 0;
   buildSections();
   applySection(0);
-  setDataSource("api", fname);
+  setDataSource(_loadedFromApi ? "api" : "cache", fname);
   showStatus(fname + " を読み込みました");
 }
 
@@ -3766,6 +3785,41 @@ function setDataSource(type, name) {
     el.textContent = "FILE: " + name;
     el.title = "ファイルから直接読み込み（最新）";
   }
+}
+
+// ═══════════════════════════════════════════════════
+// A1b: 鮮度警告 + JSONペースト読み込み
+// ═══════════════════════════════════════════════════
+function showStaleBanner() { document.getElementById("stale-banner").style.display = "block"; }
+function hideStaleBanner() { document.getElementById("stale-banner").style.display = "none"; }
+function showPasteModal() {
+  const m = document.getElementById("paste-modal");
+  m.classList.add("show");
+  document.getElementById("paste-area").value = "";
+  document.getElementById("paste-area").focus();
+}
+function closePasteModal() { document.getElementById("paste-modal").classList.remove("show"); }
+function doPasteLoad() {
+  const text = document.getElementById("paste-area").value.trim();
+  if (!text) return;
+  try {
+    jsonData = JSON.parse(text);
+    allEvents = jsonData.events || [];
+    undoStack = []; redoStack = []; updateUndoButtons();
+    currentSection = 0; buildSections(); applySection(0);
+    setDataSource("file", "clipboard");
+    hideStaleBanner();
+    closePasteModal();
+    showStatus("クリップボードから読み込みました");
+  } catch(e) { alert("JSON解析エラー: " + e.message); }
+}
+function copyRefreshPrompt() {
+  const val = document.getElementById("dialogue-select").value;
+  const fname = val ? val + ".json" : "ch01_entrance.json";
+  const prompt = "dialogue/" + fname + " の内容をクリップボードにコピーして";
+  navigator.clipboard.writeText(prompt).then(() => {
+    showStatus("プロンプトをコピーしました — Claude Codeに貼り付けてください", 4000);
+  });
 }
 
 // ═══════════════════════════════════════════════════
@@ -5153,5 +5207,15 @@ document.addEventListener("keydown", e => {
 // ═══════════════════════════════════════════════════
 init();
 </script>
+<div id="paste-modal">
+  <div class="modal-inner">
+    <div style="font-size:12px;margin-bottom:8px;color:var(--pv-tx1);">JSONを貼り付けてください:</div>
+    <textarea id="paste-area" placeholder="ここにJSONを貼り付け..."></textarea>
+    <div style="display:flex;gap:6px;margin-top:8px;justify-content:flex-end;">
+      <button onclick="doPasteLoad()">読み込み</button>
+      <button onclick="closePasteModal()">キャンセル</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

@@ -1,0 +1,36 @@
+{
+    "chapter": "ch02_mura_item_b",
+    "voice_dir": "res://assets/audio/voice/ch02_mura/",
+    "_note": "CP3 アイテムB「錆びた鎌」取得演出",
+    "events": [
+        {"type": "bg_image", "file": "item_vhs.jpg", "dur": 0.5, "brightness": 0.5, "radius": 0.3, "softness": 0.3},
+        {"type": "wait", "sec": 0.5},
+
+        {"type": "say", "text": "錆びた鎌……重い。この鎌、誰かの恨みがこもってるみたい……", "reading": "さびたかま……重い。この鎌、誰かの恨みがこもってるみたい……", "voice": "v432"},
+        {"type": "wait", "sec": 5.5},
+
+        {"type": "horror_glitch", "intensity": 0.8, "dur": 0.5},
+        {"type": "camera_shake", "intensity": 0.3, "dur": 0.4},
+        {"type": "sfx", "file": "metal/impactMetal_heavy_001.mp3"},
+
+        {"type": "chat", "msg": "やばい鎌出てきた", "user": "視聴者A"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "血の跡ついてない？", "user": "まっちゃん"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "首切り鎌って……", "user": "配信民99", "utype": "member"},
+        {"type": "wait", "sec": 0.5},
+
+        {"type": "say", "text": "持った瞬間から画面がカクカクしてきた……これのせい？", "voice": "v433"},
+        {"type": "wait", "sec": 5.0},
+
+        {"type": "chat", "msg": "Encoding Error上がってない？", "user": "ゆきんこ77", "utype": "moderator"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "捨てろ捨てろ", "user": "まっちゃん"},
+        {"type": "wait", "sec": 0.3},
+        {"type": "chat", "msg": "手遅れ", "user": "K", "utype": "horror"},
+        {"type": "wait", "sec": 0.8},
+
+        {"type": "bg_image_clear", "dur": 0.5},
+        {"type": "say_clear"}
+    ]
+}
