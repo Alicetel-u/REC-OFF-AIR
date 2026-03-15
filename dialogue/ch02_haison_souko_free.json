@@ -1,0 +1,134 @@
+{
+    "chapter": "ch02_haison_souko_free",
+    "voice_dir": "res://assets/audio/voice/ch02_souko/",
+    "chat_voice_dir": "res://assets/audio/voice/ch02_souko_chat/",
+    "_note": "CP2 自由移動開始時のバックグラウンド演出（操作を止めない）",
+    "events": [
+        {
+            "type": "wait",
+            "sec": 1.0
+        },
+        {
+            "type": "say",
+            "text": "さあ、VHSを探そう。この倉庫のどこかにあるはず……",
+            "voice": "v104a"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "chat",
+            "msg": "探索開始！",
+            "user": "視聴者A",
+            "voice": "c001"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "光ってるとこない？",
+            "user": "ゆきんこ77",
+            "utype": "moderator",
+            "voice": "c002"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "棚の裏もチェックして",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c003"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "ここ広すぎない？",
+            "user": "まっちゃん",
+            "voice": "c004"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "同接5万3千！",
+            "user": "深夜組",
+            "voice": "c005"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "しゅっちがんばれ！",
+            "user": "ガクブル太郎",
+            "voice": "c006"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "ホラー探索最高",
+            "user": "ホラー好き太郎",
+            "voice": "c007"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "見つかるまで帰れまてん",
+            "user": "名無しさん",
+            "voice": "c008"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "配信者の根性見せて",
+            "user": "幽霊ガチ勢",
+            "voice": "c009"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "おばけ出ないかな",
+            "user": "おばけ見たい",
+            "voice": "c010"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "chat",
+            "msg": "見ている",
+            "user": "K",
+            "utype": "horror",
+            "voice": "c011"
+        },
+        {
+            "type": "wait",
+            "sec": 2.0
+        }
+    ]
+}

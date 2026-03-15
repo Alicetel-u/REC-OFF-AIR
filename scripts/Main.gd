@@ -185,12 +185,21 @@ func _ready() -> void:
 			#add_child(enc_err)
 			#enc_err.gauge_changed.connect(hud.on_encoding_error_changed)
 			#enc_err.gauge_maxed.connect(_on_encoding_error_maxed)
+		# CP2: 紙芝居演出→暗転→操作説明→自由移動
+		if cur_chapter.chapter_id == "ch02_haison_souko":
+			var cam := player.get_node_or_null("Head/Camera3D")
+			if cam:
+				cam.current = false
+			await _run_chapter_opening(cur_chapter.chapter_id)
+			await _show_controls_guide()
+			if cam:
+				cam.current = true
 		# プレイアブル: 即操作可能
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		player.input_disabled = false
-		# CP2廃倉庫: 動きながらセリフ・コメントが流れるバックグラウンド演出
+		# CP2廃倉庫: 自由移動開始後のバックグラウンドコメント
 		if cur_chapter.chapter_id == "ch02_haison_souko":
-			_run_chapter_opening_background(cur_chapter.chapter_id)
+			_run_chapter_opening_background("ch02_haison_souko_free")
 		# CP3村の探索: バックグラウンドで開始演出（操作を止めない）
 		# NOTE: CP3演出一時無効化
 		#if cur_chapter.chapter_id == "ch02_mura_tansaku":
@@ -230,9 +239,9 @@ func _ready() -> void:
 	if cur_chapter and cur_chapter.chapter_id == "ch02_mura_tansaku":
 		stage_gen.exit_node.on_exit_callback = Callable(self, "_play_mura_exit")
 
-	# ミニマップ: CP2・CP3のプレイアブルチャプターで表示
+	# ミニマップ: CP2は演出後にフェードイン、CP3は即表示
 	if cur_chapter and cur_chapter.chapter_id == "ch02_haison_souko":
-		_setup_minimap(Vector2(-25, -18), Vector2(25, 18))
+		_setup_minimap_delayed(Vector2(-25, -18), Vector2(25, 18))
 	if cur_chapter and cur_chapter.chapter_id == "ch02_mura_tansaku":
 		_setup_minimap(Vector2(-50, -60), Vector2(100, 90))
 
@@ -1162,10 +1171,11 @@ func _setup_minimap(map_min: Vector2, map_max: Vector2) -> void:
 	var chapter := GameManager.current_chapter
 	if chapter == null:
 		return
-	# アイテム位置を Array に変換
+	# アイテム位置を Array に変換（CP2はミニマップにアイテム非表示）
 	var items : Array = []
-	for v in chapter.item_positions:
-		items.append(v)
+	if chapter.chapter_id != "ch02_haison_souko":
+		for v in chapter.item_positions:
+			items.append(v)
 	# ゴーストノード取得
 	var ghosts : Array = get_tree().get_nodes_in_group("ghost")
 	# CanvasLayer (YouTubeChrome=20 の手前)
@@ -1201,6 +1211,88 @@ func _populate_village_minimap(minimap: Control) -> void:
 			structures.append(child)
 	if structures.size() > 0:
 		minimap.add_manual_buildings(structures)
+
+
+func _show_controls_guide() -> void:
+	## 操作説明画像を3秒表示して自動で閉じる
+	SoundManager.stop_voice()
+	if SoundManager._chat_voice.playing:
+		SoundManager._chat_voice.stop()
+
+	var canvas := CanvasLayer.new()
+	canvas.layer = 100
+	get_tree().root.add_child(canvas)
+
+	# 全体をまとめるControlノード（フェード用）
+	var root_ctrl := Control.new()
+	root_ctrl.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root_ctrl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	canvas.add_child(root_ctrl)
+
+	var dim := ColorRect.new()
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0, 0, 0, 1.0)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root_ctrl.add_child(dim)
+
+	var tex := load("res://assets/textures/controls_guide.png") as Texture2D
+	if tex:
+		var img := TextureRect.new()
+		img.texture = tex
+		img.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		img.set_anchors_preset(Control.PRESET_FULL_RECT)
+		img.offset_left = 80
+		img.offset_right = -80
+		img.offset_top = 40
+		img.offset_bottom = -80
+		img.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		root_ctrl.add_child(img)
+
+	# フェードイン
+	root_ctrl.modulate.a = 0.0
+	var tw := create_tween()
+	tw.tween_property(root_ctrl, "modulate:a", 1.0, 1.0)
+	await tw.finished
+
+	# 3秒表示
+	await get_tree().create_timer(3.0).timeout
+
+	# フェードアウト
+	var tw_out := create_tween()
+	tw_out.tween_property(root_ctrl, "modulate:a", 0.0, 1.5).set_trans(Tween.TRANS_SINE)
+	await tw_out.finished
+	canvas.queue_free()
+
+
+func _setup_minimap_delayed(map_min: Vector2, map_max: Vector2) -> void:
+	## バックグラウンド演出が終わってからミニマップをフェードイン表示
+	# 演出完了を待つ（バックグラウンドchatが流れ終わるまで）
+	await get_tree().create_timer(3.0).timeout
+	if not is_inside_tree():
+		return
+	var chapter := GameManager.current_chapter
+	if chapter == null:
+		return
+	var items : Array = []
+	if chapter.chapter_id != "ch02_haison_souko":
+		for v in chapter.item_positions:
+			items.append(v)
+	var ghosts : Array = get_tree().get_nodes_in_group("ghost")
+	var canvas := CanvasLayer.new()
+	canvas.layer = 19
+	canvas.name = "MinimapLayer"
+	add_child(canvas)
+	var minimap := preload("res://scripts/Minimap.gd").new()
+	minimap.position = Vector2(686, 344)
+	minimap.modulate.a = 0.0
+	canvas.add_child(minimap)
+	minimap.setup(player, chapter.exit_position, items, ghosts, map_min, map_max)
+	if chapter.chapter_id == "ch02_haison_souko":
+		minimap.add_warehouse_walls()
+	# フェードイン
+	var tw := create_tween()
+	tw.tween_property(minimap, "modulate:a", 1.0, 1.5)
 
 
 func _play_souko_exit() -> void:

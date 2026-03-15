@@ -6,7 +6,7 @@ enum State { PLAYING, CAUGHT, WIN }
 
 var state      : State = State.PLAYING
 var items_found: int   = 0
-var items_total: int   = 5
+var items_total: int   = 0
 var hit_count  : int   = 0
 
 ## デバッグ: シナリオ中自由移動フラグ（F9 でトグル）

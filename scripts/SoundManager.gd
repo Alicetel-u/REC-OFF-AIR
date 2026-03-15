@@ -37,7 +37,7 @@ func _ready() -> void:
 	_monster = _make_player(0.0)
 	_door    = _make_player(0.0)
 	_voice      = _make_player(0.0)
-	_chat_voice = _make_player(-4.0)
+	_chat_voice = _make_player(0.0)
 	_bgm        = _make_player(0.0)
 	_sfx        = _make_player(0.0)
 	_scan_all()
@@ -244,7 +244,7 @@ func stop_voice() -> void:
 
 
 ## チャットコメントボイス再生（主人公ボイスと同時再生可能）
-func play_chat_voice(path: String, vol_db: float = -4.0) -> void:
+func play_chat_voice(path: String, vol_db: float = 0.0) -> void:
 	var s := _load_audio(path)
 	if not s:
 		return
@@ -310,6 +310,22 @@ func await_voice(max_sec: float = 15.0) -> void:
 		if elapsed >= max_sec:
 			push_warning("SoundManager: await_voice timed out after %.1fs" % max_sec)
 			_voice.stop()
+			break
+
+
+## チャットボイス再生中かどうかを返す
+func is_chat_voice_playing() -> bool:
+	return _chat_voice.playing
+
+
+## チャットボイス再生が終わるまで待機
+func await_chat_voice(max_sec: float = 5.0) -> void:
+	var elapsed := 0.0
+	while _chat_voice.playing:
+		await get_tree().process_frame
+		elapsed += get_process_delta_time()
+		if elapsed >= max_sec:
+			_chat_voice.stop()
 			break
 
 
