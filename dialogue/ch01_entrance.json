@@ -58,7 +58,8 @@
         {
             "type": "chat",
             "msg": "霧すごすぎ",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c002"
         },
         {
             "type": "wait",
@@ -67,7 +68,8 @@
         {
             "type": "chat",
             "msg": "どうせヤラセだろ",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c003"
         },
         {
             "type": "wait",
@@ -87,7 +89,7 @@
             "msg": "金欠配信者ｗｗｗ",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c002"
+            "voice": "c004"
         },
         {
             "type": "wait",
@@ -96,7 +98,8 @@
         {
             "type": "chat",
             "msg": "パパ活無理は草",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c005"
         },
         {
             "type": "wait",
@@ -106,7 +109,8 @@
             "type": "chat",
             "msg": "スパチャで応援するしかないな",
             "user": "幽霊ガチ勢",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c006"
         },
         {
             "type": "wait",
@@ -160,7 +164,8 @@
         {
             "type": "chat",
             "msg": "案山子が多すぎてキモいんだが",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c007"
         },
         {
             "type": "wait",
@@ -170,7 +175,8 @@
             "type": "chat",
             "msg": "首なし案山子って時点でやばい",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c008"
         },
         {
             "type": "wait",
@@ -203,7 +209,7 @@
             "msg": "見てる",
             "user": "K",
             "utype": "horror",
-            "voice": "c003"
+            "voice": "c009"
         },
         {
             "type": "wait",
@@ -247,7 +253,8 @@
         {
             "type": "chat",
             "msg": "パクったて",
-            "user": "深夜のツッコミ担当"
+            "user": "深夜のツッコミ担当",
+            "voice": "c010"
         },
         {
             "type": "wait",
@@ -258,7 +265,7 @@
             "msg": "今パクッて言った？？？",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c004"
+            "voice": "c011"
         },
         {
             "type": "wait",
@@ -281,7 +288,7 @@
             "type": "chat",
             "msg": "窃盗配信で草",
             "user": "視聴者A",
-            "voice": "c005"
+            "voice": "c012"
         },
         {
             "type": "wait",
@@ -292,7 +299,7 @@
             "msg": "もらったんだけどね（迫真）",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c006"
+            "voice": "c013"
         },
         {
             "type": "wait",
@@ -301,7 +308,8 @@
         {
             "type": "chat",
             "msg": "ばあちゃんの札パクるなｗｗｗ",
-            "user": "塩ラーメン"
+            "user": "塩ラーメン",
+            "voice": "c014"
         },
         {
             "type": "wait",
@@ -311,7 +319,8 @@
             "type": "chat",
             "msg": "映えアイテムは草",
             "user": "暗闇ウォッチャー",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c015"
         },
         {
             "type": "wait",
@@ -320,7 +329,8 @@
         {
             "type": "chat",
             "msg": "お札をそういう扱いするの不敬すぎて逆に好き",
-            "user": "オカルト研究部"
+            "user": "オカルト研究部",
+            "voice": "c016"
         },
         {
             "type": "wait",
@@ -329,7 +339,8 @@
         {
             "type": "chat",
             "msg": "フラグにしか聞こえない",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c017"
         },
         {
             "type": "wait",
@@ -338,7 +349,8 @@
         {
             "type": "chat",
             "msg": "ばーちゃん泣いてるよ",
-            "user": "地蔵キッズ"
+            "user": "地蔵キッズ",
+            "voice": "c018"
         },
         {
             "type": "wait",
@@ -347,7 +359,8 @@
         {
             "type": "chat",
             "msg": "お札3枚＝ライフ3ってこと？",
-            "user": "はじめまして民"
+            "user": "はじめまして民",
+            "voice": "c019"
         },
         {
             "type": "wait",
@@ -358,7 +371,7 @@
             "msg": "映えアイテムが命綱になるやつだこれ",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c007"
+            "voice": "c020"
         },
         {
             "type": "wait",
@@ -367,7 +380,8 @@
         {
             "type": "chat",
             "msg": "ゲームみたい",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c021"
         },
         {
             "type": "wait",
@@ -388,7 +402,7 @@
             "msg": "ガチの事件じゃん…",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c008"
+            "voice": "c022"
         },
         {
             "type": "wait",
@@ -398,7 +412,7 @@
             "type": "chat",
             "msg": "未解決ってマ？",
             "user": "視聴者A",
-            "voice": "c009"
+            "voice": "c023"
         },
         {
             "type": "wait",
@@ -444,7 +458,8 @@
             "type": "chat",
             "msg": "同じ角度はやばすぎ",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c024"
         },
         {
             "type": "wait",
@@ -454,7 +469,8 @@
             "type": "chat",
             "msg": "案山子の首を切る意味…",
             "user": "幽霊ガチ勢",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c025"
         },
         {
             "type": "wait",
@@ -497,7 +513,7 @@
             "msg": "カメラ越しにしか見えない系はガチ",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c010"
+            "voice": "c026"
         },
         {
             "type": "wait",
@@ -506,7 +522,8 @@
         {
             "type": "chat",
             "msg": "それ配信向きすぎるだろ",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c027"
         },
         {
             "type": "wait",
@@ -515,7 +532,8 @@
         {
             "type": "chat",
             "msg": "行くなよ絶対行くなよ",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c028"
         },
         {
             "type": "wait",
@@ -538,7 +556,8 @@
         {
             "type": "chat",
             "msg": "フラグ立てんな",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c029"
         },
         {
             "type": "wait",
@@ -549,7 +568,7 @@
             "msg": "大丈夫じゃないやつ",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c011"
+            "voice": "c030"
         },
         {
             "type": "wait",
@@ -577,7 +596,7 @@
             "type": "chat",
             "msg": "同接2000いったぞ",
             "user": "視聴者A",
-            "voice": "c012"
+            "voice": "c031"
         },
         {
             "type": "wait",
@@ -610,7 +629,8 @@
             "type": "chat",
             "msg": "もう引き返せないぞ",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c032"
         },
         {
             "type": "wait",
@@ -628,7 +648,7 @@
             "msg": "ライト不安定じゃない？",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c013"
+            "voice": "c033"
         },
         {
             "type": "wait",
@@ -650,7 +670,8 @@
         {
             "type": "chat",
             "msg": "会いに行くなｗｗｗ",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c034"
         },
         {
             "type": "wait",
@@ -661,7 +682,7 @@
             "msg": "知りたい？",
             "user": "K",
             "utype": "horror",
-            "voice": "c014"
+            "voice": "c035"
         },
         {
             "type": "wait",
@@ -681,7 +702,7 @@
             "msg": "優先順位ｗｗｗ",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c015"
+            "voice": "c036"
         },
         {
             "type": "wait",
@@ -690,7 +711,8 @@
         {
             "type": "chat",
             "msg": "命の心配しろ",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c037"
         },
         {
             "type": "wait",
@@ -709,7 +731,8 @@
         {
             "type": "chat",
             "msg": "配信で元取るの強すぎ",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c038"
         },
         {
             "type": "wait",
@@ -742,7 +765,7 @@
             "type": "chat",
             "msg": "ｗｗｗｗ",
             "user": "視聴者A",
-            "voice": "c016"
+            "voice": "c039"
         },
         {
             "type": "wait",
@@ -773,7 +796,8 @@
             "type": "chat",
             "msg": "勝手に揺れるシャッター……",
             "user": "幽霊ガチ勢",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c040"
         },
         {
             "type": "wait",
@@ -782,7 +806,8 @@
         {
             "type": "chat",
             "msg": "猫じゃね？",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c041"
         },
         {
             "type": "wait",
@@ -792,7 +817,8 @@
             "type": "chat",
             "msg": "20年放置の村に猫おるか？",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c042"
         },
         {
             "type": "wait",
@@ -811,7 +837,7 @@
             "type": "chat",
             "msg": "え、電波ないのにどうやって配信してんの",
             "user": "視聴者A",
-            "voice": "c017"
+            "voice": "c043"
         },
         {
             "type": "wait",
@@ -822,7 +848,7 @@
             "msg": "モバイルルーター持ってきてるって言ってた",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c018"
+            "voice": "c044"
         },
         {
             "type": "wait",
@@ -840,7 +866,8 @@
         {
             "type": "chat",
             "msg": "ティックトックにもいるのか",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c045"
         },
         {
             "type": "wait",
@@ -851,7 +878,7 @@
             "msg": "マルチプラットフォーム配信者",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c019"
+            "voice": "c046"
         },
         {
             "type": "wait",
@@ -878,7 +905,8 @@
             "type": "chat",
             "msg": "雰囲気やばくなってきた",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c047"
         },
         {
             "type": "wait",
@@ -897,7 +925,8 @@
             "type": "chat",
             "msg": "空気変わった…",
             "user": "幽霊ガチ勢",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c048"
         },
         {
             "type": "wait",
@@ -908,7 +937,7 @@
             "msg": "霧がどんどん濃くなってない？",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c020"
+            "voice": "c049"
         },
         {
             "type": "wait",
@@ -928,7 +957,7 @@
             "msg": "この状況でサムネの心配ｗｗ",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c021"
+            "voice": "c050"
         },
         {
             "type": "wait",
@@ -937,7 +966,8 @@
         {
             "type": "chat",
             "msg": "配信者の鑑",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c051"
         },
         {
             "type": "wait",
@@ -946,7 +976,8 @@
         {
             "type": "chat",
             "msg": "いや帰れよ",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c052"
         },
         {
             "type": "wait",
@@ -1001,7 +1032,8 @@
         {
             "type": "chat",
             "msg": "急に真面目になった",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c053"
         },
         {
             "type": "wait",
@@ -1011,7 +1043,8 @@
             "type": "chat",
             "msg": "こういうとこだけちゃんとしてるの好き",
             "user": "幽霊ガチ勢",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c054"
         },
         {
             "type": "wait",
@@ -1020,7 +1053,8 @@
         {
             "type": "chat",
             "msg": "見届けるってなに…？",
-            "user": "はじめまして民"
+            "user": "はじめまして民",
+            "voice": "c055"
         },
         {
             "type": "wait",
@@ -1052,7 +1086,7 @@
             "msg": "逃げた女ｗｗｗ自分で言うなｗｗ",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c022"
+            "voice": "c056"
         },
         {
             "type": "wait",
@@ -1061,7 +1095,8 @@
         {
             "type": "chat",
             "msg": "同接で判断するの草すぎる",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c057"
         },
         {
             "type": "wait",
@@ -1072,7 +1107,7 @@
             "msg": "数字に支配されてて好き",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c023"
+            "voice": "c058"
         },
         {
             "type": "wait",
@@ -1102,7 +1137,8 @@
         {
             "type": "chat",
             "msg": "人が死んだ場所で再生数の話すんな",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c059"
         },
         {
             "type": "wait",
@@ -1112,7 +1148,8 @@
             "type": "chat",
             "msg": "みゆきちゃんの前でそれ言えんの？",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c060"
         },
         {
             "type": "wait",
@@ -1123,7 +1160,7 @@
             "msg": "こいつやべえ…でも目が離せない",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c024"
+            "voice": "c061"
         },
         {
             "type": "wait",
@@ -1168,7 +1205,7 @@
             "msg": "本番きた！！",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c025"
+            "voice": "c062"
         },
         {
             "type": "wait",
@@ -1177,7 +1214,8 @@
         {
             "type": "chat",
             "msg": "マジでやめとけ",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c063"
         },
         {
             "type": "wait",
@@ -1295,7 +1333,7 @@
             "type": "chat",
             "msg": "画面真っ暗なんだが",
             "user": "視聴者A",
-            "voice": "c026"
+            "voice": "c064"
         },
         {
             "type": "wait",
@@ -1306,7 +1344,7 @@
             "msg": "足音だけ聞こえる……",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c027"
+            "voice": "c065"
         },
         {
             "type": "wait",
@@ -1362,7 +1400,7 @@
             "msg": "おっ見えてきた",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c028"
+            "voice": "c066"
         },
         {
             "type": "wait",
@@ -1371,7 +1409,8 @@
         {
             "type": "chat",
             "msg": "暗すぎて全然わかんないw",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c067"
         },
         {
             "type": "wait",
@@ -1395,7 +1434,8 @@
             "type": "chat",
             "msg": "廃墟感やばい",
             "user": "幽霊ガチ勢",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c068"
         },
         {
             "type": "wait",
@@ -1405,7 +1445,8 @@
             "type": "chat",
             "msg": "看板が落ちかけてる…",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c069"
         },
         {
             "type": "wait",
@@ -1414,7 +1455,8 @@
         {
             "type": "chat",
             "msg": "『きりはら食堂』って読める",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c070"
         },
         {
             "type": "wait",
@@ -1467,7 +1509,8 @@
             "type": "chat",
             "msg": "聞こえた。奥のほうから",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c071"
         },
         {
             "type": "wait",
@@ -1476,7 +1519,8 @@
         {
             "type": "chat",
             "msg": "シャッターが風で揺れただけだろ",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c072"
         },
         {
             "type": "wait",
@@ -1486,7 +1530,7 @@
             "type": "chat",
             "msg": "いや風ないって言ってたやん…",
             "user": "視聴者A",
-            "voice": "c029"
+            "voice": "c073"
         },
         {
             "type": "wait",
@@ -1517,7 +1561,7 @@
             "msg": "また鳴った！！ 懐中電灯もやばい！",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c030"
+            "voice": "c074"
         },
         {
             "type": "wait",
@@ -1550,7 +1594,7 @@
             "msg": "同接1万超えてるぞ！",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c031"
+            "voice": "c075"
         },
         {
             "type": "wait",
@@ -1630,7 +1674,8 @@
             "type": "chat",
             "msg": "電池じゃなくてソレは……",
             "user": "幽霊ガチ勢",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c076"
         },
         {
             "type": "wait",
@@ -1641,7 +1686,7 @@
             "msg": "近くにいるんだよ、何かが",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c032"
+            "voice": "c077"
         },
         {
             "type": "wait",
@@ -1651,7 +1696,7 @@
             "type": "chat",
             "msg": "しゅっちの後ろ！！",
             "user": "視聴者A",
-            "voice": "c033"
+            "voice": "c078"
         },
         {
             "type": "wait",
@@ -1687,7 +1732,8 @@
         {
             "type": "chat",
             "msg": "ｗｗｗｗ",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c079"
         },
         {
             "type": "wait",
@@ -1697,7 +1743,7 @@
             "type": "chat",
             "msg": "いやマジで見えた気がしたんだけど",
             "user": "視聴者A",
-            "voice": "c034"
+            "voice": "c080"
         },
         {
             "type": "wait",
@@ -1746,7 +1792,8 @@
             "type": "chat",
             "msg": "今一瞬映った！",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c081"
         },
         {
             "type": "wait",
@@ -1755,7 +1802,8 @@
         {
             "type": "chat",
             "msg": "トイレだ……ボロボロじゃん",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c082"
         },
         {
             "type": "wait",
@@ -1766,7 +1814,7 @@
             "msg": "入り口に何か貼ってあった",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c035"
+            "voice": "c083"
         },
         {
             "type": "wait",
@@ -1864,7 +1912,7 @@
             "type": "chat",
             "msg": "かえして……？",
             "user": "視聴者A",
-            "voice": "c036"
+            "voice": "c084"
         },
         {
             "type": "wait",
@@ -1873,7 +1921,8 @@
         {
             "type": "chat",
             "msg": "何を返せって言ってんだ",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c085"
         },
         {
             "type": "wait",
@@ -1883,7 +1932,8 @@
             "type": "chat",
             "msg": "首だろ……",
             "user": "幽霊ガチ勢",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c086"
         },
         {
             "type": "wait",
@@ -1894,7 +1944,7 @@
             "msg": "帰れマジで帰れ",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c037"
+            "voice": "c087"
         },
         {
             "type": "wait",
@@ -1941,7 +1991,7 @@
             "msg": "同接もうすぐ1.5万！ 神回確定",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c038"
+            "voice": "c088"
         },
         {
             "type": "wait",
@@ -1950,7 +2000,8 @@
         {
             "type": "chat",
             "msg": "入るなって言ってんのに……",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c089"
         },
         {
             "type": "wait",
@@ -2010,7 +2061,8 @@
             "type": "chat",
             "msg": "開いた……",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c090"
         },
         {
             "type": "wait",
@@ -2020,7 +2072,7 @@
             "type": "chat",
             "msg": "中真っ暗じゃん",
             "user": "視聴者A",
-            "voice": "c039"
+            "voice": "c091"
         },
         {
             "type": "wait",
@@ -2029,7 +2081,8 @@
         {
             "type": "chat",
             "msg": "なんか臭いって絶対",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c092"
         },
         {
             "type": "wait",
@@ -2207,7 +2260,8 @@
         {
             "type": "chat",
             "msg": "うわ暗っ",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c093"
         },
         {
             "type": "wait",
@@ -2217,7 +2271,7 @@
             "type": "chat",
             "msg": "なんか見える？",
             "user": "視聴者A",
-            "voice": "c040"
+            "voice": "c094"
         },
         {
             "type": "wait",
@@ -2286,7 +2340,8 @@
             "type": "chat",
             "msg": "今きしんだ？",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c095"
         },
         {
             "type": "wait",
@@ -2295,7 +2350,8 @@
         {
             "type": "chat",
             "msg": "気のせいだろ…",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c096"
         },
         {
             "type": "wait",
@@ -2349,7 +2405,7 @@
             "msg": "きたきたきた！！",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c041"
+            "voice": "c097"
         },
         {
             "type": "wait",
@@ -2402,7 +2458,7 @@
             "type": "chat",
             "msg": "今音しなかった？",
             "user": "視聴者A",
-            "voice": "c042"
+            "voice": "c098"
         },
         {
             "type": "wait",
@@ -2411,7 +2467,8 @@
         {
             "type": "chat",
             "msg": "水道の音じゃね",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c099"
         },
         {
             "type": "wait",
@@ -2445,7 +2502,8 @@
             "type": "chat",
             "msg": "ここ首切りのとこじゃん",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c100"
         },
         {
             "type": "wait",
@@ -2550,7 +2608,7 @@
             "msg": "投げ銭いくぞおおお",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c043"
+            "voice": "c101"
         },
         {
             "type": "wait",
@@ -2559,7 +2617,8 @@
         {
             "type": "chat",
             "msg": "一万いけいけ！",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c102"
         },
         {
             "type": "wait",
@@ -2606,7 +2665,8 @@
         {
             "type": "chat",
             "msg": "同接1万超えてるぞ",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c103"
         },
         {
             "type": "wait",
@@ -2619,7 +2679,8 @@
         {
             "type": "chat",
             "msg": "2万突破ｗｗｗ",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c104"
         },
         {
             "type": "wait",
@@ -2629,7 +2690,7 @@
             "type": "chat",
             "msg": "トレンド入りしてる",
             "user": "視聴者A",
-            "voice": "c044"
+            "voice": "c105"
         },
         {
             "type": "wait",
@@ -2644,7 +2705,7 @@
             "msg": "開けないほうがいい",
             "user": "K",
             "utype": "horror",
-            "voice": "c045"
+            "voice": "c106"
         },
         {
             "type": "wait",
@@ -2668,7 +2729,7 @@
             "type": "chat",
             "msg": "今の何！？",
             "user": "視聴者A",
-            "voice": "c046"
+            "voice": "c107"
         },
         {
             "type": "wait",
@@ -2677,7 +2738,8 @@
         {
             "type": "chat",
             "msg": "画面乱れたぞ",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c108"
         },
         {
             "type": "wait",
@@ -2687,7 +2749,8 @@
             "type": "chat",
             "msg": "ノイズ走ったな",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c109"
         },
         {
             "type": "wait",
@@ -2696,7 +2759,8 @@
         {
             "type": "chat",
             "msg": "電波悪い？",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c110"
         },
         {
             "type": "_comment",
@@ -2805,7 +2869,8 @@
         {
             "type": "chat",
             "msg": "何もないじゃん",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c111"
         },
         {
             "type": "wait",
@@ -2814,7 +2879,8 @@
         {
             "type": "chat",
             "msg": "ただのトイレで草",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c112"
         },
         {
             "type": "wait",
@@ -2838,7 +2904,7 @@
             "msg": "ん？",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c047"
+            "voice": "c113"
         },
         {
             "type": "wait",
@@ -2848,7 +2914,8 @@
             "type": "chat",
             "msg": "最後のなんだ？",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c114"
         },
         {
             "type": "wait",
@@ -2858,7 +2925,7 @@
             "type": "chat",
             "msg": "今の何？",
             "user": "視聴者A",
-            "voice": "c048"
+            "voice": "c115"
         },
         {
             "type": "wait",
@@ -2898,7 +2965,8 @@
         {
             "type": "chat",
             "msg": "今ノイズ入った？",
-            "user": "おばけ見たい"
+            "user": "おばけ見たい",
+            "voice": "c116"
         },
         {
             "type": "wait",
@@ -2909,7 +2977,7 @@
             "msg": "え、カメラバグってない？",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c049"
+            "voice": "c117"
         },
         {
             "type": "wait",
@@ -2919,7 +2987,8 @@
             "type": "chat",
             "msg": "天井……何かいる？",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c118"
         },
         {
             "type": "wait",
@@ -2930,7 +2999,7 @@
             "msg": "上見て！！",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c050"
+            "voice": "c119"
         },
         {
             "type": "flashlight_flicker"
@@ -3040,7 +3109,8 @@
         {
             "type": "chat",
             "msg": "ウソだろ！？！？",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c120"
         },
         {
             "type": "wait",
@@ -3050,7 +3120,8 @@
             "type": "chat",
             "msg": "天井に人いる！！！！",
             "user": "幽霊ガチ勢",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c121"
         },
         {
             "type": "wait",
@@ -3059,7 +3130,8 @@
         {
             "type": "chat",
             "msg": "は？？？？",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c122"
         },
         {
             "type": "wait",
@@ -3069,7 +3141,8 @@
             "type": "chat",
             "msg": "首がない…首がない…",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c123"
         },
         {
             "type": "wait",
@@ -3078,7 +3151,8 @@
         {
             "type": "chat",
             "msg": "逆さまってどういうことだよ",
-            "user": "おばけ見たい"
+            "user": "おばけ見たい",
+            "voice": "c124"
         },
         {
             "type": "wait",
@@ -3089,7 +3163,7 @@
             "msg": "カメラ外すと消えるってやばいだろ",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c051"
+            "voice": "c125"
         },
         {
             "type": "wait",
@@ -3098,7 +3172,8 @@
         {
             "type": "chat",
             "msg": "通報した方がいい",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c126"
         },
         {
             "type": "wait",
@@ -3109,7 +3184,7 @@
             "msg": "逃げて！！！！",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c052"
+            "voice": "c127"
         },
         {
             "type": "wait",
@@ -3118,7 +3193,8 @@
         {
             "type": "chat",
             "msg": "ガチじゃん……ガチじゃん……",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c128"
         },
         {
             "type": "wait",
@@ -3129,7 +3205,7 @@
             "msg": "見えてる",
             "user": "K",
             "utype": "horror",
-            "voice": "c053"
+            "voice": "c129"
         },
         {
             "type": "wait",
@@ -3140,7 +3216,7 @@
             "msg": "ずっと見てた",
             "user": "K",
             "utype": "horror",
-            "voice": "c054"
+            "voice": "c130"
         },
         {
             "type": "wait",
@@ -3151,7 +3227,7 @@
             "msg": "おいで",
             "user": "K",
             "utype": "horror",
-            "voice": "c055"
+            "voice": "c131"
         },
         {
             "type": "wait",
@@ -3193,7 +3269,8 @@
         {
             "type": "chat",
             "msg": "え、消えた！？",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c132"
         },
         {
             "type": "wait",
@@ -3204,7 +3281,7 @@
             "msg": "どこいった！？！？",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c056"
+            "voice": "c133"
         },
         {
             "type": "wait",
@@ -3213,7 +3290,8 @@
         {
             "type": "chat",
             "msg": "ワープした！？",
-            "user": "おばけ見たい"
+            "user": "おばけ見たい",
+            "voice": "c134"
         },
         {
             "type": "wait",
@@ -3224,7 +3302,7 @@
             "msg": "後ろ！後ろ！後ろ！",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c057"
+            "voice": "c135"
         },
         {
             "type": "wait",
@@ -3233,7 +3311,8 @@
         {
             "type": "chat",
             "msg": "逃げろおおおお",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c136"
         },
         {
             "type": "miyuki_move",
@@ -3296,7 +3375,7 @@
             "msg": "うしろ",
             "user": "K",
             "utype": "horror",
-            "voice": "c058"
+            "voice": "c137"
         },
         {
             "type": "wait",
@@ -3307,7 +3386,7 @@
             "msg": "くる",
             "user": "K",
             "utype": "horror",
-            "voice": "c059"
+            "voice": "c138"
         },
         {
             "type": "wait",
@@ -3329,7 +3408,7 @@
             "msg": "逃げて",
             "user": "K",
             "utype": "horror",
-            "voice": "c061"
+            "voice": "c139"
         },
         {
             "type": "wait",
@@ -3428,7 +3507,7 @@
             "msg": "ぎゃあああ！！",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c064"
+            "voice": "c140"
         },
         {
             "type": "wait",
@@ -3437,7 +3516,8 @@
         {
             "type": "chat",
             "msg": "ドア開けろ！！！",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c141"
         },
         {
             "type": "wait",
@@ -3447,7 +3527,8 @@
             "type": "chat",
             "msg": "お札！！お札使え！！",
             "user": "幽霊ガチ勢",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c142"
         },
         {
             "type": "wait",
@@ -3457,7 +3538,8 @@
             "type": "chat",
             "msg": "さっきのお札！！！",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c143"
         },
         {
             "type": "wait",
@@ -3468,7 +3550,7 @@
             "msg": "逃げられない",
             "user": "K",
             "utype": "horror",
-            "voice": "c065"
+            "voice": "c144"
         },
         {
             "type": "wait",
@@ -3691,7 +3773,7 @@
             "msg": "出れた！！！",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c066"
+            "voice": "c145"
         },
         {
             "type": "wait",
@@ -3702,7 +3784,7 @@
             "msg": "お札すげえ！！",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c067"
+            "voice": "c146"
         },
         {
             "type": "wait",
@@ -3711,7 +3793,8 @@
         {
             "type": "chat",
             "msg": "走れ走れ走れ！！",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c147"
         },
         {
             "type": "wait",
@@ -3793,7 +3876,8 @@
         {
             "type": "chat",
             "msg": "もう帰れって！！",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c148"
         },
         {
             "type": "wait",
@@ -3804,7 +3888,7 @@
             "msg": "心臓止まるかと思った",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c068"
+            "voice": "c149"
         },
         {
             "type": "wait",
@@ -3834,7 +3918,8 @@
         {
             "type": "chat",
             "msg": "後ろから音した！？",
-            "user": "おばけ見たい"
+            "user": "おばけ見たい",
+            "voice": "c150"
         },
         {
             "type": "wait",
@@ -3882,7 +3967,8 @@
             "type": "chat",
             "msg": "マジで本物だったのか",
             "user": "幽霊ガチ勢",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c151"
         },
         {
             "type": "wait",
@@ -3892,7 +3978,8 @@
             "type": "chat",
             "msg": "お札すげえ……",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c152"
         },
         {
             "type": "wait",
@@ -3903,7 +3990,7 @@
             "msg": "逃がしたんじゃない",
             "user": "K",
             "utype": "horror",
-            "voice": "c069"
+            "voice": "c153"
         },
         {
             "type": "wait",
@@ -4012,7 +4099,7 @@
             "msg": "走れ走れ走れ！！",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c070"
+            "voice": "c154"
         },
         {
             "type": "wait",
@@ -4021,7 +4108,8 @@
         {
             "type": "chat",
             "msg": "もう帰ろうマジで",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c155"
         },
         {
             "type": "wait",
@@ -4034,7 +4122,8 @@
         {
             "type": "chat",
             "msg": "同接5万超えてるぞ",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c156"
         },
         {
             "type": "wait",
@@ -4088,7 +4177,8 @@
             "type": "chat",
             "msg": "10万人の切り抜き師が言ってんぞ",
             "user": "幽霊ガチ勢",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c157"
         },
         {
             "type": "wait",
@@ -4107,7 +4197,8 @@
         {
             "type": "chat",
             "msg": "金の力で人を動かすな",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c158"
         },
         {
             "type": "wait",
@@ -4118,7 +4209,7 @@
             "msg": "いけいけいけ！",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c071"
+            "voice": "c159"
         },
         {
             "type": "wait",
@@ -4132,7 +4223,7 @@
             "type": "chat",
             "msg": "5万5千きたあああ",
             "user": "視聴者A",
-            "voice": "c072"
+            "voice": "c160"
         },
         {
             "type": "wait",
@@ -4195,7 +4286,8 @@
         {
             "type": "chat",
             "msg": "え、帰るの？",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c161"
         },
         {
             "type": "wait",
@@ -4205,7 +4297,8 @@
             "type": "chat",
             "msg": "ここまで来て！？",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c162"
         },
         {
             "type": "wait",
@@ -4223,7 +4316,8 @@
         {
             "type": "chat",
             "msg": "5万人の前で逃げんのかよ",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c163"
         },
         {
             "type": "wait",
@@ -4252,7 +4346,7 @@
             "type": "chat",
             "msg": "草",
             "user": "視聴者A",
-            "voice": "c073"
+            "voice": "c164"
         },
         {
             "type": "wait",
@@ -4263,7 +4357,7 @@
             "msg": "配信者の鑑",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c074"
+            "voice": "c165"
         },
         {
             "type": "wait",
@@ -4272,7 +4366,8 @@
         {
             "type": "chat",
             "msg": "生存ルートで草",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c166"
         },
         {
             "type": "wait",
@@ -4494,7 +4589,8 @@
         {
             "type": "chat",
             "msg": "目の色変わったぞこいつ",
-            "user": "深夜組"
+            "user": "深夜組",
+            "voice": "c167"
         },
         {
             "type": "wait",
@@ -4514,7 +4610,8 @@
             "type": "chat",
             "msg": "スパチャ止まんねえ",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c168"
         },
         {
             "type": "wait",
@@ -4525,7 +4622,7 @@
             "msg": "こいつ行く気だぞ",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c075"
+            "voice": "c169"
         },
         {
             "type": "wait",
@@ -4580,7 +4677,8 @@
         {
             "type": "chat",
             "msg": "うわ振り返った",
-            "user": "ガクブル太郎"
+            "user": "ガクブル太郎",
+            "voice": "c170"
         },
         {
             "type": "wait",
@@ -4589,7 +4687,8 @@
         {
             "type": "chat",
             "msg": "承認欲求モンスター",
-            "user": "名無しさん"
+            "user": "名無しさん",
+            "voice": "c171"
         },
         {
             "type": "wait",
@@ -4600,7 +4699,7 @@
             "msg": "いいぞ！！！！",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c076"
+            "voice": "c172"
         },
         {
             "type": "wait",
@@ -4648,7 +4747,8 @@
             "type": "chat",
             "msg": "かっけえ……",
             "user": "ホラー好き太郎",
-            "utype": "member"
+            "utype": "member",
+            "voice": "c173"
         },
         {
             "type": "wait",
@@ -4678,7 +4778,7 @@
             "msg": "スパチャで背中押すの草",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c078"
+            "voice": "c174"
         },
         {
             "type": "wait",
@@ -4688,7 +4788,7 @@
             "type": "chat",
             "msg": "6万いくぞこれ",
             "user": "視聴者A",
-            "voice": "c079"
+            "voice": "c175"
         },
         {
             "type": "wait",

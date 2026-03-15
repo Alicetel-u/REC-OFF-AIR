@@ -46,12 +46,27 @@ TAIL_MARGIN_MS = 30
 # ユーザー → 話者ID マッピング
 # ═══════════════════════════════════════════════════
 USER_SPEAKER_MAP = {
-    "視聴者A":   3,   # ずんだもん（高め・元気）
-    "配信民99":  2,   # 四国めたん ノーマル（落ち着いた）
-    "ゆきんこ77": 0,  # 四国めたん あまあま（柔らかい）
-    "まっちゃん": 8,  # 春日部つむぎ（カジュアル）
-    "K":         14,  # 冥鳴ひまり（不気味）
+    "視聴者A":       3,   # ずんだもん（高め・元気）
+    "配信民99":      2,   # 四国めたん ノーマル（落ち着いた）
+    "ゆきんこ77":    0,   # 四国めたん あまあま（柔らかい）
+    "まっちゃん":    8,   # 春日部つむぎ（カジュアル）
+    "K":            14,   # 冥鳴ひまり（不気味）
+    "名無しさん":   10,   # ナースロボ＿タイプＴ
+    "ホラー好き太郎": 11,  # 玄野武宏
+    "深夜組":        9,   # 雀松朱司
+    "ガクブル太郎":  13,  # 青山龍星
+    "幽霊ガチ勢":    1,   # 四国めたん ツンツン
+    "おばけ見たい":  21,  # もち子さん
+    "はじめまして民": 3,  # ずんだもん（視聴者Aと同じ）
+    "深夜のツッコミ担当": 2,  # 四国めたん ノーマル
+    "塩ラーメン":    9,   # 雀松朱司
+    "暗闇ウォッチャー": 11, # 玄野武宏
+    "オカルト研究部": 10,  # ナースロボ＿タイプＴ
+    "地蔵キッズ":   13,   # 青山龍星
 }
+
+# 繰り返しスキップ: 同じユーザーの同じメッセージが連続する場合、最初の1回だけ生成
+SKIP_DUPLICATE = True
 
 # Kの特殊パラメータ（不気味さを出す）
 K_PARAMS = {
@@ -138,15 +153,25 @@ def main():
         with open(hash_path, "r", encoding="utf-8") as f:
             hashes = json.load(f)
 
-    # chatイベントを抽出（対象ユーザーのみ）
+    # chatイベントを抽出（対象ユーザーのみ、繰り返しスキップ）
     chat_events = []
+    seen_msgs = set()  # (user, msg) の重複検出
+    prev_msg = ""
     for i, ev in enumerate(events):
         if ev.get("type") != "chat":
             continue
         user = ev.get("user", "")
         if user not in USER_SPEAKER_MAP:
             continue
+        msg = ev.get("msg", "")
+        # 繰り返しスキップ: 同一ユーザーの同一メッセージ or 直前と同じメッセージ
+        if SKIP_DUPLICATE:
+            key = (user, msg)
+            if key in seen_msgs:
+                continue
+            seen_msgs.add(key)
         chat_events.append((i, ev))
+        prev_msg = msg
 
     print(f"=== チャットボイス生成 ===")
     print(f"  対話JSON: {dialogue_path}")

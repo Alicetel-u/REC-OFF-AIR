@@ -611,7 +611,7 @@
             "msg": "呪いのメッセージだろこれ",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c019"
+            "voice": "c018"
         },
         {
             "type": "wait",
@@ -621,7 +621,7 @@
             "type": "chat",
             "msg": "神社行くしかないじゃん",
             "user": "視聴者A",
-            "voice": "c020"
+            "voice": "c019"
         },
         {
             "type": "wait",
@@ -632,7 +632,7 @@
             "msg": "行くな",
             "user": "K",
             "utype": "horror",
-            "voice": "c021"
+            "voice": "c020"
         },
         {
             "type": "wait",
@@ -643,7 +643,7 @@
             "msg": "行くな行くな行くな行くな行くな",
             "user": "K",
             "utype": "horror",
-            "voice": "c022"
+            "voice": "c021"
         },
         {
             "type": "wait",
@@ -653,7 +653,7 @@
             "type": "chat",
             "msg": "Kこわい",
             "user": "まっちゃん",
-            "voice": "c023"
+            "voice": "c022"
         },
         {
             "type": "wait",
@@ -698,7 +698,7 @@
             "msg": "しゅっちならやると思った",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c024"
+            "voice": "c023"
         },
         {
             "type": "wait",
@@ -708,7 +708,7 @@
             "type": "chat",
             "msg": "承認欲求の化物",
             "user": "まっちゃん",
-            "voice": "c025"
+            "voice": "c024"
         },
         {
             "type": "wait",
@@ -719,7 +719,7 @@
             "msg": "いや行くなって",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c026"
+            "voice": "c025"
         },
         {
             "type": "wait",
