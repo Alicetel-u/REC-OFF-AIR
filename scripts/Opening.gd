@@ -1140,6 +1140,7 @@ func _show_settings_top() -> void:
 	var menu_items : Array[Dictionary] = [
 		{"name": "ステージ選択", "sub": "チャプターを選んでプレイ", "icon": "🎮", "action": "_show_stage_select"},
 		{"name": "エンディング集", "sub": "解放したエンディングを閲覧", "icon": "📖", "action": "_show_ending_gallery"},
+		{"name": "ストーリーマップ", "sub": "分岐フローチャート・達成率", "icon": "🗺", "action": "_show_story_map"},
 		{"name": "サウンド", "sub": "BGM・SE音量調整", "icon": "🔊", "action": ""},
 		{"name": "グラフィック", "sub": "画質・エフェクト設定", "icon": "🖥", "action": ""},
 	]
@@ -1151,6 +1152,21 @@ func _show_settings_top() -> void:
 	var bot_pad := Control.new()
 	bot_pad.custom_minimum_size = Vector2(0, 8)
 	list.add_child(bot_pad)
+
+
+func _show_story_map() -> void:
+	# 設定パネルを一時非表示
+	if is_instance_valid(_settings_panel):
+		_settings_panel.visible = false
+	# フローチャートを全画面表示
+	var fc := CanvasLayer.new()
+	fc.set_script(preload("res://scripts/EndingFlowchart.gd"))
+	get_tree().root.add_child(fc)
+	fc.show_flowchart("")
+	await fc.closed
+	# 設定パネルを復帰
+	if is_instance_valid(_settings_panel):
+		_settings_panel.visible = true
 
 
 func _show_ending_gallery() -> void:

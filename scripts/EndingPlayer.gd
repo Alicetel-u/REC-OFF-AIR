@@ -37,12 +37,53 @@ var _shake_amount  : float = 0.0
 var _base_pos      : Vector2 = Vector2.ZERO
 var _section_idx   : int = 0
 var _current_audio : AudioStreamPlayer = null
+var _skip_requested : bool = false
+var _skip_btn : Button = null
 
 
 func _ready() -> void:
 	layer = 150
 	_build_ui()
 	visible = false
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not _is_playing:
+		return
+	if _skip_requested:
+		return
+	# クリックまたはキー押下でスキップボタンを表示
+	var is_key : bool = event is InputEventKey and event.pressed and not event.echo
+	var is_click : bool = event is InputEventMouseButton and event.pressed
+	if (is_key or is_click) and not is_instance_valid(_skip_btn):
+		_show_skip_btn()
+
+
+func _show_skip_btn() -> void:
+	_skip_btn = Button.new()
+	_skip_btn.text = "スキップ ▶▶"
+	_skip_btn.size = Vector2(140, 34)
+	_skip_btn.position = Vector2(1280 - 160, 20)
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.05, 0.05, 0.08, 0.7)
+	sb.border_color = Color(0.4, 0.35, 0.4, 0.5)
+	sb.set_border_width_all(1)
+	sb.set_corner_radius_all(3)
+	_skip_btn.add_theme_stylebox_override("normal", sb)
+	var sb_h := sb.duplicate()
+	sb_h.border_color = Color(0.8, 0.7, 0.8, 0.8)
+	_skip_btn.add_theme_stylebox_override("hover", sb_h)
+	_skip_btn.add_theme_font_size_override("font_size", 13)
+	_skip_btn.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+	_skip_btn.add_theme_color_override("font_hover_color", Color(1, 0.9, 0.8))
+	_skip_btn.modulate.a = 0.0
+	_container.add_child(_skip_btn)
+	_skip_btn.pressed.connect(func() -> void:
+		_skip_requested = true
+		_skip_btn.queue_free()
+	)
+	var tw := create_tween()
+	tw.tween_property(_skip_btn, "modulate:a", 1.0, 0.3)
 
 
 func _process(delta: float) -> void:
@@ -275,9 +316,22 @@ func _build_ui() -> void:
 ## ──────────────────────────────────────────────────────
 ## 再生メイン
 ## ──────────────────────────────────────────────────────
+## スキップ可能なwait — _skip_requested時は即return
+func _wait(sec: float) -> void:
+	if _skip_requested:
+		return
+	var t : float = 0.0
+	while t < sec:
+		if _skip_requested:
+			return
+		t += get_process_delta_time()
+		await get_tree().process_frame
+
+
 func play(sections: Array, ending_title: String = "") -> void:
 	visible = true
 	_is_playing = true
+	_skip_requested = false
 	_container.modulate.a = 0.0
 
 	# エンディング専用アンビエント（静かな風の音）
@@ -290,14 +344,18 @@ func play(sections: Array, ending_title: String = "") -> void:
 		add_child(ambient)
 		ambient.play()
 
-	# じわっと暗闇から始まる
-	var tw_in := create_tween()
-	tw_in.tween_property(_container, "modulate:a", 1.0, 2.0).set_trans(Tween.TRANS_SINE)
-	await tw_in.finished
+	# じわっと暗闘から始まる
+	_container.modulate.a = 1.0 if _skip_requested else 0.0
+	if not _skip_requested:
+		var tw_in := create_tween()
+		tw_in.tween_property(_container, "modulate:a", 1.0, 2.0).set_trans(Tween.TRANS_SINE)
+		await tw_in.finished
 
-	await get_tree().create_timer(1.0).timeout
+	await _wait(1.0)
 
 	for i in range(sections.size()):
+		if _skip_requested:
+			break
 		_section_idx = i
 		await _play_section(sections[i], i)
 
@@ -305,6 +363,12 @@ func play(sections: Array, ending_title: String = "") -> void:
 	if ending_title != "":
 		await _show_ending_title(ending_title)
 
+	# スキップ時はアンビエントを止める
+	if is_instance_valid(ambient):
+		ambient.stop()
+	# ボイス停止
+	if is_instance_valid(_current_audio):
+		_current_audio.stop()
 	_is_playing = false
 	ending_finished.emit()
 
@@ -381,24 +445,27 @@ func _play_section(section: Dictionary, idx: int) -> void:
 
 	# ── 各行を表示 ──
 	for line_idx in range(lines.size()):
+		if _skip_requested:
+			break
 		await _show_line(lines[line_idx], line_idx, lines.size())
 
 	# ── セクション終了の余韻 ──
-	await get_tree().create_timer(post_wait).timeout
+	await _wait(post_wait)
 
-	# ── フェードアウト ──
-	var tw_out := create_tween().set_parallel(true)
-	tw_out.tween_property(_text_label, "modulate:a", 0.0, 1.2)
-	tw_out.tween_property(_center_big, "theme_override_colors/font_color:a", 0.0, 1.2)
-	tw_out.tween_property(_section_lbl, "theme_override_colors/font_color:a", 0.0, 1.0)
-	tw_out.tween_property(_divider, "color:a", 0.0, 1.0)
-	await tw_out.finished
+	if not _skip_requested:
+		# ── フェードアウト ──
+		var tw_out := create_tween().set_parallel(true)
+		tw_out.tween_property(_text_label, "modulate:a", 0.0, 1.2)
+		tw_out.tween_property(_center_big, "theme_override_colors/font_color:a", 0.0, 1.2)
+		tw_out.tween_property(_section_lbl, "theme_override_colors/font_color:a", 0.0, 1.0)
+		tw_out.tween_property(_divider, "color:a", 0.0, 1.0)
+		await tw_out.finished
 	_text_label.text = ""
 	_text_label.modulate.a = 1.0
 	_center_big.text = ""
 
 	# セクション間の暗転余韻
-	await get_tree().create_timer(0.8).timeout
+	await _wait(0.8)
 
 
 ## ──────────────────────────────────────────────────────
@@ -525,20 +592,24 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 	tw_type.tween_property(_text_label, "visible_ratio", 1.0, type_dur)
 
 	# 音声が終わるまで待つ（テキストと音声の長い方）
-	if is_instance_valid(_current_audio):
-		await _current_audio.finished
-	else:
-		await tw_type.finished
+	if not _skip_requested:
+		if is_instance_valid(_current_audio):
+			await _current_audio.finished
+		else:
+			await tw_type.finished
 
 	# 余韻（pause = voice_dur + margin なので、voice_dur分は既に経過）
 	var remaining_pause : float = pause_after - voice_dur
 	if remaining_pause > 0.1:
-		await get_tree().create_timer(remaining_pause).timeout
+		await _wait(remaining_pause)
 
 	# フェードアウト
-	var tw_out := create_tween()
-	tw_out.tween_property(_text_label, "modulate:a", 0.0, 0.5)
-	await tw_out.finished
+	if not _skip_requested:
+		var tw_out := create_tween()
+		tw_out.tween_property(_text_label, "modulate:a", 0.0, 0.5)
+		await tw_out.finished
+	else:
+		_text_label.modulate.a = 0.0
 
 
 ## ──────────────────────────────────────────────────────
@@ -695,10 +766,11 @@ func _show_ending_title(title: String) -> void:
 	tw_in.tween_property(line_rect, "color:a", 0.4, 1.5)
 	tw_in.tween_property(line_rect, "size:x", 300.0, 2.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tw_in.tween_property(line_rect, "position:x", vp_size.x * 0.5 - 150.0, 2.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	await tw_in.finished
+	if not _skip_requested:
+		await tw_in.finished
 
 	# しばらく表示
-	await get_tree().create_timer(4.0).timeout
+	await _wait(4.0)
 
 
 ## フェードアウトして終了

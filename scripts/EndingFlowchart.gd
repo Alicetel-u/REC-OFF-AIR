@@ -104,14 +104,24 @@ func _build() -> void:
 	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(header)
 
-	# サブヘッダー
+	# 達成率計算
+	var total_endings : int = 0
+	var unlocked_count : int = 0
+	for nd in FLOW_NODES:
+		if nd.has("ending_id"):
+			total_endings += 1
+			if GameManager.is_ending_unlocked(nd["ending_id"]):
+				unlocked_count += 1
+	var pct : int = int(float(unlocked_count) / float(maxi(total_endings, 1)) * 100.0)
+
+	# サブヘッダー（達成率）
 	var sub := Label.new()
-	sub.text = "到達したエンディングが記録されます"
+	sub.text = "達成率  %d / %d  （%d%%）" % [unlocked_count, total_endings, pct]
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sub.size = Vector2(VP.x, 30)
 	sub.position = Vector2(0, 62)
-	sub.add_theme_font_size_override("font_size", 12)
-	sub.add_theme_color_override("font_color", Color(0.35, 0.35, 0.4, 0.6))
+	sub.add_theme_font_size_override("font_size", 13)
+	sub.add_theme_color_override("font_color", Color(0.5, 0.45, 0.4, 0.7))
 	sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(sub)
 
@@ -429,3 +439,72 @@ func _on_close() -> void:
 	await tw.finished
 	closed.emit()
 	queue_free()
+
+
+## play_endingから呼ばれる: フローチャート上に「選択肢に戻る / タイトルに戻る」を表示
+## 戻り値: 0=選択肢に戻る, 1=タイトルに戻る
+func show_return_choice() -> int:
+	# 既存の「タイトルに戻る」ボタンがあれば削除
+	for child in _root.get_children():
+		if child is Button:
+			child.queue_free()
+
+	var result : int = -1
+
+	# ボタンコンテナ（画面下部、フローチャートと被らない位置）
+	var btn_container := HBoxContainer.new()
+	btn_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_container.size = Vector2(VP.x, 50)
+	btn_container.position = Vector2(0, VP.y - 75)
+	btn_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn_container.modulate.a = 0.0
+	_root.add_child(btn_container)
+
+	# 共通スタイル
+	var _make_btn := func(text: String) -> Button:
+		var b := Button.new()
+		b.text = text
+		b.custom_minimum_size = Vector2(220, 42)
+		var s := StyleBoxFlat.new()
+		s.bg_color = Color(0.08, 0.06, 0.1, 0.8)
+		s.border_color = Color(0.4, 0.35, 0.4, 0.6)
+		s.set_border_width_all(1)
+		s.set_corner_radius_all(4)
+		s.set_content_margin_all(8)
+		b.add_theme_stylebox_override("normal", s)
+		var s_h := s.duplicate()
+		s_h.border_color = Color(0.7, 0.6, 0.7, 0.8)
+		b.add_theme_stylebox_override("hover", s_h)
+		b.add_theme_font_size_override("font_size", 15)
+		b.add_theme_color_override("font_color", COL_TEXT)
+		b.add_theme_color_override("font_hover_color", Color(1, 0.9, 0.8))
+		return b
+
+	var btn_retry : Button = _make_btn.call("選択肢の直前に戻る") as Button
+	btn_container.add_child(btn_retry)
+
+	var spacer := Control.new()
+	spacer.custom_minimum_size = Vector2(30, 0)
+	btn_container.add_child(spacer)
+
+	var btn_title : Button = _make_btn.call("タイトルに戻る") as Button
+	btn_container.add_child(btn_title)
+
+	# フェードイン（フローチャート出現後に遅延）
+	var total_delay : float = 0.5 + float(_node_controls.size()) * 0.12 + 0.5
+	var tw_btn := create_tween()
+	tw_btn.tween_property(btn_container, "modulate:a", 1.0, 0.4).set_delay(total_delay)
+
+	btn_retry.pressed.connect(func() -> void: result = 0)
+	btn_title.pressed.connect(func() -> void: result = 1)
+
+	# 選択待ち
+	while result < 0:
+		await get_tree().process_frame
+
+	# フェードアウト
+	var tw_out := create_tween()
+	tw_out.tween_property(_root, "modulate:a", 0.0, 0.5)
+	await tw_out.finished
+
+	return result

@@ -447,11 +447,25 @@ func run_from_path(json_path: String) -> void:
 
 			"play_ending":
 				await _play_ending(ev)
-				# BAD END後に選択肢に戻る
+				# BAD END後: フローチャート表示 + 選択肢
 				var pe_return : String = ev.get("return_label", "")
+				var pe_eid : String = ev.get("id", "")
 				if pe_return != "" and pe_return in label_map:
-					idx = label_map[pe_return]
-					continue
+					# フローチャート表示
+					var fc := CanvasLayer.new()
+					fc.set_script(preload("res://scripts/EndingFlowchart.gd"))
+					get_tree().root.add_child(fc)
+					fc.show_flowchart(pe_eid)
+					# フローチャートの上にボタンを重ねる
+					var pe_choice : int = await fc.show_return_choice()
+					fc.queue_free()
+					if pe_choice == 0:
+						await _fade_clear(0.8, 0.0)
+						idx = label_map[pe_return]
+						continue
+					else:
+						get_tree().change_scene_to_file("res://scenes/Opening.tscn")
+						return
 
 			"bad_end":
 				await _bad_end(
