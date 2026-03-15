@@ -1,83 +1,88 @@
 {
-  "chapter": "ch02_haison_souko",
-  "voice_dir": "res://assets/audio/voice/ch02_souko/",
-  "_note": "第2章：廃倉庫 ─ 保存された絶叫 ─",
-  "events": [
-    {
-      "type": "set_viewers",
-      "count": 52000
-    },
-    {
-      "type": "sfx",
-      "sound": "door_creak"
-    },
-    {
-      "type": "flashlight_on"
-    },
-    {
-      "type": "wait",
-      "sec": 1.0
-    },
-    {
-      "type": "say",
-      "text": "ハァ、ハァ……トイレからなんとか逃げた。",
-      "voice": "v101a"
-    },
-    {
-      "type": "wait",
-      "sec": 3.0
-    },
-    {
-      "type": "say",
-      "text": "DMで言ってた『証拠VHS』がある廃倉庫だ。配信的には、ここで証拠をゲットするのがセオリーだよね。",
-      "voice": "v101b"
-    },
-    {
-      "type": "wait",
-      "sec": 7.5
-    },
-    {
-      "type": "chat",
-      "msg": "証拠ｗ",
-      "user": "視聴者A"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "ガチの事件じゃん",
-      "user": "ゆきんこ77",
-      "utype": "moderator"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "早く入れよ",
-      "user": "配信民99",
-      "utype": "member"
-    },
-    {
-      "type": "wait",
-      "sec": 0.3
-    },
-    {
-      "type": "chat",
-      "msg": "見ている",
-      "user": "K",
-      "utype": "horror"
-    },
-    {
-      "type": "wait",
-      "sec": 1.5
-    },
-    {
-      "type": "_comment",
-      "_": "play_ending(bad_eien)は削除済み — バッドエンドはゴーストCAUGHTのみ（Main.gdに直接定義）"
-    }
-  ]
+    "chapter": "ch02_haison_souko",
+    "voice_dir": "res://assets/audio/voice/ch02_souko/",
+    "_note": "第2章：廃倉庫 ─ 保存された絶叫 ─",
+    "events": [
+        {
+            "type": "set_viewers",
+            "count": 52000
+        },
+        {
+            "type": "sfx",
+            "sound": "door_creak"
+        },
+        {
+            "type": "flashlight_on"
+        },
+        {
+            "type": "wait",
+            "sec": 1.0
+        },
+        {
+            "type": "say",
+            "text": "ハァ、ハァ……トイレからなんとか逃げた。",
+            "voice": "v101a"
+        },
+        {
+            "type": "wait",
+            "sec": 3.0
+        },
+        {
+            "type": "say",
+            "text": "DMで言ってた『証拠VHS』がある廃倉庫だ。配信的には、ここで証拠をゲットするのがセオリーだよね。",
+            "voice": "v101b"
+        },
+        {
+            "type": "wait",
+            "sec": 7.5
+        },
+        {
+            "type": "chat",
+            "msg": "証拠ｗ",
+            "user": "視聴者A",
+            "voice": "c001"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "ガチの事件じゃん",
+            "user": "ゆきんこ77",
+            "utype": "moderator",
+            "voice": "c002"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "早く入れよ",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c003"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "見ている",
+            "user": "K",
+            "utype": "horror",
+            "voice": "c004"
+        },
+        {
+            "type": "wait",
+            "sec": 1.5
+        },
+        {
+            "type": "_comment",
+            "_": "play_ending(bad_eien)は削除済み — バッドエンドはゴーストCAUGHTのみ（Main.gdに直接定義）"
+        }
+    ],
+    "chat_voice_dir": "res://assets/audio/voice/ch02_souko_chat/"
 }

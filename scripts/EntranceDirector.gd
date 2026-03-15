@@ -114,6 +114,7 @@ func run_from_path(json_path: String) -> void:
 	var data   : Dictionary = json.get_data()
 	var events : Array      = data.get("events", [])
 	var _voice_dir : String = data.get("voice_dir", "res://assets/audio/voice/ch01/")
+	var _chat_voice_dir : String = data.get("chat_voice_dir", "")
 
 	# ラベル → インデックスのマップを事前構築
 	var label_map : Dictionary = {}
@@ -189,7 +190,11 @@ func run_from_path(json_path: String) -> void:
 			"chat":
 				# スキップ中はチャット追加をスキップ
 				if not _skip_to_next_say:
-					_chat(ev.get("msg", ""), ev.get("user", ""), ev.get("utype", ""))
+					var cv_id : String = ev.get("voice", "")
+					var cv_path : String = ""
+					if cv_id != "" and _chat_voice_dir != "":
+						cv_path = _chat_voice_dir + cv_id + ".wav"
+					_chat(ev.get("msg", ""), ev.get("user", ""), ev.get("utype", ""), cv_path)
 
 			"sleep":
 				## スキップ・ボイス待機を無視する固定待機（横見演出など）
@@ -657,9 +662,12 @@ func _say_clear() -> void:
 		hud.hide_monologue()
 
 
-func _chat(msg: String, user: String = "", utype: String = "") -> void:
+func _chat(msg: String, user: String = "", utype: String = "", chat_voice: String = "") -> void:
 	if is_instance_valid(hud):
 		hud.add_chat(msg, user, utype)
+	# チャットボイス再生（voiceフィールドにフルパスが入る）
+	if chat_voice != "":
+		SoundManager.play_chat_voice(chat_voice)
 
 
 func _rot_y(target: float, dur: float) -> Tween:

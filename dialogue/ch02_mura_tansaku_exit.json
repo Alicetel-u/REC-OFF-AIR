@@ -3,457 +3,1622 @@
     "voice_dir": "res://assets/audio/voice/ch02_mura/",
     "_note": "CP3-2 つなぎ演出 — 階段→みゆき→灯籠スマホ→選択肢→BAD END×2+正解",
     "events": [
-
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-        {"type": "_comment", "_": "  PHASE 1 — 封印解除、神社の階段へ"},
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-
-        {"type": "fade_black", "dur": 0.3},
-        {"type": "wait", "sec": 0.4},
-        {"type": "set_viewers", "count": 85000},
-        {"type": "flashlight_on"},
-        {"type": "bg_image", "file": "jinja_kaidan.jpg", "dur": 2.0, "brightness": 0.3, "radius": 0.22, "softness": 0.3, "center": [0.5, 0.65]},
-        {"type": "bg_walk_start", "speed": 0.15, "zoom_end": 1.06, "zoom_dur": 60.0, "radius": 0.22, "softness": 0.3},
-        {"type": "fade_clear", "dur": 2.5, "target": 0.8},
-        {"type": "wait", "sec": 1.5},
-
-        {"type": "say", "text": "封印が解けた……神社への道が開いてる……", "voice": "v411"},
-        {"type": "wait", "sec": 4.5},
-
-        {"type": "chat", "msg": "神社の階段見えてるね", "user": "ゆきんこ77", "utype": "moderator"},
-        {"type": "wait", "sec": 0.8},
-
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-        {"type": "_comment", "_": "  PHASE 2 — みゆきの気配"},
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-
-        {"type": "say_clear"},
-        {"type": "sfx", "file": "metal/impactMetal_heavy_000.mp3"},
-        {"type": "horror_glitch", "intensity": 0.8, "dur": 0.4},
-        {"type": "camera_shake", "intensity": 0.3, "dur": 0.3},
-        {"type": "wait", "sec": 0.3},
-
-        {"type": "say", "text": "……後ろに気配がする", "voice": "v413"},
-        {"type": "wait", "sec": 3.5},
-
-        {"type": "chat", "msg": "後ろ！！！", "user": "まっちゃん"},
-        {"type": "wait", "sec": 0.3},
-        {"type": "chat", "msg": "振り向くな", "user": "配信民99", "utype": "member"},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "sfx", "sound": "scare_hit"},
-        {"type": "scare_flash"},
-        {"type": "camera_shake", "intensity": 0.6, "dur": 0.5},
-        {"type": "horror_glitch", "intensity": 1.5, "dur": 0.8},
-        {"type": "wait", "sec": 0.3},
-
-        {"type": "say", "text": "みゆき……！　すぐ後ろに……！　なんでここに！？", "voice": "v414"},
-        {"type": "wait", "sec": 4.5},
-
-        {"type": "chat", "msg": "逃げろ！！", "user": "視聴者A"},
-        {"type": "wait", "sec": 0.3},
-        {"type": "chat", "msg": "走れ！！", "user": "ゆきんこ77", "utype": "moderator"},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-        {"type": "_comment", "_": "  PHASE 3 — 階段を駆け上がる"},
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-
-        {"type": "say_clear"},
-        {"type": "bg_walk_start", "speed": 2.5, "zoom_end": 1.8, "zoom_dur": 8.0, "radius": 0.18, "softness": 0.2},
-
-        {"type": "say", "text": "走れ走れ走れ……！　階段を上がれば……！", "voice": "v415"},
-        {"type": "wait", "sec": 1.5},
-
-        {"type": "camera_shake", "intensity": 0.3, "dur": 0.25},
-        {"type": "horror_glitch", "intensity": 0.4, "dur": 0.15},
-        {"type": "wait", "sec": 0.4},
-        {"type": "camera_shake", "intensity": 0.5, "dur": 0.3},
-        {"type": "horror_glitch", "intensity": 0.7, "dur": 0.2},
-        {"type": "sfx", "file": "metal/impactMetal_heavy_000.mp3"},
-        {"type": "wait", "sec": 0.4},
-        {"type": "camera_shake", "intensity": 0.6, "dur": 0.35},
-        {"type": "horror_glitch", "intensity": 1.0, "dur": 0.3},
-        {"type": "wait", "sec": 0.3},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "足が重い……でも止まったら終わる……！", "voice": "v416"},
-        {"type": "wait", "sec": 2.0},
-
-        {"type": "camera_shake", "intensity": 0.7, "dur": 0.4},
-        {"type": "horror_glitch", "intensity": 1.3, "dur": 0.4},
-        {"type": "sfx", "file": "metal/impactMetal_heavy_001.mp3"},
-        {"type": "wait", "sec": 0.3},
-        {"type": "camera_shake", "intensity": 0.8, "dur": 0.5},
-        {"type": "horror_glitch", "intensity": 1.8, "dur": 0.5},
-        {"type": "sfx", "file": "metal/impactMetal_heavy_002.mp3"},
-        {"type": "wait", "sec": 0.3},
-        {"type": "camera_shake", "intensity": 0.9, "dur": 0.5},
-        {"type": "horror_glitch", "intensity": 2.2, "dur": 0.5},
-        {"type": "sfx", "sound": "scare_hit"},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "chat", "msg": "走れ走れ走れ", "user": "配信民99", "utype": "member"},
-        {"type": "wait", "sec": 0.2},
-        {"type": "chat", "msg": "心拍やばそう", "user": "まっちゃん"},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-        {"type": "_comment", "_": "  PHASE 4 — 振り向いたらいない（安堵）"},
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-
-        {"type": "bg_walk_start", "speed": 0.3, "zoom_end": 2.0, "zoom_dur": 40.0, "radius": 0.22, "softness": 0.3},
-        {"type": "say_clear"},
-        {"type": "wait", "sec": 2.0},
-
-        {"type": "say", "text": "……はぁ……はぁ……。もう走れない……", "voice": "v417"},
-        {"type": "wait", "sec": 4.0},
-        {"type": "say_clear"},
-        {"type": "wait", "sec": 2.0},
-
-        {"type": "say", "text": "振り向いたら……いない。消えた。最初からいなかったみたいに", "voice": "v418"},
-        {"type": "wait", "sec": 5.5},
-
-        {"type": "chat", "msg": "消えた？", "user": "視聴者A"},
-        {"type": "wait", "sec": 0.3},
-        {"type": "chat", "msg": "よかった……", "user": "ゆきんこ77", "utype": "moderator"},
-        {"type": "wait", "sec": 0.8},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "なんで追ってこなかった……追う必要がなかったから……？", "voice": "v419"},
-        {"type": "wait", "sec": 5.5},
-
-        {"type": "chat", "msg": "それ怖いこと言うなよ", "user": "配信民99", "utype": "member"},
-        {"type": "wait", "sec": 1.0},
-
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-        {"type": "_comment", "_": "  PHASE 5 — 灯籠に気づく→近づく→スマホ発見"},
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-
-        {"type": "set_viewers", "count": 90000},
-        {"type": "say_clear"},
-        {"type": "wait", "sec": 1.0},
-
-        {"type": "say", "text": "……ん？　あかりが見える……灯籠？　こんなところに", "reading": "……ん？　あかりが見える……とうろう？　こんなところに", "voice": "v420"},
-        {"type": "wait", "sec": 5.0},
-
-        {"type": "chat", "msg": "なんかある", "user": "視聴者A"},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "sfx", "file": "bell/impactBell_heavy_001.mp3"},
-        {"type": "say_clear"},
-        {"type": "wait", "sec": 1.0},
-
-        {"type": "say", "text": "近づいてみる……何か中に入ってる……", "voice": "v421"},
-        {"type": "wait", "sec": 4.5},
-
-        {"type": "chat", "msg": "やめとけ", "user": "配信民99", "utype": "member"},
-        {"type": "wait", "sec": 0.3},
-        {"type": "chat", "msg": "絶対罠", "user": "まっちゃん"},
-        {"type": "wait", "sec": 1.5},
-
-        {"type": "sfx", "sound": "scare_hit"},
-        {"type": "camera_shake", "intensity": 1.0, "dur": 1.2},
-        {"type": "horror_glitch", "intensity": 3.5, "dur": 2.5},
-        {"type": "scare_flash"},
-        {"type": "bg_image", "file": "tourou_smartphone.jpg", "dur": 0.2, "brightness": 0.5, "radius": 0.28, "softness": 0.25},
-        {"type": "wait", "sec": 0.3},
-
-        {"type": "say", "text": "スマホ……！？　灯籠の中に……画面がついてる……", "reading": "スマホ……！？　とうろうの中に……画面がついてる……", "voice": "v422"},
-        {"type": "wait", "sec": 5.0},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "これ……私の配信……！　なんで……誰がここに置いた……", "voice": "v423"},
-        {"type": "wait", "sec": 5.5},
-
-        {"type": "chat", "msg": "は！？", "user": "視聴者A"},
-        {"type": "wait", "sec": 0.2},
-        {"type": "chat", "msg": "誰が見てるんだよ", "user": "まっちゃん"},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-        {"type": "_comment", "_": "  PHASE 6 — 同接崩壊+赤+文字化け"},
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-
-        {"type": "say_clear"},
-        {"type": "horror_red", "dur": 25.0},
-        {"type": "chat_horror_mode", "dur": 20.0},
-        {"type": "sfx", "sound": "static_noise"},
-        {"type": "wait", "sec": 0.3},
-
-        {"type": "set_viewers", "count": 71000},
-        {"type": "horror_glitch", "intensity": 1.5, "dur": 0.2},
-        {"type": "wait", "sec": 0.15},
-        {"type": "set_viewers", "count": 43000},
-        {"type": "horror_glitch", "intensity": 2.0, "dur": 0.3},
-        {"type": "wait", "sec": 0.15},
-        {"type": "set_viewers", "count": 12000},
-        {"type": "camera_shake", "intensity": 0.5, "dur": 0.3},
-        {"type": "wait", "sec": 0.15},
-        {"type": "set_viewers", "count": 3000},
-        {"type": "horror_glitch", "intensity": 2.5, "dur": 0.3},
-        {"type": "wait", "sec": 0.15},
-        {"type": "set_viewers", "count": 500},
-        {"type": "wait", "sec": 0.15},
-        {"type": "set_viewers", "count": 89},
-        {"type": "sfx", "sound": "scare_hit"},
-        {"type": "wait", "sec": 0.15},
-        {"type": "set_viewers", "count": 12},
-        {"type": "camera_shake", "intensity": 0.8, "dur": 0.5},
-        {"type": "wait", "sec": 0.15},
-        {"type": "set_viewers", "count": 3},
-        {"type": "horror_glitch", "intensity": 4.0, "dur": 0.5},
-        {"type": "wait", "sec": 0.2},
-        {"type": "set_viewers", "count": 1},
-        {"type": "scare_flash"},
-        {"type": "camera_shake", "intensity": 1.5, "dur": 2.0},
-        {"type": "horror_glitch", "intensity": 5.0, "dur": 3.0},
-        {"type": "sfx", "sound": "scare_hit"},
-        {"type": "wait", "sec": 1.5},
-
-        {"type": "_comment", "_": "── タイプライター：同接1 ──"},
-        {"type": "horror_typewriter", "text": "同接1", "delay": 0.3},
-        {"type": "wait", "sec": 2.5},
-
-        {"type": "say", "text": "消えた……全員……同接1……", "reading": "消えた……全員……どうせつ1……", "voice": "v424"},
-        {"type": "wait", "sec": 4.0},
-
-        {"type": "say_clear"},
-        {"type": "horror_typewriter", "text": "ダレガミテイル？", "delay": 0.12},
-        {"type": "wait", "sec": 2.0},
-
-        {"type": "say", "text": "私は……誰に向けて配信してたの……", "voice": "v425"},
-        {"type": "wait", "sec": 5.0},
-
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-        {"type": "_comment", "_": "  PHASE 7 — 選択肢"},
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-
-        {"type": "say_clear"},
-        {"type": "wait", "sec": 1.0},
-
-        {"type": "label", "name": "cp3_choice"},
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "_comment",
+            "_": "  PHASE 1 — 封印解除、神社の階段へ"
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "fade_black",
+            "dur": 0.3
+        },
+        {
+            "type": "wait",
+            "sec": 0.4
+        },
+        {
+            "type": "set_viewers",
+            "count": 85000
+        },
+        {
+            "type": "flashlight_on"
+        },
+        {
+            "type": "bg_image",
+            "file": "jinja_kaidan.jpg",
+            "dur": 2.0,
+            "brightness": 0.3,
+            "radius": 0.22,
+            "softness": 0.3,
+            "center": [
+                0.5,
+                0.65
+            ]
+        },
+        {
+            "type": "bg_walk_start",
+            "speed": 0.15,
+            "zoom_end": 1.06,
+            "zoom_dur": 60.0,
+            "radius": 0.22,
+            "softness": 0.3
+        },
+        {
+            "type": "fade_clear",
+            "dur": 2.5,
+            "target": 0.8
+        },
+        {
+            "type": "wait",
+            "sec": 1.5
+        },
+        {
+            "type": "say",
+            "text": "封印が解けた……神社への道が開いてる……",
+            "voice": "v411"
+        },
+        {
+            "type": "wait",
+            "sec": 4.5
+        },
+        {
+            "type": "chat",
+            "msg": "神社の階段見えてるね",
+            "user": "ゆきんこ77",
+            "utype": "moderator",
+            "voice": "c001"
+        },
+        {
+            "type": "wait",
+            "sec": 0.8
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "_comment",
+            "_": "  PHASE 2 — みゆきの気配"
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "sfx",
+            "file": "metal/impactMetal_heavy_000.mp3"
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 0.8,
+            "dur": 0.4
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.3,
+            "dur": 0.3
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "say",
+            "text": "……後ろに気配がする",
+            "voice": "v413"
+        },
+        {
+            "type": "wait",
+            "sec": 3.5
+        },
+        {
+            "type": "chat",
+            "msg": "後ろ！！！",
+            "user": "まっちゃん",
+            "voice": "c002"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "振り向くな",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c003"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "sfx",
+            "sound": "scare_hit"
+        },
+        {
+            "type": "scare_flash"
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.6,
+            "dur": 0.5
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 1.5,
+            "dur": 0.8
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "say",
+            "text": "みゆき……！　すぐ後ろに……！　なんでここに！？",
+            "voice": "v414"
+        },
+        {
+            "type": "wait",
+            "sec": 4.5
+        },
+        {
+            "type": "chat",
+            "msg": "逃げろ！！",
+            "user": "視聴者A",
+            "voice": "c004"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "走れ！！",
+            "user": "ゆきんこ77",
+            "utype": "moderator",
+            "voice": "c005"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "_comment",
+            "_": "  PHASE 3 — 階段を駆け上がる"
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "bg_walk_start",
+            "speed": 2.5,
+            "zoom_end": 1.8,
+            "zoom_dur": 8.0,
+            "radius": 0.18,
+            "softness": 0.2
+        },
+        {
+            "type": "say",
+            "text": "走れ走れ走れ……！　階段を上がれば……！",
+            "voice": "v415"
+        },
+        {
+            "type": "wait",
+            "sec": 1.5
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.3,
+            "dur": 0.25
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 0.4,
+            "dur": 0.15
+        },
+        {
+            "type": "wait",
+            "sec": 0.4
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.5,
+            "dur": 0.3
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 0.7,
+            "dur": 0.2
+        },
+        {
+            "type": "sfx",
+            "file": "metal/impactMetal_heavy_000.mp3"
+        },
+        {
+            "type": "wait",
+            "sec": 0.4
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.6,
+            "dur": 0.35
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 1.0,
+            "dur": 0.3
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "足が重い……でも止まったら終わる……！",
+            "voice": "v416"
+        },
+        {
+            "type": "wait",
+            "sec": 2.0
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.7,
+            "dur": 0.4
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 1.3,
+            "dur": 0.4
+        },
+        {
+            "type": "sfx",
+            "file": "metal/impactMetal_heavy_001.mp3"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.8,
+            "dur": 0.5
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 1.8,
+            "dur": 0.5
+        },
+        {
+            "type": "sfx",
+            "file": "metal/impactMetal_heavy_002.mp3"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.9,
+            "dur": 0.5
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 2.2,
+            "dur": 0.5
+        },
+        {
+            "type": "sfx",
+            "sound": "scare_hit"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "chat",
+            "msg": "走れ走れ走れ",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c006"
+        },
+        {
+            "type": "wait",
+            "sec": 0.2
+        },
+        {
+            "type": "chat",
+            "msg": "心拍やばそう",
+            "user": "まっちゃん",
+            "voice": "c007"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "_comment",
+            "_": "  PHASE 4 — 振り向いたらいない（安堵）"
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "bg_walk_start",
+            "speed": 0.3,
+            "zoom_end": 2.0,
+            "zoom_dur": 40.0,
+            "radius": 0.22,
+            "softness": 0.3
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "wait",
+            "sec": 2.0
+        },
+        {
+            "type": "say",
+            "text": "……はぁ……はぁ……。もう走れない……",
+            "voice": "v417"
+        },
+        {
+            "type": "wait",
+            "sec": 4.0
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "wait",
+            "sec": 2.0
+        },
+        {
+            "type": "say",
+            "text": "振り向いたら……いない。消えた。最初からいなかったみたいに",
+            "voice": "v418"
+        },
+        {
+            "type": "wait",
+            "sec": 5.5
+        },
+        {
+            "type": "chat",
+            "msg": "消えた？",
+            "user": "視聴者A",
+            "voice": "c008"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "よかった……",
+            "user": "ゆきんこ77",
+            "utype": "moderator",
+            "voice": "c009"
+        },
+        {
+            "type": "wait",
+            "sec": 0.8
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "なんで追ってこなかった……追う必要がなかったから……？",
+            "voice": "v419"
+        },
+        {
+            "type": "wait",
+            "sec": 5.5
+        },
+        {
+            "type": "chat",
+            "msg": "それ怖いこと言うなよ",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c010"
+        },
+        {
+            "type": "wait",
+            "sec": 1.0
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "_comment",
+            "_": "  PHASE 5 — 灯籠に気づく→近づく→スマホ発見"
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "set_viewers",
+            "count": 90000
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "wait",
+            "sec": 1.0
+        },
+        {
+            "type": "say",
+            "text": "……ん？　あかりが見える……灯籠？　こんなところに",
+            "reading": "……ん？　あかりが見える……とうろう？　こんなところに",
+            "voice": "v420"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "chat",
+            "msg": "なんかある",
+            "user": "視聴者A",
+            "voice": "c011"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "sfx",
+            "file": "bell/impactBell_heavy_001.mp3"
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "wait",
+            "sec": 1.0
+        },
+        {
+            "type": "say",
+            "text": "近づいてみる……何か中に入ってる……",
+            "voice": "v421"
+        },
+        {
+            "type": "wait",
+            "sec": 4.5
+        },
+        {
+            "type": "chat",
+            "msg": "やめとけ",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c012"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "絶対罠",
+            "user": "まっちゃん",
+            "voice": "c013"
+        },
+        {
+            "type": "wait",
+            "sec": 1.5
+        },
+        {
+            "type": "sfx",
+            "sound": "scare_hit"
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 1.0,
+            "dur": 1.2
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 3.5,
+            "dur": 2.5
+        },
+        {
+            "type": "scare_flash"
+        },
+        {
+            "type": "bg_image",
+            "file": "tourou_smartphone.jpg",
+            "dur": 0.2,
+            "brightness": 0.5,
+            "radius": 0.28,
+            "softness": 0.25
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "say",
+            "text": "スマホ……！？　灯籠の中に……画面がついてる……",
+            "reading": "スマホ……！？　とうろうの中に……画面がついてる……",
+            "voice": "v422"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "これ……私の配信……！　なんで……誰がここに置いた……",
+            "voice": "v423"
+        },
+        {
+            "type": "wait",
+            "sec": 5.5
+        },
+        {
+            "type": "chat",
+            "msg": "は！？",
+            "user": "視聴者A",
+            "voice": "c014"
+        },
+        {
+            "type": "wait",
+            "sec": 0.2
+        },
+        {
+            "type": "chat",
+            "msg": "誰が見てるんだよ",
+            "user": "まっちゃん",
+            "voice": "c015"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "_comment",
+            "_": "  PHASE 6 — 同接崩壊+赤+文字化け"
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "horror_red",
+            "dur": 25.0
+        },
+        {
+            "type": "chat_horror_mode",
+            "dur": 20.0
+        },
+        {
+            "type": "sfx",
+            "sound": "static_noise"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "set_viewers",
+            "count": 71000
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 1.5,
+            "dur": 0.2
+        },
+        {
+            "type": "wait",
+            "sec": 0.15
+        },
+        {
+            "type": "set_viewers",
+            "count": 43000
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 2.0,
+            "dur": 0.3
+        },
+        {
+            "type": "wait",
+            "sec": 0.15
+        },
+        {
+            "type": "set_viewers",
+            "count": 12000
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.5,
+            "dur": 0.3
+        },
+        {
+            "type": "wait",
+            "sec": 0.15
+        },
+        {
+            "type": "set_viewers",
+            "count": 3000
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 2.5,
+            "dur": 0.3
+        },
+        {
+            "type": "wait",
+            "sec": 0.15
+        },
+        {
+            "type": "set_viewers",
+            "count": 500
+        },
+        {
+            "type": "wait",
+            "sec": 0.15
+        },
+        {
+            "type": "set_viewers",
+            "count": 89
+        },
+        {
+            "type": "sfx",
+            "sound": "scare_hit"
+        },
+        {
+            "type": "wait",
+            "sec": 0.15
+        },
+        {
+            "type": "set_viewers",
+            "count": 12
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.8,
+            "dur": 0.5
+        },
+        {
+            "type": "wait",
+            "sec": 0.15
+        },
+        {
+            "type": "set_viewers",
+            "count": 3
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 4.0,
+            "dur": 0.5
+        },
+        {
+            "type": "wait",
+            "sec": 0.2
+        },
+        {
+            "type": "set_viewers",
+            "count": 1
+        },
+        {
+            "type": "scare_flash"
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 1.5,
+            "dur": 2.0
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 5.0,
+            "dur": 3.0
+        },
+        {
+            "type": "sfx",
+            "sound": "scare_hit"
+        },
+        {
+            "type": "wait",
+            "sec": 1.5
+        },
+        {
+            "type": "_comment",
+            "_": "── タイプライター：同接1 ──"
+        },
+        {
+            "type": "horror_typewriter",
+            "text": "同接1",
+            "delay": 0.3
+        },
+        {
+            "type": "wait",
+            "sec": 2.5
+        },
+        {
+            "type": "say",
+            "text": "消えた……全員……同接1……",
+            "reading": "消えた……全員……どうせつ1……",
+            "voice": "v424"
+        },
+        {
+            "type": "wait",
+            "sec": 4.0
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "horror_typewriter",
+            "text": "ダレガミテイル？",
+            "delay": 0.12
+        },
+        {
+            "type": "wait",
+            "sec": 2.0
+        },
+        {
+            "type": "say",
+            "text": "私は……誰に向けて配信してたの……",
+            "voice": "v425"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "_comment",
+            "_": "  PHASE 7 — 選択肢"
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "wait",
+            "sec": 1.0
+        },
+        {
+            "type": "label",
+            "name": "cp3_choice"
+        },
         {
             "type": "choice",
             "title": "▼  灯 籠 の ス マ ホ  ▼",
             "prompt": "目の前の灯籠に、自分の配信を映し続けるスマホ。どうする？",
             "choices": [
-                {"text": "スマホを壊す", "sub": "呪いの元を断つ"},
-                {"text": "スマホを持っていく", "sub": "証拠として神社の中へ"},
-                {"text": "配信を止める", "sub": "もう誰にも見せない"}
+                {
+                    "text": "スマホを壊す",
+                    "sub": "呪いの元を断つ"
+                },
+                {
+                    "text": "スマホを持っていく",
+                    "sub": "証拠として神社の中へ"
+                },
+                {
+                    "text": "配信を止める",
+                    "sub": "もう誰にも見せない"
+                }
             ],
-            "targets": ["route_smash", "route_take", "route_stop"],
+            "targets": [
+                "route_smash",
+                "route_take",
+                "route_stop"
+            ],
             "danger": true
         },
-
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-        {"type": "_comment", "_": "  ROUTE A — スマホを壊す → BAD END「落伍者の井戸」"},
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-
-        {"type": "label", "name": "route_smash"},
-        {"type": "horror_glitch", "intensity": 0.5, "dur": 0.3},
-
-        {"type": "say", "text": "壊す……壊せばこの呪いも終わる……！", "voice": "v426"},
-        {"type": "wait", "sec": 4.0},
-
-        {"type": "sfx", "file": "metal/impactMetal_heavy_002.mp3"},
-        {"type": "camera_shake", "intensity": 0.5, "dur": 0.5},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "……割れた。画面が真っ暗になった。……終わった？", "voice": "v427"},
-        {"type": "wait", "sec": 5.0},
-
-        {"type": "chat", "msg": "壊しちゃった", "user": "視聴者A"},
-        {"type": "wait", "sec": 0.3},
-        {"type": "chat", "msg": "これで終わり？", "user": "配信民99", "utype": "member"},
-        {"type": "wait", "sec": 0.8},
-
-        {"type": "_comment", "_": "── 境内に駆け上がる ──"},
-        {"type": "say_clear"},
-        {"type": "say", "text": "……上に行かないと。境内を確認しないと……！", "voice": "v427b"},
-        {"type": "wait", "sec": 3.5},
-
-        {"type": "bg_image", "file": "jinja_kaidan.jpg", "dur": 0.3, "brightness": 0.4, "radius": 0.18, "softness": 0.2},
-        {"type": "bg_walk_start", "speed": 2.0, "zoom_end": 1.6, "zoom_dur": 5.0, "radius": 0.18, "softness": 0.2},
-        {"type": "camera_shake", "intensity": 0.4, "dur": 0.3},
-        {"type": "wait", "sec": 0.4},
-        {"type": "camera_shake", "intensity": 0.5, "dur": 0.3},
-        {"type": "wait", "sec": 0.4},
-        {"type": "camera_shake", "intensity": 0.6, "dur": 0.4},
-        {"type": "wait", "sec": 0.4},
-        {"type": "camera_shake", "intensity": 0.7, "dur": 0.4},
-        {"type": "wait", "sec": 0.4},
-        {"type": "camera_shake", "intensity": 0.8, "dur": 0.5},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "bg_walk_stop"},
-        {"type": "bg_image_clear", "dur": 0.3},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "……あれ、境内に何かある。井戸……？　蓋が開いてる", "voice": "v428"},
-        {"type": "wait", "sec": 5.0},
-
-        {"type": "horror_glitch", "intensity": 0.8, "dur": 0.3},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "近づかない方がいい……でも足が勝手に……なんで……止まれない……", "voice": "v429"},
-        {"type": "wait", "sec": 5.5},
-
-        {"type": "horror_glitch", "intensity": 1.2, "dur": 0.5},
-        {"type": "camera_shake", "intensity": 0.3, "dur": 0.4},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "足元が……あ、暗い……下が見えない……深い……", "voice": "v430a"},
-        {"type": "wait", "sec": 5.0},
-
-        {"type": "horror_glitch", "intensity": 2.0, "dur": 0.8},
-        {"type": "camera_shake", "intensity": 0.5, "dur": 0.5},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "スマホを壊したから……呪いを引き受けたのは……私？", "voice": "v430b"},
-        {"type": "wait", "sec": 5.0},
-
-        {"type": "sfx", "sound": "scare_hit"},
-        {"type": "scare_flash"},
-        {"type": "camera_shake", "intensity": 2.0, "dur": 2.0},
-        {"type": "horror_glitch", "intensity": 5.0, "dur": 3.0},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "あ——落ち——", "voice": "v430c"},
-        {"type": "wait", "sec": 1.5},
-
-        {"type": "sfx", "file": "metal/impactMetal_heavy_000.mp3"},
-        {"type": "camera_shake", "intensity": 1.0, "dur": 0.8},
-        {"type": "say_clear"},
-
-        {"type": "_comment", "_": "── 井戸に落ちた → BAD END再生 ──"},
-        {"type": "play_ending", "id": "bad_ido", "ending_title": "アナタノカワリニ", "return_label": "cp3_choice",
-         "sections": [
-            {"title": "", "mood": "dark", "wait": 1.5, "lines": [
-                {"text": "いてて……体中が痛い……", "voice": "res://assets/audio/voice/ch02_mura/v440.wav", "pause": 3.5},
-                {"text": "出れない。壁がぬるぬるして、手がかりがない。", "voice": "res://assets/audio/voice/ch02_mura/v441.wav", "pause": 3.5}
-            ]},
-            {"title": "", "mood": "fear", "image": "res://assets/textures/ido_nashi.jpg", "wait": 1.0, "lines": [
-                {"text": "見上げると、丸い空が遠くに見える。", "voice": "res://assets/audio/voice/ch02_mura/v442.wav", "pause": 3.5},
-                {"text": "誰も来ない。誰も助けてくれない。", "voice": "res://assets/audio/voice/ch02_mura/v443.wav", "pause": 3.5}
-            ]},
-            {"title": "", "mood": "fear", "image": "res://assets/textures/ido_hitokage.jpg", "wait": 1.0, "lines": [
-                {"text": "……上に誰かいる。", "voice": "res://assets/audio/voice/ch02_mura/v444.wav", "pause": 3.0},
-                {"text": "私だ。私が上から覗いている。", "voice": "res://assets/audio/voice/ch02_mura/v445.wav", "pause": 3.5},
-                {"text": "笑ってる。なんで笑ってるの。", "voice": "res://assets/audio/voice/ch02_mura/v446.wav", "pause": 3.5},
-                {"text": "「待って！ 助けて！ 行かないで！！」", "voice": "res://assets/audio/voice/ch02_mura/v447.wav", "pause": 3.0, "emphasis": true}
-            ]},
-            {"title": "", "mood": "fear", "image": "res://assets/textures/ido_nashi.jpg", "wait": 1.5, "lines": [
-                {"text": "行っちゃった。何も言わずに。", "voice": "res://assets/audio/voice/ch02_mura/v448.wav", "pause": 4.0},
-                {"text": "何時間経ったんだろう。声も出なくなってきた。", "voice": "res://assets/audio/voice/ch02_mura/v449.wav", "pause": 4.5},
-                {"text": "スマホを壊したから、あの子が私の代わりに上で——", "voice": "res://assets/audio/voice/ch02_mura/v450.wav", "pause": 4.5, "emphasis": true}
-            ]}
-        ]},
-
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-        {"type": "_comment", "_": "  ROUTE B — スマホを持っていく → 正解（CP4へ）"},
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-
-        {"type": "label", "name": "route_take"},
-        {"type": "horror_red_clear"},
-        {"type": "horror_glitch", "intensity": 0.3, "dur": 0.2},
-        {"type": "bg_image_clear", "dur": 0.3},
-        {"type": "set_viewers", "count": 95000},
-        {"type": "sfx", "sound": "ambient_wind"},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "say", "text": "……持っていく。これは証拠だ。答えはこの先にある", "voice": "v431"},
-        {"type": "wait", "sec": 5.0},
-
-        {"type": "chat", "msg": "戻った！", "user": "視聴者A"},
-        {"type": "wait", "sec": 0.1},
-        {"type": "chat", "msg": "同接9万5千ｗｗ", "user": "配信民99", "utype": "member"},
-        {"type": "wait", "sec": 0.1},
-        {"type": "chat", "msg": "今の何！？", "user": "まっちゃん"},
-        {"type": "wait", "sec": 0.1},
-        {"type": "chat", "msg": "しゅっち大丈夫？", "user": "ゆきんこ77", "utype": "moderator"},
-        {"type": "wait", "sec": 0.1},
-        {"type": "chat", "msg": "心臓止まった", "user": "視聴者A"},
-        {"type": "wait", "sec": 0.1},
-        {"type": "chat", "msg": "配信事故レベル", "user": "配信民99", "utype": "member"},
-        {"type": "wait", "sec": 0.1},
-        {"type": "chat", "msg": "鳥肌立ったわ", "user": "まっちゃん"},
-        {"type": "wait", "sec": 0.1},
-        {"type": "chat", "msg": "神回確定", "user": "視聴者A"},
-        {"type": "wait", "sec": 0.8},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "……行こう。神社の中に、全部の答えがある", "voice": "v432"},
-        {"type": "wait", "sec": 5.0},
-
-        {"type": "superchat", "msg": "最後まで見届ける", "user": "夜桜モカ", "amount": 10000},
-        {"type": "wait", "sec": 1.0},
-
-        {"type": "say_clear"},
-
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-        {"type": "_comment", "_": "  ROUTE C — 配信を止める → BAD END「わたしはだあれ」"},
-        {"type": "_comment", "_": "══════════════════════════════════════"},
-
-        {"type": "label", "name": "route_stop"},
-
-        {"type": "say", "text": "もういい……配信止める。こんなの見せたくない……", "voice": "v433"},
-        {"type": "wait", "sec": 4.5},
-
-        {"type": "chat", "msg": "は？やめんなよ", "user": "視聴者A"},
-        {"type": "wait", "sec": 0.2},
-        {"type": "chat", "msg": "ここまで来て逃げるのかよ", "user": "配信民99", "utype": "member"},
-        {"type": "wait", "sec": 0.2},
-        {"type": "chat", "msg": "同接9万のためにやってんだろ", "user": "まっちゃん"},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "うるさい！　怖いんだよ！　もう無理……！", "voice": "v434"},
-        {"type": "wait", "sec": 4.0},
-
-        {"type": "chat", "msg": "承認欲求の塊が何言ってんの", "user": "配信民99", "utype": "member"},
-        {"type": "wait", "sec": 0.2},
-        {"type": "chat", "msg": "逃げるなら最初から来んなよ", "user": "まっちゃん"},
-        {"type": "wait", "sec": 0.2},
-        {"type": "chat", "msg": "期待はずれ", "user": "視聴者A"},
-        {"type": "wait", "sec": 0.2},
-        {"type": "chat", "msg": "つまんね 落ちるわ", "user": "視聴者A"},
-        {"type": "wait", "sec": 0.5},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "……もういい。みんな勝手にして。配信、止める", "voice": "v435"},
-        {"type": "wait", "sec": 4.5},
-
-        {"type": "set_viewers", "count": 0},
-        {"type": "horror_glitch", "intensity": 2.0, "dur": 1.0},
-        {"type": "wait", "sec": 1.0},
-
-        {"type": "say_clear"},
-        {"type": "say", "text": "止めた……これで……", "voice": "v436"},
-        {"type": "wait", "sec": 3.0},
-
-        {"type": "say_clear"},
-
-        {"type": "play_ending", "id": "bad_dare", "ending_title": "わたしはだあれ", "return_label": "cp3_choice",
-         "sections": [
-            {"title": "", "mood": "dark", "image": "res://assets/textures/bad_dare_watashi.jpg", "wait": 1.5, "lines": [
-                {"text": "配信を止めた。", "voice": "res://assets/audio/voice/ch02_mura/v451.wav", "pause": 3.0},
-                {"text": "……あれ、手が透けてる……？", "voice": "res://assets/audio/voice/ch02_mura/v452.wav", "pause": 3.5}
-            ]},
-            {"title": "", "mood": "fear", "image": "res://assets/textures/bad_dare_watashi.jpg", "wait": 1.0, "lines": [
-                {"text": "足も見えなくなってきた。", "voice": "res://assets/audio/voice/ch02_mura/v453.wav", "pause": 3.0},
-                {"text": "配信してないと……消えるの……？", "voice": "res://assets/audio/voice/ch02_mura/v454.wav", "pause": 3.5},
-                {"text": "やだ……誰か……見て……お願い誰か見て……！", "voice": "res://assets/audio/voice/ch02_mura/v455.wav", "pause": 3.5, "emphasis": true}
-            ]},
-            {"title": "", "mood": "fear", "image": "res://assets/textures/bad_dare_watashi.jpg", "wait": 1.5, "lines": [
-                {"text": "「誰？」", "pause": 2.0},
-                {"text": "「誰の配信だっけ」", "pause": 2.5},
-                {"text": "「知らない子だね」", "pause": 3.0},
-                {"text": "見てくれないと……私って……誰だっけ……", "voice": "res://assets/audio/voice/ch02_mura/v456.wav", "pause": 4.0, "emphasis": true}
-            ]}
-        ]}
-    ]
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "_comment",
+            "_": "  ROUTE A — スマホを壊す → BAD END「落伍者の井戸」"
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "label",
+            "name": "route_smash"
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 0.5,
+            "dur": 0.3
+        },
+        {
+            "type": "say",
+            "text": "壊す……壊せばこの呪いも終わる……！",
+            "voice": "v426"
+        },
+        {
+            "type": "wait",
+            "sec": 4.0
+        },
+        {
+            "type": "sfx",
+            "file": "metal/impactMetal_heavy_002.mp3"
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.5,
+            "dur": 0.5
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "……割れた。画面が真っ暗になった。……終わった？",
+            "voice": "v427"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "chat",
+            "msg": "壊しちゃった",
+            "user": "視聴者A",
+            "voice": "c016"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "これで終わり？",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c017"
+        },
+        {
+            "type": "wait",
+            "sec": 0.8
+        },
+        {
+            "type": "_comment",
+            "_": "── 境内に駆け上がる ──"
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "……上に行かないと。境内を確認しないと……！",
+            "voice": "v427b"
+        },
+        {
+            "type": "wait",
+            "sec": 3.5
+        },
+        {
+            "type": "bg_image",
+            "file": "jinja_kaidan.jpg",
+            "dur": 0.3,
+            "brightness": 0.4,
+            "radius": 0.18,
+            "softness": 0.2
+        },
+        {
+            "type": "bg_walk_start",
+            "speed": 2.0,
+            "zoom_end": 1.6,
+            "zoom_dur": 5.0,
+            "radius": 0.18,
+            "softness": 0.2
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.4,
+            "dur": 0.3
+        },
+        {
+            "type": "wait",
+            "sec": 0.4
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.5,
+            "dur": 0.3
+        },
+        {
+            "type": "wait",
+            "sec": 0.4
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.6,
+            "dur": 0.4
+        },
+        {
+            "type": "wait",
+            "sec": 0.4
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.7,
+            "dur": 0.4
+        },
+        {
+            "type": "wait",
+            "sec": 0.4
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.8,
+            "dur": 0.5
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "bg_walk_stop"
+        },
+        {
+            "type": "bg_image_clear",
+            "dur": 0.3
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "……あれ、境内に何かある。井戸……？　蓋が開いてる",
+            "voice": "v428"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 0.8,
+            "dur": 0.3
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "近づかない方がいい……でも足が勝手に……なんで……止まれない……",
+            "voice": "v429"
+        },
+        {
+            "type": "wait",
+            "sec": 5.5
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 1.2,
+            "dur": 0.5
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.3,
+            "dur": 0.4
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "足元が……あ、暗い……下が見えない……深い……",
+            "voice": "v430a"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 2.0,
+            "dur": 0.8
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.5,
+            "dur": 0.5
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "スマホを壊したから……呪いを引き受けたのは……私？",
+            "voice": "v430b"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "sfx",
+            "sound": "scare_hit"
+        },
+        {
+            "type": "scare_flash"
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 2.0,
+            "dur": 2.0
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 5.0,
+            "dur": 3.0
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "あ——落ち——",
+            "voice": "v430c"
+        },
+        {
+            "type": "wait",
+            "sec": 1.5
+        },
+        {
+            "type": "sfx",
+            "file": "metal/impactMetal_heavy_000.mp3"
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 1.0,
+            "dur": 0.8
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "_comment",
+            "_": "── 井戸に落ちた → BAD END再生 ──"
+        },
+        {
+            "type": "play_ending",
+            "id": "bad_ido",
+            "ending_title": "アナタノカワリニ",
+            "return_label": "cp3_choice",
+            "sections": [
+                {
+                    "title": "",
+                    "mood": "dark",
+                    "wait": 1.5,
+                    "lines": [
+                        {
+                            "text": "いてて……体中が痛い……",
+                            "voice": "res://assets/audio/voice/ch02_mura/v440.wav",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "出れない。壁がぬるぬるして、手がかりがない。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v441.wav",
+                            "pause": 3.5
+                        }
+                    ]
+                },
+                {
+                    "title": "",
+                    "mood": "fear",
+                    "image": "res://assets/textures/ido_nashi.jpg",
+                    "wait": 1.0,
+                    "lines": [
+                        {
+                            "text": "見上げると、丸い空が遠くに見える。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v442.wav",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "誰も来ない。誰も助けてくれない。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v443.wav",
+                            "pause": 3.5
+                        }
+                    ]
+                },
+                {
+                    "title": "",
+                    "mood": "fear",
+                    "image": "res://assets/textures/ido_hitokage.jpg",
+                    "wait": 1.0,
+                    "lines": [
+                        {
+                            "text": "……上に誰かいる。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v444.wav",
+                            "pause": 3.0
+                        },
+                        {
+                            "text": "私だ。私が上から覗いている。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v445.wav",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "笑ってる。なんで笑ってるの。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v446.wav",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "「待って！ 助けて！ 行かないで！！」",
+                            "voice": "res://assets/audio/voice/ch02_mura/v447.wav",
+                            "pause": 3.0,
+                            "emphasis": true
+                        }
+                    ]
+                },
+                {
+                    "title": "",
+                    "mood": "fear",
+                    "image": "res://assets/textures/ido_nashi.jpg",
+                    "wait": 1.5,
+                    "lines": [
+                        {
+                            "text": "行っちゃった。何も言わずに。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v448.wav",
+                            "pause": 4.0
+                        },
+                        {
+                            "text": "何時間経ったんだろう。声も出なくなってきた。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v449.wav",
+                            "pause": 4.5
+                        },
+                        {
+                            "text": "スマホを壊したから、あの子が私の代わりに上で——",
+                            "voice": "res://assets/audio/voice/ch02_mura/v450.wav",
+                            "pause": 4.5,
+                            "emphasis": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "_comment",
+            "_": "  ROUTE B — スマホを持っていく → 正解（CP4へ）"
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "label",
+            "name": "route_take"
+        },
+        {
+            "type": "horror_red_clear"
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 0.3,
+            "dur": 0.2
+        },
+        {
+            "type": "bg_image_clear",
+            "dur": 0.3
+        },
+        {
+            "type": "set_viewers",
+            "count": 95000
+        },
+        {
+            "type": "sfx",
+            "sound": "ambient_wind"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "say",
+            "text": "……持っていく。これは証拠だ。答えはこの先にある",
+            "voice": "v431"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "chat",
+            "msg": "戻った！",
+            "user": "視聴者A",
+            "voice": "c018"
+        },
+        {
+            "type": "wait",
+            "sec": 0.1
+        },
+        {
+            "type": "chat",
+            "msg": "同接9万5千ｗｗ",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c019"
+        },
+        {
+            "type": "wait",
+            "sec": 0.1
+        },
+        {
+            "type": "chat",
+            "msg": "今の何！？",
+            "user": "まっちゃん",
+            "voice": "c020"
+        },
+        {
+            "type": "wait",
+            "sec": 0.1
+        },
+        {
+            "type": "chat",
+            "msg": "しゅっち大丈夫？",
+            "user": "ゆきんこ77",
+            "utype": "moderator",
+            "voice": "c021"
+        },
+        {
+            "type": "wait",
+            "sec": 0.1
+        },
+        {
+            "type": "chat",
+            "msg": "心臓止まった",
+            "user": "視聴者A",
+            "voice": "c022"
+        },
+        {
+            "type": "wait",
+            "sec": 0.1
+        },
+        {
+            "type": "chat",
+            "msg": "配信事故レベル",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c023"
+        },
+        {
+            "type": "wait",
+            "sec": 0.1
+        },
+        {
+            "type": "chat",
+            "msg": "鳥肌立ったわ",
+            "user": "まっちゃん",
+            "voice": "c024"
+        },
+        {
+            "type": "wait",
+            "sec": 0.1
+        },
+        {
+            "type": "chat",
+            "msg": "神回確定",
+            "user": "視聴者A",
+            "voice": "c025"
+        },
+        {
+            "type": "wait",
+            "sec": 0.8
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "……行こう。神社の中に、全部の答えがある",
+            "voice": "v432"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "superchat",
+            "msg": "最後まで見届ける",
+            "user": "夜桜モカ",
+            "amount": 10000
+        },
+        {
+            "type": "wait",
+            "sec": 1.0
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "_comment",
+            "_": "  ROUTE C — 配信を止める → BAD END「わたしはだあれ」"
+        },
+        {
+            "type": "_comment",
+            "_": "══════════════════════════════════════"
+        },
+        {
+            "type": "label",
+            "name": "route_stop"
+        },
+        {
+            "type": "say",
+            "text": "もういい……配信止める。こんなの見せたくない……",
+            "voice": "v433"
+        },
+        {
+            "type": "wait",
+            "sec": 4.5
+        },
+        {
+            "type": "chat",
+            "msg": "は？やめんなよ",
+            "user": "視聴者A",
+            "voice": "c026"
+        },
+        {
+            "type": "wait",
+            "sec": 0.2
+        },
+        {
+            "type": "chat",
+            "msg": "ここまで来て逃げるのかよ",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c027"
+        },
+        {
+            "type": "wait",
+            "sec": 0.2
+        },
+        {
+            "type": "chat",
+            "msg": "同接9万のためにやってんだろ",
+            "user": "まっちゃん",
+            "voice": "c028"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "うるさい！　怖いんだよ！　もう無理……！",
+            "voice": "v434"
+        },
+        {
+            "type": "wait",
+            "sec": 4.0
+        },
+        {
+            "type": "chat",
+            "msg": "承認欲求の塊が何言ってんの",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c029"
+        },
+        {
+            "type": "wait",
+            "sec": 0.2
+        },
+        {
+            "type": "chat",
+            "msg": "逃げるなら最初から来んなよ",
+            "user": "まっちゃん",
+            "voice": "c030"
+        },
+        {
+            "type": "wait",
+            "sec": 0.2
+        },
+        {
+            "type": "chat",
+            "msg": "期待はずれ",
+            "user": "視聴者A",
+            "voice": "c031"
+        },
+        {
+            "type": "wait",
+            "sec": 0.2
+        },
+        {
+            "type": "chat",
+            "msg": "つまんね 落ちるわ",
+            "user": "視聴者A",
+            "voice": "c032"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "……もういい。みんな勝手にして。配信、止める",
+            "voice": "v435"
+        },
+        {
+            "type": "wait",
+            "sec": 4.5
+        },
+        {
+            "type": "set_viewers",
+            "count": 0
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 2.0,
+            "dur": 1.0
+        },
+        {
+            "type": "wait",
+            "sec": 1.0
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "止めた……これで……",
+            "voice": "v436"
+        },
+        {
+            "type": "wait",
+            "sec": 3.0
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "play_ending",
+            "id": "bad_dare",
+            "ending_title": "わたしはだあれ",
+            "return_label": "cp3_choice",
+            "sections": [
+                {
+                    "title": "",
+                    "mood": "dark",
+                    "image": "res://assets/textures/bad_dare_watashi.jpg",
+                    "wait": 1.5,
+                    "lines": [
+                        {
+                            "text": "配信を止めた。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v451.wav",
+                            "pause": 3.0
+                        },
+                        {
+                            "text": "……あれ、手が透けてる……？",
+                            "voice": "res://assets/audio/voice/ch02_mura/v452.wav",
+                            "pause": 3.5
+                        }
+                    ]
+                },
+                {
+                    "title": "",
+                    "mood": "fear",
+                    "image": "res://assets/textures/bad_dare_watashi.jpg",
+                    "wait": 1.0,
+                    "lines": [
+                        {
+                            "text": "足も見えなくなってきた。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v453.wav",
+                            "pause": 3.0
+                        },
+                        {
+                            "text": "配信してないと……消えるの……？",
+                            "voice": "res://assets/audio/voice/ch02_mura/v454.wav",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "やだ……誰か……見て……お願い誰か見て……！",
+                            "voice": "res://assets/audio/voice/ch02_mura/v455.wav",
+                            "pause": 3.5,
+                            "emphasis": true
+                        }
+                    ]
+                },
+                {
+                    "title": "",
+                    "mood": "fear",
+                    "image": "res://assets/textures/bad_dare_watashi.jpg",
+                    "wait": 1.5,
+                    "lines": [
+                        {
+                            "text": "「誰？」",
+                            "pause": 2.0
+                        },
+                        {
+                            "text": "「誰の配信だっけ」",
+                            "pause": 2.5
+                        },
+                        {
+                            "text": "「知らない子だね」",
+                            "pause": 3.0
+                        },
+                        {
+                            "text": "見てくれないと……私って……誰だっけ……",
+                            "voice": "res://assets/audio/voice/ch02_mura/v456.wav",
+                            "pause": 4.0,
+                            "emphasis": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "chat_voice_dir": "res://assets/audio/voice/ch02_mura_chat/"
 }

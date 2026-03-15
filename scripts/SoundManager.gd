@@ -25,9 +25,10 @@ var _step_cats     : Dictionary = {}   # category → Array of paths
 
 var _monster_idx   : int = 0
 
-var _voice    : AudioStreamPlayer = null
-var _bgm      : AudioStreamPlayer = null
-var _sfx      : AudioStreamPlayer = null
+var _voice      : AudioStreamPlayer = null
+var _chat_voice : AudioStreamPlayer = null
+var _bgm        : AudioStreamPlayer = null
+var _sfx        : AudioStreamPlayer = null
 
 
 func _ready() -> void:
@@ -35,9 +36,10 @@ func _ready() -> void:
 	_step    = _make_player(0.0)
 	_monster = _make_player(0.0)
 	_door    = _make_player(0.0)
-	_voice   = _make_player(0.0)
-	_bgm     = _make_player(0.0)
-	_sfx     = _make_player(0.0)
+	_voice      = _make_player(0.0)
+	_chat_voice = _make_player(-4.0)
+	_bgm        = _make_player(0.0)
+	_sfx        = _make_player(0.0)
 	_scan_all()
 
 
@@ -239,6 +241,17 @@ func play_voice(path: String, vol_db: float = 0.0) -> void:
 ## ボイスを停止
 func stop_voice() -> void:
 	_voice.stop()
+
+
+## チャットコメントボイス再生（主人公ボイスと同時再生可能）
+func play_chat_voice(path: String, vol_db: float = -4.0) -> void:
+	var s := _load_audio(path)
+	if not s:
+		return
+	_chat_voice.stop()
+	_chat_voice.stream    = s
+	_chat_voice.volume_db = vol_db
+	_chat_voice.play()
 
 
 ## 全音声を即停止（バッドエンド遷移等）
