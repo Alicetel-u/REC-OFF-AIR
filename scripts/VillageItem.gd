@@ -7,10 +7,12 @@ const ItemResourceScript := preload("res://Inventory/ItemResource.gd")
 @onready var mesh_inst : MeshInstance3D = $MeshInstance3D
 @onready var glow      : OmniLight3D    = $GlowLight
 
-var item_id : String = ""            # "kibori_head" / "sabi_kama" / "utsushi_ofuda"
+var item_id : String = ""
 var item_display_name : String = ""
 var item_description  : String = ""
 var item_image_path   : String = ""  # ポラロイド用画像パス
+var item_dialogue     : String = ""  # 対応するdialogue JSON名
+var item_mesh_type    : String = "sphere"  # メッシュ種別
 var glow_color : Color = Color(0.3, 0.8, 0.4)
 
 var bob_t : float = 0.0
@@ -35,38 +37,38 @@ func _setup_appearance() -> void:
 	glow.light_energy = 1.5
 	glow.omni_range = 6.0
 
-	match item_id:
-		"kibori_head":
+	var mat := StandardMaterial3D.new()
+	mat.emission_enabled = true
+	mat.emission = glow_color * 0.3
+	mat.emission_energy_multiplier = 0.5
+
+	match item_mesh_type:
+		"sphere":
 			var sphere := SphereMesh.new()
 			sphere.radius = 0.2
 			sphere.height = 0.4
 			mesh_inst.mesh = sphere
-			var mat := StandardMaterial3D.new()
 			mat.albedo_color = Color(0.45, 0.3, 0.15)
-			mat.emission_enabled = true
-			mat.emission = glow_color * 0.3
-			mat.emission_energy_multiplier = 0.5
-			mesh_inst.material_override = mat
-		"sabi_kama":
+		"box_flat":
 			var box := BoxMesh.new()
 			box.size = Vector3(0.6, 0.05, 0.15)
 			mesh_inst.mesh = box
-			var mat := StandardMaterial3D.new()
 			mat.albedo_color = Color(0.3, 0.15, 0.1)
-			mat.emission_enabled = true
-			mat.emission = glow_color * 0.3
-			mat.emission_energy_multiplier = 0.5
-			mesh_inst.material_override = mat
-		"utsushi_ofuda":
+		"box_thin":
 			var box := BoxMesh.new()
 			box.size = Vector3(0.12, 0.2, 0.01)
 			mesh_inst.mesh = box
-			var mat := StandardMaterial3D.new()
 			mat.albedo_color = Color(0.9, 0.85, 0.7)
-			mat.emission_enabled = true
 			mat.emission = glow_color * 0.4
 			mat.emission_energy_multiplier = 0.8
-			mesh_inst.material_override = mat
+		_:
+			var sphere := SphereMesh.new()
+			sphere.radius = 0.15
+			sphere.height = 0.3
+			mesh_inst.mesh = sphere
+			mat.albedo_color = glow_color
+
+	mesh_inst.material_override = mat
 
 
 func _process(delta: float) -> void:
@@ -96,11 +98,13 @@ func _on_body_entered(body: Node3D) -> void:
 	await _show_polaroid()
 
 	# dialogue JSON 演出を実行
-	var json_name := ""
-	match item_id:
-		"kibori_head": json_name = "ch02_mura_item_a"
-		"sabi_kama":   json_name = "ch02_mura_item_b"
-		"utsushi_ofuda": json_name = "ch02_mura_item_c"
+	var json_name : String = item_dialogue
+	if json_name == "":
+		# フォールバック（旧互換）
+		match item_id:
+			"kibori_head": json_name = "ch02_mura_item_a"
+			"sabi_kama":   json_name = "ch02_mura_item_b"
+			"utsushi_ofuda": json_name = "ch02_mura_item_c"
 	if json_name != "":
 		var main : Node = get_tree().current_scene
 		if main and main.has_method("_run_chapter_opening"):
