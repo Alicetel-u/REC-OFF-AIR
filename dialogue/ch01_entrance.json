@@ -4240,7 +4240,7 @@
         },
         {
             "type": "_comment",
-            "_": "── CP1-4 三択分岐 ──"
+            "_": "── CP1-4 三択分岐（初回：迷い選択肢あり） ──"
         },
         {
             "type": "label",
@@ -4257,8 +4257,8 @@
                     "sub": ""
                 },
                 {
-                    "text": "もう一回トイレを調べる。証拠を押さえたい。",
-                    "sub": ""
+                    "text": "……少し待って。まだ決められない。",
+                    "sub": "迷っている"
                 },
                 {
                     "text": "……やっぱ帰る。無理。",
@@ -4267,6 +4267,103 @@
             ],
             "targets": [
                 "cp4_continue",
+                "cp4_hesitate",
+                "cp4_bad_end"
+            ]
+        },
+        {
+            "type": "_comment",
+            "_": "── 迷い選択 → チャットに突っ込まれて2択に ──"
+        },
+        {
+            "type": "label",
+            "name": "cp4_hesitate"
+        },
+        {
+            "type": "chat",
+            "msg": "迷ってる場合じゃないだろ",
+            "user": "深夜組",
+            "voice": "c161"
+        },
+        {
+            "type": "wait",
+            "sec": 0.4
+        },
+        {
+            "type": "chat",
+            "msg": "悩むってことはもう答え出てるんだよ",
+            "user": "ゆきんこ77",
+            "utype": "moderator",
+            "voice": "c162"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "say",
+            "text": "……わかってる。わかってるけど。",
+            "voice": "v048"
+        },
+        {
+            "type": "wait",
+            "sec": 2.47
+        },
+        {
+            "type": "chat",
+            "msg": "5万人待ってんだよ 早く決めろ",
+            "user": "名無しさん",
+            "voice": "c163"
+        },
+        {
+            "type": "wait",
+            "sec": 0.4
+        },
+        {
+            "type": "superchat",
+            "user": "ホラー好き太郎",
+            "amount": 2000,
+            "msg": "しゅっち、行くか帰るかどっちかにしろ！"
+        },
+        {
+            "type": "wait",
+            "sec": 0.6
+        },
+        {
+            "type": "chat",
+            "msg": "待ってても何も変わらないぞ",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c164"
+        },
+        {
+            "type": "wait",
+            "sec": 0.8
+        },
+        {
+            "type": "_comment",
+            "_": "── 2択で再表示（迷い選択肢なし） ──"
+        },
+        {
+            "type": "label",
+            "name": "cp4_choice_final"
+        },
+        {
+            "type": "choice",
+            "title": "▼  逃 げ る か 、 進 む か  ▼",
+            "danger": true,
+            "prompt": "もう迷ってる時間はない。",
+            "choices": [
+                {
+                    "text": "……奥に進む。この目で確かめる。",
+                    "sub": ""
+                },
+                {
+                    "text": "……やっぱ帰る。無理。",
+                    "sub": "怖気づいてしまった"
+                }
+            ],
+            "targets": [
                 "cp4_continue",
                 "cp4_bad_end"
             ]
@@ -4287,7 +4384,7 @@
             "type": "chat",
             "msg": "え、帰るの？",
             "user": "深夜組",
-            "voice": "c161"
+            "voice": "c165"
         },
         {
             "type": "wait",
@@ -4298,7 +4395,7 @@
             "msg": "ここまで来て！？",
             "user": "ホラー好き太郎",
             "utype": "member",
-            "voice": "c162"
+            "voice": "c166"
         },
         {
             "type": "wait",
@@ -4317,7 +4414,7 @@
             "type": "chat",
             "msg": "5万人の前で逃げんのかよ",
             "user": "名無しさん",
-            "voice": "c163"
+            "voice": "c167"
         },
         {
             "type": "wait",
@@ -4346,7 +4443,7 @@
             "type": "chat",
             "msg": "草",
             "user": "視聴者A",
-            "voice": "c164"
+            "voice": "c168"
         },
         {
             "type": "wait",
@@ -4357,7 +4454,7 @@
             "msg": "配信者の鑑",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c165"
+            "voice": "c169"
         },
         {
             "type": "wait",
@@ -4367,7 +4464,7 @@
             "type": "chat",
             "msg": "生存ルートで草",
             "user": "ガクブル太郎",
-            "voice": "c166"
+            "voice": "c170"
         },
         {
             "type": "wait",
@@ -4580,17 +4677,104 @@
         },
         {
             "type": "_comment",
-            "_": "── 正規ルート続行 ──"
+            "_": "── 正規ルート続行：葛藤→決意 ──"
         },
         {
             "type": "label",
             "name": "cp4_continue"
         },
         {
+            "type": "say",
+            "text": "……正直、足が震えてる。さっきのトイレのこと、まだ頭から離れない。",
+            "voice": "v049"
+        },
+        {
+            "type": "wait",
+            "sec": 6.05
+        },
+        {
+            "type": "chat",
+            "msg": "正直でいいぞ",
+            "user": "深夜組",
+            "voice": "c171"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "今からでも帰れるんだぞ？",
+            "user": "ガクブル太郎",
+            "voice": "c172"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "say",
+            "text": "でもさ……あの子、天井からあたしのこと見てたんだよ。",
+            "voice": "v050"
+        },
+        {
+            "type": "wait",
+            "sec": 4.0
+        },
+        {
+            "type": "say",
+            "text": "助けてって言ってたのかもしれない。",
+            "voice": "v051"
+        },
+        {
+            "type": "wait",
+            "sec": 2.31
+        },
+        {
+            "type": "chat",
+            "msg": "……",
+            "user": "ホラー好き太郎",
+            "utype": "member",
+            "voice": "c173"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "chat",
+            "msg": "急にマジトーンやめろ",
+            "user": "名無しさん",
+            "voice": "c174"
+        },
+        {
+            "type": "wait",
+            "sec": 0.4
+        },
+        {
+            "type": "superchat",
+            "user": "古参リスナー",
+            "amount": 10000,
+            "msg": "しゅっち、無理すんな。でもお前が決めたなら応援する"
+        },
+        {
+            "type": "wait",
+            "sec": 0.8
+        },
+        {
+            "type": "say",
+            "text": "……ありがと。うん。行く。逃げたら一生後悔する気がする。",
+            "voice": "v052"
+        },
+        {
+            "type": "wait",
+            "sec": 4.85
+        },
+        {
             "type": "chat",
             "msg": "目の色変わったぞこいつ",
             "user": "深夜組",
-            "voice": "c167"
+            "voice": "c175"
         },
         {
             "type": "wait",
@@ -4604,14 +4788,14 @@
         },
         {
             "type": "wait",
-            "sec": 0.8
+            "sec": 0.6
         },
         {
             "type": "chat",
             "msg": "スパチャ止まんねえ",
             "user": "ホラー好き太郎",
             "utype": "member",
-            "voice": "c168"
+            "voice": "c176"
         },
         {
             "type": "wait",
@@ -4622,39 +4806,15 @@
             "msg": "こいつ行く気だぞ",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c169"
+            "voice": "c177"
         },
         {
             "type": "wait",
-            "sec": 1.0
-        },
-        {
-            "type": "choice",
-            "title": "▼  引き返せますか？  ▼",
-            "danger": true,
-            "prompt": "5万5千人が見ている。ここで、帰る……？",
-            "choices": [
-                {
-                    "text": "……帰るべき。命が大事。",
-                    "sub": ""
-                },
-                {
-                    "text": "……行く。みんなが待ってる。",
-                    "sub": ""
-                }
-            ],
-            "targets": [
-                "cp4_obsession",
-                "cp4_obsession"
-            ]
-        },
-        {
-            "type": "label",
-            "name": "cp4_obsession"
+            "sec": 0.8
         },
         {
             "type": "_comment",
-            "_": "── Phase3: 反転（承認欲求に負ける） ──"
+            "_": "── Phase3: 反転（覚悟を決めた → 承認欲求に飲まれていく） ──"
         },
         {
             "type": "say",
@@ -4678,7 +4838,7 @@
             "type": "chat",
             "msg": "うわ振り返った",
             "user": "ガクブル太郎",
-            "voice": "c170"
+            "voice": "c178"
         },
         {
             "type": "wait",
@@ -4688,7 +4848,7 @@
             "type": "chat",
             "msg": "承認欲求モンスター",
             "user": "名無しさん",
-            "voice": "c171"
+            "voice": "c179"
         },
         {
             "type": "wait",
@@ -4699,7 +4859,7 @@
             "msg": "いいぞ！！！！",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c172"
+            "voice": "c180"
         },
         {
             "type": "wait",
@@ -4748,7 +4908,7 @@
             "msg": "かっけえ……",
             "user": "ホラー好き太郎",
             "utype": "member",
-            "voice": "c173"
+            "voice": "c181"
         },
         {
             "type": "wait",
@@ -4778,7 +4938,7 @@
             "msg": "スパチャで背中押すの草",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c174"
+            "voice": "c182"
         },
         {
             "type": "wait",
@@ -4788,7 +4948,7 @@
             "type": "chat",
             "msg": "6万いくぞこれ",
             "user": "視聴者A",
-            "voice": "c175"
+            "voice": "c183"
         },
         {
             "type": "wait",
