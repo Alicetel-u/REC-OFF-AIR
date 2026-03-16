@@ -1,0 +1,36 @@
+#!/bin/bash
+# post-merge hook: プル後にGodotリインポートを自動実行
+# 新規・変更されたアセット（画像/音声/モデル等）のインポートキャッシュを更新する
+
+# Godotパスを探す
+GODOT=""
+for candidate in \
+	"/c/Users/【RST-9】リバイブ新所沢/Desktop/Godot_v4.6.1-stable_win64.exe/Godot_v4.6.1-stable_win64_console.exe" \
+	"$(which godot 2>/dev/null)"; do
+	if [ -x "$candidate" ]; then
+		GODOT="$candidate"
+		break
+	fi
+done
+
+if [ -z "$GODOT" ]; then
+	echo "[post-merge] Godot が見つかりません。手動で godot --headless --import を実行してください。"
+	exit 0
+fi
+
+# アセットファイルが変更されたかチェック（画像/音声/モデル/シェーダー）
+CHANGED=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD -- \
+	'*.png' '*.jpg' '*.jpeg' '*.svg' \
+	'*.wav' '*.ogg' '*.mp3' \
+	'*.glb' '*.gltf' '*.fbx' '*.obj' \
+	'*.tres' '*.tscn' '*.gdshader' \
+	2>/dev/null)
+
+if [ -z "$CHANGED" ]; then
+	exit 0
+fi
+
+COUNT=$(echo "$CHANGED" | wc -l)
+echo "[post-merge] $COUNT 件のアセットが変更されました。Godotリインポートを実行中..."
+"$GODOT" --headless --import --path "$(git rev-parse --show-toplevel)" 2>/dev/null
+echo "[post-merge] リインポート完了"

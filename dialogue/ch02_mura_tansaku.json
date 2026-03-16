@@ -1,0 +1,974 @@
+{
+  "chapter": "ch02_mura_tansaku",
+  "_note": "CP2 廃倉庫。到着→VHS1本発見→みゆき遭遇→ブラウン管再生→神社へ",
+  "_pv_spawn": { "x": 0, "z": 15 },
+  "events": [
+    {
+      "type": "_comment",
+      "_": "═══════════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション1：廃倉庫到着 — トイレから脱出】"
+    },
+    {
+      "type": "_comment",
+      "_": "═══════════════════════════════════════════════════"
+    },
+    {
+      "type": "sfx",
+      "sound": "ambient_wind"
+    },
+    {
+      "type": "set_viewers",
+      "count": 32000
+    },
+    {
+      "type": "say",
+      "text": "ハァ、ハァ……トイレからなんとか逃げた。……見て、あの建物。DMで言ってた『証拠のVHS』がある廃倉庫だ。配信的には、ここで証拠をゲットするのがセオリーだよね",
+      "reading": "ハァ、ハァ……トイレからなんとか逃げた。……見て、あの建物。ディーエムで言ってた『証拠のブイエイチエス』がある廃倉庫だ。配信的には、ここで証拠をゲットするのがセオリーだよね",
+      "voice": "v201"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "chat",
+      "msg": "証拠ｗ",
+      "user": "草生える太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "ガチの事件じゃん",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "早く入れよ",
+      "user": "夜更かし太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "Kが「見ている」って言ってるぞ",
+      "user": "廃墟マニア",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "_comment",
+      "_": "── 廃倉庫に侵入 ──"
+    },
+    {
+      "type": "say",
+      "text": "……よし、入るよ。みんな、ここからが本番だから",
+      "voice": "v202"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/door/creak1.ogg",
+      "vol": -3.0
+    },
+    {
+      "type": "chat",
+      "msg": "ドアの音やばすぎ",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "気をつけてね…",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "say",
+      "text": "うわ、カビ臭い……。棚がいっぱい並んでる。懐中電灯で照らすよ",
+      "voice": "v203"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "chat",
+      "msg": "廃墟感すごいな",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "何年放置されてるんだこれ",
+      "user": "RPG脳"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "_comment",
+      "_": "═══════════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション2：VHSテープ発見 ─ 倉庫の奥の棚】"
+    },
+    {
+      "type": "_comment",
+      "_": "═══════════════════════════════════════════════════"
+    },
+    {
+      "type": "nav_to",
+      "x": 8,
+      "z": -10,
+      "label": "奥の棚",
+      "radius": 3.0
+    },
+    {
+      "type": "say",
+      "text": "あ、あった！ ラベルに『199410記録』って書いてある。これ、私が生まれた年にみゆきちゃんが……",
+      "reading": "あ、あった！ ラベルに『いちきゅうきゅうよんいちぜろ記録』って書いてある。これ、私が生まれた年にみゆきちゃんが……",
+      "voice": "v204"
+    },
+    {
+      "type": "wait",
+      "sec": 3.5
+    },
+    {
+      "type": "chat",
+      "msg": "1994年……30年以上前じゃん",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "VHSまだ残ってるのすごい",
+      "user": "技術班"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "再生できるの？",
+      "user": "視聴者A"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "say",
+      "text": "テープ確保……。でもここで再生する方法が……あ、奥にモニターっぽいのが見える",
+      "reading": "テープ確保……。でもここで再生する方法が……あ、奥にモニターっぽいのが見える",
+      "voice": "v205"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "set_viewers",
+      "count": 36000
+    },
+    {
+      "type": "chat",
+      "msg": "奥にテレビある！",
+      "user": "夜更かし太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "_comment",
+      "_": "═══════════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション3：みゆき遭遇 ─ テープに触れた者の前に現れる】"
+    },
+    {
+      "type": "_comment",
+      "_": "═══════════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "── テープを取った直後、倉庫の照明が落ちる ──"
+    },
+    {
+      "type": "light_flicker",
+      "count": 4,
+      "dur": 2.0
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/door/creak2.ogg",
+      "vol": -2.0
+    },
+    {
+      "type": "say",
+      "text": "え……懐中電灯が……チカチカして……",
+      "voice": "v206"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "chat",
+      "msg": "ライト消えかけてる！！",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "なんか奥に見える……",
+      "user": "視聴者A"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "_comment",
+      "_": "── みゆき出現：倉庫の奥、棚の隙間に立っている ──"
+    },
+    {
+      "type": "miyuki_spawn",
+      "pos": [-8, 0, -18],
+      "scale": 3.0,
+      "upside_down": false
+    },
+    {
+      "type": "horror_flash",
+      "dur": 0.1
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.12,
+      "dur": 2.0
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 1.0,
+      "dur": 2.5
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/metal/impactMetal_heavy_003.ogg",
+      "vol": -1.0
+    },
+    {
+      "type": "say",
+      "text": "ッ！？ だ、誰かいる！！ 棚の……棚の向こうに……！！",
+      "voice": "v207"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "set_viewers",
+      "count": 43000
+    },
+    {
+      "type": "chat",
+      "msg": "うわああ！！！！",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "女の子いる！髪長い！",
+      "user": "夜更かし太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "みゆきちゃん！？",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "逃げろ逃げろ逃げろ",
+      "user": "配信民99",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "_comment",
+      "_": "── みゆきがこちらを向く、痙攣開始 ──"
+    },
+    {
+      "type": "miyuki_move",
+      "convulsion_intensity": 0.6,
+      "track_player": true
+    },
+    {
+      "type": "desaturate",
+      "amount": 0.7,
+      "dur": 0.5
+    },
+    {
+      "type": "vignette",
+      "amount": 0.6,
+      "dur": 0.5
+    },
+    {
+      "type": "say",
+      "text": "こっち見てる……首が……首が変な方向に曲がって……",
+      "reading": "こっち見てる……くびが……くびが変な方向に曲がって……",
+      "voice": "v208"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "superchat",
+      "name": "恐怖スパチャ",
+      "msg": "痙攣してる！！やばい！！",
+      "amount": 10000
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "_comment",
+      "_": "── みゆきが一瞬でプレイヤーの目の前に移動 ──"
+    },
+    {
+      "type": "miyuki_move",
+      "pos": [0, 0, -8],
+      "convulsion_intensity": 1.0,
+      "light_energy": 12.0
+    },
+    {
+      "type": "horror_flash",
+      "dur": 0.08
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.15,
+      "dur": 3.0
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/bell/impactBell_heavy_000.ogg",
+      "vol": 0.0
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 1.0,
+      "dur": 3.0
+    },
+    {
+      "type": "say",
+      "text": "いやああああ！！ 目の前に！！ 来ないで！！ 来ないでよ！！",
+      "voice": "v209"
+    },
+    {
+      "type": "wait",
+      "sec": 3.5
+    },
+    {
+      "type": "chat",
+      "msg": "ぎゃああああ！！！！",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.2
+    },
+    {
+      "type": "chat",
+      "msg": "画面越しでも怖いんだが",
+      "user": "草生える太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "鐘の音やばすぎ",
+      "user": "技術班"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "_comment",
+      "_": "── みゆき消失 → 演出解除 ──"
+    },
+    {
+      "type": "horror_flash",
+      "dur": 0.2
+    },
+    {
+      "type": "miyuki_despawn"
+    },
+    {
+      "type": "desaturate",
+      "amount": 0.0,
+      "dur": 1.0
+    },
+    {
+      "type": "vignette",
+      "amount": 0.0,
+      "dur": 1.0
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "say",
+      "text": "消えた……？ 今のは……みゆきちゃん……？ なんで、ここに……",
+      "voice": "v210"
+    },
+    {
+      "type": "wait",
+      "sec": 3.5
+    },
+    {
+      "type": "chat",
+      "msg": "消えた……",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "トイレの時と同じ子だよな",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "テープに触ったから来たんじゃ",
+      "user": "廃墟マニア",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "say",
+      "text": "……みゆきちゃんがテープを守ってた……？ でも、もう手に入れた。このテープの中身を確かめないと",
+      "voice": "v211"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "set_viewers",
+      "count": 50000
+    },
+    {
+      "type": "_comment",
+      "_": "═══════════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション4：ブラウン管モニター — 1994年の映像に今の私が】"
+    },
+    {
+      "type": "_comment",
+      "_": "═══════════════════════════════════════════════════"
+    },
+    {
+      "type": "nav_to",
+      "x": 0,
+      "z": -20,
+      "label": "モニター",
+      "radius": 4.0
+    },
+    {
+      "type": "say",
+      "text": "倉庫の一番奥に……古いブラウン管モニターが何台も並んでる。VHSデッキも繋がってる",
+      "reading": "倉庫の一番奥に……古いブラウン管モニターが何台も並んでる。ブイエイチエスデッキも繋がってる",
+      "voice": "v212"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "chat",
+      "msg": "さっきの後でまだ進むの！？",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "配信者根性すごい",
+      "user": "草生える太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "say",
+      "text": "テープをデッキに入れ……",
+      "voice": "v213"
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "_comment",
+      "_": "── モニターが勝手に起動 → CRTエフェクトON ──"
+    },
+    {
+      "type": "crt_on",
+      "dur": 0.8
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/metal/impactMetal_heavy_001.ogg",
+      "vol": -5.0
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 0.8,
+      "dur": 2.0
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.06,
+      "dur": 1.5
+    },
+    {
+      "type": "say",
+      "text": "！？ モニターが全部勝手についた！ 触ってないのに！",
+      "voice": "v214"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "set_viewers",
+      "count": 58000
+    },
+    {
+      "type": "chat",
+      "msg": "全台同時に！？",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "電源コード抜けてるのに映ってる",
+      "user": "技術班"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "_comment",
+      "_": "── 1994年の粗い映像 ──"
+    },
+    {
+      "type": "desaturate",
+      "amount": 0.6,
+      "dur": 0.5
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 0.4,
+      "dur": 3.0
+    },
+    {
+      "type": "say",
+      "text": "映像が流れてる……ザラザラの画質。日付は1994年10月。この倉庫の中だ、30年前の",
+      "reading": "映像が流れてる……ザラザラの画質。日付はせんきゅうひゃくきゅうじゅうよねん十月。この倉庫の中だ、さんじゅうねんまえの",
+      "voice": "v215"
+    },
+    {
+      "type": "wait",
+      "sec": 3.5
+    },
+    {
+      "type": "chat",
+      "msg": "30年前のこの場所……",
+      "user": "廃墟マニア",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "みゆきちゃんの時代か",
+      "user": "ホラー好き太郎",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "_comment",
+      "_": "── 映像の中にしゅっちの姿 ──"
+    },
+    {
+      "type": "horror_flash",
+      "dur": 0.2
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.08,
+      "dur": 1.5
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 1.0,
+      "dur": 2.0
+    },
+    {
+      "type": "say",
+      "text": "……え？ 映像の中に誰かいる。あの服、あの髪……",
+      "voice": "v216"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "set_viewers",
+      "count": 65000
+    },
+    {
+      "type": "say",
+      "text": "これ、私！？ なんで30年前のビデオに『今の私』が映ってるの！？",
+      "reading": "これ、わたし！？ なんでさんじゅうねんまえのビデオに『いまのわたし』が映ってるの！？",
+      "voice": "v217"
+    },
+    {
+      "type": "wait",
+      "sec": 3.5
+    },
+    {
+      "type": "chat",
+      "msg": "え！？ しゅっちが映ってる！？",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "嘘だろ……同じ人じゃん",
+      "user": "視聴者A"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "superchat",
+      "name": "震えるスパチャ",
+      "msg": "映像の中のしゅっちが追い詰められてる……",
+      "amount": 10000
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "_comment",
+      "_": "── 映像の中のしゅっちが追い詰められる ──"
+    },
+    {
+      "type": "vhs_glitch",
+      "intensity": 0.9,
+      "dur": 2.5
+    },
+    {
+      "type": "vignette",
+      "amount": 0.6,
+      "dur": 0.5
+    },
+    {
+      "type": "say",
+      "text": "映像の中の私が……逃げてる。何かに追われて、壁に追い詰められて……！",
+      "voice": "v218"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "horror_flash",
+      "dur": 0.15
+    },
+    {
+      "type": "camera_shake",
+      "intensity": 0.1,
+      "dur": 2.0
+    },
+    {
+      "type": "say",
+      "text": "やだ、消して！ 消してよ！！",
+      "voice": "v219"
+    },
+    {
+      "type": "wait",
+      "sec": 2.0
+    },
+    {
+      "type": "set_viewers",
+      "count": 73000
+    },
+    {
+      "type": "chat",
+      "msg": "モニター壊せ！！",
+      "user": "夜更かし太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "逃げろしゅっち！！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "コンセント刺さってないのに映ってるんだが",
+      "user": "技術班"
+    },
+    {
+      "type": "wait",
+      "sec": 1.0
+    },
+    {
+      "type": "_comment",
+      "_": "═══════════════════════════════════════════════════"
+    },
+    {
+      "type": "_comment",
+      "_": "【セクション5：テープ回収 — 倉庫脱出 — 神社へ】"
+    },
+    {
+      "type": "_comment",
+      "_": "═══════════════════════════════════════════════════"
+    },
+    {
+      "type": "crt_off",
+      "dur": 0.5
+    },
+    {
+      "type": "desaturate",
+      "amount": 0.0,
+      "dur": 0.3
+    },
+    {
+      "type": "vignette",
+      "amount": 0.0,
+      "dur": 0.3
+    },
+    {
+      "type": "sfx",
+      "file": "res://assets/audio/sfx/metal/impactMetal_heavy_003.ogg",
+      "vol": -3.0
+    },
+    {
+      "type": "say",
+      "text": "……これで世界が変わる。でも、これをどこかで流さなきゃ",
+      "voice": "v220"
+    },
+    {
+      "type": "wait",
+      "sec": 3.0
+    },
+    {
+      "type": "chat",
+      "msg": "流すってどこで？",
+      "user": "視聴者A"
+    },
+    {
+      "type": "wait",
+      "sec": 0.4
+    },
+    {
+      "type": "chat",
+      "msg": "警察に持っていけよ",
+      "user": "RPG脳"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "chat",
+      "msg": "この村に警察あると思う？",
+      "user": "廃墟マニア",
+      "utype": "member"
+    },
+    {
+      "type": "wait",
+      "sec": 0.8
+    },
+    {
+      "type": "say",
+      "text": "……神社！ 神社なら上映できる場所があるはず！！",
+      "voice": "v221"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "set_viewers",
+      "count": 80000
+    },
+    {
+      "type": "chat",
+      "msg": "神社で上映会！？",
+      "user": "ガクブル太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "chat",
+      "msg": "配信者の発想で草",
+      "user": "草生える太郎"
+    },
+    {
+      "type": "wait",
+      "sec": 0.3
+    },
+    {
+      "type": "superchat",
+      "name": "赤スパ太郎",
+      "msg": "しゅっち行け！真実を暴け！",
+      "amount": 50000
+    },
+    {
+      "type": "wait",
+      "sec": 1.5
+    },
+    {
+      "type": "chat",
+      "msg": "8万迫ってるぞ！",
+      "user": "ゆきんこ77",
+      "utype": "moderator"
+    },
+    {
+      "type": "wait",
+      "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "みんな……ここからが本当の配信だ。神社に行く！",
+      "voice": "v222"
+    },
+    {
+      "type": "wait",
+      "sec": 2.5
+    },
+    {
+      "type": "fade_black",
+      "dur": 1.0
+    },
+    {
+      "type": "say_clear"
+    },
+    {
+      "type": "sleep",
+      "sec": 1.5
+    },
+    {
+      "type": "fade_clear",
+      "dur": 0.8
+    }
+  ]
+}

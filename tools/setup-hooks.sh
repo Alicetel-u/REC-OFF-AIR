@@ -13,4 +13,9 @@ cp "$SCRIPT_DIR/pre-commit" "$HOOK_DIR/pre-commit"
 chmod +x "$HOOK_DIR/pre-commit"
 echo "  pre-commit フックをインストールしました"
 
+# post-merge フックをコピー（プル後の自動リインポート）
+cp "$SCRIPT_DIR/post-merge" "$HOOK_DIR/post-merge"
+chmod +x "$HOOK_DIR/post-merge"
+echo "  post-merge フックをインストールしました"
+
 echo "=== 完了 ==="
