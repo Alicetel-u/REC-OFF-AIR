@@ -104,50 +104,54 @@ func _create_exit(pos: Vector3) -> Area3D:
 	return exit
 
 
-## CP3 村の探索: 固有アイテム3種 + 使用ポイント2箇所を生成
+## CP3 村の探索: JSON外部定義からアイテム・使用ポイントを生成
 func _spawn_village_items(chapter: Resource, parent: Node) -> void:
-	# アイテム定義: [item_id, display_name, description, glow_color]
-	var item_defs := [
-		["kibori_head", "木彫りの頭",
-			"眼球の嵌め込まれた木彫りの頭。視線がカメラを追ってくる。",
-			Color(0.6, 0.2, 0.1)],
-		["sabi_kama", "錆びた鎌",
-			"刃こぼれした錆びた鎌。誰かの恨みがこもっている。",
-			Color(0.8, 0.15, 0.1)],
-		["utsushi_ofuda", "写し鏡の御札",
-			"鏡のように光を反射する特殊な御札。",
-			Color(0.9, 0.85, 0.5)],
-	]
+	var cfg := _load_json("res://dialogue/ch02_mura_items_config.json")
 
-	for i in range(mini(item_defs.size(), chapter.item_positions.size())):
+	# アイテム生成
+	var items_arr : Array = cfg.get("items", [])
+	for i in range(mini(items_arr.size(), chapter.item_positions.size())):
+		var d : Dictionary = items_arr[i]
 		var vi := VillageItemScene.instantiate()
 		vi.name = "VillageItem_%d" % (i + 1)
 		vi.position = chapter.item_positions[i]
-		vi.item_id = item_defs[i][0]
-		vi.item_display_name = item_defs[i][1]
-		vi.item_description = item_defs[i][2]
-		vi.glow_color = item_defs[i][3]
+		vi.item_id = d.get("id", "item_%d" % i)
+		vi.item_display_name = d.get("name", "???")
+		vi.item_description = d.get("description", "")
+		var gc : Array = d.get("glow_color", [0.5, 0.5, 0.5])
+		vi.glow_color = Color(gc[0], gc[1], gc[2])
+		vi.item_image_path = d.get("image", "")
+		vi.item_dialogue = d.get("dialogue", "")
+		vi.item_mesh_type = d.get("mesh", "sphere")
 		parent.add_child(vi)
 
-	# 使用ポイント: 案山子（木彫りの頭を載せる）
-	var kakashi := _create_use_point(
-		Vector3(24.50, 1.0, -68.25),
-		"kakashi",
-		"木彫りの頭",
-		"頭を案山子に載せた……封印が、解けていく……！",
-		"首のない案山子がある……何か載せるものが必要みたい。"
-	)
-	parent.add_child(kakashi)
+	# 使用ポイント生成
+	var use_points_arr : Array = cfg.get("use_points", [])
+	for up_data in use_points_arr:
+		var p : Array = up_data.get("position", [0, 0, 0])
+		var point := _create_use_point(
+			Vector3(p[0], p[1], p[2]),
+			up_data.get("id", ""),
+			up_data.get("required_item", ""),
+			up_data.get("use_message", ""),
+			up_data.get("locked_message", "")
+		)
+		parent.add_child(point)
 
-	# 使用ポイント: 門（錆びた鎌で髪の紐を切る）
-	var mon := _create_use_point(
-		Vector3(87.75, 1.0, 45.75),
-		"mon",
-		"錆びた鎌",
-		"髪の毛のような紐を……切った！ 門が開く！",
-		"門に髪の毛のような紐が絡みついている……切るものが必要だ。"
-	)
-	parent.add_child(mon)
+
+func _load_json(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		return {}
+	var f := FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		return {}
+	var json := JSON.new()
+	if json.parse(f.get_as_text()) != OK:
+		return {}
+	var data = json.get_data()
+	if data is Dictionary:
+		return data
+	return {}
 
 
 func _create_use_point(pos: Vector3, pid: String, req_item: String, use_msg: String, locked_msg: String) -> Area3D:

@@ -53,36 +53,9 @@ func _ready() -> void:
 		push_error("Main: chapter data failed to load — aborting _ready()")
 		return
 
-	# CP3 村の探索: .tresがGodotエディタに上書きされるためコードで強制設定
+	# CP3 村の探索: JSON外部定義から読み込み
 	if chapter.chapter_id == "ch02_mura_tansaku":
-		chapter.stage_scene_path = "res://scenes/KiriharaVillageMap/VillageMap.tscn"
-		chapter.player_spawn = Vector3(13.50, 0.0, -23.50)
-		chapter.exit_position = Vector3(8.75, 1.5, 80.25)
-		# 3アイテム: A=木彫りの頭, B=錆びた鎌, C=写し鏡の御札
-		var village_items := PackedVector3Array()
-		village_items.append(Vector3(21.0, 0.2, -68.0))    # A: 木彫りの頭
-		village_items.append(Vector3(92.62, 0.2, 42.54))    # B: 錆びた鎌
-		village_items.append(Vector3(61.25, 0.2, 3.50))    # C: 写し鏡の御札
-		chapter.item_positions = village_items
-		# ゴースト3体（みゆき）
-		var GhostConfigScript := preload("res://scripts/GhostConfig.gd")
-		var miyuki_configs : Array[Resource] = []
-		var m1 := GhostConfigScript.new()
-		m1.position = Vector3(-14.25, -0.5, -40.25)
-		m1.model_path = "res://assets/models/characters/Miyuki.glb"
-		m1.model_scale = Vector3(3, 3, 3)
-		miyuki_configs.append(m1)
-		var m2 := GhostConfigScript.new()
-		m2.position = Vector3(52.75, -0.5, 51.75)
-		m2.model_path = "res://assets/models/characters/Miyuki.glb"
-		m2.model_scale = Vector3(3, 3, 3)
-		miyuki_configs.append(m2)
-		var m3 := GhostConfigScript.new()
-		m3.position = Vector3(-35.25, -0.5, 52.75)
-		m3.model_path = "res://assets/models/characters/Miyuki.glb"
-		m3.model_scale = Vector3(3, 3, 3)
-		miyuki_configs.append(m3)
-		chapter.ghost_configs = miyuki_configs
+		_apply_mura_config(chapter)
 
 	# items_total を generate() より前に設定（Exit._ready() が参照するため）
 	GameManager.items_total = chapter.item_positions.size()
@@ -403,6 +376,65 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 # ──────────────────────────────────────────────
+# ──────────────────────────────────────────────
+# CP3設定: JSONから読み込み
+# ──────────────────────────────────────────────
+
+func _apply_mura_config(chapter: Resource) -> void:
+	var cfg := _load_json("res://dialogue/ch02_mura_items_config.json")
+	if cfg.is_empty():
+		push_warning("Main: ch02_mura_items_config.json が読み込めません、フォールバック")
+		return
+
+	# ステージ・スポーン・出口
+	if cfg.has("stage_scene_path"):
+		chapter.stage_scene_path = cfg["stage_scene_path"]
+	if cfg.has("player_spawn"):
+		var sp : Array = cfg["player_spawn"]
+		chapter.player_spawn = Vector3(sp[0], sp[1], sp[2])
+	if cfg.has("exit_position"):
+		var ep : Array = cfg["exit_position"]
+		chapter.exit_position = Vector3(ep[0], ep[1], ep[2])
+
+	# アイテム座標
+	if cfg.has("items"):
+		var items_arr : Array = cfg["items"]
+		var positions := PackedVector3Array()
+		for item_data in items_arr:
+			var p : Array = item_data["position"]
+			positions.append(Vector3(p[0], p[1], p[2]))
+		chapter.item_positions = positions
+
+	# ゴースト
+	if cfg.has("ghosts"):
+		var GhostConfigScript := preload("res://scripts/GhostConfig.gd")
+		var ghost_configs : Array[Resource] = []
+		for gd_data in cfg["ghosts"]:
+			var gc := GhostConfigScript.new()
+			var gp : Array = gd_data["position"]
+			gc.position = Vector3(gp[0], gp[1], gp[2])
+			gc.model_path = gd_data.get("model", "res://assets/models/characters/Miyuki.glb")
+			var s : float = float(gd_data.get("scale", 3))
+			gc.model_scale = Vector3(s, s, s)
+			ghost_configs.append(gc)
+		chapter.ghost_configs = ghost_configs
+
+
+func _load_json(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		return {}
+	var f := FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		return {}
+	var json := JSON.new()
+	if json.parse(f.get_as_text()) != OK:
+		return {}
+	var data = json.get_data()
+	if data is Dictionary:
+		return data
+	return {}
+
+
 # 環境設定
 # ──────────────────────────────────────────────
 
