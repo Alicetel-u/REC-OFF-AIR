@@ -107,16 +107,17 @@ func _create_exit(pos: Vector3) -> Area3D:
 ## CP3 村の探索: 固有アイテム3種 + 使用ポイント2箇所を生成
 func _spawn_village_items(chapter: Resource, parent: Node) -> void:
 	# アイテム定義: [item_id, display_name, description, glow_color]
+	# [item_id, display_name, description, glow_color, image_path]
 	var item_defs := [
 		["kibori_head", "木彫りの頭",
 			"眼球の嵌め込まれた木彫りの頭。視線がカメラを追ってくる。",
-			Color(0.6, 0.2, 0.1)],
+			Color(0.6, 0.2, 0.1), "res://assets/textures/item_kibori_head.png"],
 		["sabi_kama", "錆びた鎌",
 			"刃こぼれした錆びた鎌。誰かの恨みがこもっている。",
-			Color(0.8, 0.15, 0.1)],
+			Color(0.8, 0.15, 0.1), "res://assets/textures/item_sabi_kama.png"],
 		["utsushi_ofuda", "写し鏡の御札",
 			"鏡のように光を反射する特殊な御札。",
-			Color(0.9, 0.85, 0.5)],
+			Color(0.9, 0.85, 0.5), "res://assets/textures/item_utsushi_ofuda.png"],
 	]
 
 	for i in range(mini(item_defs.size(), chapter.item_positions.size())):
@@ -127,6 +128,7 @@ func _spawn_village_items(chapter: Resource, parent: Node) -> void:
 		vi.item_display_name = item_defs[i][1]
 		vi.item_description = item_defs[i][2]
 		vi.glow_color = item_defs[i][3]
+		vi.item_image_path = item_defs[i][4]
 		parent.add_child(vi)
 
 	# 使用ポイント: 案山子（木彫りの頭を載せる）

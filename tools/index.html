@@ -539,6 +539,17 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg0); co
         <div class="card-launch">▶ 起動</div>
       </a>
 
+      <a class="tool-card" href="map-editor/index.html" data-cat="map" data-keywords="CP3 村 マップ エディタ 霧原村 VillageMap 建物 配置">
+        <div class="card-shine"></div>
+        <div class="card-header">
+          <div class="card-gem" style="background:linear-gradient(135deg,#0e4020,#1e7040); color:var(--emerald)"></div>
+          <div><div class="card-name">CP3 マップエディタ</div></div>
+          <span class="card-badge badge-active">ACTIVE</span>
+        </div>
+        <div class="card-desc">CP3 霧原村マップの建物・壁・木・車・仏像の配置を俯瞰編集。当たり判定・ゴースト巡回エリアの確認。</div>
+        <div class="card-launch">▶ 起動</div>
+      </a>
+
       <a class="tool-card" href="https://alicetel-u.github.io/REC-OFF-AIR/" target="_blank" data-cat="system" data-keywords="ゲーム 起動 本番 Web プレイ テスト">
         <div class="card-shine"></div>
         <div class="card-header">
@@ -748,7 +759,7 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg0); co
       <div class="project-sub">YouTuberホラー配信ゲーム<br>プロトタイプ</div>
       <div class="stats-grid">
         <div class="stat-box"><div class="stat-val">7</div><div class="stat-lbl">チャプター</div></div>
-        <div class="stat-box"><div class="stat-val">3</div><div class="stat-lbl">稼働ツール</div></div>
+        <div class="stat-box"><div class="stat-val">4</div><div class="stat-lbl">稼働ツール</div></div>
         <div class="stat-box"><div class="stat-val">5</div><div class="stat-lbl">VHSアイテム</div></div>
         <div class="stat-box"><div class="stat-val">4</div><div class="stat-lbl">ゴースト数</div></div>
       </div>
@@ -937,12 +948,11 @@ Object.entries(clips).forEach(([id, cmd]) => {
 // ── Dashboard: Progress ──
 const PROGRESS_KEY = 'rec-offair-progress';
 const defaultProgress = [
-  { id:'opening',   label:'オープニング',   pct:80 },
-  { id:'ch01',      label:'Ch01 廃村入口',  pct:70 },
-  { id:'toilet',    label:'公衆トイレ',     pct:60 },
-  { id:'yashiki',   label:'屋敷ステージ',   pct:30 },
-  { id:'ghost',     label:'ゴースト/AI',    pct:20 },
-  { id:'ending',    label:'エンディング',   pct:5  },
+  { id:'cp1', label:'CP1 廃村入口',       pct:95 },
+  { id:'cp2', label:'CP2 廃倉庫',         pct:85 },
+  { id:'cp3', label:'CP3 村の探索',       pct:70 },
+  { id:'cp4', label:'CP4 ???',            pct:0  },
+  { id:'cp5', label:'CP5 ???',            pct:0  },
 ];
 
 function loadProgress() {
