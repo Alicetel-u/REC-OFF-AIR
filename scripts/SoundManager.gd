@@ -94,17 +94,20 @@ func _scan_dir(path: String) -> Array:
 		d.list_dir_begin()
 		var fname := d.get_next()
 		while fname != "":
-			if not d.current_is_dir() and fname.to_lower().ends_with(".mp3"):
-				list.append(path + "/" + fname)
+			if not d.current_is_dir():
+				var flow := fname.to_lower()
+				if flow.ends_with(".mp3") or flow.ends_with(".wav"):
+					list.append(path + "/" + fname)
 			fname = d.get_next()
 		d.list_dir_end()
 	# 2) エクスポートビルド用フォールバック: ResourceLoader で既知パターン探索
 	if list.is_empty() and SFX_PREFIXES.has(path):
 		var prefix : String = SFX_PREFIXES[path]
-		for i in range(1, 30):
-			var p := "%s/%s (%d).mp3" % [path, prefix, i]
-			if ResourceLoader.exists(p):
-				list.append(p)
+		for i in range(1, 40):
+			for ext in [".mp3", ".wav"]:
+				var p := "%s/%s (%d)%s" % [path, prefix, i, ext]
+				if ResourceLoader.exists(p):
+					list.append(p)
 	return list
 
 
@@ -213,14 +216,22 @@ func play_door_creak() -> void:
 
 ## 汎用 SFX を再生（file = "door/creak1" → res://assets/audio/sfx/door/creak1.ogg）
 func play_sfx_file(file: String, vol_db: float = -6.0) -> void:
-	var path := "res://assets/audio/sfx/" + file
-	# 拡張子が省略されていたら .ogg を試す
-	if not path.get_extension():
-		path += ".ogg"
-	var s := _load_audio(path)
+	var base_path := "res://assets/audio/sfx/" + file
+	var s : AudioStream = null
+	
+	# 拡張子がある場合
+	if not base_path.get_extension().is_empty():
+		s = _load_audio(base_path)
+	else:
+		# 拡張子がない場合、候補を順に試す
+		for ext in [".ogg", ".wav", ".mp3"]:
+			s = _load_audio(base_path + ext)
+			if s: break
+
 	if not s:
-		push_warning("SoundManager: sfx not found: " + path)
+		push_warning("SoundManager: sfx not found: " + base_path)
 		return
+	
 	_sfx.stream    = s
 	_sfx.volume_db = vol_db
 	_sfx.play()

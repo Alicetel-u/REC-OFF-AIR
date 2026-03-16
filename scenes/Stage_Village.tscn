@@ -11,7 +11,6 @@
 [ext_resource type="PackedScene" uid="uid://bhx3tvvd5n8j7" path="res://shaders/素材/立ち入り禁止.glb" id="14_3p2gp"]
 [ext_resource type="PackedScene" uid="uid://bsr6k1oktb2b0" path="res://shaders/素材/鳥居.glb" id="14_cvmbd"]
 [ext_resource type="PackedScene" uid="uid://yphkfl18nj0m" path="res://shaders/素材/dead_tree.glb" id="15_cvmbd"]
-[ext_resource type="PackedScene" uid="uid://b2icb65frptyq" path="res://shaders/素材/rusty_fence.glb" id="16_fence"]
 [ext_resource type="PackedScene" uid="uid://i8h6bm2efdgs" path="res://shaders/素材/案山子.glb" id="16_kakashi"]
 [ext_resource type="Script" uid="uid://c4tkk7nofoaxx" path="res://scripts/KakashiGlow.gd" id="17_kglow"]
 
@@ -450,12 +449,32 @@ transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 38, 0, -4)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -15)
 
 [node name="@CSGBox3D@2" type="CSGBox3D" parent="SmallShrine" unique_id=823859190]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.045, 2)
-size = Vector3(6, 0.1, 5.5)
+transform = Transform3D(1, 0, 0, 0, 0.27360958, 0, 0, 0, 2.7475052, -0.4229126, 0.045, 0.39256477)
+size = Vector3(8.7323, 0.1, 4.3134766)
 material = SubResource("ShaderMaterial_cvmbd")
 
 [node name="MainHall" parent="SmallShrine" unique_id=1488790322 instance=ExtResource("11_mwfav")]
-transform = Transform3D(-3.496911e-07, 0, -8, 0, 8, 0, 8, 0, -3.496911e-07, 0, 3.3, 0)
+transform = Transform3D(-3.496911e-07, 0, -8, 0, 8, 0, 8, 0, -3.496911e-07, 0, 4.2108335, -2.2992668)
+
+[node name="ShrineBase" type="CSGBox3D" parent="SmallShrine" unique_id=314159268]
+transform = Transform3D(1, 0, 0, 0, 0.4238287, 0, 0, 0, 1, 0, -0.043669343, -2.627739)
+size = Vector3(6, 4.2, 5.716797)
+material = SubResource("ShaderMaterial_cvmbd")
+
+[node name="ShrineStep1" type="CSGBox3D" parent="SmallShrine" unique_id=314159265]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 2.1)
+size = Vector3(3, 0.3, 0.6)
+material = SubResource("ShaderMaterial_cvmbd")
+
+[node name="ShrineStep2" type="CSGBox3D" parent="SmallShrine" unique_id=314159266]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 1.5)
+size = Vector3(3, 0.3, 0.6)
+material = SubResource("ShaderMaterial_cvmbd")
+
+[node name="ShrineStep3" type="CSGBox3D" parent="SmallShrine" unique_id=314159267]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0.9)
+size = Vector3(3, 0.3, 0.6)
+material = SubResource("ShaderMaterial_cvmbd")
 
 [node name="Pedestal_Model_A" type="Node3D" parent="SmallShrine" unique_id=1640406247]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0, 3.5)
@@ -860,18 +879,6 @@ transform = Transform3D(9.396926, 0, 3.4202013, 0, 12, 0, -3.4202013, 0, 9.39692
 
 [node name="GateDeadTree_Right" parent="." unique_id=884825146 instance=ExtResource("15_cvmbd")]
 transform = Transform3D(7.7134514, 0, -9.1925335, 0, 15, 0, 9.1925335, 0, 7.7134514, 45, 6.5, -2)
-
-[node name="ShrineFence_Front" parent="." unique_id=574269076 instance=ExtResource("16_fence")]
-transform = Transform3D(0.0014837289, 0, 7.5989676, 0, 5, 0, -5.0007715, 0, 0.0022546137, 12, 0.8, -10)
-
-[node name="ShrineFence_Back" parent="." unique_id=508603245 instance=ExtResource("16_fence")]
-transform = Transform3D(0.15371856, 0, -7.531467, 0, 5, 0, 4.8832664, 0, 0.23708028, 11.532336, 0.8, -20)
-
-[node name="ShrineFence_Left" parent="." unique_id=1703013179 instance=ExtResource("16_fence")]
-transform = Transform3D(4.763068, 0, 0.50059545, 0, 5.0000005, 0, -0.2442041, 0, 9.763842, 8, 0.8, -15)
-
-[node name="ShrineFence_Right" parent="." unique_id=1444740013 instance=ExtResource("16_fence")]
-transform = Transform3D(4.851348, 0, 0.2945288, 0, 5, 0, -0.14373054, 0, 9.941255, 15.640919, 0.8, -15)
 
 [node name="Kakashi_R1" parent="." unique_id=672912505 instance=ExtResource("16_kakashi")]
 transform = Transform3D(0.95302325, 0, 2.8554943, 0, 2.9999995, 0, -2.8554943, 0, 0.95302325, 4, 0.89980054, 12)

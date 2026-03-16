@@ -27,6 +27,7 @@ var _bg_walk_zoom_end  : float     = 1.4
 var _bg_walk_zoom_dur  : float     = 30.0
 var _miyuki_instance   : Node3D    = null
 var _miyuki_convulsion : float     = 0.0   # 痙攣の強さ (0=無し)
+var _miyuki_backward   : bool      = false
 var _miyuki_track      : bool      = false  # プレイヤーの方を向く
 var _miyuki_shader_mat : ShaderMaterial = null
 
@@ -1691,6 +1692,11 @@ func _miyuki_spawn(ev: Dictionary) -> void:
 	_miyuki_instance.visible = ev.get("visible", true)
 	_miyuki_convulsion = float(ev.get("convulsion_intensity", 0.0))
 	_miyuki_track = ev.get("track_player", false)
+	_miyuki_backward = ev.get("backward", false)
+	
+	# 後ろ向き（追跡前に初期回転を適用）
+	if _miyuki_backward:
+		_miyuki_instance.rotation.y += PI
 
 	# シーンツリーに追加
 	get_tree().current_scene.add_child(_miyuki_instance)
@@ -1747,6 +1753,12 @@ func _miyuki_move(ev: Dictionary) -> void:
 	if ev.has("track_player"):
 		_miyuki_track = ev.get("track_player", false)
 
+	if ev.has("backward"):
+		var old_b = _miyuki_backward
+		_miyuki_backward = ev.get("backward", false)
+		if _miyuki_backward != old_b:
+			_miyuki_instance.rotation.y += PI
+
 	# rage（シェーダー — 赤く激しくなる）
 	if ev.has("rage") and _miyuki_shader_mat:
 		_miyuki_shader_mat.set_shader_parameter("rage", float(ev.get("rage", 0.0)))
@@ -1793,6 +1805,8 @@ func _miyuki_update(delta: float) -> void:
 			# 逆さの場合は反転
 			var is_upside : bool = absf(_miyuki_instance.rotation.x - PI) < 0.1
 			if is_upside:
+				target_angle += PI
+			if _miyuki_backward:
 				target_angle += PI
 			_miyuki_instance.rotation.y = lerp_angle(
 				_miyuki_instance.rotation.y, target_angle, delta * 2.0)

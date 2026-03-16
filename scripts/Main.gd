@@ -60,8 +60,8 @@ func _ready() -> void:
 		chapter.exit_position = Vector3(8.75, 1.5, 80.25)
 		# 3アイテム: A=木彫りの頭, B=錆びた鎌, C=写し鏡の御札
 		var village_items := PackedVector3Array()
-		village_items.append(Vector3(103.97, 0.2, 8.64))    # A: 木彫りの頭
-		village_items.append(Vector3(-14.0, 0.2, 36.0))    # B: 錆びた鎌（建物3/民家の縁側付近）
+		village_items.append(Vector3(21.0, 0.2, -68.0))    # A: 木彫りの頭
+		village_items.append(Vector3(92.62, 0.2, 42.54))    # B: 錆びた鎌
 		village_items.append(Vector3(61.25, 0.2, 3.50))    # C: 写し鏡の御札
 		chapter.item_positions = village_items
 		# ゴースト3体（みゆき）
@@ -87,7 +87,8 @@ func _ready() -> void:
 	# items_total を generate() より前に設定（Exit._ready() が参照するため）
 	GameManager.items_total = chapter.item_positions.size()
 	# つなぎ演出（start_section==1）の場合、ステージ生成をスキップ（GPUメモリ節約）
-	if GameManager.start_section == 1:
+	# ※CP1（廃村入口）では Section 1 は商店街パートの開始地点なので、スキップ対象から除外する
+	if GameManager.start_section == 1 and chapter.chapter_id != "ch01_haison_iriguchi":
 		GameManager.start_section = 0
 		# YouTubeChrome・弾幕をHUDに接続（chatイベント用）
 		hud.set_chrome($YouTubeChrome)

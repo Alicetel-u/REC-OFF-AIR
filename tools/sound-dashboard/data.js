@@ -1,4 +1,5 @@
-{
+// 自動生成されたデータファイル (全5000行超)
+const SCENARIO_DATA = {
   "chapter": "ch01_haison_iriguchi",
   "voice_dir": "res://assets/audio/voice/ch01/",
   "_note": "CP1 公衆トイレの首無し少女 — 配信開始→解説ウォーク→トイレ→脱出→商店街ゲート",
@@ -5005,4 +5006,167 @@
     "z": 3
   },
   "chat_voice_dir": "res://assets/audio/voice/ch01_chat/"
-}
+};
+
+const SOUND_CATEGORIES = {
+  "ambient_wind": "res://assets/audio/sfx/ambient_wind",
+  "bell": "res://assets/audio/sfx/bell",
+  "book": "res://assets/audio/sfx/book",
+  "bus": "res://assets/audio/sfx/bus",
+  "door": "res://assets/audio/sfx/door",
+  "footsteps": "res://assets/audio/sfx/footsteps",
+  "glass": "res://assets/audio/sfx/glass",
+  "horror_voice": "res://assets/audio/sfx/horror_voice",
+  "metal": "res://assets/audio/sfx/metal",
+  "monster": "res://assets/audio/sfx/monster"
+};
+
+const SOUND_FILES = {
+  "ambient_wind": [
+    "Ambient Wind (1).mp3",
+    "Ambient Wind (2).mp3",
+    "Ambient Wind (3).mp3",
+    "Ambient Wind (4).mp3",
+    "Ambient Wind (5).mp3",
+    "Ambient Wind (6).mp3",
+    "Ambient Wind (7).mp3",
+    "Ambient Wind (8).mp3",
+    "Ambient Wind (9).mp3"
+  ],
+  "bell": [
+    "impactBell_heavy_000.ogg",
+    "impactBell_heavy_001.ogg",
+    "impactBell_heavy_002.ogg",
+    "impactBell_heavy_003.ogg",
+    "impactBell_heavy_004.ogg"
+  ],
+  "book": [
+    "bookClose.ogg",
+    "bookFlip1.ogg",
+    "bookFlip2.ogg",
+    "bookFlip3.ogg",
+    "bookOpen.ogg",
+    "bookPlace1.ogg",
+    "bookPlace2.ogg",
+    "bookPlace3.ogg"
+  ],
+  "bus": [
+    "bus_transit.mp3"
+  ],
+  "door": [
+    "creak1.ogg",
+    "creak2.ogg",
+    "creak3.ogg",
+    "Creaking Door (1).mp3",
+    "Creaking Door (10).mp3",
+    "Creaking Door (11).mp3",
+    "Creaking Door (12).mp3",
+    "Creaking Door (2).mp3",
+    "Creaking Door (3).mp3",
+    "Creaking Door (4).mp3",
+    "Creaking Door (5).mp3",
+    "Creaking Door (6).mp3",
+    "Creaking Door (7).mp3",
+    "Creaking Door (8).mp3",
+    "Creaking Door (9).mp3",
+    "doorClose_1.ogg",
+    "doorClose_2.ogg",
+    "doorClose_3.ogg",
+    "doorClose_4.ogg",
+    "doorOpen_1.ogg",
+    "doorOpen_2.ogg"
+  ],
+  "footsteps": [
+    "carpet/Carpet Footstep (1).mp3",
+    "carpet/Carpet Footstep (2).mp3",
+    "carpet/Carpet Footstep (3).mp3",
+    "carpet/Carpet Footstep (4).mp3",
+    "concrete/Concrete Footsteps (1).mp3",
+    "concrete/Concrete Footsteps (2).mp3",
+    "concrete/Concrete Footsteps (3).mp3",
+    "concrete/Concrete Footsteps (4).mp3",
+    "gravel/Gravel Footsteps (1).mp3",
+    "gravel/Gravel Footsteps (2).mp3",
+    "gravel/Gravel Footsteps (3).mp3",
+    "gravel/Gravel Footsteps (4).mp3",
+    "gravel/Gravel Footsteps (5).mp3",
+    "gravel/Gravel Footsteps (6).mp3",
+    "gravel/Gravel Footsteps (7).mp3",
+    "gravel/Gravel Footsteps (8).mp3",
+    "leaves/Leaves Footsteps (1).mp3",
+    "leaves/Leaves Footsteps (2).mp3",
+    "leaves/Leaves Footsteps (3).mp3",
+    "leaves/Leaves Footsteps (4).mp3",
+    "metal/Metal Footsteps (1).mp3",
+    "metal/Metal Footsteps (2).mp3",
+    "metal/Metal Footsteps (3).mp3",
+    "metal/Metal Footsteps (4).mp3",
+    "mud/Mud Footsteps (1).mp3",
+    "mud/Mud Footsteps (2).mp3",
+    "mud/Mud Footsteps (3).mp3",
+    "mud/Mud Footsteps (4).mp3",
+    "mud/Mud Footsteps (5).mp3",
+    "mud/Mud Footsteps (6).mp3",
+    "mud/Mud Footsteps (7).mp3",
+    "mud/Mud Footsteps (8).mp3",
+    "stairs/Stair Footsteps (1).mp3",
+    "stairs/Stair Footsteps (2).mp3",
+    "stairs/Stair Footsteps (3).mp3",
+    "stairs/Stair Footsteps (4).mp3",
+    "stairs/Stair Footsteps (5).mp3",
+    "stairs/Stair Footsteps (6).mp3",
+    "stairs/Stair Footsteps (7).mp3",
+    "stairs/Stair Footsteps (8).mp3",
+    "wind/Wind Footsteps (1).mp3",
+    "wind/Wind Footsteps (2).mp3",
+    "wind/Wind Footsteps (3).mp3",
+    "wind/Wind Footsteps (4).mp3",
+    "wooden/Wooden Foosteps (1).mp3",
+    "wooden/Wooden Foosteps (2).mp3",
+    "wooden/Wooden Foosteps (3).mp3",
+    "wooden/Wooden Foosteps (4).mp3",
+    "wooden/Wooden Foosteps (5).mp3",
+    "wooden/Wooden Foosteps (6).mp3",
+    "wooden/Wooden Foosteps (7).mp3",
+    "wooden/Wooden Foosteps (8).mp3"
+  ],
+  "glass": [
+    "impactGlass_heavy_000.ogg",
+    "impactGlass_heavy_001.ogg",
+    "impactGlass_heavy_002.ogg",
+    "impactGlass_heavy_003.ogg",
+    "impactGlass_heavy_004.ogg",
+    "impactGlass_medium_000.ogg",
+    "impactGlass_medium_001.ogg",
+    "impactGlass_medium_002.ogg",
+    "impactGlass_medium_003.ogg",
+    "impactGlass_medium_004.ogg"
+  ],
+  "horror_voice": [
+    "anata_no_ushiro.wav",
+    "are.wav",
+    "creepy_loop.wav",
+    "creepy_moan_long.wav",
+    "tasukete.wav",
+    "tasukete_new.wav"
+  ],
+  "metal": [
+    "impactMetal_heavy_000.ogg",
+    "impactMetal_heavy_001.ogg",
+    "impactMetal_heavy_002.ogg",
+    "impactMetal_heavy_003.ogg",
+    "impactMetal_heavy_004.ogg",
+    "impactMetal_medium_000.ogg",
+    "impactMetal_medium_001.ogg",
+    "impactMetal_medium_002.ogg",
+    "impactMetal_medium_003.ogg",
+    "impactMetal_medium_004.ogg",
+    "knifeSlice.ogg",
+    "knifeSlice2.ogg",
+    "metalClick.ogg",
+    "metalLatch.ogg"
+  ],
+  "monster": [
+    "kimo2.wav"
+  ]
+};
