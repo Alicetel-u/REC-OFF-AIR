@@ -47,21 +47,21 @@ if (-not (Test-Path "$TMPL_DIR\windows_release_x86_64.exe")) {
 Write-Host "[3/4] Exporting game..."
 New-Item -ItemType Directory -Force -Path $BUILD | Out-Null
 
-& $GODOT --headless --path $PROJECT --export-release "Windows Desktop" "$BUILD\GhostStreamer.exe"
+& $GODOT --headless --path $PROJECT --export-release "Windows Desktop" "$BUILD\REC-OFF-AIR.exe"
 
-if (-not (Test-Path "$BUILD\GhostStreamer.exe")) {
+if (-not (Test-Path "$BUILD\REC-OFF-AIR.exe")) {
     Write-Host "ERROR: Export failed." -ForegroundColor Red
     exit 1
 }
-Write-Host "      Export complete: $BUILD\GhostStreamer.exe"
+Write-Host "      Export complete: $BUILD\REC-OFF-AIR.exe"
 
 # Step 4: ZIP
 Write-Host "[4/4] Creating ZIP..."
-$zip = "$PROJECT\GhostStreamer_build.zip"
+$zip = "$PROJECT\REC-OFF-AIR_build.zip"
 if (Test-Path $zip) { Remove-Item $zip }
 Compress-Archive -Path "$BUILD\*" -DestinationPath $zip
 
 Write-Host ""
 Write-Host "Done!" -ForegroundColor Green
-Write-Host "  EXE : $BUILD\GhostStreamer.exe"
+Write-Host "  EXE : $BUILD\REC-OFF-AIR.exe"
 Write-Host "  ZIP : $zip"

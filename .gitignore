@@ -23,6 +23,7 @@ mono_crash.*.txt
 web/
 build/
 GhostStreamer_build.zip
+REC-OFF-AIR_build.zip
 
 # OS
 .DS_Store
