@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene load_steps=25 format=3]
 
 [ext_resource type="Script" path="res://scenes/KiriharaVillageMap/MapGenerator.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/建物1.glb" id="2_b1"]
@@ -19,6 +19,9 @@
 [ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/ShoppingStreetGate.tscn" id="18_gate"]
 [ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/建物9.glb" id="19_b9"]
 [ext_resource type="PackedScene" path="res://scenes/KiriharaVillageMap/Mountains.tscn" id="20_mts"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/mud_diff.jpg" id="21_mud_diff"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/mud_nor.jpg" id="22_mud_nor"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/mud_rough.jpg" id="23_mud_rough"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
 size = Vector3(1000, 5, 1000)
@@ -27,8 +30,14 @@ size = Vector3(1000, 5, 1000)
 size = Vector2(200, 200)
 
 [sub_resource type="StandardMaterial3D" id="Mat_ground"]
-albedo_color = Color(0.12, 0.08, 0.04, 1)
+albedo_color = Color(0.15, 0.10, 0.06, 1)
+albedo_texture = ExtResource("21_mud_diff")
 roughness = 0.95
+roughness_texture = ExtResource("23_mud_rough")
+normal_enabled = true
+normal_texture = ExtResource("22_mud_nor")
+normal_scale = 0.8
+uv1_scale = Vector3(30, 30, 30)
 
 [node name="VillageMap" type="Node3D" unique_id=1245464996]
 script = ExtResource("1_script")
