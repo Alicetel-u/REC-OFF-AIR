@@ -511,21 +511,15 @@ func _update_visuals(delta: float) -> void:
 	var target_lean : float = p["target_lean"]
 	var sway_amp    : float = p["sway_amp"]
 
-	# ── ボブ・前傾き・スウェイ ──
-	_bob_phase    += delta * bob_speed
-	_lean_current  = lerp(_lean_current, target_lean, delta * 5.0)
-	var bob_y  := sin(_bob_phase) * bob_amp
-	var sway_z := sin(_bob_phase * 0.6) * sway_amp
-
 	# 表示高さを底上げ（廃倉庫と村の探索のみ）
 	var base_h : float = 0.0
 	var cur_chapter := GameManager.current_chapter
 	if cur_chapter and cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku"]:
 		base_h = 0.6
-	
+
 	_motion_timer += delta
 
-	# ── モーションパターン別の姿勢制御 ──
+	# ── モーションパターン別の姿勢制御（bob_speed/bob_amp変更はここで）──
 	var motion_rot_x : float = 0.0
 	var motion_rot_z : float = 0.0
 	var motion_pos_offset := Vector3.ZERO
@@ -581,6 +575,12 @@ func _update_visuals(delta: float) -> void:
 			# 逆さま
 			motion_rot_z = 180.0
 			base_h = 2.5
+
+	# ── ボブ計算（モーションパターンによるbob_speed変更の後で）──
+	_bob_phase    += delta * bob_speed
+	_lean_current  = lerp(_lean_current, target_lean, delta * 5.0)
+	var bob_y  := sin(_bob_phase) * bob_amp
+	var sway_z := sin(_bob_phase * 0.6) * sway_amp
 
 	_ghost_body.position.y = base_h + bob_y + motion_pos_offset.y
 	_ghost_body.position.x = motion_pos_offset.x
