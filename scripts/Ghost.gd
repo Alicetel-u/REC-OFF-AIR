@@ -6,6 +6,39 @@ class_name Ghost
 
 enum GhostState { PATROL, ALERT, CHASE, CAUGHT }
 
+## 恐怖モーションパターン（状態別にランダム選択）
+enum MotionPattern {
+	NORMAL,
+	# PATROL
+	HEAD_JERK,       # 首カクカク
+	SERPENTINE,      # 蛇行浮遊
+	FREEZE_BURST,    # 瞬間停止→急発進
+	# ALERT
+	TREMOR,          # ブルブル震え
+	SLOW_TURN,       # 首ゆっくり回転
+	LEVITATE,        # 浮上
+	# CHASE
+	LEAN_DASH,       # 前傾ダッシュ
+	CRAB_WALK,       # カニ歩き
+	TELEPORT_FAKE,   # テレポートフェイク
+	CRAWL,           # 四つん這い
+	# CAUGHT
+	FACE_CLOSE,      # 顔面ドアップ
+	UPSIDE_DOWN,     # 逆さま
+}
+
+const PATROL_MOTIONS : Array[int] = [
+	MotionPattern.NORMAL, MotionPattern.HEAD_JERK,
+	MotionPattern.SERPENTINE, MotionPattern.FREEZE_BURST]
+const ALERT_MOTIONS : Array[int] = [
+	MotionPattern.NORMAL, MotionPattern.TREMOR,
+	MotionPattern.SLOW_TURN, MotionPattern.LEVITATE]
+const CHASE_MOTIONS : Array[int] = [
+	MotionPattern.NORMAL, MotionPattern.LEAN_DASH,
+	MotionPattern.CRAB_WALK, MotionPattern.CRAWL]
+const CAUGHT_MOTIONS : Array[int] = [
+	MotionPattern.FACE_CLOSE, MotionPattern.UPSIDE_DOWN]
+
 const PATROL_SPEED : float = 0.5
 const ALERT_SPEED  : float = 0.9
 const CHASE_SPEED  : float = 1.6
@@ -63,6 +96,16 @@ var _head_tilt_t  : float = 0.0
 var _lean_current : float = 0.0
 var _is_alive     : bool  = true
 var _growl_timer    : float = 0.0
+
+# モーションパターン
+var _current_motion : int = MotionPattern.NORMAL
+var _motion_timer   : float = 0.0
+var _head_jerk_next : float = 0.0
+var _freeze_active  : bool  = false
+var _freeze_timer   : float = 0.0
+var _teleport_phase : int   = 0  # 0=通常, 1=消えている, 2=再出現
+var _teleport_timer : float = 0.0
+var _original_scale : Vector3 = Vector3.ONE
 var _growl_interval : float = 5.0
 # ── フェイクラッシュ演出用 ──
 var _fake_rush_timer : float = 0.0
@@ -413,10 +456,36 @@ func _face(target: Vector3) -> void:
 
 
 # ════════════════════════════════════════════════════════════════
+# 恐怖モーションパターン選択
+# ════════════════════════════════════════════════════════════════
+
+var _prev_ghost_state : int = -1
+
+func _pick_motion_if_changed() -> void:
+	if ghost_state == _prev_ghost_state:
+		return
+	_prev_ghost_state = ghost_state
+	_motion_timer = 0.0
+	_freeze_active = false
+	_teleport_phase = 0
+	match ghost_state:
+		GhostState.PATROL:
+			_current_motion = PATROL_MOTIONS[randi() % PATROL_MOTIONS.size()]
+		GhostState.ALERT:
+			_current_motion = ALERT_MOTIONS[randi() % ALERT_MOTIONS.size()]
+		GhostState.CHASE:
+			_current_motion = CHASE_MOTIONS[randi() % CHASE_MOTIONS.size()]
+		GhostState.CAUGHT:
+			_current_motion = CAUGHT_MOTIONS[randi() % CAUGHT_MOTIONS.size()]
+	print("[Ghost] state=%d motion=%d" % [ghost_state, _current_motion])
+
+
+# ════════════════════════════════════════════════════════════════
 # 恐怖ビジュアル演出
 # ════════════════════════════════════════════════════════════════
 
 func _update_visuals(delta: float) -> void:
+	_pick_motion_if_changed()
 	if not _ghost_body:
 		return
 
@@ -451,10 +520,70 @@ func _update_visuals(delta: float) -> void:
 	if cur_chapter and cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku"]:
 		base_h = 0.6
 	
-	_ghost_body.position.y          = base_h + bob_y
-	# 姿勢をまっすぐに固定
-	_ghost_body.rotation_degrees.x  = 0.0 # _lean_current を無視
-	_ghost_body.rotation_degrees.z  = 0.0 # sway_z を無視
+	_motion_timer += delta
+
+	# ── モーションパターン別の姿勢制御 ──
+	var motion_rot_x : float = 0.0
+	var motion_rot_z : float = 0.0
+	var motion_pos_offset := Vector3.ZERO
+
+	match _current_motion:
+		MotionPattern.HEAD_JERK:
+			# 首カクカク — 不規則にカクッと動く
+			_head_jerk_next -= delta
+			if _head_jerk_next <= 0.0:
+				_head_jerk_next = randf_range(0.8, 2.5)
+				motion_rot_x = randf_range(-15.0, 15.0)
+				motion_rot_z = randf_range(-8.0, 8.0)
+		MotionPattern.SERPENTINE:
+			# 蛇行浮遊 — 左右に揺れながら移動
+			motion_rot_z = sin(_bob_phase * 0.6) * 12.0
+			motion_pos_offset.x = sin(_bob_phase * 0.4) * 0.5
+		MotionPattern.FREEZE_BURST:
+			# 瞬間停止→急発進
+			if not _freeze_active and fmod(_motion_timer, 4.0) < 2.0:
+				_freeze_active = true
+				bob_speed = 0.0
+			elif _freeze_active and fmod(_motion_timer, 4.0) >= 2.0:
+				_freeze_active = false
+				bob_speed = 6.0
+		MotionPattern.TREMOR:
+			# ブルブル震え
+			motion_pos_offset.x = sin(_motion_timer * 30.0) * 0.02
+			motion_pos_offset.z = cos(_motion_timer * 25.0) * 0.02
+		MotionPattern.SLOW_TURN:
+			# 首ゆっくり回転（_face()の速度を遅くする効果は別途）
+			motion_rot_z = sin(_motion_timer * 0.5) * 5.0
+		MotionPattern.LEVITATE:
+			# 浮上 — 天井近くに上がる
+			bob_amp = lerp(bob_amp, 0.3, delta * 0.5)
+			base_h = lerp(base_h, 2.0, delta * 0.3)
+		MotionPattern.LEAN_DASH:
+			# 前傾ダッシュ
+			motion_rot_x = -30.0
+		MotionPattern.CRAB_WALK:
+			# カニ歩き — 横向き
+			motion_rot_z = 15.0
+		MotionPattern.CRAWL:
+			# 四つん這い — 低姿勢で高速
+			_ghost_body.scale.y = lerp(_ghost_body.scale.y, 0.5, delta * 3.0)
+			base_h = -0.3
+		MotionPattern.FACE_CLOSE:
+			# 顔面ドアップ（CATCHEDで使用）
+			if is_instance_valid(player):
+				var face_pos := player.global_position + player.transform.basis.z * -0.5
+				face_pos.y = player.global_position.y + 0.3
+				global_position = global_position.lerp(face_pos, delta * 5.0)
+		MotionPattern.UPSIDE_DOWN:
+			# 逆さま
+			motion_rot_z = 180.0
+			base_h = 2.5
+
+	_ghost_body.position.y = base_h + bob_y + motion_pos_offset.y
+	_ghost_body.position.x = motion_pos_offset.x
+	_ghost_body.position.z = motion_pos_offset.z
+	_ghost_body.rotation_degrees.x = motion_rot_x
+	_ghost_body.rotation_degrees.z = motion_rot_z
 
 	# ── GhostLight 状態連動 ──
 	if _ghost_light:

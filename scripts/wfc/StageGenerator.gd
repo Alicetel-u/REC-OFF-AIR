@@ -192,12 +192,22 @@ func _build_floor_geometry(fd: Dictionary, floor_idx: int) -> void:
 			_build_cell(cell, floor_idx)
 
 
+## 「不可能な空間」— ランダムで1部屋に違和感を仕込む（恐怖レベルデザイン）
+var _uncanny_room_applied : bool = false
+
 func _build_cell(cell: Dictionary, floor_idx: int) -> void:
 	var pos: Vector3 = cell.world_pos
 	var cs  := _cell_size
 	var ch  := _ceil_h
 	var sockets: Array = cell.sockets
 	var is_outdoor: bool = cell.get("outdoor", false)
+
+	# 15%の確率で「不可能な空間」を1部屋だけ適用
+	var is_uncanny : bool = false
+	if not is_outdoor and not _uncanny_room_applied and randf() < 0.15:
+		_uncanny_room_applied = true
+		is_uncanny = true
+		ch = ch * 0.7  # 天井が低い部屋
 
 	var cell_node := Node3D.new()
 	cell_node.name = "F%d_%s" % [floor_idx, cell.name]
@@ -247,6 +257,12 @@ func _build_cell(cell: Dictionary, floor_idx: int) -> void:
 		if sockets[face] == WFCGenerator.Socket.OPEN:
 			_add_door_frame(cell_node, face, cs, ch, door_mat)
 		_add_baseboard(cell_node, sockets, face, cs, base_mat)
+
+	# 「不可能な空間」: 壁を微妙に傾ける（無意識の不安感を煽る）
+	if is_uncanny:
+		for child in cell_node.get_children():
+			if child.name.begins_with("Wall_"):
+				child.rotation_degrees.z += randf_range(-1.5, 1.5)
 
 
 func _build_wall(parent: Node3D, sockets: Array, face: int,

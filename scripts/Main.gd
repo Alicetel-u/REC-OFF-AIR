@@ -181,6 +181,9 @@ func _ready() -> void:
 		# プレイアブル: 即操作可能
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		player.input_disabled = false
+		# 自動探索モード: 操作なしでストーリー自動進行（視覚障碍者対応）
+		if GameManager.auto_explore_mode:
+			_start_auto_explore()
 		# CP2廃倉庫: 自由移動開始後のバックグラウンドコメント
 		if cur_chapter.chapter_id == "ch02_haison_souko":
 			_run_chapter_opening_background("ch02_haison_souko_free")
@@ -2056,6 +2059,34 @@ func _process(_delta: float) -> void:
 			if is_instance_valid(p):
 				p.global_position = player.global_position
 
+	# ゴースト接近度をHUDに伝える（REC心拍連動 + VHSグリッチ連動）
+	if is_instance_valid(player) and is_instance_valid(hud):
+		var closest_dist : float = 999.0
+		for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+			if is_instance_valid(ghost) and ghost.visible:
+				var d : float = player.global_position.distance_to(ghost.global_position)
+				closest_dist = min(closest_dist, d)
+		# 0.0=遠い(20m+), 1.0=超近い(3m以下)
+		var proximity : float = clamp(1.0 - (closest_dist - 3.0) / 17.0, 0.0, 1.0)
+		hud._ghost_proximity = proximity
+		# VHSグリッチをゴースト距離に連動（Step 10: ゴースト画面演出）
+		if is_instance_valid(_vhs_rect) and _vhs_rect.material:
+			var mat : ShaderMaterial = _vhs_rect.material as ShaderMaterial
+			if mat:
+				mat.set_shader_parameter("noise_intensity", 0.08 + proximity * 0.25)
+				mat.set_shader_parameter("chroma_boost", proximity * 0.5)
+				mat.set_shader_parameter("distortion", proximity * 0.3)
+		# ミニマップホラー化: ゴースト接近でノイズ→消失
+		var minimap := get_node_or_null("MinimapLayer")
+		if minimap:
+			if proximity > 0.7:
+				minimap.visible = fmod(Time.get_ticks_msec() / 100.0, 1.0) > 0.3  # ちらつき
+			elif proximity > 0.3:
+				minimap.modulate.a = lerp(1.0, 0.3, (proximity - 0.3) / 0.4)
+			else:
+				minimap.modulate.a = 1.0
+				minimap.visible = true
+
 	# デバッグラベルのプレイヤー座標をリアルタイム更新
 	if _DEBUG_CHAPTER_SKIP and is_instance_valid(_debug_label) and is_instance_valid(player):
 		_refresh_debug_label()
@@ -2068,6 +2099,51 @@ func _debug_skip_to_chapter(idx: int) -> void:
 	GameManager._hit_invincible = false
 	GameManager.load_chapter(idx)
 	get_tree().reload_current_scene()
+
+
+# ════════════════════════════════════════════════════════════════
+# 自動探索モード（視覚障碍者向け）
+# ════════════════════════════════════════════════════════════════
+
+func _start_auto_explore() -> void:
+	var ch := GameManager.current_chapter
+	if ch == null:
+		return
+	print("[AutoExplore] 自動探索モード開始: %s" % ch.chapter_name)
+	# 無敵化（ゴーストは表示するが捕まらない）
+	GameManager.ghost_grace = true
+	# アイテム位置→出口の順に自動歩行
+	var targets : Array[Vector3] = []
+	for v in ch.item_positions:
+		targets.append(v)
+	targets.append(ch.exit_position)
+
+	for target in targets:
+		if not is_inside_tree():
+			return
+		await _auto_explore_walk(target)
+		await get_tree().create_timer(1.0).timeout
+
+
+func _auto_explore_walk(target: Vector3) -> void:
+	if not is_instance_valid(player):
+		return
+	var speed : float = 3.2  # WALK_SPEED * 0.8
+	while is_inside_tree() and is_instance_valid(player):
+		var to := target - player.global_position
+		to.y = 0.0
+		var dist := to.length()
+		if dist < 2.0:
+			break
+		var dir := to.normalized()
+		player.velocity.x = dir.x * speed
+		player.velocity.z = dir.z * speed
+		# カメラを進行方向に向ける
+		var target_yaw := atan2(dir.x, dir.z)
+		player.rotation.y = lerp_angle(player.rotation.y, target_yaw, 0.05)
+		player.move_and_slide()
+		await get_tree().process_frame
+	player.velocity = Vector3.ZERO
 
 
 ## Shift+F10: 現チャプターを自動プレイ（一筆書きルートで歩いてクリア）

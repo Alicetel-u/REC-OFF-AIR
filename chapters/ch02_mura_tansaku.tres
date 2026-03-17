@@ -27,7 +27,7 @@ patrol_points = PackedVector3Array()
 model_path = "res://assets/models/characters/Miyuki.glb"
 model_scale = Vector3(3, 3, 3)
 
-; ── チャプターデータ本体 ──
+; ── チャプターデータ本体（HD-2D強化） ──
 [resource]
 script = ExtResource("1")
 chapter_id = "ch02_mura_tansaku"
@@ -39,22 +39,23 @@ player_spawn = Vector3(13.50, 1.0, -23.50)
 ghost_configs = [SubResource("miyuki_1"), SubResource("miyuki_2"), SubResource("miyuki_3")]
 item_positions = PackedVector3Array(-30.0, 1.0, 20.0, 70.0, 1.0, -10.0, 61.25, 1.0, 3.50)
 exit_position = Vector3(8.75, 1.5, 80.25)
-ambient_light_energy = 0.8
-directional_light_energy = 1.0
-background_color = Color(0.2, 0.22, 0.3, 1)
-fog_enabled = false
-fog_density = 0.0
+ambient_light_energy = 0.06
+directional_light_energy = 0.3
+background_color = Color(0.02, 0.02, 0.05, 1)
+fog_enabled = true
+fog_density = 0.04
 use_sky_background = true
-sky_top_color = Color(0.15, 0.15, 0.25, 1)
-sky_horizon_color = Color(0.25, 0.25, 0.3, 1)
-ambient_light_color = Color(0.4, 0.4, 0.5, 1)
+sky_top_color = Color(0.02, 0.02, 0.05, 1)
+sky_horizon_color = Color(0.06, 0.06, 0.10, 1)
+ambient_light_color = Color(0.05, 0.05, 0.10, 1)
 tonemap_mode = 3
-ssao_enabled = false
-ssil_enabled = false
-fog_light_color = Color(0.08, 0.06, 0.10, 1)
-fog_aerial_perspective = 0.0
-volumetric_fog_enabled = false
-volumetric_fog_density = 0.0
+fog_light_color = Color(0.03, 0.03, 0.06, 1)
+fog_aerial_perspective = 1.0
 vhs_overlay = false
+glow_enabled = true
+glow_intensity = 1.2
+glow_bloom = 0.3
+glow_blend_mode = 2
+glow_hdr_threshold = 0.5
 monologue_lines = PackedStringArray()
 next_chapter_id = ""

@@ -45,3 +45,23 @@ assets/audio/sfx/_tmp*/
 
 # Voice recordings (large files excluded — ch01 is tracked)
 # assets/audio/voice/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Screenshots (debug)
+screenshot*.png
+screenshot*.png.import
+
+# Debug output
+game_autotest*.txt
+game_import*.txt
+game_stdout2.txt
+
+# Dialogue backups
+dialogue/*.json.bak_*
+
+# Collision debug output
+collision_corners.txt
+collision_data.txt

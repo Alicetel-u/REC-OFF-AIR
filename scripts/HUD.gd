@@ -23,6 +23,7 @@ var record_time : float = 0.0
 var rec_blink_t : float = 0.0
 var _last_tc_frame : int = -1
 var rec_show    : bool  = true
+var _ghost_proximity : float = 0.0  # 0.0=遠い, 1.0=超近い（外部から設定）
 var scare_t     : float = 0.0
 var idle_chat_t : float = 0.0
 var _chat_next  : float = 0.0
@@ -166,9 +167,13 @@ func _process(delta: float) -> void:
 
 	record_time += delta
 
-	# ── REC 点滅（状態変化時のみUI更新） ──
+	# ── REC 点滅（ゴースト接近時は心拍リズムで不規則化） ──
+	var blink_interval : float = 0.6
+	if _ghost_proximity > 0.0:
+		# ゴースト接近度に応じて点滅を不規則に（心拍連動）
+		blink_interval = lerp(0.6, randf_range(0.25, 0.55), _ghost_proximity)
 	rec_blink_t += delta
-	if rec_blink_t >= 0.6:
+	if rec_blink_t >= blink_interval:
 		rec_blink_t = 0.0
 		rec_show = not rec_show
 		if is_instance_valid(_rec_dot):

@@ -26,6 +26,7 @@ var start_section: int = 0
 
 var _hit_invincible : bool = false
 var ghost_grace     : bool = false   ## ゴースト有効化直後の無敵時間
+var auto_explore_mode : bool = false ## 視覚障碍者向け自動探索モード
 const HIT_MAX       : int  = 3
 
 ## ── エンディング分岐 ──
