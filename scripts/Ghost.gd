@@ -455,8 +455,13 @@ func _face(target: Vector3) -> void:
 	var t := target
 	t.y = global_position.y
 	if t.distance_to(global_position) > 0.1:
-		look_at(t, Vector3.UP)
-		rotation.y += PI * 0.5
+		var target_yaw := atan2(t.x - global_position.x, t.z - global_position.z) + PI * 0.5
+		if _current_motion == MotionPattern.SLOW_TURN:
+			# ゆっくり振り向く（3倍遅い）
+			rotation.y = lerp_angle(rotation.y, target_yaw, 0.02)
+		else:
+			look_at(t, Vector3.UP)
+			rotation.y += PI * 0.5
 
 
 # ════════════════════════════════════════════════════════════════
