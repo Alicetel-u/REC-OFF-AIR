@@ -1,16 +1,24 @@
-[gd_scene format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Shader" path="res://assets/models/environment/shaders/dark_asphalt.gdshader" id="1_oe4cw"]
 [ext_resource type="Material" path="res://assets/models/bus_stop/materials/decayed_wood.tres" id="2_0n5af"]
 [ext_resource type="Material" path="res://assets/models/bus_stop/materials/rusty_bench.tres" id="3_tj8nk"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/asphalt_diff.jpg" id="4_asphalt_diff"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/asphalt_nor.jpg" id="5_asphalt_nor"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/asphalt_rough.jpg" id="6_asphalt_rough"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7thgd"]
 render_priority = 0
 shader = ExtResource("1_oe4cw")
-shader_parameter/asphalt_color = null
-shader_parameter/crack_color = null
-shader_parameter/puddle_color = null
-shader_parameter/wetness = null
+shader_parameter/asphalt_color = Color(0.16, 0.15, 0.14, 1)
+shader_parameter/crack_color = Color(0.04, 0.04, 0.03, 1)
+shader_parameter/puddle_color = Color(0.06, 0.06, 0.07, 1)
+shader_parameter/wetness = 0.5
+shader_parameter/albedo_tex = ExtResource("4_asphalt_diff")
+shader_parameter/normal_tex = ExtResource("5_asphalt_nor")
+shader_parameter/rough_tex = ExtResource("6_asphalt_rough")
+shader_parameter/tex_blend = 0.7
+shader_parameter/tex_scale = 4.0
 
 [node name="StreetRoot" type="Node3D" unique_id=695537134]
 

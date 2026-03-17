@@ -494,21 +494,165 @@ func _apply_environment(chapter: Resource) -> void:
 	if chapter.fog_enabled:
 		env.fog_density            = chapter.fog_density
 		env.fog_light_color        = chapter.fog_light_color
-		env.fog_light_energy       = 0.0
+		env.fog_light_energy       = 0.05
 		env.fog_aerial_perspective = chapter.fog_aerial_perspective
 
-	# ── ボリュメトリックフォグ (Forward Plus) ──
+	# ── ボリュメトリックフォグ (Forward Plus — gl_compatibility では無視される) ──
 	env.volumetric_fog_enabled = chapter.volumetric_fog_enabled
 	if chapter.volumetric_fog_enabled:
 		env.volumetric_fog_density = chapter.volumetric_fog_density
 
+	# ── Glow / Bloom（HD-2D演出）──
+	env.glow_enabled       = chapter.glow_enabled
+	env.glow_intensity     = chapter.glow_intensity
+	env.glow_bloom         = chapter.glow_bloom
+	env.glow_blend_mode    = chapter.glow_blend_mode
+	env.glow_hdr_threshold = chapter.glow_hdr_threshold
+
 	$DirectionalLight3D.light_energy = chapter.directional_light_energy
+
+	# ── HD-2D パーティクル（全チャプター共通）──
+	_setup_atmosphere_particles()
 
 	# ── VHS オーバーレイ ──
 	if chapter.vhs_overlay:
 		_setup_vhs_overlay()
 	else:
 		_remove_vhs_overlay()
+
+
+# ──────────────────────────────────────────────
+# HD-2D パーティクル（全チャプター共通）
+# ──────────────────────────────────────────────
+
+var _atmosphere_particles: Array[GPUParticles3D] = []
+
+## ソフトな円形グラデーションテクスチャ（中心→白→外側→透明）
+func _create_soft_circle_texture() -> GradientTexture2D:
+	var grad := Gradient.new()
+	grad.set_offset(0, 0.0)
+	grad.set_color(0, Color(1, 1, 1, 1))
+	grad.add_point(0.4, Color(1, 1, 1, 0.6))
+	grad.set_offset(2, 1.0)
+	grad.set_color(2, Color(1, 1, 1, 0))
+	var tex := GradientTexture2D.new()
+	tex.gradient = grad
+	tex.fill = GradientTexture2D.FILL_RADIAL
+	tex.fill_from = Vector2(0.5, 0.5)
+	tex.fill_to = Vector2(0.5, 0.0)
+	tex.width = 64
+	tex.height = 64
+	return tex
+
+func _make_particle_mat(color: Color, emission_col: Color,
+		emission_energy: float, circle_tex: GradientTexture2D) -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = color
+	m.albedo_texture = circle_tex
+	if emission_energy > 0.0:
+		m.emission_enabled = true
+		m.emission = emission_col
+		m.emission_energy_multiplier = emission_energy
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.vertex_color_use_as_albedo = true
+	return m
+
+func _setup_atmosphere_particles() -> void:
+	if _atmosphere_particles.size() > 0:
+		return
+
+	var circle_tex := _create_soft_circle_texture()
+
+	# ── 1. 塵・埃パーティクル ──
+	var dust := GPUParticles3D.new()
+	dust.name = "HD2D_Dust"
+	dust.amount = 60
+	dust.lifetime = 6.0
+	dust.visibility_aabb = AABB(Vector3(-15, -3, -15), Vector3(30, 8, 30))
+
+	var dust_proc := ParticleProcessMaterial.new()
+	dust_proc.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	dust_proc.emission_box_extents = Vector3(10.0, 3.0, 10.0)
+	dust_proc.gravity = Vector3(0, -0.02, 0)
+	dust_proc.initial_velocity_min = 0.05
+	dust_proc.initial_velocity_max = 0.15
+	dust_proc.spread = 180.0
+	dust_proc.scale_min = 0.3
+	dust_proc.scale_max = 0.7
+	dust_proc.color = Color(0.9, 0.85, 0.7, 0.35)
+	dust.process_material = dust_proc
+
+	var dust_mesh := QuadMesh.new()
+	dust_mesh.size = Vector2(0.05, 0.05)
+	dust_mesh.material = _make_particle_mat(
+		Color(0.9, 0.85, 0.7, 0.4),
+		Color(0.9, 0.85, 0.7), 0.3, circle_tex)
+	dust.draw_pass_1 = dust_mesh
+	add_child(dust)
+	_atmosphere_particles.append(dust)
+
+	# ── 2. 地面の霧パーティクル ──
+	var fog := GPUParticles3D.new()
+	fog.name = "HD2D_GroundFog"
+	fog.amount = 12
+	fog.lifetime = 12.0
+	fog.visibility_aabb = AABB(Vector3(-20, -1, -20), Vector3(40, 4, 40))
+
+	var fog_proc := ParticleProcessMaterial.new()
+	fog_proc.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	fog_proc.emission_box_extents = Vector3(12.0, 0.2, 12.0)
+	fog_proc.gravity = Vector3(0, 0, 0)
+	fog_proc.initial_velocity_min = 0.08
+	fog_proc.initial_velocity_max = 0.2
+	fog_proc.direction = Vector3(1, 0, 0.3)
+	fog_proc.spread = 45.0
+	fog_proc.scale_min = 4.0
+	fog_proc.scale_max = 8.0
+	fog_proc.color = Color(0.6, 0.6, 0.7, 0.04)
+	fog.process_material = fog_proc
+	fog.position = Vector3(0, 0.4, 0)
+
+	var fog_mesh := QuadMesh.new()
+	fog_mesh.size = Vector2(3.0, 3.0)
+	var fog_draw := _make_particle_mat(
+		Color(0.6, 0.6, 0.7, 0.04),
+		Color.BLACK, 0.0, circle_tex)
+	fog_draw.no_depth_test = true
+	fog_mesh.material = fog_draw
+	fog.draw_pass_1 = fog_mesh
+	add_child(fog)
+	_atmosphere_particles.append(fog)
+
+	# ── 3. ボケパーティクル（HD-2D定番：柔らかい光の玉）──
+	var bokeh := GPUParticles3D.new()
+	bokeh.name = "HD2D_Bokeh"
+	bokeh.amount = 10
+	bokeh.lifetime = 8.0
+	bokeh.visibility_aabb = AABB(Vector3(-15, -1, -15), Vector3(30, 10, 30))
+
+	var bokeh_proc := ParticleProcessMaterial.new()
+	bokeh_proc.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	bokeh_proc.emission_box_extents = Vector3(8.0, 2.0, 8.0)
+	bokeh_proc.gravity = Vector3(0, 0.03, 0)
+	bokeh_proc.initial_velocity_min = 0.02
+	bokeh_proc.initial_velocity_max = 0.06
+	bokeh_proc.direction = Vector3(0, 1, 0)
+	bokeh_proc.spread = 80.0
+	bokeh_proc.scale_min = 0.5
+	bokeh_proc.scale_max = 1.2
+	bokeh_proc.color = Color(0.4, 0.9, 0.5, 0.15)
+	bokeh.process_material = bokeh_proc
+
+	var bokeh_mesh := QuadMesh.new()
+	bokeh_mesh.size = Vector2(0.12, 0.12)
+	bokeh_mesh.material = _make_particle_mat(
+		Color(1, 1, 1, 0.2),
+		Color(0.3, 0.9, 0.4), 2.5, circle_tex)
+	bokeh.draw_pass_1 = bokeh_mesh
+	add_child(bokeh)
+	_atmosphere_particles.append(bokeh)
 
 
 # ──────────────────────────────────────────────
@@ -1388,6 +1532,9 @@ func _play_souko_exit() -> void:
 	_souko_exiting = true
 	player.input_disabled = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	# HUD・ナビ矢印を非表示にする（紙芝居中に残らないように）
+	hud.visible = false
+	hud.stop_nav()
 	# ミニマップを非表示にする（紙芝居演出中に残らないように）
 	var minimap_layer := get_node_or_null("MinimapLayer")
 	if minimap_layer:
@@ -1903,6 +2050,12 @@ func _refresh_debug_label() -> void:
 
 
 func _process(_delta: float) -> void:
+	# HD-2D パーティクルをプレイヤーに追従
+	if _atmosphere_particles.size() > 0 and is_instance_valid(player):
+		for p in _atmosphere_particles:
+			if is_instance_valid(p):
+				p.global_position = player.global_position
+
 	# デバッグラベルのプレイヤー座標をリアルタイム更新
 	if _DEBUG_CHAPTER_SKIP and is_instance_valid(_debug_label) and is_instance_valid(player):
 		_refresh_debug_label()

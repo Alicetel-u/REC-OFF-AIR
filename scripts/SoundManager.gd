@@ -28,6 +28,7 @@ var _monster_idx   : int = 0
 var _voice      : AudioStreamPlayer = null
 var _chat_voice : AudioStreamPlayer = null
 var chat_voice_muted : bool = false  ## デバッグ: チャット音声ミュート
+var _chat_voice_queue : Array[Dictionary] = []  ## チャットボイスキュー（順番待ち）
 var _bgm        : AudioStreamPlayer = null
 var _sfx        : AudioStreamPlayer = null
 
@@ -47,6 +48,12 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if _step_cooldown > 0.0:
 		_step_cooldown -= delta
+	# チャットボイスキュー処理: 再生中でなければ次を再生
+	if _chat_voice_queue.size() > 0 and not _chat_voice.playing:
+		var next : Dictionary = _chat_voice_queue.pop_front()
+		_chat_voice.stream    = next.stream
+		_chat_voice.volume_db = next.vol_db
+		_chat_voice.play()
 
 
 func _make_player(vol_db: float) -> AudioStreamPlayer:
@@ -255,22 +262,26 @@ func stop_voice() -> void:
 	_voice.stop()
 
 
-## チャットコメントボイス再生（主人公ボイスと同時再生可能）
+## チャットコメントボイス再生（キュー方式: 前の音声が終わってから次を再生）
 func play_chat_voice(path: String, vol_db: float = 0.0) -> void:
 	if chat_voice_muted:
 		return
 	var s := _load_audio(path)
 	if not s:
 		return
-	_chat_voice.stop()
-	_chat_voice.stream    = s
-	_chat_voice.volume_db = vol_db
-	_chat_voice.play()
+	# 再生中でなければ即再生、再生中ならキューに追加
+	if not _chat_voice.playing:
+		_chat_voice.stream    = s
+		_chat_voice.volume_db = vol_db
+		_chat_voice.play()
+	else:
+		_chat_voice_queue.append({ "stream": s, "vol_db": vol_db })
 
 
-## チャットボイスを停止
+## チャットボイスを停止（キューもクリア）
 func stop_chat_voice() -> void:
 	_chat_voice.stop()
+	_chat_voice_queue.clear()
 
 
 ## 全音声を即停止（バッドエンド遷移等）

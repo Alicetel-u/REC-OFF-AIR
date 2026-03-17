@@ -118,13 +118,42 @@ func _create_materials() -> void:
 	mat_h_blood  = _make_mat(null, Color(0.30, 0.03, 0.01), 0.95, Vector3(1, 1, 1))
 
 
-func _make_mat(tex: Texture2D, color: Color, rough: float, uv_scale: Vector3) -> StandardMaterial3D:
+# プロシージャル Normal Map（NoiseTexture2D）— 全マテリアル共通で凹凸感を付加
+var _normal_noise_tex: NoiseTexture2D = null
+
+func _get_normal_noise() -> NoiseTexture2D:
+	if _normal_noise_tex:
+		return _normal_noise_tex
+	_normal_noise_tex = NoiseTexture2D.new()
+	_normal_noise_tex.as_normal_map = true
+	_normal_noise_tex.bump_strength = 4.0
+	_normal_noise_tex.width = 256
+	_normal_noise_tex.height = 256
+	var noise := FastNoiseLite.new()
+	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
+	noise.frequency = 0.03
+	noise.fractal_octaves = 4
+	_normal_noise_tex.noise = noise
+	return _normal_noise_tex
+
+
+func _make_mat(tex: Texture2D, color: Color, rough: float, uv_scale: Vector3,
+		emission_color: Color = Color.BLACK, emission_energy: float = 0.0) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	if tex:
 		m.albedo_texture = tex
 	m.albedo_color = color
 	m.roughness = rough
 	m.uv1_scale = uv_scale
+	if emission_energy > 0.0:
+		m.emission_enabled = true
+		m.emission = emission_color
+		m.emission_energy_multiplier = emission_energy
+	# HD-2D: Normal Map で凹凸感追加（Emission マテリアルには不要）
+	if emission_energy <= 0.0 and rough > 0.5:
+		m.normal_enabled = true
+		m.normal_texture = _get_normal_noise()
+		m.normal_scale = 0.6
 	return m
 
 
@@ -426,6 +455,12 @@ func _props_generator(p: Node3D) -> void:
 	_box(p, "GenBase_A", Vector3(2.2, 0.25, 2.2), Vector3(-2.5, 0.125, -3.2), mat_metal)
 	_box(p, "GenBase_B", Vector3(2.2, 0.25, 2.2), Vector3( 1.5, 0.125, -3.2), mat_metal)
 	_box(p, "ElecPanel",  Vector3(3.5, 1.8, 0.35), Vector3(3.5, 0.9, -4.1), mat_cabinet)
+	# 電気パネルのインジケータLED（赤い発光）
+	var mat_led := _make_mat(null, Color(0.15, 0.02, 0.02), 0.30, Vector3(1, 1, 1),
+		Color(1.0, 0.1, 0.05), 2.0)
+	_box(p, "PanelLED1", Vector3(0.08, 0.08, 0.02), Vector3(4.5, 1.5, -3.93), mat_led)
+	_box(p, "PanelLED2", Vector3(0.08, 0.08, 0.02), Vector3(4.2, 1.3, -3.93), mat_led)
+	_box(p, "PanelLED3", Vector3(0.08, 0.08, 0.02), Vector3(3.8, 1.5, -3.93), mat_led)
 	_box(p, "ElecPanel2", Vector3(1.5, 1.5, 0.35), Vector3(-0.5, 0.75, -4.1), mat_cabinet)
 	_box(p, "Pipe_Gen1", Vector3(0.22, 0.22, 7.0), Vector3(-2.5, 5.0, 0.0), mat_pipes)
 	_box(p, "Pipe_Gen2", Vector3(0.22, 0.22, 7.0), Vector3( 1.5, 5.0, 0.0), mat_pipes)
@@ -437,9 +472,12 @@ func _props_generator(p: Node3D) -> void:
 func _props_control_rm(p: Node3D) -> void:
 	_box(p, "Console_Main", Vector3(7.5, 1.0, 0.75), Vector3(0, 0.5, -3.8), mat_cabinet)
 	_box(p, "Console_Top",  Vector3(7.5, 0.08, 0.75), Vector3(0, 1.04, -3.8), mat_metal)
+	# モニター — Emission追加（Bloom対応: 青白い発光）
+	var mat_monitor := _make_mat(null, Color(0.15, 0.20, 0.30), 0.40, Vector3(1, 1, 1),
+		Color(0.4, 0.6, 1.0), 2.5)
 	for i in 4:
 		_box(p, "Monitor_%d" % i, Vector3(0.85, 0.55, 0.08),
-			Vector3(-3.3 + i * 2.2, 1.65, -3.85), mat_metal)
+			Vector3(-3.3 + i * 2.2, 1.65, -3.85), mat_monitor)
 	_box(p, "Chair_Seat", Vector3(0.55, 0.06, 0.55), Vector3(0, 0.55, -2.5), mat_fabric)
 	_box(p, "Chair_Back", Vector3(0.55, 0.60, 0.06), Vector3(0, 0.90, -2.25), mat_fabric)
 	_box(p, "SubConsole", Vector3(0.65, 0.85, 2.5), Vector3(-4.2, 0.425, -1.5), mat_cabinet)
@@ -536,8 +574,11 @@ func _props_entrance(p: Node3D) -> void:
 		var cx := -1.0 + i * 2.0
 		_box(p, "Chair_S_%d" % i, Vector3(0.50, 0.06, 0.50), Vector3(cx, 0.50, 2.2), mat_fabric)
 		_box(p, "Chair_B_%d" % i, Vector3(0.50, 0.55, 0.06), Vector3(cx, 0.83, 2.48), mat_fabric)
-	_box(p, "Sign",     Vector3(2.0, 0.55, 0.05), Vector3(0, 3.5, 4.4), mat_cabinet)
-	_box(p, "SignText", Vector3(1.8, 0.35, 0.03), Vector3(0, 3.5, 4.44), mat_metal)
+	# EXIT看板 — 赤い非常灯（Bloom対応）
+	var mat_exit_sign := _make_mat(null, Color(0.20, 0.05, 0.02), 0.40, Vector3(1, 1, 1),
+		Color(1.0, 0.15, 0.05), 1.5)
+	_box(p, "Sign",     Vector3(2.0, 0.55, 0.05), Vector3(0, 3.5, 4.4), mat_exit_sign)
+	_box(p, "SignText", Vector3(1.8, 0.35, 0.03), Vector3(0, 3.5, 4.44), mat_exit_sign)
 	_box(p, "Barrier",  Vector3(0.08, 1.2, 1.5), Vector3(-2.5, 0.6, 1.0), mat_metal)
 	_cyl(p, "FireExt_E", 0.12, 0.55, Vector3(-4.0, 0.275, 3.5), mat_metal)
 
@@ -545,7 +586,10 @@ func _props_entrance(p: Node3D) -> void:
 func _props_break_room(p: Node3D) -> void:
 	_box(p, "Vending_A", Vector3(0.75, 1.95, 0.55), Vector3(-3.5, 0.975, 3.8), mat_cabinet)
 	_box(p, "Vending_B", Vector3(0.75, 1.95, 0.55), Vector3(-2.7, 0.975, 3.8), mat_cabinet)
-	_box(p, "Vending_Screen", Vector3(0.50, 0.55, 0.03), Vector3(-3.5, 1.3, 3.55), mat_metal)
+	# 自販機スクリーン — 薄緑の発光（Bloom対応）
+	var mat_vending_glow := _make_mat(null, Color(0.10, 0.18, 0.10), 0.35, Vector3(1, 1, 1),
+		Color(0.3, 0.8, 0.3), 1.8)
+	_box(p, "Vending_Screen", Vector3(0.50, 0.55, 0.03), Vector3(-3.5, 1.3, 3.55), mat_vending_glow)
 	_box(p, "Locker_BR1", Vector3(0.50, 2.0, 0.60), Vector3(3.8, 1.0, 3.7), mat_cabinet)
 	_box(p, "Locker_BR2", Vector3(0.50, 2.0, 0.60), Vector3(3.2, 1.0, 3.7), mat_cabinet)
 	_box(p, "BreakTable", Vector3(2.5, 0.06, 1.2), Vector3(0, 0.78, -0.5), mat_metal)
@@ -625,11 +669,13 @@ func _props_shrine(p: Node3D) -> void:
 	_box(p, "Torii_L", Vector3(0.25, 3.5, 0.25), Vector3(-2.0, 1.75, h - 1.0), mat_h_wood)
 	_box(p, "Torii_R", Vector3(0.25, 3.5, 0.25), Vector3( 2.0, 1.75, h - 1.0), mat_h_wood)
 	_box(p, "Torii_H", Vector3(4.5, 0.25, 0.25), Vector3(0, 3.5, h - 1.0),    mat_h_wood)
-	# 石灯籠
+	# 石灯籠 — Emission追加（オレンジの揺らめく光、Bloom対応）
+	var mat_lantern_glow := _make_mat(null, Color(0.35, 0.20, 0.05), 0.90, Vector3(1, 1, 1),
+		Color(1.0, 0.6, 0.15), 2.0)
 	_cyl(p, "Lantern_L_Base", 0.25, 0.6, Vector3(-1.5, 0.3, 0.5), mat_h_stone)
-	_box(p, "Lantern_L_Top",  Vector3(0.5, 0.5, 0.5), Vector3(-1.5, 0.85, 0.5), mat_h_stone)
+	_box(p, "Lantern_L_Top",  Vector3(0.5, 0.5, 0.5), Vector3(-1.5, 0.85, 0.5), mat_lantern_glow)
 	_cyl(p, "Lantern_R_Base", 0.25, 0.6, Vector3( 1.5, 0.3, 0.5), mat_h_stone)
-	_box(p, "Lantern_R_Top",  Vector3(0.5, 0.5, 0.5), Vector3( 1.5, 0.85, 0.5), mat_h_stone)
+	_box(p, "Lantern_R_Top",  Vector3(0.5, 0.5, 0.5), Vector3( 1.5, 0.85, 0.5), mat_lantern_glow)
 	# 倒れた石碑
 	_box(p, "Stele", Vector3(0.25, 1.2, 0.1), Vector3(-3.0, 0.2, -1.0), mat_h_stone)
 	_box(p, "Stele", Vector3(0.25, 1.2, 0.1), Vector3(-3.0, 0.2, -1.0), mat_h_stone)
@@ -680,7 +726,10 @@ func _props_well(p: Node3D) -> void:
 	# 井戸本体
 	_cyl(p, "Well_Ring1", 0.85, 0.08, Vector3(0, 0.04, 0), mat_h_stone)
 	_cyl(p, "Well_Ring2", 0.78, 0.6,  Vector3(0, 0.3,  0), mat_h_stone)
-	_cyl(p, "Well_Inner", 0.55, 0.62, Vector3(0, 0.31, 0), mat_h_ground)
+	# 井戸の底 — 不気味な青緑の発光（Bloom対応）
+	var mat_well_glow := _make_mat(null, Color(0.05, 0.10, 0.08), 0.98, Vector3(1, 1, 1),
+		Color(0.2, 0.8, 0.6), 1.5)
+	_cyl(p, "Well_Inner", 0.55, 0.62, Vector3(0, 0.31, 0), mat_well_glow)
 	# 井戸の屋根柱
 	_box(p, "Well_Post_NW", Vector3(0.12, 1.5, 0.12), Vector3(-0.7, 0.75, -0.7), mat_h_wood)
 	_box(p, "Well_Post_NE", Vector3(0.12, 1.5, 0.12), Vector3( 0.7, 0.75, -0.7), mat_h_wood)
@@ -982,9 +1031,9 @@ func _place_environment() -> void:
 		env.fog_enabled    = true
 		env.fog_light_color = Color(0.02, 0.02, 0.06)
 		env.fog_light_energy = 0.05
-		env.fog_density    = 0.018
+		env.fog_density    = 0.045  # HD-2D: 濃い霧で奥行き感UP
 	else:
-		# インダストリアル: 完全な闇
+		# インダストリアル: 完全な闇 + 埃っぽい空気
 		env.background_color = Color(0.0, 0.0, 0.0)
 		env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 		env.ambient_light_color  = Color(0.06, 0.05, 0.08)
@@ -992,7 +1041,14 @@ func _place_environment() -> void:
 		env.fog_enabled    = true
 		env.fog_light_color = Color(0.02, 0.01, 0.03)
 		env.fog_light_energy = 0.04
-		env.fog_density    = 0.014
+		env.fog_density    = 0.030  # HD-2D: 埃っぽい空気感
+
+	# ── Glow / Bloom（HD-2D演出）──
+	env.glow_enabled       = true
+	env.glow_intensity     = 0.8
+	env.glow_bloom         = 0.1
+	env.glow_blend_mode    = Environment.GLOW_BLEND_MODE_ADDITIVE
+	env.glow_hdr_threshold = 0.8
 
 	var we := WorldEnvironment.new()
 	we.name = "WorldEnvironment"
@@ -1000,6 +1056,176 @@ func _place_environment() -> void:
 	add_child(we)
 
 	_add_room_lights()
+	# パーティクルは Main.gd で全チャプター統一管理（_setup_atmosphere_particles）
+	_add_godrays()
+
+
+# ──────────────────────────────────────────────
+# HD-2D ゴッドレイ（BAKIN方式: メッシュ+シェーダー）
+# ──────────────────────────────────────────────
+
+const GodrayShader := preload("res://shaders/godray_mesh.gdshader")
+
+func _add_godrays() -> void:
+	# 各部屋のライト位置から下向きのゴッドレイメッシュを配置
+	# 重要な部屋のみ（影のある部屋と同じ）
+	for room_name in SHADOW_ROOMS:
+		var node: Node3D = get_node_or_null("F0_%s" % room_name)
+		if not node:
+			continue
+		_create_godray(node, room_name)
+
+
+func _create_godray(parent: Node3D, room_name: String) -> void:
+	# 天井ランプから下方向への光の筋
+	var ray := MeshInstance3D.new()
+	ray.name = "Godray_%s" % room_name
+	# PlaneMesh を縦に配置（光の筋の形状）
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(1.5, _ceil_h * 0.8)
+	ray.mesh = plane
+	# 天井から少し下を始点、床方向に伸びる
+	ray.position = Vector3(0, _ceil_h * 0.5, 0)
+	ray.rotation_degrees = Vector3(90, 0, 0)  # 垂直に立てる
+
+	var mat := ShaderMaterial.new()
+	mat.shader = GodrayShader
+	# 部屋タイプに応じた光の色
+	var ray_color := Color(1.0, 0.95, 0.8, 0.08)
+	if room_name == "CONTROL_RM":
+		ray_color = Color(0.5, 0.7, 1.0, 0.06)
+	elif room_name == "FURNACE":
+		ray_color = Color(1.0, 0.4, 0.15, 0.08)
+	elif room_name == "SHRINE":
+		ray_color = Color(1.0, 0.85, 0.5, 0.07)
+	mat.set_shader_parameter("ray_color", ray_color)
+	mat.set_shader_parameter("intensity", 1.0)
+	mat.set_shader_parameter("fade_power", 2.0)
+	mat.set_shader_parameter("scroll_speed", 0.03)
+	ray.material_override = mat
+	ray.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(ray)
+
+	# 2枚目を90度回転して十字に配置（立体感を出す）
+	var ray2 := ray.duplicate() as MeshInstance3D
+	ray2.name = "Godray2_%s" % room_name
+	ray2.rotation_degrees = Vector3(90, 90, 0)
+	parent.add_child(ray2)
+
+
+# ──────────────────────────────────────────────
+# HD-2D パーティクル演出
+# ──────────────────────────────────────────────
+
+func _add_atmosphere_particles() -> void:
+	# ── 1. 塵・埃パーティクル（カメラ追従、全マップ共通）──
+	var dust := GPUParticles3D.new()
+	dust.name = "DustParticles"
+	dust.amount = 80
+	dust.lifetime = 6.0
+	dust.visibility_aabb = AABB(Vector3(-15, -3, -15), Vector3(30, 8, 30))
+
+	var dust_mat := ParticleProcessMaterial.new()
+	dust_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	dust_mat.emission_box_extents = Vector3(12.0, 4.0, 12.0)
+	dust_mat.gravity = Vector3(0, -0.02, 0)  # ほぼ無重力でゆっくり漂う
+	dust_mat.initial_velocity_min = 0.05
+	dust_mat.initial_velocity_max = 0.15
+	dust_mat.direction = Vector3(0, 0, 0)
+	dust_mat.spread = 180.0
+	dust_mat.scale_min = 0.03
+	dust_mat.scale_max = 0.06
+	dust_mat.color = Color(0.9, 0.85, 0.7, 0.4)
+	dust.process_material = dust_mat
+
+	var dust_mesh := QuadMesh.new()
+	dust_mesh.size = Vector2(0.08, 0.08)
+	var dust_draw_mat := StandardMaterial3D.new()
+	dust_draw_mat.albedo_color = Color(0.9, 0.85, 0.7, 0.5)
+	dust_draw_mat.emission_enabled = true
+	dust_draw_mat.emission = Color(0.9, 0.85, 0.7)
+	dust_draw_mat.emission_energy_multiplier = 0.5
+	dust_draw_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	dust_draw_mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	dust_draw_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	dust_mesh.material = dust_draw_mat
+	dust.draw_pass_1 = dust_mesh
+	add_child(dust)
+
+	# ── 2. 地面の霧パーティクル（大きめ半透明、低い位置に漂う）──
+	var fog := GPUParticles3D.new()
+	fog.name = "GroundFogParticles"
+	fog.amount = 20
+	fog.lifetime = 10.0
+	fog.visibility_aabb = AABB(Vector3(-20, -1, -20), Vector3(40, 4, 40))
+
+	var fog_mat := ParticleProcessMaterial.new()
+	fog_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	fog_mat.emission_box_extents = Vector3(15.0, 0.3, 15.0)
+	fog_mat.gravity = Vector3(0, 0, 0)
+	fog_mat.initial_velocity_min = 0.1
+	fog_mat.initial_velocity_max = 0.3
+	fog_mat.direction = Vector3(1, 0, 0)
+	fog_mat.spread = 60.0
+	fog_mat.scale_min = 3.0
+	fog_mat.scale_max = 6.0
+	fog_mat.color = Color(0.7, 0.7, 0.8, 0.08)
+	fog.process_material = fog_mat
+	fog.position = Vector3(0, 0.5, 0)  # 地面付近
+
+	var fog_mesh := QuadMesh.new()
+	fog_mesh.size = Vector2(2.0, 2.0)
+	var fog_draw_mat := StandardMaterial3D.new()
+	fog_draw_mat.albedo_color = Color(0.7, 0.7, 0.8, 0.06)
+	fog_draw_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	fog_draw_mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	fog_draw_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	fog_draw_mat.no_depth_test = true
+	fog_mesh.material = fog_draw_mat
+	fog.draw_pass_1 = fog_mesh
+	add_child(fog)
+
+	# ── 3. ボケパーティクル（HD-2D定番：光る玉が浮遊）──
+	var bokeh := GPUParticles3D.new()
+	bokeh.name = "BokehParticles"
+	bokeh.amount = 15
+	bokeh.lifetime = 8.0
+	bokeh.visibility_aabb = AABB(Vector3(-15, -1, -15), Vector3(30, 10, 30))
+
+	var bokeh_mat := ParticleProcessMaterial.new()
+	bokeh_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	bokeh_mat.emission_box_extents = Vector3(12.0, 3.0, 12.0)
+	bokeh_mat.gravity = Vector3(0, 0.03, 0)  # わずかに上昇
+	bokeh_mat.initial_velocity_min = 0.02
+	bokeh_mat.initial_velocity_max = 0.08
+	bokeh_mat.direction = Vector3(0, 1, 0)
+	bokeh_mat.spread = 90.0
+	bokeh_mat.scale_min = 0.08
+	bokeh_mat.scale_max = 0.18
+
+	# マップタイプで色を変える
+	if _map_type == WFCGenerator.MapType.HAISON:
+		bokeh_mat.color = Color(0.3, 0.8, 0.4, 0.25)  # 蛍風（緑がかった光）
+	else:
+		bokeh_mat.color = Color(0.9, 0.8, 0.5, 0.2)  # 埃が反射した光（暖色）
+	bokeh.process_material = bokeh_mat
+
+	var bokeh_mesh := QuadMesh.new()
+	bokeh_mesh.size = Vector2(0.15, 0.15)
+	var bokeh_draw_mat := StandardMaterial3D.new()
+	bokeh_draw_mat.albedo_color = Color(1, 1, 1, 0.3)
+	bokeh_draw_mat.emission_enabled = true
+	if _map_type == WFCGenerator.MapType.HAISON:
+		bokeh_draw_mat.emission = Color(0.3, 0.9, 0.4)
+	else:
+		bokeh_draw_mat.emission = Color(0.9, 0.8, 0.5)
+	bokeh_draw_mat.emission_energy_multiplier = 2.0  # Bloom でにじむ
+	bokeh_draw_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	bokeh_draw_mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	bokeh_draw_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	bokeh_mesh.material = bokeh_draw_mat
+	bokeh.draw_pass_1 = bokeh_mesh
+	add_child(bokeh)
 
 
 func _add_room_lights() -> void:
@@ -1060,17 +1286,38 @@ func _add_room_lights_haison() -> void:
 			_create_room_light(node, room_name, lights[room_name])
 
 
-func _create_room_light(parent: Node3D, room_name: String, cfg: Dictionary) -> void:
-	var light := OmniLight3D.new()
-	light.name = "RoomLight_%s" % room_name
-	light.position = Vector3(0, _ceil_h - 0.5, 0)
-	light.light_color = cfg.color
-	light.light_energy = cfg.energy
-	light.omni_range = cfg.range
-	light.shadow_enabled = false
-	parent.add_child(light)
+# 影を有効化する重要な部屋（合計4-6個に抑える）
+const SHADOW_ROOMS := [
+	"CONTROL_RM", "WORKSHOP", "ENTRANCE", "SHRINE", "EXIT_HALL", "FURNACE"
+]
 
-	# 天井ランプメッシュ（屋外セルには天井なしなので不要）
+func _create_room_light(parent: Node3D, room_name: String, cfg: Dictionary) -> void:
+	var use_shadow : bool = room_name in SHADOW_ROOMS
+
+	if use_shadow:
+		# SpotLight3D（影つき）— 天井から真下を照らす
+		var spot := SpotLight3D.new()
+		spot.name = "RoomLight_%s" % room_name
+		spot.position = Vector3(0, _ceil_h - 0.3, 0)
+		spot.rotation_degrees = Vector3(-90, 0, 0)  # 真下向き
+		spot.light_color = cfg.color
+		spot.light_energy = cfg.energy * 2.5  # SpotはOmniより集中するため補正
+		spot.spot_range = cfg.range
+		spot.spot_angle = 55.0
+		spot.shadow_enabled = true
+		spot.shadow_blur = 0.5
+		parent.add_child(spot)
+	else:
+		var light := OmniLight3D.new()
+		light.name = "RoomLight_%s" % room_name
+		light.position = Vector3(0, _ceil_h - 0.5, 0)
+		light.light_color = cfg.color
+		light.light_energy = cfg.energy
+		light.omni_range = cfg.range
+		light.shadow_enabled = false
+		parent.add_child(light)
+
+	# 天井ランプメッシュ — Bloom対応でemission強化
 	var lamp_mesh := CSGBox3D.new()
 	lamp_mesh.name = "LampFixture_%s" % room_name
 	lamp_mesh.size = Vector3(1.2, 0.08, 0.15)
@@ -1079,7 +1326,7 @@ func _create_room_light(parent: Node3D, room_name: String, cfg: Dictionary) -> v
 	lamp_mat.albedo_color = cfg.color
 	lamp_mat.emission_enabled = true
 	lamp_mat.emission = cfg.color
-	lamp_mat.emission_energy_multiplier = 1.8
+	lamp_mat.emission_energy_multiplier = 3.0  # Bloomでにじむよう強化
 	lamp_mesh.material = lamp_mat
 	parent.add_child(lamp_mesh)
 

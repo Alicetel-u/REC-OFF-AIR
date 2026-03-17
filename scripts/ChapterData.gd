@@ -51,6 +51,13 @@ extends Resource
 @export var volumetric_fog_density: float = 0.0
 @export var vhs_overlay: bool = false
 
+## Glow / Bloom（HD-2D演出）
+@export var glow_enabled: bool = true
+@export var glow_intensity: float = 1.2
+@export var glow_bloom: float = 0.3
+@export var glow_blend_mode: int = 2  # ADDITIVE
+@export var glow_hdr_threshold: float = 0.5
+
 ## 配信者のモノローグ
 @export var monologue_lines: PackedStringArray = []
 

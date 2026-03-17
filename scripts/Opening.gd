@@ -404,21 +404,25 @@ func _show_profile() -> void:
 		return
 
 	# 各行フェードイン + ボイス
+	# 行[0]=name はボイスなし、行[1]〜[8] に op_p01〜08 を割り当て
 	var _profile_voice_ids : Array[String] = [
-		"op_p01", "op_p02", "op_p03", "op_p04",
+		"", "op_p01", "op_p02", "op_p03", "op_p04",
 		"op_p05", "op_p06", "op_p07", "op_p08"]
 	for i in range(labels.size()):
 		if _skipped: break
 		var lbl := labels[i]
 		var tw := create_tween()
 		tw.tween_property(lbl, "modulate:a", 1.0, 0.6)
-		# ボイス再生
-		if i < _profile_voice_ids.size():
-			_play_op_voice(_profile_voice_ids[i], -2.0)
+		# ボイス再生（空文字列ならスキップ）
+		if i < _profile_voice_ids.size() and _profile_voice_ids[i] != "":
+			_play_op_voice(_profile_voice_ids[i], -4.0)
 		await tw.finished
 		if _skipped: break
-		await _await_op_voice()
-		await get_tree().create_timer(0.3).timeout
+		if i < _profile_voice_ids.size() and _profile_voice_ids[i] != "":
+			await _await_op_voice()
+			await get_tree().create_timer(0.3).timeout
+		else:
+			await get_tree().create_timer(0.8).timeout
 
 	if _skipped:
 		root.queue_free()
@@ -526,6 +530,7 @@ func _show_dm() -> void:
 		"op_dm01", "op_dm02", "op_dm03", "op_dm04",
 		"op_dm05", "op_dm06", "op_dm07"]
 	var dm_voice_idx : int = 0
+
 	for idx in range(messages.size()):
 		if _skipped: break
 		var msg : Dictionary = messages[idx]
@@ -555,9 +560,9 @@ func _show_dm() -> void:
 
 		var tw_in := create_tween()
 		tw_in.tween_property(msg_label, "modulate:a", 1.0, 0.5)
-		# DMボイス再生
+		# DMボイス再生（Kと同じ冥鳴ひまり音声）
 		if dm_voice_idx < _dm_voice_ids.size():
-			_play_op_voice(_dm_voice_ids[dm_voice_idx], -4.0)
+			_play_op_voice(_dm_voice_ids[dm_voice_idx], 10.0)
 			dm_voice_idx += 1
 		await tw_in.finished
 		if _skipped: break
@@ -670,7 +675,7 @@ func _scare_moment() -> void:
 	scare_root.modulate.a = 0.9
 	_overlay.color = Color(0.4, 0.0, 0.0, 0.18)
 	_play_sfx("bell/impactBell_heavy_001.ogg", -4.0)
-	_play_op_voice("op_scare", 2.0)
+	_play_op_voice_creepy("op_scare", 6.0, "", "creepy")
 	await _shake(6.0, 0.5)
 	await get_tree().create_timer(0.6).timeout
 	if is_instance_valid(_overlay):
@@ -998,6 +1003,24 @@ func _play_op_voice(filename: String, vol_db: float = 0.0) -> void:
 	_op_voice = AudioStreamPlayer.new()
 	_op_voice.stream = stream
 	_op_voice.volume_db = vol_db
+	add_child(_op_voice)
+	_op_voice.play()
+
+## DMの主の声を不気味に加工して再生（ピッチダウン + リバーブバス）
+func _play_op_voice_creepy(filename: String, vol_db: float, bus_name: String, style: String) -> void:
+	var path := "res://assets/audio/voice/opening/" + filename + ".wav"
+	var stream := load(path) as AudioStream
+	if not stream:
+		return
+	if _op_voice and is_instance_valid(_op_voice):
+		_op_voice.stop()
+		_op_voice.queue_free()
+	_op_voice = AudioStreamPlayer.new()
+	_op_voice.stream = stream
+	_op_voice.volume_db = vol_db
+	_op_voice.bus = bus_name
+	# 無機質な一定ピッチ（creepyだけ少し低く）
+	_op_voice.pitch_scale = 0.88 if style != "creepy" else 0.78
 	add_child(_op_voice)
 	_op_voice.play()
 

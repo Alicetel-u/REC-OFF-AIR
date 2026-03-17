@@ -1,13 +1,21 @@
-[gd_resource type="ShaderMaterial" format=3]
+[gd_resource type="ShaderMaterial" load_steps=5 format=3]
 
 [ext_resource type="Shader" path="res://assets/models/bus_stop/shaders/decayed_wood.gdshader" id="1_decayed_wood"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/wood_diff.jpg" id="2_wood_diff"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/wood_nor.jpg" id="3_wood_nor"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/wood_rough.jpg" id="4_wood_rough"]
 
 [resource]
 render_priority = 0
 shader = ExtResource("1_decayed_wood")
-shader_parameter/wood_base_color = Color(0.1, 0.08, 0.05, 1)
-shader_parameter/wood_highlight_color = Color(0.2, 0.18, 0.15, 1)
+shader_parameter/wood_base_color = Color(0.12, 0.09, 0.06, 1)
+shader_parameter/wood_highlight_color = Color(0.22, 0.19, 0.15, 1)
 shader_parameter/moss_color = Color(0.1, 0.25, 0.05, 1)
-shader_parameter/decay_amount = 0.9
-shader_parameter/moss_amount = 0.7
-shader_parameter/uv_scale = null
+shader_parameter/decay_amount = 0.85
+shader_parameter/moss_amount = 0.6
+shader_parameter/uv_scale = 10.0
+shader_parameter/albedo_tex = ExtResource("2_wood_diff")
+shader_parameter/normal_tex = ExtResource("3_wood_nor")
+shader_parameter/rough_tex = ExtResource("4_wood_rough")
+shader_parameter/tex_blend = 0.6
+shader_parameter/tex_scale = 3.0

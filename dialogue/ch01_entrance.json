@@ -2116,7 +2116,7 @@
       "scene": "res://scenes/PublicToiletStage.tscn",
       "spawn": [
         -1.5,
-        0,
+        1,
         -3.75
       ]
     },
