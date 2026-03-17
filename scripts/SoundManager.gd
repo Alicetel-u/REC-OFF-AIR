@@ -27,6 +27,7 @@ var _monster_idx   : int = 0
 
 var _voice      : AudioStreamPlayer = null
 var _chat_voice : AudioStreamPlayer = null
+var chat_voice_muted : bool = false  ## デバッグ: チャット音声ミュート
 var _bgm        : AudioStreamPlayer = null
 var _sfx        : AudioStreamPlayer = null
 
@@ -256,6 +257,8 @@ func stop_voice() -> void:
 
 ## チャットコメントボイス再生（主人公ボイスと同時再生可能）
 func play_chat_voice(path: String, vol_db: float = 0.0) -> void:
+	if chat_voice_muted:
+		return
 	var s := _load_audio(path)
 	if not s:
 		return

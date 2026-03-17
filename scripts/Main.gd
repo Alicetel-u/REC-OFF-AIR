@@ -328,6 +328,15 @@ func _input(event: InputEvent) -> void:
 		return
 	var kc := (event as InputEventKey).keycode
 
+	# F8: チャット音声オン/オフ トグル
+	if kc == KEY_F8:
+		SoundManager.chat_voice_muted = not SoundManager.chat_voice_muted
+		if SoundManager.chat_voice_muted and SoundManager._chat_voice.playing:
+			SoundManager._chat_voice.stop()
+		_refresh_debug_label()
+		get_viewport().set_input_as_handled()
+		return
+
 	# F9: シナリオ中自由移動トグル（常時有効）
 	if kc == KEY_F9:
 		_toggle_debug_free_move()
@@ -1861,8 +1870,9 @@ func _refresh_debug_label() -> void:
 		var p := player.global_position
 		pos_str = " | pos=(%.1f, %.1f)" % [p.x, p.z]
 	var free_str := " | [F9] 自由移動: ON" if GameManager.debug_free_move else ""
+	var chat_str := " | [F8] chat音声: OFF" if SoundManager.chat_voice_muted else ""
 	var test_str := " | AUTO-TEST" if GameManager.autotest_active else ""
-	_debug_label.text = "CP%d: %s%s%s%s" % [idx, cname, pos_str, free_str, test_str]
+	_debug_label.text = "CP%d: %s%s%s%s%s" % [idx, cname, pos_str, free_str, chat_str, test_str]
 
 
 func _process(_delta: float) -> void:
