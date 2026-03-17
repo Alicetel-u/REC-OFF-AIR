@@ -468,6 +468,9 @@ func _pick_motion_if_changed() -> void:
 	_motion_timer = 0.0
 	_freeze_active = false
 	_teleport_phase = 0
+	# CRAWLパターンのscale復元
+	if _ghost_body:
+		_ghost_body.scale = Vector3.ONE
 	match ghost_state:
 		GhostState.PATROL:
 			_current_motion = PATROL_MOTIONS[randi() % PATROL_MOTIONS.size()]

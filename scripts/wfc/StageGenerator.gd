@@ -162,6 +162,7 @@ func _make_mat(tex: Texture2D, color: Color, rough: float, uv_scale: Vector3,
 # ──────────────────────────────────────────────
 
 func generate(map_type: int = WFCGenerator.MapType.HAISON) -> Dictionary:
+	_uncanny_room_applied = false  # リセット
 	var wfc := WFCGenerator.new()
 	var result: Dictionary = wfc.generate(4, 3, 1, map_type)
 
