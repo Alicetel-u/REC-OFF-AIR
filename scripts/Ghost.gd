@@ -485,7 +485,7 @@ func _pick_motion_if_changed() -> void:
 			_current_motion = CHASE_MOTIONS[randi() % CHASE_MOTIONS.size()]
 		GhostState.CAUGHT:
 			_current_motion = CAUGHT_MOTIONS[randi() % CAUGHT_MOTIONS.size()]
-	print("[Ghost] state=%d motion=%d" % [ghost_state, _current_motion])
+	# デバッグ: print("[Ghost] state=%d motion=%d" % [ghost_state, _current_motion])
 
 
 # ════════════════════════════════════════════════════════════════
