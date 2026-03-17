@@ -108,6 +108,7 @@ var _freeze_timer   : float = 0.0
 var _teleport_phase : int   = 0  # 0=通常, 1=消えている, 2=再出現
 var _teleport_timer : float = 0.0
 var _original_scale : Vector3 = Vector3.ONE
+var _levitate_h     : float = 0.0  # LEVITATEパターン用の蓄積高さ
 var _growl_interval : float = 5.0
 # ── フェイクラッシュ演出用 ──
 var _fake_rush_timer : float = 0.0
@@ -472,7 +473,8 @@ func _pick_motion_if_changed() -> void:
 	_motion_timer = 0.0
 	_freeze_active = false
 	_teleport_phase = 0
-	# CRAWLパターンのscale復元
+	# CRAWLパターンのscale復元 + LEVITATE高さリセット
+	_levitate_h = 0.0
 	if _ghost_body:
 		_ghost_body.scale = Vector3.ONE
 	match ghost_state:
@@ -558,9 +560,10 @@ func _update_visuals(delta: float) -> void:
 			# 首ゆっくり回転（_face()の速度を遅くする効果は別途）
 			motion_rot_z = sin(_motion_timer * 0.5) * 5.0
 		MotionPattern.LEVITATE:
-			# 浮上 — 天井近くに上がる
-			bob_amp = lerp(bob_amp, 0.3, delta * 0.5)
-			base_h = lerp(base_h, 2.0, delta * 0.3)
+			# 浮上 — 天井近くに上がる（蓄積値でlerp）
+			_levitate_h = lerp(_levitate_h, 2.5, delta * 0.3)
+			base_h += _levitate_h
+			bob_amp = 0.15
 		MotionPattern.LEAN_DASH:
 			# 前傾ダッシュ
 			motion_rot_x = -30.0
