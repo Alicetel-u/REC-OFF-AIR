@@ -1400,7 +1400,7 @@
         },
         {
             "type": "_comment",
-            "_": "  ROUTE C — 配信を止める → BAD END「わたしはだあれ」"
+            "_": "  ROUTE C — 配信を止める → BAD END「盲目の捕食者」"
         },
         {
             "type": "_comment",
@@ -1545,48 +1545,63 @@
         },
         {
             "type": "play_ending",
-            "id": "bad_dare",
-            "ending_title": "わたしはだあれ",
+            "id": "bad_hoshokusha",
+            "ending_title": "盲目の捕食者",
             "return_label": "cp3_choice",
             "sections": [
                 {
                     "title": "",
                     "mood": "dark",
-                    "image": "res://assets/textures/bad_dare_watashi.jpg",
+                    "wait": 2.0,
+                    "lines": [
+                        {
+                            "text": "配信を止めた。画面が真っ暗になった。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v451.wav",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "……静か。何も聞こえない。風の音すら消えた。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v452.wav",
+                            "pause": 4.0
+                        }
+                    ]
+                },
+                {
+                    "title": "",
+                    "mood": "dark",
                     "wait": 1.5,
                     "lines": [
                         {
-                            "text": "配信を止めた。",
-                            "voice": "res://assets/audio/voice/ch02_mura/v451.wav",
-                            "pause": 3.0
+                            "text": "懐中電灯が……消えた？　バッテリーは満タンだったのに。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v453.wav",
+                            "pause": 3.5
                         },
                         {
-                            "text": "……あれ、手が透けてる……？",
-                            "voice": "res://assets/audio/voice/ch02_mura/v452.wav",
-                            "pause": 3.5
+                            "text": "真っ暗。何も見えない。自分の手すら見えない。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v454.wav",
+                            "pause": 4.0
                         }
                     ]
                 },
                 {
                     "title": "",
                     "mood": "fear",
-                    "image": "res://assets/textures/bad_dare_watashi.jpg",
                     "wait": 1.0,
                     "lines": [
                         {
-                            "text": "足も見えなくなってきた。",
-                            "voice": "res://assets/audio/voice/ch02_mura/v453.wav",
-                            "pause": 3.0
-                        },
-                        {
-                            "text": "配信してないと……消えるの……？",
-                            "voice": "res://assets/audio/voice/ch02_mura/v454.wav",
+                            "text": "……何か聞こえる。地面を……引きずる音……？",
+                            "voice": "res://assets/audio/voice/ch02_mura/v455.wav",
                             "pause": 3.5
                         },
                         {
-                            "text": "やだ……誰か……見て……お願い誰か見て……！",
-                            "voice": "res://assets/audio/voice/ch02_mura/v455.wav",
-                            "pause": 3.5,
+                            "text": "近づいてる。どんどん速くなってる。",
+                            "voice": "res://assets/audio/voice/ch02_mura/v456.wav",
+                            "pause": 3.0
+                        },
+                        {
+                            "text": "やだ……逃げなきゃ……でもどっちに！？",
+                            "voice": "res://assets/audio/voice/ch02_mura/v457.wav",
+                            "pause": 3.0,
                             "emphasis": true
                         }
                     ]
@@ -1594,26 +1609,17 @@
                 {
                     "title": "",
                     "mood": "fear",
-                    "image": "res://assets/textures/bad_dare_watashi.jpg",
-                    "wait": 1.5,
+                    "wait": 0.5,
                     "lines": [
                         {
-                            "text": "「誰？」",
-                            "pause": 2.0
-                        },
-                        {
-                            "text": "「誰の配信だっけ」",
-                            "pause": 2.5
-                        },
-                        {
-                            "text": "「知らない子だね」",
-                            "pause": 3.0
-                        },
-                        {
-                            "text": "見てくれないと……私って……誰だっけ……",
-                            "voice": "res://assets/audio/voice/ch02_mura/v456.wav",
-                            "pause": 4.0,
+                            "text": "来ないで！！　来ないで来ないで来ないでっ——！！",
+                            "voice": "res://assets/audio/voice/ch02_mura/v458.wav",
+                            "pause": 3.0,
                             "emphasis": true
+                        },
+                        {
+                            "text": "——",
+                            "pause": 3.0
                         }
                     ]
                 }
