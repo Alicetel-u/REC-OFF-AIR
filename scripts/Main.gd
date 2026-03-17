@@ -597,6 +597,36 @@ func _add_cp1_debris() -> void:
 		item.rotation_degrees.y = rng.randf_range(0, 360)
 		stage.add_child(item)
 
+	# 倒れた自転車（道路脇に1台）
+	var bike := Node3D.new()
+	bike.name = "AbandonedBike"
+	bike.position = Vector3(3.8, 0.0, -5.0)
+	bike.rotation_degrees = Vector3(0, 35, 75)  # 横倒し
+	# フレーム
+	var frame := CSGBox3D.new()
+	frame.size = Vector3(0.03, 0.5, 0.9)
+	frame.material = metal_mat
+	bike.add_child(frame)
+	# 前輪
+	var wheel_f := CSGCylinder3D.new()
+	wheel_f.radius = 0.3
+	wheel_f.height = 0.03
+	wheel_f.sides = 12
+	wheel_f.position = Vector3(0, 0.0, 0.4)
+	wheel_f.rotation_degrees.x = 90
+	wheel_f.material = metal_mat
+	bike.add_child(wheel_f)
+	# 後輪
+	var wheel_r := CSGCylinder3D.new()
+	wheel_r.radius = 0.3
+	wheel_r.height = 0.03
+	wheel_r.sides = 12
+	wheel_r.position = Vector3(0, 0.0, -0.4)
+	wheel_r.rotation_degrees.x = 90
+	wheel_r.material = metal_mat
+	bike.add_child(wheel_r)
+	stage.add_child(bike)
+
 
 var _atmosphere_particles: Array[GPUParticles3D] = []
 
