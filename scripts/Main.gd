@@ -1253,15 +1253,22 @@ func _on_item_collected_warehouse(count: int, total: int) -> void:
 	if count == 1:
 		_run_chapter_opening_background("ch02_haison_souko_found")
 	# VHS回収後: 照明を暗くする（「何かが変わった」感）
-	for light_node in get_tree().get_nodes_in_group("ghost"):
-		pass  # ゴーストグループではなくライトを直接探す
-	var stage_node := get_node_or_null("StageGenerator")
-	if stage_node:
-		for child in stage_node.get_children():
-			for sub in child.get_children():
-				if sub is OmniLight3D or sub is SpotLight3D:
-					var tw := create_tween()
-					tw.tween_property(sub, "light_energy", sub.light_energy * 0.5, 3.0)
+	_dim_all_lights(0.5, 3.0)
+
+
+## ステージ内の全ライトを暗くする（恐怖演出用）
+func _dim_all_lights(multiplier: float, duration: float) -> void:
+	var stage := get_node_or_null("StageGenerator")
+	if not stage:
+		return
+	_dim_lights_recursive(stage, multiplier, duration)
+
+func _dim_lights_recursive(node: Node, mult: float, dur: float) -> void:
+	if node is OmniLight3D or node is SpotLight3D:
+		var tw := create_tween()
+		tw.tween_property(node, "light_energy", node.light_energy * mult, dur)
+	for child in node.get_children():
+		_dim_lights_recursive(child, mult, dur)
 
 	# 全VHS回収で脱出演出
 	if count >= total and total > 0:
