@@ -1252,6 +1252,17 @@ func _on_item_collected_warehouse(count: int, total: int) -> void:
 	# 最初の1個だけセリフ演出を流す（ポラロイド後）
 	if count == 1:
 		_run_chapter_opening_background("ch02_haison_souko_found")
+	# VHS回収後: 照明を暗くする（「何かが変わった」感）
+	for light_node in get_tree().get_nodes_in_group("ghost"):
+		pass  # ゴーストグループではなくライトを直接探す
+	var stage_node := get_node_or_null("StageGenerator")
+	if stage_node:
+		for child in stage_node.get_children():
+			for sub in child.get_children():
+				if sub is OmniLight3D or sub is SpotLight3D:
+					var tw := create_tween()
+					tw.tween_property(sub, "light_energy", sub.light_energy * 0.5, 3.0)
+
 	# 全VHS回収で脱出演出
 	if count >= total and total > 0:
 		hud.show_monologue("全部見つけた……！ ここを出ないと！")
