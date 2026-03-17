@@ -1,7 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scenes/KiriharaVillageMap/UtilityPole.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://scenes/KiriharaVillageMap/電信柱_basecolor.png" id="2_tex"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/wood_nor.jpg" id="3_nor"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/wood_rough.jpg" id="4_rough"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_pole_large"]
 top_radius = 0.28
@@ -12,7 +14,11 @@ height = 10.0
 albedo_texture = ExtResource("2_tex")
 uv1_scale = Vector3(1, 6, 1)
 uv1_triplanar = true
-roughness = 1.0
+roughness = 0.92
+roughness_texture = ExtResource("4_rough")
+normal_enabled = true
+normal_texture = ExtResource("3_nor")
+normal_scale = 0.6
 
 [sub_resource type="BoxMesh" id="BoxMesh_crossarm_large"]
 size = Vector3(2.5, 0.25, 0.25)
