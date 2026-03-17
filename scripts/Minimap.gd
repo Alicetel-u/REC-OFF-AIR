@@ -63,6 +63,10 @@ func setup(p_player: Node3D, p_exit: Vector3, p_items: Array,
 	custom_minimum_size = Vector2(MAP_SIZE, MAP_SIZE)
 	size = Vector2(MAP_SIZE, MAP_SIZE)
 	_noise_seed = randi()
+	
+func update_items(p_items: Array) -> void:
+	_item_positions = p_items
+	queue_redraw()
 
 
 ## CP2 廃倉庫の壁データをハードコードで追加

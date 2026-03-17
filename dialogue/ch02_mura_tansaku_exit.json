@@ -1254,145 +1254,113 @@
             "name": "route_take"
         },
         {
-            "type": "horror_red_clear"
+            "type": "say",
+            "text": "……持っていく。これは私の、この世界の真実の証拠だ",
+            "voice": "v431_new"
+        },
+        {
+            "type": "wait",
+            "sec": 4.0
         },
         {
             "type": "horror_glitch",
-            "intensity": 0.3,
-            "dur": 0.2
-        },
-        {
-            "type": "bg_image_clear",
-            "dur": 0.3
-        },
-        {
-            "type": "set_viewers",
-            "count": 95000
+            "intensity": 0.8,
+            "dur": 0.5
         },
         {
             "type": "sfx",
-            "sound": "ambient_wind"
-        },
-        {
-            "type": "wait",
-            "sec": 0.5
-        },
-        {
-            "type": "say",
-            "text": "……持っていく。これは証拠だ。答えはこの先にある",
-            "voice": "v431"
-        },
-        {
-            "type": "wait",
-            "sec": 5.0
-        },
-        {
-            "type": "chat",
-            "msg": "戻った！",
-            "user": "視聴者A",
-            "voice": "c018"
-        },
-        {
-            "type": "wait",
-            "sec": 0.1
-        },
-        {
-            "type": "chat",
-            "msg": "同接9万5千ｗｗ",
-            "user": "配信民99",
-            "utype": "member",
-            "voice": "c019"
-        },
-        {
-            "type": "wait",
-            "sec": 0.1
-        },
-        {
-            "type": "chat",
-            "msg": "今の何！？",
-            "user": "まっちゃん",
-            "voice": "c020"
-        },
-        {
-            "type": "wait",
-            "sec": 0.1
-        },
-        {
-            "type": "chat",
-            "msg": "しゅっち大丈夫？",
-            "user": "ゆきんこ77",
-            "utype": "moderator",
-            "voice": "c021"
-        },
-        {
-            "type": "wait",
-            "sec": 0.1
-        },
-        {
-            "type": "chat",
-            "msg": "心臓止まった",
-            "user": "視聴者A",
-            "voice": "c022"
-        },
-        {
-            "type": "wait",
-            "sec": 0.1
-        },
-        {
-            "type": "chat",
-            "msg": "配信事故レベル",
-            "user": "配信民99",
-            "utype": "member",
-            "voice": "c023"
-        },
-        {
-            "type": "wait",
-            "sec": 0.1
-        },
-        {
-            "type": "chat",
-            "msg": "鳥肌立ったわ",
-            "user": "まっちゃん",
-            "voice": "c024"
-        },
-        {
-            "type": "wait",
-            "sec": 0.1
-        },
-        {
-            "type": "chat",
-            "msg": "神回確定",
-            "user": "視聴者A",
-            "voice": "c025"
-        },
-        {
-            "type": "wait",
-            "sec": 0.8
+            "file": "metal/impactMetal_heavy_000.ogg"
         },
         {
             "type": "say_clear"
         },
         {
             "type": "say",
-            "text": "……行こう。神社の中に、全部の答えがある",
-            "voice": "v432"
+            "text": "スマホの中の自分と……みゆきが……笑ってる？",
+            "voice": "v432_new"
         },
         {
             "type": "wait",
-            "sec": 5.0
+            "sec": 4.5
         },
         {
-            "type": "superchat",
-            "msg": "最後まで見届ける",
-            "user": "夜桜モカ",
-            "amount": 10000
+            "type": "horror_red",
+            "dur": 5.0
         },
         {
             "type": "wait",
             "sec": 1.0
         },
         {
-            "type": "say_clear"
+            "type": "play_ending",
+            "id": "true_archive",
+            "ending_title": "永遠のアーカイブ",
+            "return_label": "cp3_choice",
+            "sections": [
+                {
+                    "title": "結末：デジタル・アーカイブ",
+                    "mood": "dark",
+                    "wait": 2.0,
+                    "lines": [
+                        {
+                            "text": "スマホを手にした瞬間、視界がノイズで塗りつぶされた。",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "熱い。体が、電子の海に溶けていくような感覚。",
+                            "pause": 4.0
+                        }
+                    ]
+                },
+                {
+                    "title": "",
+                    "mood": "fear",
+                    "image": "res://assets/textures/archive_end.jpg",
+                    "wait": 1.5,
+                    "lines": [
+                        {
+                            "text": "気づけば、私は「画面の中」にいた。",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "隣には、あの子……みゆきが立っている。",
+                            "pause": 4.0
+                        }
+                    ]
+                },
+                {
+                    "title": "",
+                    "mood": "dark",
+                    "image": "res://assets/textures/archive_end.jpg",
+                    "wait": 1.5,
+                    "lines": [
+                        {
+                            "text": "私たちは、永遠に記録され続ける。",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "視聴者が再生ボタンを押すたびに、この地獄を繰り返す。",
+                            "pause": 4.5
+                        },
+                        {
+                            "text": "でも……もう、怖くない。一人じゃないから。",
+                            "pause": 5.0,
+                            "emphasis": true
+                        }
+                    ]
+                },
+                {
+                    "title": "OFF AIR",
+                    "mood": "clear",
+                    "wait": 2.0,
+                    "lines": [
+                        {
+                            "text": "この動画のタイトルは……『REC-OFF-AIR』",
+                            "pause": 4.0
+                        }
+                    ]
+                }
+            ]
         },
         {
             "type": "_comment",
@@ -1412,173 +1380,95 @@
         },
         {
             "type": "say",
-            "text": "もういい……配信止める。こんなの見せたくない……",
-            "voice": "v433"
-        },
-        {
-            "type": "wait",
-            "sec": 4.5
-        },
-        {
-            "type": "chat",
-            "msg": "は？やめんなよ",
-            "user": "視聴者A",
-            "voice": "c026"
-        },
-        {
-            "type": "wait",
-            "sec": 0.2
-        },
-        {
-            "type": "chat",
-            "msg": "ここまで来て逃げるのかよ",
-            "user": "配信民99",
-            "utype": "member",
-            "voice": "c027"
-        },
-        {
-            "type": "wait",
-            "sec": 0.2
-        },
-        {
-            "type": "chat",
-            "msg": "同接9万のためにやってんだろ",
-            "user": "まっちゃん",
-            "voice": "c028"
-        },
-        {
-            "type": "wait",
-            "sec": 0.5
-        },
-        {
-            "type": "say_clear"
-        },
-        {
-            "type": "say",
-            "text": "うるさい！　怖いんだよ！　もう無理……！",
-            "voice": "v434"
+            "text": "もういい……配信止める。こんなの配信できない！",
+            "voice": "v433_new"
         },
         {
             "type": "wait",
             "sec": 4.0
         },
         {
-            "type": "chat",
-            "msg": "承認欲求の塊が何言ってんの",
-            "user": "配信民99",
-            "utype": "member",
-            "voice": "c029"
-        },
-        {
-            "type": "wait",
-            "sec": 0.2
-        },
-        {
-            "type": "chat",
-            "msg": "逃げるなら最初から来んなよ",
-            "user": "まっちゃん",
-            "voice": "c030"
-        },
-        {
-            "type": "wait",
-            "sec": 0.2
-        },
-        {
-            "type": "chat",
-            "msg": "期待はずれ",
-            "user": "視聴者A",
-            "voice": "c031"
-        },
-        {
-            "type": "wait",
-            "sec": 0.2
-        },
-        {
-            "type": "chat",
-            "msg": "つまんね 落ちるわ",
-            "user": "視聴者A",
-            "voice": "c032"
-        },
-        {
-            "type": "wait",
-            "sec": 0.5
-        },
-        {
-            "type": "say_clear"
-        },
-        {
-            "type": "say",
-            "text": "……もういい。みんな勝手にして。配信、止める",
-            "voice": "v435"
-        },
-        {
-            "type": "wait",
-            "sec": 4.5
+            "type": "chat_clear"
         },
         {
             "type": "set_viewers",
             "count": 0
         },
         {
-            "type": "horror_glitch",
-            "intensity": 2.0,
-            "dur": 1.0
+            "type": "sfx",
+            "sound": "static_noise"
+        },
+        {
+            "type": "fade_black",
+            "dur": 2.0
         },
         {
             "type": "wait",
-            "sec": 1.0
-        },
-        {
-            "type": "say_clear"
+            "sec": 1.5
         },
         {
             "type": "say",
-            "text": "止めた……これで……",
-            "voice": "v436"
+            "text": "……止めた。これで、誰も見られないはず……",
+            "voice": "v434_new"
         },
         {
             "type": "wait",
-            "sec": 3.0
+            "sec": 3.5
         },
         {
-            "type": "say_clear"
+            "type": "sfx",
+            "file": "horror/ghost_breath.wav",
+            "vol": -10.0
+        },
+        {
+            "type": "wait",
+            "sec": 2.0
+        },
+        {
+            "type": "say",
+            "text": "え……？ 何、今の……？",
+            "voice": "v435_new"
+        },
+        {
+            "type": "wait",
+            "sec": 1.5
         },
         {
             "type": "play_ending",
-            "id": "bad_hoshokusha",
+            "id": "bad_predator",
             "ending_title": "盲目の捕食者",
             "return_label": "cp3_choice",
             "sections": [
                 {
-                    "title": "",
+                    "title": "結末：観測の消失",
                     "mood": "dark",
                     "wait": 2.0,
                     "lines": [
                         {
-                            "text": "配信を止めた。画面が真っ暗になった。",
-                            "voice": "res://assets/audio/voice/ch02_mura/v451.wav",
+                            "text": "配信を止めた瞬間、世界から「光」が消えた。",
                             "pause": 3.5
                         },
                         {
-                            "text": "……静か。何も聞こえない。風の音すら消えた。",
-                            "voice": "res://assets/audio/voice/ch02_mura/v452.wav",
+                            "text": "視聴者という観測者がいなくなったことで……",
+                            "pause": 4.0
+                        },
+                        {
+                            "text": "あの子を縛っていたデジタルな法則も、消失した。",
                             "pause": 4.0
                         }
                     ]
                 },
                 {
                     "title": "",
-                    "mood": "dark",
+                    "mood": "fear",
                     "wait": 1.5,
                     "lines": [
                         {
-                            "text": "懐中電灯が……消えた？　バッテリーは満タンだったのに。",
-                            "voice": "res://assets/audio/voice/ch02_mura/v453.wav",
-                            "pause": 3.5
+                            "text": "暗闇の中から、這い寄る音が聞こえる。",
+                            "pause": 3.0
                         },
                         {
-                            "text": "真っ暗。何も見えない。自分の手すら見えない。",
-                            "voice": "res://assets/audio/voice/ch02_mura/v454.wav",
+                            "text": "「観てる間」だけは、あの子は画面の中に留まっていたんだ。",
                             "pause": 4.0
                         }
                     ]
@@ -1589,32 +1479,12 @@
                     "wait": 1.0,
                     "lines": [
                         {
-                            "text": "……何か聞こえる。地面を……引きずる音……？",
-                            "voice": "res://assets/audio/voice/ch02_mura/v455.wav",
-                            "pause": 3.5
+                            "text": "目が合ったような気がした。……いや、あの子に目はない。",
+                            "pause": 4.0
                         },
                         {
-                            "text": "近づいてる。どんどん速くなってる。",
-                            "voice": "res://assets/audio/voice/ch02_mura/v456.wav",
-                            "pause": 3.0
-                        },
-                        {
-                            "text": "やだ……逃げなきゃ……でもどっちに！？",
-                            "voice": "res://assets/audio/voice/ch02_mura/v457.wav",
-                            "pause": 3.0,
-                            "emphasis": true
-                        }
-                    ]
-                },
-                {
-                    "title": "",
-                    "mood": "fear",
-                    "wait": 0.5,
-                    "lines": [
-                        {
-                            "text": "来ないで！！　来ないで来ないで来ないでっ——！！",
-                            "voice": "res://assets/audio/voice/ch02_mura/v458.wav",
-                            "pause": 3.0,
+                            "text": "でも、私の喉を掴む指の感触は、あまりにもリアルで——",
+                            "pause": 4.5,
                             "emphasis": true
                         },
                         {

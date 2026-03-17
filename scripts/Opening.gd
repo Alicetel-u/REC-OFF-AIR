@@ -1197,7 +1197,7 @@ func _show_settings_top() -> void:
 	var menu_items : Array[Dictionary] = [
 		{"name": "ステージ選択", "sub": "チャプターを選んでプレイ", "icon": "🎮", "action": "_show_stage_select"},
 		{"name": "エンディング集", "sub": "解放したエンディングを閲覧", "icon": "📖", "action": "_show_ending_gallery"},
-		{"name": "ストーリーマップ", "sub": "分岐フローチャート・達成率", "icon": "🗺", "action": "_show_story_map"},
+		{"name": "ストーリーマップ", "sub": "分岐フローチャート・達成率", "icon": "◈", "action": "_show_story_map"},
 		{"name": "サウンド", "sub": "BGM・SE音量調整", "icon": "🔊", "action": ""},
 		{"name": "グラフィック", "sub": "画質・エフェクト設定", "icon": "🖥", "action": ""},
 	]
@@ -1212,6 +1212,7 @@ func _show_settings_top() -> void:
 
 
 func _show_story_map() -> void:
+	_play_sfx("metal/metalClick.ogg", -6.0)
 	# 設定パネルを一時非表示
 	if is_instance_valid(_settings_panel):
 		_settings_panel.visible = false
@@ -1535,7 +1536,13 @@ func _menu_card(title: String, sub: String, icon: String, action: String) -> Con
 	wrapper.add_child(btn)
 
 	if not is_disabled:
-		btn.pressed.connect(Callable(self, action))
+		# 文字列からの Callable 生成ではなく、明示的なメソッド呼び出しを行うラムダを使用
+		btn.pressed.connect(func():
+			if has_method(action):
+				call(action)
+			else:
+				print("[Error] Opening: Method not found: ", action)
+		)
 
 	return wrapper
 

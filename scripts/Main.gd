@@ -145,6 +145,8 @@ func _ready() -> void:
 		# start_section==1 のつなぎ演出は _ready() 冒頭で処理済み
 		# CP3 村の探索: 即プレイアブル + バックグラウンドで演出
 		if cur_chapter.chapter_id == "ch02_mura_tansaku":
+			# BGM「静寂ノ境界」を流す
+			SoundManager.play_bgm("res://assets/audio/bgm/静寂ノ境界.mp3", -12.0, 1.0, 3.0)
 			# ゴースト有効化（grace付き）
 			GameManager.ghost_grace = true
 			for ghost: Node in get_tree().get_nodes_in_group("ghost"):
@@ -213,6 +215,7 @@ func _ready() -> void:
 	# ゴーストはVHS2個回収で有効化（_on_ghosts_awaken で処理）
 	GameManager.item_collected.connect(_on_item_for_ghost_awaken)
 	GameManager.item_collected.connect(_on_item_collected_warehouse)
+	GameManager.item_collected.connect(_on_item_collected_village)
 
 	# CP2廃倉庫: ゴール到達時にv103,v104演出を挟んでから遷移
 	if cur_chapter and cur_chapter.chapter_id == "ch02_haison_souko":
@@ -1040,6 +1043,28 @@ func _on_item_collected_warehouse(count: int, total: int) -> void:
 			hud.hide_monologue()
 
 
+func _on_item_collected_village(count: int, _total: int) -> void:
+	## CP3 村の探索チャプター専用：アイテム回収時にミニマップを更新
+	if not (GameManager.current_chapter and GameManager.current_chapter.chapter_id == "ch02_mura_tansaku"):
+		return
+	
+	# ミニマップレイヤーを探して更新
+	var minimap_layer := get_node_or_null("MinimapLayer")
+	if not minimap_layer:
+		return
+	var minimap = minimap_layer.get_child(0)
+	if not is_instance_valid(minimap) or not minimap.has_method("update_items"):
+		return
+		
+	# 現在残っているアイテムの座標リストを作成
+	var items : Array = []
+	for node in get_tree().get_nodes_in_group("village_item"):
+		if is_instance_valid(node) and not node.is_queued_for_deletion():
+			items.append(node.global_position)
+	
+	minimap.update_items(items)
+
+
 func _show_item_acquired(count: int, total: int) -> void:
 	## VHS入手 — ポラロイド風演出（1秒停止・画面中央）
 	player.input_disabled = true
@@ -1228,8 +1253,10 @@ func _setup_minimap(map_min: Vector2, map_max: Vector2) -> void:
 	var items : Array = []
 	if chapter.chapter_id == "ch02_mura_tansaku":
 		for node in get_tree().get_nodes_in_group("village_item"):
-			items.append(node)
+			if is_instance_valid(node):
+				items.append(node.global_position)
 	elif chapter.chapter_id != "ch02_haison_souko":
+		# CP2以外は座標配列として扱う
 		for v in chapter.item_positions:
 			items.append(v)
 	# ゴーストノード取得
