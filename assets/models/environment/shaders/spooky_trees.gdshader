@@ -13,9 +13,14 @@ float noise(vec2 x) {
 }
 
 void vertex() {
-    // 完全にランダムで不気味な風の揺れ
-    float wind = sin(TIME * 2.0 + VERTEX.x * 0.5 + VERTEX.z * 0.5) * 0.1;
-    VERTEX.x += wind * (VERTEX.y * 0.2); // 高いところほど揺れる
+    // 不気味な風の揺れ（複数波の重ね合わせで不規則に）
+    float t = TIME;
+    float wind = sin(t * 1.5 + VERTEX.x * 0.5 + VERTEX.z * 0.3) * 0.15
+               + sin(t * 3.7 + VERTEX.z * 0.8) * 0.06
+               + sin(t * 0.4 + VERTEX.x * 0.2) * 0.20; // ゆっくりした大きな揺れ
+    float height_factor = VERTEX.y * 0.25; // 高いところほど揺れる
+    VERTEX.x += wind * height_factor;
+    VERTEX.z += sin(t * 2.3 + VERTEX.x * 0.6) * 0.04 * height_factor; // Z軸にも少し揺れ
 }
 
 void fragment() {
