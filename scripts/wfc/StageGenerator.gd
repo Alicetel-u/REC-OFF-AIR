@@ -938,10 +938,7 @@ func _place_game_objects(result: Dictionary) -> void:
 		item.position = items_arr[i]
 		add_child(item)
 
-	# --- ゴースト (一時無効化) ---
-	#var ghosts_arr: Array = spawns.ghosts
-	#for i in ghosts_arr.size():
-	#	...
+	# --- ゴーストはMain.gdでChapterDataから配置（WFC内部配置は不使用）---
 
 	# --- ドア ---
 	var doors_arr: Array = spawns.doors
@@ -1128,121 +1125,6 @@ func _create_godray(parent: Node3D, room_name: String) -> void:
 	ray2.name = "Godray2_%s" % room_name
 	ray2.rotation_degrees = Vector3(90, 90, 0)
 	parent.add_child(ray2)
-
-
-# ──────────────────────────────────────────────
-# HD-2D パーティクル演出
-# ──────────────────────────────────────────────
-
-func _add_atmosphere_particles() -> void:
-	# ── 1. 塵・埃パーティクル（カメラ追従、全マップ共通）──
-	var dust := GPUParticles3D.new()
-	dust.name = "DustParticles"
-	dust.amount = 80
-	dust.lifetime = 6.0
-	dust.visibility_aabb = AABB(Vector3(-15, -3, -15), Vector3(30, 8, 30))
-
-	var dust_mat := ParticleProcessMaterial.new()
-	dust_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
-	dust_mat.emission_box_extents = Vector3(12.0, 4.0, 12.0)
-	dust_mat.gravity = Vector3(0, -0.02, 0)  # ほぼ無重力でゆっくり漂う
-	dust_mat.initial_velocity_min = 0.05
-	dust_mat.initial_velocity_max = 0.15
-	dust_mat.direction = Vector3(0, 0, 0)
-	dust_mat.spread = 180.0
-	dust_mat.scale_min = 0.03
-	dust_mat.scale_max = 0.06
-	dust_mat.color = Color(0.9, 0.85, 0.7, 0.4)
-	dust.process_material = dust_mat
-
-	var dust_mesh := QuadMesh.new()
-	dust_mesh.size = Vector2(0.08, 0.08)
-	var dust_draw_mat := StandardMaterial3D.new()
-	dust_draw_mat.albedo_color = Color(0.9, 0.85, 0.7, 0.5)
-	dust_draw_mat.emission_enabled = true
-	dust_draw_mat.emission = Color(0.9, 0.85, 0.7)
-	dust_draw_mat.emission_energy_multiplier = 0.5
-	dust_draw_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	dust_draw_mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-	dust_draw_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	dust_mesh.material = dust_draw_mat
-	dust.draw_pass_1 = dust_mesh
-	add_child(dust)
-
-	# ── 2. 地面の霧パーティクル（大きめ半透明、低い位置に漂う）──
-	var fog := GPUParticles3D.new()
-	fog.name = "GroundFogParticles"
-	fog.amount = 20
-	fog.lifetime = 10.0
-	fog.visibility_aabb = AABB(Vector3(-20, -1, -20), Vector3(40, 4, 40))
-
-	var fog_mat := ParticleProcessMaterial.new()
-	fog_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
-	fog_mat.emission_box_extents = Vector3(15.0, 0.3, 15.0)
-	fog_mat.gravity = Vector3(0, 0, 0)
-	fog_mat.initial_velocity_min = 0.1
-	fog_mat.initial_velocity_max = 0.3
-	fog_mat.direction = Vector3(1, 0, 0)
-	fog_mat.spread = 60.0
-	fog_mat.scale_min = 3.0
-	fog_mat.scale_max = 6.0
-	fog_mat.color = Color(0.7, 0.7, 0.8, 0.08)
-	fog.process_material = fog_mat
-	fog.position = Vector3(0, 0.5, 0)  # 地面付近
-
-	var fog_mesh := QuadMesh.new()
-	fog_mesh.size = Vector2(2.0, 2.0)
-	var fog_draw_mat := StandardMaterial3D.new()
-	fog_draw_mat.albedo_color = Color(0.7, 0.7, 0.8, 0.06)
-	fog_draw_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	fog_draw_mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-	fog_draw_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	fog_draw_mat.no_depth_test = true
-	fog_mesh.material = fog_draw_mat
-	fog.draw_pass_1 = fog_mesh
-	add_child(fog)
-
-	# ── 3. ボケパーティクル（HD-2D定番：光る玉が浮遊）──
-	var bokeh := GPUParticles3D.new()
-	bokeh.name = "BokehParticles"
-	bokeh.amount = 15
-	bokeh.lifetime = 8.0
-	bokeh.visibility_aabb = AABB(Vector3(-15, -1, -15), Vector3(30, 10, 30))
-
-	var bokeh_mat := ParticleProcessMaterial.new()
-	bokeh_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
-	bokeh_mat.emission_box_extents = Vector3(12.0, 3.0, 12.0)
-	bokeh_mat.gravity = Vector3(0, 0.03, 0)  # わずかに上昇
-	bokeh_mat.initial_velocity_min = 0.02
-	bokeh_mat.initial_velocity_max = 0.08
-	bokeh_mat.direction = Vector3(0, 1, 0)
-	bokeh_mat.spread = 90.0
-	bokeh_mat.scale_min = 0.08
-	bokeh_mat.scale_max = 0.18
-
-	# マップタイプで色を変える
-	if _map_type == WFCGenerator.MapType.HAISON:
-		bokeh_mat.color = Color(0.3, 0.8, 0.4, 0.25)  # 蛍風（緑がかった光）
-	else:
-		bokeh_mat.color = Color(0.9, 0.8, 0.5, 0.2)  # 埃が反射した光（暖色）
-	bokeh.process_material = bokeh_mat
-
-	var bokeh_mesh := QuadMesh.new()
-	bokeh_mesh.size = Vector2(0.15, 0.15)
-	var bokeh_draw_mat := StandardMaterial3D.new()
-	bokeh_draw_mat.albedo_color = Color(1, 1, 1, 0.3)
-	bokeh_draw_mat.emission_enabled = true
-	if _map_type == WFCGenerator.MapType.HAISON:
-		bokeh_draw_mat.emission = Color(0.3, 0.9, 0.4)
-	else:
-		bokeh_draw_mat.emission = Color(0.9, 0.8, 0.5)
-	bokeh_draw_mat.emission_energy_multiplier = 2.0  # Bloom でにじむ
-	bokeh_draw_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	bokeh_draw_mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-	bokeh_draw_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	bokeh_mesh.material = bokeh_draw_mat
-	bokeh.draw_pass_1 = bokeh_mesh
-	add_child(bokeh)
 
 
 func _add_room_lights() -> void:
