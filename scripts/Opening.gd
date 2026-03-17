@@ -1221,6 +1221,7 @@ func _show_settings_top() -> void:
 		{"name": "ステージ選択", "sub": "チャプターを選んでプレイ", "icon": "🎮", "action": "_show_stage_select"},
 		{"name": "エンディング集", "sub": "解放したエンディングを閲覧", "icon": "📖", "action": "_show_ending_gallery"},
 		{"name": "ストーリーマップ", "sub": "分岐フローチャート・達成率", "icon": "◈", "action": "_show_story_map"},
+		{"name": "自動探索モード", "sub": ("ON — 操作なしで進行" if GameManager.auto_explore_mode else "OFF — 通常操作"), "icon": "♿", "action": "_toggle_auto_explore"},
 		{"name": "サウンド", "sub": "BGM・SE音量調整", "icon": "🔊", "action": ""},
 		{"name": "グラフィック", "sub": "画質・エフェクト設定", "icon": "🖥", "action": ""},
 	]
@@ -1233,6 +1234,13 @@ func _show_settings_top() -> void:
 	bot_pad.custom_minimum_size = Vector2(0, 8)
 	list.add_child(bot_pad)
 
+
+func _toggle_auto_explore() -> void:
+	GameManager.auto_explore_mode = not GameManager.auto_explore_mode
+	var state : String = "ON" if GameManager.auto_explore_mode else "OFF"
+	_play_sfx("metal/metalClick.ogg", -6.0)
+	# 設定メニューを再描画して状態を反映
+	_show_settings_top()
 
 func _show_story_map() -> void:
 	_play_sfx("metal/metalClick.ogg", -6.0)
