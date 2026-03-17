@@ -2170,11 +2170,13 @@ func _process(_delta: float) -> void:
 		if minimap:
 			if proximity > 0.7:
 				minimap.visible = fmod(Time.get_ticks_msec() / 100.0, 1.0) > 0.3  # ちらつき
+				minimap.modulate.a = 0.4
 			elif proximity > 0.3:
+				minimap.visible = true
 				minimap.modulate.a = lerp(1.0, 0.3, (proximity - 0.3) / 0.4)
 			else:
-				minimap.modulate.a = 1.0
 				minimap.visible = true
+				minimap.modulate.a = 1.0
 
 	# デバッグラベルのプレイヤー座標をリアルタイム更新
 	if _DEBUG_CHAPTER_SKIP and is_instance_valid(_debug_label) and is_instance_valid(player):
