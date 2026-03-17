@@ -411,8 +411,10 @@ func _do_chase(delta: float) -> void:
 	velocity.x = to_player.x * speed + strafe.x * lateral
 	velocity.z = to_player.z * speed + strafe.z * lateral
 
-	# 常にプレイヤーの方を向く
+	# 常にプレイヤーの方を向く（CRAB_WALKは横向き）
 	_face(tgt)
+	if _current_motion == MotionPattern.CRAB_WALK:
+		rotation.y += PI * 0.5  # 90度横向き
 
 	if global_position.distance_to(player.global_position) > SIGHT_RANGE:
 		ghost_state = GhostState.ALERT
