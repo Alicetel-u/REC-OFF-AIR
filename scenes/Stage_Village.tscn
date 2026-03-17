@@ -1,5 +1,8 @@
 [gd_scene format=3 uid="uid://cytbf4k3b0rs1"]
 
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/stone_diff.jpg" id="0_stone_diff"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/stone_nor.jpg" id="0_stone_nor"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/stone_rough.jpg" id="0_stone_rough"]
 [ext_resource type="PackedScene" path="res://assets/models/bus_stop/BusStop.tscn" id="1_bus_stop"]
 [ext_resource type="PackedScene" path="res://assets/models/environment/DarkStreet.tscn" id="6_nxtc6"]
 [ext_resource type="PackedScene" path="res://assets/models/environment/VillageGate.tscn" id="7_nxtc6"]
@@ -21,12 +24,17 @@ shader_parameter/base_color = Color(0.35, 0.35, 0.33, 1)
 shader_parameter/moss_color = Color(0.08, 0.12, 0.04, 1)
 shader_parameter/moss_strength = 0.6
 shader_parameter/stone_roughness = 0.95
+shader_parameter/albedo_tex = ExtResource("0_stone_diff")
+shader_parameter/normal_tex = ExtResource("0_stone_nor")
+shader_parameter/rough_tex = ExtResource("0_stone_rough")
+shader_parameter/tex_blend = 0.5
+shader_parameter/tex_scale = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ft6cd"]
 albedo_color = Color(1, 0.1, 0, 1)
 emission_enabled = true
 emission = Color(1, 0.1, 0, 1)
-emission_energy_multiplier = 2.0
+emission_energy_multiplier = 4.0
 
 [node name="Stage_Village" type="Node3D" unique_id=2005550640]
 
