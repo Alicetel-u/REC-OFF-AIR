@@ -38,18 +38,18 @@ roughness = 0.9
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_oa722"]
 render_priority = 0
 shader = ExtResource("4_sb5cu")
-shader_parameter/top_blue = null
-shader_parameter/mid_white = null
-shader_parameter/bot_blue = null
-shader_parameter/rust_color = null
-shader_parameter/rust_amount = null
+shader_parameter/top_blue = Color(0.15, 0.45, 0.75, 1)
+shader_parameter/mid_white = Color(0.85, 0.88, 0.85, 1)
+shader_parameter/bot_blue = Color(0.15, 0.45, 0.75, 1)
+shader_parameter/rust_color = Color(0.25, 0.1, 0.05, 1)
+shader_parameter/rust_amount = 1.2
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_su3ln"]
 render_priority = 0
 shader = ExtResource("5_xj3kk")
-shader_parameter/paper_color = null
-shader_parameter/ink_color = null
-shader_parameter/line_thickness = null
+shader_parameter/paper_color = Color(0.75, 0.72, 0.65, 1)
+shader_parameter/ink_color = Color(0.1, 0.1, 0.1, 1)
+shader_parameter/line_thickness = 0.015
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sb5cu"]
 albedo_color = Color(0.15, 0.15, 0.15, 1)
