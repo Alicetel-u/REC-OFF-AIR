@@ -9,10 +9,25 @@ extends Node3D
 @export var texture_scale: Vector3 = Vector3(1.0, 4.0, 1.0)
 
 func _ready():
-	# 子供（メッシュ）が既にいる場合は作成しない（エディタでの二重生成防止）
+	# 子供（メッシュ）が既にいる場合は、そのマテリアルを更新する
 	if get_child_count() > 0:
+		_apply_rust_to_existing()
 		return
 	_create_pole()
+
+func _apply_rust_to_existing():
+	# 既存のノードを探してマテリアルを更新
+	var nodes = [get_node_or_null("PoleMesh"), get_node_or_null("CrossArm")]
+	for node in nodes:
+		if node is MeshInstance3D:
+			var mat = StandardMaterial3D.new()
+			if texture: mat.albedo_texture = texture
+			mat.albedo_color = Color(0.45, 0.3, 0.2)
+			mat.uv1_scale = texture_scale
+			mat.uv1_triplanar = true
+			mat.roughness = 1.0
+			mat.metallic = 0.4
+			node.set_surface_override_material(0, mat)
 
 func _create_pole():
 	# メインの柱
@@ -24,15 +39,21 @@ func _create_pole():
 	cylinder.height = pole_height
 	pole_mesh.mesh = cylinder
 	
-	# マテリアルの設定
+	# マテリアルの設定（錆びついた質感）
 	var mat = StandardMaterial3D.new()
 	if texture:
 		mat.albedo_texture = texture
+		# 錆びた赤茶色を乗算
+		mat.albedo_color = Color(0.45, 0.3, 0.2) 
 	else:
-		mat.albedo_color = Color(0.3, 0.3, 0.3)
+		mat.albedo_color = Color(0.25, 0.15, 0.1) # 濃い錆色
+	
 	mat.uv1_scale = texture_scale
 	mat.uv1_triplanar = true
-	mat.roughness = 1.0
+	mat.roughness = 1.0     # 錆びてカサカサ
+	mat.metallic = 0.4      # 錆びた金属の鈍い光
+	mat.uv1_world_triplanar = true # タイリングをワールド座標に合わせる
+	
 	pole_mesh.set_surface_override_material(0, mat)
 	
 	# 配置と傾き

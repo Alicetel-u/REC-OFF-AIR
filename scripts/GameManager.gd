@@ -110,6 +110,10 @@ func trigger_win() -> void:
 
 func advance_to_next_chapter() -> void:
 	## 次チャプターへ進む。最終チャプターならWINにする
+	# ボイスを停止してから遷移（Autoload対策）
+	SoundManager.stop_voice()
+	SoundManager.stop_chat_voice()
+	
 	if advance_chapter():
 		items_found = 0
 		get_tree().reload_current_scene()
@@ -118,6 +122,9 @@ func advance_to_next_chapter() -> void:
 
 
 func restart() -> void:
+	# 状態リセット前に全音声を停止（ボイス残り防止）
+	SoundManager.stop_all()
+	
 	state      = State.PLAYING
 	items_found = 0
 	hit_count   = 0

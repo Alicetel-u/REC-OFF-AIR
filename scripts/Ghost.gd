@@ -19,10 +19,10 @@ const ALERT_TIME   : float = 7.0
 
 # 状態別ビジュアルパラメータ
 const STATE_VISUALS := {
-	GhostState.PATROL: {"bob_speed": 2.0, "bob_amp": 0.06, "target_lean":  8.0, "sway_amp": 2.0, "rage": 0.0},
-	GhostState.ALERT:  {"bob_speed": 2.8, "bob_amp": 0.08, "target_lean": 14.0, "sway_amp": 2.5, "rage": 0.4},
-	GhostState.CHASE:  {"bob_speed": 4.5, "bob_amp": 0.10, "target_lean": 26.0, "sway_amp": 3.5, "rage": 1.0},
-	GhostState.CAUGHT: {"bob_speed": 0.5, "bob_amp": 0.02, "target_lean": -4.0, "sway_amp": 0.5, "rage": 1.0},
+	GhostState.PATROL: {"bob_speed": 2.0, "bob_amp": 0.06, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.0},
+	GhostState.ALERT:  {"bob_speed": 2.8, "bob_amp": 0.08, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.4},
+	GhostState.CHASE:  {"bob_speed": 4.5, "bob_amp": 0.10, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
+	GhostState.CAUGHT: {"bob_speed": 0.5, "bob_amp": 0.02, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 }
 
 # 人型キャラクターモデルのパス（FBX）
@@ -444,12 +444,21 @@ func _update_visuals(delta: float) -> void:
 	_lean_current  = lerp(_lean_current, target_lean, delta * 5.0)
 	var bob_y  := sin(_bob_phase) * bob_amp
 	var sway_z := sin(_bob_phase * 0.6) * sway_amp
-	_ghost_body.position.y          = bob_y
-	_ghost_body.rotation_degrees.x  = _lean_current
-	_ghost_body.rotation_degrees.z  = sway_z
+
+	# 表示高さを底上げ（廃倉庫と村の探索のみ）
+	var base_h : float = 0.0
+	var cur_chapter := GameManager.current_chapter
+	if cur_chapter and cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku"]:
+		base_h = 0.6
+	
+	_ghost_body.position.y          = base_h + bob_y
+	# 姿勢をまっすぐに固定
+	_ghost_body.rotation_degrees.x  = 0.0 # _lean_current を無視
+	_ghost_body.rotation_degrees.z  = 0.0 # sway_z を無視
 
 	# ── GhostLight 状態連動 ──
 	if _ghost_light:
+		_ghost_light.position.y = 1.2 + base_h
 		var base_energy := 0.8
 		var chase_energy := 2.5
 		_ghost_light.light_energy = lerp(base_energy, chase_energy, _rage_current)

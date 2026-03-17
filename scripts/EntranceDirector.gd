@@ -83,6 +83,12 @@ func cleanup() -> void:
 		_fade_rect = null
 		_bg_image_rect = null
 		_bg_vignette = null
+	
+	# ボイスを停止（ Autoload なので明示的に止めないと残り続ける）
+	SoundManager.stop_voice()
+	if SoundManager.has_method("stop_chat_voice"):
+		SoundManager.stop_chat_voice()
+
 	# VHSシェーダーをリセット
 	_vhs_reset()
 

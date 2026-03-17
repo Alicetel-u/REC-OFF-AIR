@@ -100,6 +100,11 @@ func set_input_lag(factor: float) -> void:
 	_input_lag = clampf(factor, 0.1, 1.0)
 
 
+func set_head_height(h: float) -> void:
+	if is_instance_valid(head):
+		head.position.y = h
+
+
 func _physics_process(delta: float) -> void:
 	if GameManager.state != GameManager.State.PLAYING or input_disabled:
 		velocity = Vector3.ZERO

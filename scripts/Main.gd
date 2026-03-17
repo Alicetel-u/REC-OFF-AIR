@@ -59,6 +59,7 @@ func _ready() -> void:
 
 	# items_total を generate() より前に設定（Exit._ready() が参照するため）
 	GameManager.items_total = chapter.item_positions.size()
+	print("[Main] items_total set to: ", GameManager.items_total)
 	# つなぎ演出（start_section==1）の場合、ステージ生成をスキップ（GPUメモリ節約）
 	# ※CP1（廃村入口）では Section 1 は商店街パートの開始地点なので、スキップ対象から除外する
 	if GameManager.start_section == 1 and chapter.chapter_id != "ch01_haison_iriguchi":
@@ -100,8 +101,9 @@ func _ready() -> void:
 
 	# YouTube Chrome をHUDに渡してチャットを接続
 	hud.set_chrome($YouTubeChrome)
-	# items_totalが確定した後でHUDラベルを更新（0個のときは非表示にするため）
+	# items_totalが確定した後でHUDラベルを強制更新
 	hud.refresh_item_label()
+	print("[Main] HUD item label refreshed. Total: ", GameManager.items_total)
 
 	# 弾幕レイヤーを構築してHUDに接続
 	_setup_danmaku()
@@ -159,6 +161,12 @@ func _ready() -> void:
 			#add_child(enc_err)
 			#enc_err.gauge_changed.connect(hud.on_encoding_error_changed)
 			#enc_err.gauge_maxed.connect(_on_encoding_error_maxed)
+		
+		# 廃倉庫・村の探索パートでは視点を高くする（ユーザー要望）
+		if cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku"]:
+			player.set_head_height(2.5)
+		else:
+			player.set_head_height(0.7)
 		# CP2: 紙芝居演出→暗転→操作説明→自由移動
 		if cur_chapter.chapter_id == "ch02_haison_souko":
 			var cam := player.get_node_or_null("Head/Camera3D")
@@ -217,7 +225,8 @@ func _ready() -> void:
 	if cur_chapter and cur_chapter.chapter_id == "ch02_haison_souko":
 		_setup_minimap_delayed(Vector2(-25, -18), Vector2(25, 18))
 	if cur_chapter and cur_chapter.chapter_id == "ch02_mura_tansaku":
-		_setup_minimap(Vector2(-50, -60), Vector2(100, 90))
+		# 村のマップは広いため、表示範囲を広げる (-80, -80) から (120, 120)
+		_setup_minimap(Vector2(-80, -80), Vector2(120, 120))
 
 	# ナビ矢印用: プレイヤー参照をHUDに渡す
 	hud._player_ref = player

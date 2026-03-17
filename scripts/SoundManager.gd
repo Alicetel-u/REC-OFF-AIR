@@ -265,10 +265,16 @@ func play_chat_voice(path: String, vol_db: float = 0.0) -> void:
 	_chat_voice.play()
 
 
+## チャットボイスを停止
+func stop_chat_voice() -> void:
+	_chat_voice.stop()
+
+
 ## 全音声を即停止（バッドエンド遷移等）
 func stop_all() -> void:
 	_ambient.stop()
 	_voice.stop()
+	_chat_voice.stop()
 	_bgm.stop()
 	_step.stop()
 	_monster.stop()
