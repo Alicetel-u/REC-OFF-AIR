@@ -107,7 +107,6 @@ var _freeze_active  : bool  = false
 var _freeze_timer   : float = 0.0
 var _teleport_phase : int   = 0  # 0=通常, 1=消えている, 2=再出現
 var _teleport_timer : float = 0.0
-var _original_scale : Vector3 = Vector3.ONE
 var _levitate_h     : float = 0.0  # LEVITATEパターン用の蓄積高さ
 var _growl_interval : float = 5.0
 # ── フェイクラッシュ演出用 ──
