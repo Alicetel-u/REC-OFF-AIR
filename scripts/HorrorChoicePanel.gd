@@ -46,7 +46,13 @@ func show_choice(prompt: String, choices: Array, title_text: String = "", danger
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if danger:
 		await _danger_warning()
+	# queue_free済みノードをツリーから除去してからUI構築
+	await get_tree().process_frame
 	_build_ui(prompt, choices, title_text)
+	# ボタンがGodotの入力システムに登録されるのを待つ
+	await get_tree().process_frame
+	# マウスモードを再確認（他の処理で上書きされる可能性がある）
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	_start_vote(choices)
 
 
@@ -383,6 +389,9 @@ func _start_vote(choices: Array) -> void:
 	var tw := create_tween().set_parallel(true)
 	tw.tween_property(_overlay, "modulate:a", 1.0, 0.5)
 	tw.tween_property(_panel, "modulate:a", 1.0, 0.8).set_delay(0.2)
+	# 最初のボタンにフォーカス（キーボード操作対応 + 入力系の初期化）
+	if _choice_btns.size() > 0:
+		_choice_btns[0].grab_focus()
 
 
 func _process(delta: float) -> void:
