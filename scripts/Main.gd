@@ -2217,14 +2217,15 @@ func _auto_explore_walk(target: Vector3) -> void:
 		if dist < 2.0:
 			break
 		var dir := to.normalized()
+		# velocity を設定するだけ（move_and_slideはPlayer._physics_process()で呼ばれる）
 		player.velocity.x = dir.x * speed
 		player.velocity.z = dir.z * speed
 		# カメラを進行方向に向ける
 		var target_yaw := atan2(dir.x, dir.z)
 		player.rotation.y = lerp_angle(player.rotation.y, target_yaw, 0.05)
-		player.move_and_slide()
-		await get_tree().process_frame
-	player.velocity = Vector3.ZERO
+		await get_tree().physics_frame
+	player.velocity.x = 0.0
+	player.velocity.z = 0.0
 
 
 ## Shift+F10: 現チャプターを自動プレイ（一筆書きルートで歩いてクリア）
