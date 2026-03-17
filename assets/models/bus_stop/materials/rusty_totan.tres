@@ -10,4 +10,4 @@ shader_parameter/rust_color = Color(0.2, 0.05, 0.02, 1)
 shader_parameter/bright_rust_color = Color(0.4, 0.1, 0.02, 1)
 shader_parameter/rust_amount = 0.9
 shader_parameter/wetness = 0.8
-shader_parameter/uv_scale = null
+shader_parameter/uv_scale = 10.0
