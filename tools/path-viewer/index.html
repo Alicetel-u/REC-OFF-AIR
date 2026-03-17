@@ -1198,6 +1198,7 @@ body.light .preset-custom-input input { background:rgba(255,255,255,.85); border
     <div id="file-info" style="font-size:10px;color:var(--pv-tx2);padding:2px 0;display:none;">
       <span id="file-name" style="color:var(--green);"></span>
     </div>
+    <div id="event-stats" style="font-size:9px;color:var(--pv-tx2);padding:2px 6px;display:none;background:rgba(0,0,0,0.3);border-radius:3px;margin:2px 0;"></div>
     <input type="file" id="json-file" accept=".json" style="font-size:10px;">
     <span id="data-source"></span>
     <div id="stale-banner">
@@ -2707,6 +2708,22 @@ function applyEventFilter() { buildEventList(); }
 
 function buildEventList() {
   const el = document.getElementById("event-list"); if (!el) return; el.innerHTML = "";
+  // 統計計算
+  const stats = {total:0, say:0, chat:0, wait:0, sfx:0, voice:0, waitSec:0};
+  for (const ev of events) {
+    if (ev.type === "_comment") continue;
+    stats.total++;
+    if (ev.type === "say") stats.say++;
+    if (ev.type === "chat") stats.chat++;
+    if (ev.type === "wait" || ev.type === "sleep") { stats.wait++; stats.waitSec += (ev.sec||0); }
+    if (ev.type === "sfx") stats.sfx++;
+    if (ev.voice) stats.voice++;
+  }
+  const statsEl = document.getElementById("event-stats");
+  if (statsEl) {
+    statsEl.style.display = "block";
+    statsEl.innerHTML = `📊 ${stats.total}件 | 💬${stats.say} | 🗨${stats.chat} | ⏱${stats.wait}(${stats.waitSec.toFixed(1)}s) | 🔊${stats.sfx} | 🎙${stats.voice}`;
+  }
   const frag = document.createDocumentFragment();
   for (let i=0;i<events.length;i++){
     const ev=events[i],t=ev.type||""; if(t==="_comment")continue;
