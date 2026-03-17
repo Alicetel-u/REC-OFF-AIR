@@ -517,9 +517,10 @@ func _apply_environment(chapter: Resource) -> void:
 	# ── HD-2D パーティクル（全チャプター共通）──
 	_setup_atmosphere_particles()
 
-	# ── VillageGate 電球にライト追加（CP1のみ）──
+	# ── CP1: VillageGate電球ライト + 環境小物追加 ──
 	if chapter.chapter_id == "ch01_haison_iriguchi":
 		_add_bulb_lights()
+		_add_cp1_debris()
 
 	# ── VHS オーバーレイ ──
 	if chapter.vhs_overlay:
@@ -561,6 +562,40 @@ func _find_nodes_recursive(root: Node, prefix: String) -> Array[Node]:
 			result.append(child)
 		result.append_array(_find_nodes_recursive(child, prefix))
 	return result
+
+
+## CP1: 道路脇の環境小物（落ちたゴミ・缶・瓦礫）
+func _add_cp1_debris() -> void:
+	var stage := get_node_or_null("StageGenerator/Stage")
+	if not stage:
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 42  # 固定シードで毎回同じ配置
+	var debris_mat := StandardMaterial3D.new()
+	debris_mat.albedo_color = Color(0.15, 0.12, 0.10)
+	debris_mat.roughness = 0.95
+	var metal_mat := StandardMaterial3D.new()
+	metal_mat.albedo_color = Color(0.25, 0.25, 0.28)
+	metal_mat.metallic = 0.4
+	metal_mat.roughness = 0.7
+
+	# 道路沿い（Z=-50〜Z=20）に小物を散布
+	for i in range(15):
+		var z_pos : float = rng.randf_range(-40.0, 15.0)
+		var x_off : float = rng.randf_range(-4.5, -2.5) if rng.randf() > 0.5 else rng.randf_range(2.5, 4.5)
+		var item := CSGBox3D.new()
+		item.name = "Debris_%d" % i
+		if rng.randf() > 0.6:
+			# 潰れた缶
+			item.size = Vector3(0.08, 0.04, 0.08)
+			item.material = metal_mat
+		else:
+			# 瓦礫・紙くず
+			item.size = Vector3(rng.randf_range(0.1, 0.25), 0.02, rng.randf_range(0.1, 0.2))
+			item.material = debris_mat
+		item.position = Vector3(x_off, 0.01, z_pos)
+		item.rotation_degrees.y = rng.randf_range(0, 360)
+		stage.add_child(item)
 
 
 var _atmosphere_particles: Array[GPUParticles3D] = []
