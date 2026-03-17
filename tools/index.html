@@ -509,6 +509,40 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg0); co
   <div id="main">
     <div id="no-results">検索結果がありません</div>
 
+    <!-- ◆ チャプター完成度 -->
+    <div class="section-hdr" data-section="progress">
+      <div class="section-gem" style="color:var(--ruby); background:var(--ruby)"></div>
+      <div class="section-title">チャプター完成度</div>
+      <div class="section-line"></div>
+    </div>
+    <div id="chapter-progress" data-section="progress" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;padding:0 8px 16px;">
+    </div>
+    <script>
+    (function(){
+      const chapters = [
+        {name:"CP1 廃村入口", pct:85, color:"var(--emerald)"},
+        {name:"CP2 廃倉庫",  pct:75, color:"var(--sapphire)"},
+        {name:"CP3 村探索",  pct:70, color:"var(--aqua)"},
+        {name:"CP4 民家",    pct:5,  color:"var(--onyx)"},
+        {name:"CP5 神社",    pct:5,  color:"var(--onyx)"},
+        {name:"CP6 脱出",    pct:10, color:"var(--onyx)"},
+      ];
+      const container = document.getElementById("chapter-progress");
+      chapters.forEach(ch => {
+        const card = document.createElement("div");
+        card.style.cssText = "background:var(--ff-panel);border:1px solid var(--ff-outer);border-radius:6px;padding:10px 12px;";
+        card.innerHTML = `
+          <div style="font-size:12px;color:var(--tx1);margin-bottom:6px;">${ch.name}</div>
+          <div style="background:var(--bg0);border-radius:3px;height:8px;overflow:hidden;">
+            <div style="width:${ch.pct}%;height:100%;background:${ch.color};border-radius:3px;transition:width 0.5s;"></div>
+          </div>
+          <div style="font-size:11px;color:var(--tx2);margin-top:4px;text-align:right;">${ch.pct}%</div>
+        `;
+        container.appendChild(card);
+      });
+    })();
+    </script>
+
     <!-- ◆ 稼働中ツール（最上部） -->
     <div class="section-hdr" data-section="active-tools">
       <div class="section-gem" style="color:var(--accent); background:var(--accent)"></div>

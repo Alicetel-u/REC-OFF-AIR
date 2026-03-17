@@ -1226,6 +1226,26 @@ body.light .preset-custom-input input { background:rgba(255,255,255,.85); border
     <div id="pick-dist"></div>
   </div>
 
+  <!-- イベントフィルター -->
+  <div id="event-filter" style="padding:4px 6px;display:flex;gap:4px;flex-wrap:wrap;">
+    <select id="filter-type" onchange="applyEventFilter()" style="background:#0c1a35;color:#a8b4cc;border:1px solid #1e3a6e;border-radius:3px;padding:2px 4px;font-size:11px;">
+      <option value="">全タイプ</option>
+      <option value="say">say</option>
+      <option value="chat">chat</option>
+      <option value="wait">wait</option>
+      <option value="sfx">sfx</option>
+      <option value="pos_z">pos_z</option>
+      <option value="rot_y">rot_y</option>
+      <option value="head_x">head_x</option>
+      <option value="choice">choice</option>
+      <option value="horror_glitch">horror_glitch</option>
+      <option value="stage_swap">stage_swap</option>
+      <option value="bg_image">bg_image</option>
+    </select>
+    <label style="font-size:10px;color:#6b7a99;display:flex;align-items:center;gap:2px;">
+      <input type="checkbox" id="filter-voice" onchange="applyEventFilter()"> voice有
+    </label>
+  </div>
   <div id="event-list"></div>
 </div>
 
@@ -2683,11 +2703,18 @@ const TYPE_JA = {
   use_ofuda:"お札使用",fade_black:"暗転",polaroid_video:"動画",superchat:"スパチャ",
 };
 
+function applyEventFilter() { buildEventList(); }
+
 function buildEventList() {
   const el = document.getElementById("event-list"); if (!el) return; el.innerHTML = "";
   const frag = document.createDocumentFragment();
   for (let i=0;i<events.length;i++){
     const ev=events[i],t=ev.type||""; if(t==="_comment")continue;
+    // フィルター適用
+    const ft = document.getElementById("filter-type");
+    const fv = document.getElementById("filter-voice");
+    if (ft && ft.value && t !== ft.value) continue;
+    if (fv && fv.checked && !ev.voice) continue;
     const isMovement = MOVEMENT_TYPES.has(t);
     const div=document.createElement("div");
     let cls = "ev-item" + (isMovement ? " movement" : "");

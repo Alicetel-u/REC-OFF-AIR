@@ -517,6 +517,10 @@ func _apply_environment(chapter: Resource) -> void:
 	# ── HD-2D パーティクル（全チャプター共通）──
 	_setup_atmosphere_particles()
 
+	# ── VillageGate 電球にライト追加（CP1のみ）──
+	if chapter.chapter_id == "ch01_haison_iriguchi":
+		_add_bulb_lights()
+
 	# ── VHS オーバーレイ ──
 	if chapter.vhs_overlay:
 		_setup_vhs_overlay()
@@ -527,6 +531,37 @@ func _apply_environment(chapter: Resource) -> void:
 # ──────────────────────────────────────────────
 # HD-2D パーティクル（全チャプター共通）
 # ──────────────────────────────────────────────
+
+## VillageGate の電球にOmniLight + Emissionを動的追加
+func _add_bulb_lights() -> void:
+	var stage := get_node_or_null("StageGenerator/Stage")
+	if not stage:
+		return
+	# VillageGate > ArchStructure > Bulb_0〜Bulb_10 を探す
+	for node in _find_nodes_recursive(stage, "Bulb_"):
+		var light := OmniLight3D.new()
+		light.light_color = Color(1.0, 0.85, 0.55)
+		light.light_energy = 0.4
+		light.omni_range = 3.0
+		light.shadow_enabled = false
+		node.add_child(light)
+		# Emissionマテリアル（Bloom対応）
+		if node is CSGSphere3D:
+			var mat := StandardMaterial3D.new()
+			mat.albedo_color = Color(1.0, 0.9, 0.6)
+			mat.emission_enabled = true
+			mat.emission = Color(1.0, 0.85, 0.55)
+			mat.emission_energy_multiplier = 3.0
+			node.material = mat
+
+func _find_nodes_recursive(root: Node, prefix: String) -> Array[Node]:
+	var result : Array[Node] = []
+	for child in root.get_children():
+		if child.name.begins_with(prefix):
+			result.append(child)
+		result.append_array(_find_nodes_recursive(child, prefix))
+	return result
+
 
 var _atmosphere_particles: Array[GPUParticles3D] = []
 
