@@ -165,3 +165,7 @@ transform = Transform3D(0.027646845, 0, -1.7291616, 0, 1.7293828, 0, 1.7291616, 
 
 [node name="洗面台3" parent="." unique_id=950156441 instance=ExtResource("7_sq0y5")]
 transform = Transform3D(0.027646845, 0, -1.7291616, 0, 1.7293828, 0, 1.7291616, 0, 0.027646845, -2.5052047, 1.0192108, 1.4993012)
+
+
+
+autoplay = true

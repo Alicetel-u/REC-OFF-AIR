@@ -414,6 +414,16 @@ func run_from_path(json_path: String) -> void:
 						"monster_growl": SoundManager.play_monster_growl(vol)
 						"wooden_floor":  SoundManager.play_footstep(GameManager.chapter_index, false)
 
+			"bgm":
+				var file : String = ev.get("file", "")
+				var vol  : float  = float(ev.get("vol", -10.0))
+				var fade : float  = float(ev.get("fade", 0.0))
+				var seek : float  = float(ev.get("seek", 0.0))
+				if not file.is_empty():
+					SoundManager.play_bgm("res://assets/audio/bgm/" + file, vol, 1.0, fade, seek)
+				else:
+					SoundManager.stop_bgm(fade)
+
 			"flashlight_off":
 				_flashlight_off()
 

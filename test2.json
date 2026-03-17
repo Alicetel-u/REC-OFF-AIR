@@ -1,4 +1,4 @@
-{
+﻿{
   "chapter": "ch01_haison_iriguchi",
   "voice_dir": "res://assets/audio/voice/ch01/",
   "_note": "CP1 公衆トイレの首無し少女 — 配信開始→解説ウォーク→トイレ→脱出→商店街ゲート",
@@ -2121,16 +2121,6 @@
       ]
     },
     {
-      "type": "bgm",
-      "file": "",
-      "vol": 0
-    },
-    {
-      "type": "bgm",
-      "file": "静寂ノ境界.mp3",
-      "vol": -8.0
-    },
-    {
       "type": "pos_y",
       "target": 0.4,
       "dur": 0.01
@@ -2226,12 +2216,7 @@
     {
       "type": "say",
       "text": "た...す...け...て...",
-      "voice": ""
-    },
-    {
-      "type": "sfx",
-      "file": "horror_voice/tasukete_new",
-      "vol": -11
+      "voice": "v011r"
     },
     {
       "type": "camera_shake",
@@ -2451,6 +2436,11 @@
     {
       "type": "wait",
       "sec": 0.5
+    },
+    {
+      "type": "say",
+      "text": "た...す...け...て...",
+      "voice": "v011r"
     },
     {
       "type": "camera_shake",
@@ -2899,11 +2889,6 @@
     {
       "type": "_comment",
       "_": "══ フェーズ3-3：偽りの安心（指定セリフ） ══"
-    },
-    {
-      "type": "bgm",
-      "file": "",
-      "fade": 1.0
     },
     {
       "type": "say",
@@ -3510,13 +3495,6 @@
       "sec": 0.5
     },
     {
-      "type": "bgm",
-      "file": "panic_bgm.mp3",
-      "vol": -8.0,
-      "fade": 1.5,
-      "seek": 41.0
-    },
-    {
       "type": "say",
       "text": "ひっ……！？ こっち来た！ 扉が開かない！ 開けて、開けてよ！！",
       "voice": "v016"
@@ -3981,11 +3959,6 @@
       "text": "…… スパチャありがと……さっきの天井の、首がなかった…… あれがみゆきちゃんなの？",
       "reading": "…… スパチャありがと……さっきの天井の、くびがなかった…… あれがみゆきちゃんなの？",
       "voice": "v018c"
-    },
-    {
-      "type": "bgm",
-      "file": "",
-      "fade": 3.0
     },
     {
       "type": "wait",

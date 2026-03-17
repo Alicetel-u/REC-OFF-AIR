@@ -276,7 +276,8 @@ func stop_all() -> void:
 
 
 ## BGM を再生（ループ再生）
-func play_bgm(path: String, vol_db: float = -10.0, pitch: float = 1.0) -> void:
+func play_bgm(path: String, vol_db: float = -10.0, pitch: float = 1.0, fade_in_sec: float = 0.0, start_from_sec: float = 0.0) -> void:
+	print("[SoundManager] play_bgm requested: ", path, " Vol: ", vol_db, " FadeIn: ", fade_in_sec, " Start: ", start_from_sec)
 	var s := _load_audio(path)
 	if not s:
 		push_warning("SoundManager: BGM not found: " + path)
@@ -284,9 +285,18 @@ func play_bgm(path: String, vol_db: float = -10.0, pitch: float = 1.0) -> void:
 	s.set("loop", true)
 	_bgm.stop()
 	_bgm.stream    = s
-	_bgm.volume_db = vol_db
 	_bgm.pitch_scale = pitch
-	_bgm.play()
+	
+	if fade_in_sec > 0.0:
+		_bgm.volume_db = -60.0
+		_bgm.play(start_from_sec)
+		var tw := create_tween()
+		tw.tween_property(_bgm, "volume_db", vol_db, fade_in_sec)
+	else:
+		_bgm.volume_db = vol_db
+		_bgm.play(start_from_sec)
+	
+	print("[SoundManager] BGM playback started.")
 
 
 ## BGM をフェードアウトして停止
