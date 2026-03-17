@@ -403,15 +403,22 @@ func _show_profile() -> void:
 		root.queue_free()
 		return
 
-	# 各行フェードイン
-	for lbl in labels:
+	# 各行フェードイン + ボイス
+	var _profile_voice_ids : Array[String] = [
+		"op_p01", "op_p02", "op_p03", "op_p04",
+		"op_p05", "op_p06", "op_p07", "op_p08"]
+	for i in range(labels.size()):
 		if _skipped: break
+		var lbl := labels[i]
 		var tw := create_tween()
 		tw.tween_property(lbl, "modulate:a", 1.0, 0.6)
+		# ボイス再生
+		if i < _profile_voice_ids.size():
+			_play_op_voice(_profile_voice_ids[i], -2.0)
 		await tw.finished
 		if _skipped: break
-		var wait : float = maxf(0.25, lbl.text.length() * 0.025)
-		await get_tree().create_timer(wait).timeout
+		await _await_op_voice()
+		await get_tree().create_timer(0.3).timeout
 
 	if _skipped:
 		root.queue_free()
@@ -515,6 +522,10 @@ func _show_dm() -> void:
 	root.add_child(msg_label)
 
 	var messages : Array = _od.get("dm", {}).get("lines", [])
+	var _dm_voice_ids : Array[String] = [
+		"op_dm01", "op_dm02", "op_dm03", "op_dm04",
+		"op_dm05", "op_dm06", "op_dm07"]
+	var dm_voice_idx : int = 0
 	for idx in range(messages.size()):
 		if _skipped: break
 		var msg : Dictionary = messages[idx]
@@ -544,11 +555,15 @@ func _show_dm() -> void:
 
 		var tw_in := create_tween()
 		tw_in.tween_property(msg_label, "modulate:a", 1.0, 0.5)
+		# DMボイス再生
+		if dm_voice_idx < _dm_voice_ids.size():
+			_play_op_voice(_dm_voice_ids[dm_voice_idx], -4.0)
+			dm_voice_idx += 1
 		await tw_in.finished
 		if _skipped: break
 
-		var hold : float = maxf(1.2, text.length() * 0.07)
-		await get_tree().create_timer(hold).timeout
+		await _await_op_voice()
+		await get_tree().create_timer(0.5).timeout
 		if _skipped: break
 
 		# 後半: 不穏な赤フリッカー
@@ -649,12 +664,13 @@ func _scare_moment() -> void:
 		scare_root.queue_free()
 		return
 
-	# 最終フラッシュ
+	# 最終フラッシュ + 「見ている」ボイス
 	scare_r.position.x = -8
 	scare_b.position.x = 8
 	scare_root.modulate.a = 0.9
 	_overlay.color = Color(0.4, 0.0, 0.0, 0.18)
 	_play_sfx("bell/impactBell_heavy_001.ogg", -4.0)
+	_play_op_voice("op_scare", 2.0)
 	await _shake(6.0, 0.5)
 	await get_tree().create_timer(0.6).timeout
 	if is_instance_valid(_overlay):
@@ -671,6 +687,11 @@ func _scare_moment() -> void:
 
 func _show_monologue() -> void:
 	var lines : Array = _od.get("monologue", {}).get("lines", [])
+	# ト書き(stage_direction)以外のセリフにボイスを付ける
+	var _mono_voice_ids : Array[String] = [
+		"op_m01", "op_m02", "op_m03", "op_m04", "op_m05",
+		"op_m06", "op_m07", "op_m08", "op_m09", "op_m10"]
+	var mono_voice_idx : int = 0
 
 	for line_data in lines:
 		if _skipped: return
@@ -706,13 +727,18 @@ func _show_monologue() -> void:
 
 		var tw_in := create_tween()
 		tw_in.tween_property(lbl, "modulate:a", 1.0, 0.6)
+		# ト書き以外にボイス再生
+		if style != "stage_direction" and mono_voice_idx < _mono_voice_ids.size():
+			_play_op_voice(_mono_voice_ids[mono_voice_idx])
+			mono_voice_idx += 1
 		await tw_in.finished
 		if _skipped:
 			lbl.queue_free()
 			return
 
-		var wait : float = maxf(1.0, text.length() * 0.05)
-		await get_tree().create_timer(wait).timeout
+		# ボイス再生完了を待つ（テキスト長ベースのwaitの代わり）
+		await _await_op_voice()
+		await get_tree().create_timer(0.3).timeout
 		if _skipped:
 			lbl.queue_free()
 			return
@@ -787,12 +813,18 @@ func _show_caption() -> void:
 
 	var c : Dictionary = _od.get("caption", {})
 	var cap_lines : Array = c.get("lines", ["霧 原 村", "", "深 夜   0 : 0 0"])
+	var _cap_voice_ids : Array[String] = ["op_c01", "op_c02"]
+	var cap_voice_idx : int = 0
 	for line in cap_lines:
 		if _skipped: break
 		if str(line) == "":
 			cap_label.text += "\n"
 			await get_tree().create_timer(0.6).timeout
 		else:
+			# テロップボイス再生（1行目=霧原村、2行目=深夜0時）
+			if cap_voice_idx < _cap_voice_ids.size():
+				_play_op_voice(_cap_voice_ids[cap_voice_idx], -2.0)
+				cap_voice_idx += 1
 			for ch in str(line):
 				if _skipped: break
 				cap_label.text += ch
@@ -951,6 +983,31 @@ func _remove_skip_button() -> void:
 		_skip_btn.queue_free()
 	_skip_btn = null
 
+
+## オープニングボイス再生（再生中のボイスを停止してから鳴らす）
+var _op_voice : AudioStreamPlayer = null
+
+func _play_op_voice(filename: String, vol_db: float = 0.0) -> void:
+	var path := "res://assets/audio/voice/opening/" + filename + ".wav"
+	var stream := load(path) as AudioStream
+	if not stream:
+		return
+	if _op_voice and is_instance_valid(_op_voice):
+		_op_voice.stop()
+		_op_voice.queue_free()
+	_op_voice = AudioStreamPlayer.new()
+	_op_voice.stream = stream
+	_op_voice.volume_db = vol_db
+	add_child(_op_voice)
+	_op_voice.play()
+
+func _await_op_voice(max_sec: float = 10.0) -> void:
+	if not _op_voice or not is_instance_valid(_op_voice):
+		return
+	var t : float = 0.0
+	while _op_voice.playing and t < max_sec:
+		t += get_process_delta_time()
+		await get_tree().process_frame
 
 func _play_sfx(rel_path: String, vol_db: float = -6.0) -> void:
 	var path := "res://assets/audio/sfx/" + rel_path
