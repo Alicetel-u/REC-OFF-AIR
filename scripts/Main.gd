@@ -1204,9 +1204,14 @@ func _setup_minimap(map_min: Vector2, map_max: Vector2) -> void:
 	var chapter := GameManager.current_chapter
 	if chapter == null:
 		return
-	# アイテム位置を Array に変換（CP2はミニマップにアイテム非表示）
+	# アイテムをミニマップに渡す（CP2はミニマップにアイテム非表示）
+	# CP3: VillageItemノード自体を渡す（回収=queue_freeで自動消失）
+	# それ以外: Vector3座標を渡す（カウンタ方式フォールバック）
 	var items : Array = []
-	if chapter.chapter_id != "ch02_haison_souko":
+	if chapter.chapter_id == "ch02_mura_tansaku":
+		for node in get_tree().get_nodes_in_group("village_item"):
+			items.append(node)
+	elif chapter.chapter_id != "ch02_haison_souko":
 		for v in chapter.item_positions:
 			items.append(v)
 	# ゴーストノード取得
@@ -1355,6 +1360,14 @@ func _play_mura_exit() -> void:
 	## CP3村の探索ゴール到達時のつなぎ演出（紙芝居）
 	player.input_disabled = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	# ゴーストを無効化（みゆきの唸り声・金属音を止める）
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		ghost.process_mode = Node.PROCESS_MODE_DISABLED
+		ghost.visible = false
+	# ミニマップを非表示にする
+	var minimap_layer := get_node_or_null("MinimapLayer")
+	if minimap_layer:
+		minimap_layer.visible = false
 	# 3Dカメラ無効化（紙芝居中に3Dモデルが見えないように）
 	var cam := player.get_node_or_null("Head/Camera3D")
 	if cam:

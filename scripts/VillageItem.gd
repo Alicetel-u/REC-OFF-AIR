@@ -21,6 +21,7 @@ var _collected : bool = false
 
 
 func _ready() -> void:
+	add_to_group("village_item")
 	bob_t = randf() * TAU
 	body_entered.connect(_on_body_entered)
 

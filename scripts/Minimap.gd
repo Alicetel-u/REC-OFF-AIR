@@ -227,11 +227,23 @@ func _draw() -> void:
 	_draw_label(exit_p + Vector2(0, -14), "EXIT", EXIT_COLOR)
 
 	# ── 未取得アイテム（パルス◇） ──
+	# _item_positions は Vector3 の配列 or Node3D の配列
+	# Node3D の場合: queue_free 済み（回収済み）なら描画スキップ
+	# Vector3 の場合: GameManager.items_found カウンタで判定（フォールバック）
 	var found : int = GameManager.items_found
 	for i in range(_item_positions.size()):
-		if i < found:
+		var item = _item_positions[i]
+		var ip : Vector2
+		if item is Node3D:
+			if not is_instance_valid(item):
+				continue
+			ip = _world_to_map(item.global_position)
+		elif item is Vector3:
+			if i < found:
+				continue
+			ip = _world_to_map(item)
+		else:
 			continue
-		var ip : Vector2 = _world_to_map(_item_positions[i])
 		var item_pulse : float = 0.5 + 0.5 * sin(_time * 2.5 + float(i) * 1.3)
 		draw_circle(ip, 8.0 + item_pulse * 3.0, ITEM_GLOW)
 		var d : float = 5.0 + item_pulse * 1.5
