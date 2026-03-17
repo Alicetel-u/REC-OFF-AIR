@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mountain"]
-albedo_color = Color(0.005, 0.01, 0.005, 1)
+albedo_color = Color(0.03, 0.04, 0.03, 1)
 roughness = 1.0
 
 [node name="Mountains" type="Node3D"]
