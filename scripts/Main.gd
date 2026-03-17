@@ -2149,8 +2149,9 @@ func _process(_delta: float) -> void:
 
 	# ゴースト接近度をHUDに伝える（REC心拍連動 + VHSグリッチ連動）
 	if is_instance_valid(player) and is_instance_valid(hud):
+		var ghosts := get_tree().get_nodes_in_group("ghost")
 		var closest_dist : float = 999.0
-		for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		for ghost: Node in ghosts:
 			if is_instance_valid(ghost) and ghost.visible:
 				var d : float = player.global_position.distance_to(ghost.global_position)
 				closest_dist = min(closest_dist, d)
