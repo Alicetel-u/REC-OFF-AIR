@@ -1,12 +1,18 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Texture2D" path="res://scenes/KiriharaVillageMap/電信柱_basecolor.png" id="1_rusty"]
 [ext_resource type="Texture2D" path="res://scenes/KiriharaVillageMap/happy_street_sign.png" id="2_happy"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/rust_nor.jpg" id="3_nor"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/rust_rough.jpg" id="4_rough"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rusty"]
 albedo_texture = ExtResource("1_rusty")
 uv1_triplanar = true
 albedo_color = Color(0.4, 0.2, 0.1, 1)
+normal_enabled = true
+normal_texture = ExtResource("3_nor")
+normal_scale = 0.8
+roughness_texture = ExtResource("4_rough")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sign"]
 transparency = 1
