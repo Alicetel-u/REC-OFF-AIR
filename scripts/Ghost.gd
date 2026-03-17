@@ -100,7 +100,9 @@ var _growl_timer    : float = 0.0
 # モーションパターン
 var _current_motion : int = MotionPattern.NORMAL
 var _motion_timer   : float = 0.0
-var _head_jerk_next : float = 0.0
+var _head_jerk_next  : float = 0.0
+var _head_jerk_rot_x : float = 0.0
+var _head_jerk_rot_z : float = 0.0
 var _freeze_active  : bool  = false
 var _freeze_timer   : float = 0.0
 var _teleport_phase : int   = 0  # 0=通常, 1=消えている, 2=再出現
@@ -526,12 +528,14 @@ func _update_visuals(delta: float) -> void:
 
 	match _current_motion:
 		MotionPattern.HEAD_JERK:
-			# 首カクカク — 不規則にカクッと動く
+			# 首カクカク — 不規則にカクッと動いて保持
 			_head_jerk_next -= delta
 			if _head_jerk_next <= 0.0:
 				_head_jerk_next = randf_range(0.8, 2.5)
-				motion_rot_x = randf_range(-15.0, 15.0)
-				motion_rot_z = randf_range(-8.0, 8.0)
+				_head_jerk_rot_x = randf_range(-15.0, 15.0)
+				_head_jerk_rot_z = randf_range(-8.0, 8.0)
+			motion_rot_x = _head_jerk_rot_x
+			motion_rot_z = _head_jerk_rot_z
 		MotionPattern.SERPENTINE:
 			# 蛇行浮遊 — 左右に揺れながら移動
 			motion_rot_z = sin(_bob_phase * 0.6) * 12.0
