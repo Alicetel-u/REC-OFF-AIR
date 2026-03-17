@@ -96,7 +96,7 @@
         },
         {
             "type": "sfx",
-            "file": "metal/impactMetal_heavy_000.mp3"
+            "file": "metal/impactMetal_heavy_000.ogg"
         },
         {
             "type": "horror_glitch",
@@ -251,7 +251,7 @@
         },
         {
             "type": "sfx",
-            "file": "metal/impactMetal_heavy_000.mp3"
+            "file": "metal/impactMetal_heavy_000.ogg"
         },
         {
             "type": "wait",
@@ -295,7 +295,7 @@
         },
         {
             "type": "sfx",
-            "file": "metal/impactMetal_heavy_001.mp3"
+            "file": "metal/impactMetal_heavy_001.ogg"
         },
         {
             "type": "wait",
@@ -313,7 +313,7 @@
         },
         {
             "type": "sfx",
-            "file": "metal/impactMetal_heavy_002.mp3"
+            "file": "metal/impactMetal_heavy_002.ogg"
         },
         {
             "type": "wait",
@@ -499,7 +499,7 @@
         },
         {
             "type": "sfx",
-            "file": "bell/impactBell_heavy_001.mp3"
+            "file": "bell/impactBell_heavy_001.ogg"
         },
         {
             "type": "say_clear"
@@ -887,7 +887,7 @@
         },
         {
             "type": "sfx",
-            "file": "metal/impactMetal_heavy_002.mp3"
+            "file": "metal/impactMetal_heavy_002.ogg"
         },
         {
             "type": "camera_shake",
@@ -1127,7 +1127,7 @@
         },
         {
             "type": "sfx",
-            "file": "metal/impactMetal_heavy_000.mp3"
+            "file": "metal/impactMetal_heavy_000.ogg"
         },
         {
             "type": "camera_shake",

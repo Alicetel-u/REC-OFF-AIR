@@ -1,7 +1,7 @@
 {
     "chapter": "ch02_haison_souko_exit",
     "voice_dir": "res://assets/audio/voice/ch02_souko/",
-    "_note": "CP2-2 廃倉庫脱出（紙芝居演出） — 裏口脱出→全力逃走→安堵→ブラウン管ホラー→VHS映像→自分が映る恐怖→神社決意",
+    "_note": "CP2-2 廃倉庫脱出（紙芝居演出） — 異変→閉じ込め→お札脱出→全力逃走→安堵→ブラウン管ホラー→VHS映像→自分が映る恐怖→神社決意",
     "events": [
         {
             "type": "_comment",
@@ -9,7 +9,7 @@
         },
         {
             "type": "_comment",
-            "_": "  PHASE 1 — 裏口発見・脱出"
+            "_": "  PHASE 1 — 異変（静寂と閉じ込め）"
         },
         {
             "type": "_comment",
@@ -39,14 +39,6 @@
             ]
         },
         {
-            "type": "bg_walk_start",
-            "speed": 0.8,
-            "zoom_end": 1.15,
-            "zoom_dur": 12.0,
-            "radius": 0.25,
-            "softness": 0.3
-        },
-        {
             "type": "fade_clear",
             "dur": 2.5,
             "target": 0.85
@@ -56,20 +48,70 @@
             "sec": 1.5
         },
         {
-            "type": "say",
-            "text": "……裏口？　こんなとこに出口あったんだ。外の空気が流れてくる……今のうちに！",
-            "voice": "v109"
+            "type": "_comment",
+            "_": "── 環境音が徐々に消え、不気味な静寂 ──"
+        },
+        {
+            "type": "sfx",
+            "sound": "ambient_fade_out"
         },
         {
             "type": "wait",
-            "sec": 6.5
+            "sec": 2.0
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 2.0,
+            "dur": 0.5
+        },
+        {
+            "type": "sfx",
+            "file": "metal/impactMetal_heavy_000.ogg"
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.4,
+            "dur": 0.6
+        },
+        {
+            "type": "wait",
+            "sec": 1.0
+        },
+        {
+            "type": "_comment",
+            "_": "── 入口が消えている ──"
+        },
+        {
+            "type": "say",
+            "text": "え……？　嘘でしょ、扉は？　どこ！？　入ってきたところ、壁になってるんだけど！！",
+            "voice": "v108a"
+        },
+        {
+            "type": "wait",
+            "sec": 6.0
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.2,
+            "dur": 0.4
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "閉じ込められた……？　なんで、さっきまで扉があったのに……！",
+            "voice": "v108b"
+        },
+        {
+            "type": "wait",
+            "sec": 5.5
         },
         {
             "type": "chat",
-            "msg": "逃げろ！！",
-            "user": "ゆきんこ77",
-            "utype": "moderator",
-            "voice": "c001"
+            "msg": "え？扉消えた！？",
+            "user": "視聴者A",
+            "voice": "c030"
         },
         {
             "type": "wait",
@@ -77,9 +119,298 @@
         },
         {
             "type": "chat",
-            "msg": "今しかない",
+            "msg": "やばいやばいやばい",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c031"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "壁になってるってどういうこと",
+            "user": "まっちゃん",
+            "voice": "c032"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "閉じ込められた",
+            "user": "K",
+            "utype": "horror",
+            "voice": "c033"
+        },
+        {
+            "type": "wait",
+            "sec": 1.0
+        },
+        {
+            "type": "_comment",
+            "_": "════════════════════════════════════════"
+        },
+        {
+            "type": "_comment",
+            "_": "  PHASE 2 — 新たな扉（開かない絶望）"
+        },
+        {
+            "type": "_comment",
+            "_": "════════════════════════════════════════"
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "bg_walk_start",
+            "speed": 0.5,
+            "zoom_end": 1.1,
+            "zoom_dur": 10.0,
+            "radius": 0.2,
+            "softness": 0.25
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 0.6,
+            "dur": 0.3
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "say",
+            "text": "あ、あそこに扉……！　前はなかったよね？　お願い、開いて……！",
+            "voice": "v108c"
+        },
+        {
+            "type": "wait",
+            "sec": 5.5
+        },
+        {
+            "type": "sfx",
+            "sound": "door_creak"
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.35,
+            "dur": 0.8
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "……ダメ、びくともしない！　何これ、接着剤で固められてるみたい……！",
+            "voice": "v108d"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "sfx",
+            "sound": "door_creak"
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.5,
+            "dur": 0.5
+        },
+        {
+            "type": "chat",
+            "msg": "力ずくは無理か",
+            "user": "ゆきんこ77",
+            "utype": "moderator",
+            "voice": "c034"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "詰んでない？",
             "user": "視聴者A",
-            "voice": "c002"
+            "voice": "c035"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "お札！！お札使え！！",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c036"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "superchat",
+            "msg": "お札使って！！",
+            "user": "幽霊ガチ勢",
+            "amount": 1000
+        },
+        {
+            "type": "wait",
+            "sec": 1.0
+        },
+        {
+            "type": "_comment",
+            "_": "════════════════════════════════════════"
+        },
+        {
+            "type": "_comment",
+            "_": "  PHASE 3 — お札使用（脱出）"
+        },
+        {
+            "type": "_comment",
+            "_": "════════════════════════════════════════"
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "……そうだ、このお札！　さっきのトイレの時も、これを使ったら……！",
+            "voice": "v108e"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 1.5,
+            "dur": 0.5
+        },
+        {
+            "type": "sfx",
+            "sound": "monster_growl",
+            "vol": 2
+        },
+        {
+            "type": "say",
+            "text": "お願い、私をここから出して！！",
+            "voice": "v108f"
+        },
+        {
+            "type": "wait",
+            "sec": 3.0
+        },
+        {
+            "type": "_comment",
+            "_": "── お札発動 ──"
+        },
+        {
+            "type": "use_ofuda"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "scare_flash",
+            "color": "white"
+        },
+        {
+            "type": "sfx",
+            "file": "bell/impactBell_heavy_001.ogg"
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.7,
+            "dur": 1.0
+        },
+        {
+            "type": "horror_glitch",
+            "intensity": 3.0,
+            "dur": 1.5
+        },
+        {
+            "type": "wait",
+            "sec": 1.5
+        },
+        {
+            "type": "_comment",
+            "_": "── 扉が開いた ──"
+        },
+        {
+            "type": "sfx",
+            "sound": "door_creak"
+        },
+        {
+            "type": "sfx",
+            "file": "metal/impactMetal_heavy_003.ogg"
+        },
+        {
+            "type": "camera_shake",
+            "intensity": 0.3,
+            "dur": 0.5
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "say",
+            "text": "開いた……！　外の空気が流れてくる……今のうちに！！",
+            "voice": "v109"
+        },
+        {
+            "type": "wait",
+            "sec": 5.0
+        },
+        {
+            "type": "chat",
+            "msg": "お札つえー！",
+            "user": "まっちゃん",
+            "voice": "c037"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "おばあちゃんに感謝",
+            "user": "ゆきんこ77",
+            "utype": "moderator",
+            "voice": "c038"
+        },
+        {
+            "type": "wait",
+            "sec": 0.2
+        },
+        {
+            "type": "chat",
+            "msg": "逃げろ！！",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c039"
+        },
+        {
+            "type": "wait",
+            "sec": 0.2
+        },
+        {
+            "type": "chat",
+            "msg": "走れ走れ！！",
+            "user": "視聴者A",
+            "voice": "c040"
         },
         {
             "type": "wait",
@@ -91,7 +422,7 @@
         },
         {
             "type": "_comment",
-            "_": "  PHASE 2 — 全力逃走（緊迫感MAX）"
+            "_": "  PHASE 4 — 全力逃走（緊迫感MAX）"
         },
         {
             "type": "_comment",
@@ -213,7 +544,7 @@
         },
         {
             "type": "_comment",
-            "_": "  PHASE 3 — 安堵（一転、静寂）"
+            "_": "  PHASE 5 — 安堵（一転、静寂）"
         },
         {
             "type": "_comment",
@@ -278,7 +609,7 @@
         },
         {
             "type": "_comment",
-            "_": "  PHASE 4 — ブラウン管テレビ発見（恐怖の転換点）"
+            "_": "  PHASE 6 — ブラウン管テレビ発見（恐怖の転換点）"
         },
         {
             "type": "_comment",
@@ -372,7 +703,7 @@
         },
         {
             "type": "_comment",
-            "_": "  PHASE 5 — VHS映像が勝手に再生"
+            "_": "  PHASE 7 — VHS映像が勝手に再生"
         },
         {
             "type": "_comment",
@@ -429,7 +760,7 @@
         },
         {
             "type": "_comment",
-            "_": "  PHASE 6 — 自分が映っている（最大恐怖）"
+            "_": "  PHASE 8 — 自分が映っている（最大恐怖）"
         },
         {
             "type": "_comment",
@@ -514,7 +845,7 @@
         },
         {
             "type": "_comment",
-            "_": "  PHASE 7 — 封印解カレタ（ホラータイプライター演出）"
+            "_": "  PHASE 9 — 封印解カレタ（ホラータイプライター演出）"
         },
         {
             "type": "_comment",
@@ -665,7 +996,7 @@
         },
         {
             "type": "_comment",
-            "_": "  PHASE 8 — 覚悟（配信者の意地）"
+            "_": "  PHASE 10 — 覚悟（配信者の意地）"
         },
         {
             "type": "_comment",

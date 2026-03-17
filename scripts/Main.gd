@@ -1304,6 +1304,9 @@ func _setup_minimap_delayed(map_min: Vector2, map_max: Vector2) -> void:
 	await get_tree().create_timer(3.0).timeout
 	if not is_inside_tree():
 		return
+	# 脱出演出が既に始まっている場合はミニマップを作らない
+	if _souko_exiting:
+		return
 	var chapter := GameManager.current_chapter
 	if chapter == null:
 		return
@@ -1328,10 +1331,21 @@ func _setup_minimap_delayed(map_min: Vector2, map_max: Vector2) -> void:
 	tw.tween_property(minimap, "modulate:a", 1.0, 1.5)
 
 
+var _souko_exiting : bool = false  # 脱出演出中フラグ（ミニマップ遅延作成を抑止）
+
 func _play_souko_exit() -> void:
-	## CP2廃倉庫ゴール到達時の演出（v103, v104）
+	## CP2廃倉庫ゴール到達時の演出
+	_souko_exiting = true
 	player.input_disabled = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	# ミニマップを非表示にする（紙芝居演出中に残らないように）
+	var minimap_layer := get_node_or_null("MinimapLayer")
+	if minimap_layer:
+		minimap_layer.visible = false
+	# ゴーストを無効化（みゆきの唸り声・金属音を止める）
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		ghost.process_mode = Node.PROCESS_MODE_DISABLED
+		ghost.visible = false
 	await _run_chapter_opening("ch02_haison_souko_exit")
 	player.input_disabled = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)

@@ -305,7 +305,7 @@
         },
         {
             "type": "sfx",
-            "file": "metal/impactMetal_heavy_000.mp3"
+            "file": "metal/impactMetal_heavy_000.ogg"
         },
         {
             "type": "camera_shake",
