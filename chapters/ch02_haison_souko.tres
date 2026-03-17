@@ -87,5 +87,6 @@ glow_intensity = 1.2
 glow_bloom = 0.3
 glow_blend_mode = 2
 glow_hdr_threshold = 0.5
+vhs_overlay = true
 monologue_lines = PackedStringArray("証拠VHSは倉庫の奥に隠されているはず……", "棚の裏や暗い角を懐中電灯で照らして探そう")
 next_chapter_id = "ch02_mura_tansaku"
