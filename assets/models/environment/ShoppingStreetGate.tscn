@@ -1,8 +1,14 @@
-[gd_scene format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Shader" path="res://assets/models/environment/shaders/heavy_rust.gdshader" id="1_75yt1"]
 [ext_resource type="Texture2D" path="res://assets/models/environment/textures/happy_street_sign.png" id="2_2nl8c"]
 [ext_resource type="Shader" path="res://assets/models/environment/shaders/dark_asphalt.gdshader" id="3_klayy"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/rust_diff.jpg" id="4_rust_diff"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/rust_nor.jpg" id="5_rust_nor"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/rust_rough.jpg" id="6_rust_rough"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/asphalt_diff.jpg" id="7_asphalt_diff"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/asphalt_nor.jpg" id="8_asphalt_nor"]
+[ext_resource type="Texture2D" path="res://assets/textures/pbr/asphalt_rough.jpg" id="9_asphalt_rough"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_r7wne"]
 render_priority = 0
@@ -11,6 +17,11 @@ shader_parameter/base_paint_color = Color(0.2, 0.05, 0.02, 1)
 shader_parameter/rust_color1 = Color(0.35, 0.15, 0.05, 1)
 shader_parameter/rust_color2 = Color(0.15, 0.05, 0, 1)
 shader_parameter/rust_amount = 0.9
+shader_parameter/albedo_tex = ExtResource("4_rust_diff")
+shader_parameter/normal_tex = ExtResource("5_rust_nor")
+shader_parameter/rough_tex = ExtResource("6_rust_rough")
+shader_parameter/tex_blend = 0.6
+shader_parameter/tex_scale = 3.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jlpo2"]
 render_priority = 0
@@ -18,6 +29,11 @@ shader = ExtResource("1_75yt1")
 shader_parameter/base_paint_color = Color(0.65, 0.6, 0.55, 1)
 shader_parameter/rust_color1 = Color(0.4, 0.15, 0.05, 1)
 shader_parameter/rust_color2 = Color(0.1, 0.05, 0.02, 1)
+shader_parameter/albedo_tex = ExtResource("4_rust_diff")
+shader_parameter/normal_tex = ExtResource("5_rust_nor")
+shader_parameter/rough_tex = ExtResource("6_rust_rough")
+shader_parameter/tex_blend = 0.5
+shader_parameter/tex_scale = 4.0
 shader_parameter/rust_amount = 0.75
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_75yt1"]
@@ -32,10 +48,15 @@ size = Vector2(5.5, 5.5)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_euyir"]
 render_priority = 0
 shader = ExtResource("3_klayy")
-shader_parameter/asphalt_color = Color(0.08, 0.08, 0.09, 1)
-shader_parameter/crack_color = Color(0.02, 0.02, 0.02, 1)
-shader_parameter/puddle_color = Color(0.05, 0.05, 0.05, 1)
+shader_parameter/asphalt_color = Color(0.16, 0.15, 0.14, 1)
+shader_parameter/crack_color = Color(0.04, 0.04, 0.03, 1)
+shader_parameter/puddle_color = Color(0.06, 0.06, 0.07, 1)
 shader_parameter/wetness = 0.5
+shader_parameter/albedo_tex = ExtResource("7_asphalt_diff")
+shader_parameter/normal_tex = ExtResource("8_asphalt_nor")
+shader_parameter/rough_tex = ExtResource("9_asphalt_rough")
+shader_parameter/tex_blend = 0.7
+shader_parameter/tex_scale = 4.0
 
 [node name="ShoppingStreetGate" type="Node3D" unique_id=1664610175]
 

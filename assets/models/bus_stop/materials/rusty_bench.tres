@@ -5,8 +5,8 @@
 [resource]
 render_priority = 0
 shader = ExtResource("1_y2yuv")
-shader_parameter/base_paint = null
-shader_parameter/rust_color = null
-shader_parameter/bright_rust = null
-shader_parameter/rust_level = null
-shader_parameter/scale = null
+shader_parameter/base_paint = Color(0.4, 0.45, 0.5, 1)
+shader_parameter/rust_color = Color(0.2, 0.06, 0.02, 1)
+shader_parameter/bright_rust = Color(0.4, 0.12, 0.04, 1)
+shader_parameter/rust_level = 0.7
+shader_parameter/scale = 8.0
