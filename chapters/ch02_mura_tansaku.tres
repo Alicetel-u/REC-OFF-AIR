@@ -1,7 +1,37 @@
-[gd_resource type="Resource" script_class="ChapterData" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="ChapterData" load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/ChapterData.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/GhostConfig.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/LightConfig.gd" id="3"]
+
+; ── エリアライト（アイテム・出口付近の光源）──
+[sub_resource type="Resource" id="light_item_a"]
+script = ExtResource("3")
+position = Vector3(-30.0, 3.0, 20.0)
+color = Color(0.9, 0.6, 0.2, 1)
+energy = 1.5
+omni_range = 10.0
+
+[sub_resource type="Resource" id="light_item_b"]
+script = ExtResource("3")
+position = Vector3(70.0, 3.0, -10.0)
+color = Color(0.2, 0.6, 0.9, 1)
+energy = 1.5
+omni_range = 10.0
+
+[sub_resource type="Resource" id="light_item_c"]
+script = ExtResource("3")
+position = Vector3(61.25, 3.0, 3.50)
+color = Color(0.9, 0.2, 0.3, 1)
+energy = 1.5
+omni_range = 10.0
+
+[sub_resource type="Resource" id="light_exit"]
+script = ExtResource("3")
+position = Vector3(8.75, 3.0, 80.25)
+color = Color(0.3, 0.9, 0.3, 1)
+energy = 2.0
+omni_range = 14.0
 
 ; ── みゆき1（南西エリア巡回） ──
 [sub_resource type="Resource" id="miyuki_1"]
@@ -39,6 +69,7 @@ player_spawn = Vector3(13.50, 1.0, -23.50)
 ghost_configs = [SubResource("miyuki_1"), SubResource("miyuki_2"), SubResource("miyuki_3")]
 item_positions = PackedVector3Array(-30.0, 1.0, 20.0, 70.0, 1.0, -10.0, 61.25, 1.0, 3.50)
 exit_position = Vector3(8.75, 1.5, 80.25)
+lights = [SubResource("light_item_a"), SubResource("light_item_b"), SubResource("light_item_c"), SubResource("light_exit")]
 ambient_light_energy = 0.12
 directional_light_energy = 0.5
 background_color = Color(0.02, 0.02, 0.05, 1)
