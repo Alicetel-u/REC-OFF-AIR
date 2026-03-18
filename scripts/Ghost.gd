@@ -624,7 +624,10 @@ func _update_visuals(delta: float) -> void:
 		var swell : float = clampf(1.0 + (1.0 - dist / SIGHT_RANGE) * 0.35, 1.0, 1.5)
 		if ghost_state == GhostState.CAUGHT:
 			swell = 2.5
-		_ghost_body.scale = Vector3(swell, swell, swell)
+		if _current_motion == MotionPattern.CRAWL:
+			_ghost_body.scale = Vector3(swell, 0.5, swell)  # CRAWLは低姿勢維持
+		else:
+			_ghost_body.scale = Vector3(swell, swell, swell)
 
 	# ── フェイクラッシュ（CHASE/ALERT中にランダム発動）──
 	if ghost_state in [GhostState.CHASE, GhostState.ALERT] and not _fake_rushing:
