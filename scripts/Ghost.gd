@@ -39,8 +39,8 @@ const CHASE_MOTIONS : Array[int] = [
 const CAUGHT_MOTIONS : Array[int] = [
 	MotionPattern.FACE_CLOSE, MotionPattern.UPSIDE_DOWN]
 
-const PATROL_SPEED : float = 0.6
-const ALERT_SPEED  : float = 1.1  # 警戒時やや速く
+const PATROL_SPEED : float = 0.7
+const ALERT_SPEED  : float = 1.2
 const CHASE_SPEED  : float = 1.9
 const CHASE_BURST  : float = 5.0   # 瞬間ダッシュ速度
 const CHASE_STRAFE : float = 3.0   # 横移動の速さ
@@ -54,7 +54,7 @@ const ALERT_TIME   : float = 5.0  # 警戒→見失いが速い（緊張維持�
 const STATE_VISUALS := {
 	GhostState.PATROL: {"bob_speed": 1.6, "bob_amp": 0.07, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.0},
 	GhostState.ALERT:  {"bob_speed": 3.5, "bob_amp": 0.10, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.4},
-	GhostState.CHASE:  {"bob_speed": 5.0, "bob_amp": 0.12, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
+	GhostState.CHASE:  {"bob_speed": 5.0, "bob_amp": 0.14, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 	GhostState.CAUGHT: {"bob_speed": 0.3, "bob_amp": 0.04, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 }
 
