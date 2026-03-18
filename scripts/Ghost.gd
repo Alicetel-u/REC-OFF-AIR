@@ -46,9 +46,9 @@ const CHASE_BURST  : float = 4.5   # 瞬間ダッシュ速度
 const CHASE_STRAFE : float = 2.5   # 横移動の速さ
 const GRAVITY      : float = 9.8
 const SIGHT_RANGE  : float = 25.0
-const PROX_DETECT  : float = 4.5
+const PROX_DETECT  : float = 5.5  # 近接検知を広めに
 const CATCH_DIST   : float = 1.5
-const ALERT_TIME   : float = 7.0
+const ALERT_TIME   : float = 5.0  # 警戒→見失いが速い（緊張維持）
 
 # 状態別ビジュアルパラメータ
 const STATE_VISUALS := {
@@ -320,7 +320,7 @@ func _do_patrol(delta: float) -> void:
 
 
 # ---- 警戒(最後の位置へ移動) ----
-const ALERT_MIN_TIME : float = 3.0  # CHASEに遷移するまでの最低警戒時間
+const ALERT_MIN_TIME : float = 2.0  # CHASEに遷移するまでの最低警戒時間（速く）
 
 func _do_alert(delta: float) -> void:
 	alert_t += delta

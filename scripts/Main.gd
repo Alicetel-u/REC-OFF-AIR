@@ -752,7 +752,7 @@ func _setup_atmosphere_particles() -> void:
 	bokeh_mesh.size = Vector2(0.12, 0.12)
 	bokeh_mesh.material = _make_particle_mat(
 		Color(1, 1, 1, 0.2),
-		Color(0.3, 0.9, 0.4), 2.5, circle_tex)
+		Color(0.3, 0.9, 0.4), 3.0, circle_tex)  # Bloom強化
 	bokeh.draw_pass_1 = bokeh_mesh
 	add_child(bokeh)
 	_atmosphere_particles.append(bokeh)
