@@ -621,7 +621,7 @@ func _update_visuals(delta: float) -> void:
 	# ── 接近膨張 ──
 	if is_instance_valid(player) and not _fake_rushing:
 		var dist := global_position.distance_to(player.global_position)
-		var swell : float = clampf(1.0 + (1.0 - dist / SIGHT_RANGE) * 0.25, 1.0, 1.3)
+		var swell : float = clampf(1.0 + (1.0 - dist / SIGHT_RANGE) * 0.35, 1.0, 1.5)
 		if ghost_state == GhostState.CAUGHT:
 			swell = 2.0
 		_ghost_body.scale = Vector3(swell, swell, swell)

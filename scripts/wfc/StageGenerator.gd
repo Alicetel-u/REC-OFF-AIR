@@ -1225,7 +1225,7 @@ func _create_room_light(parent: Node3D, room_name: String, cfg: Dictionary) -> v
 	lamp_mat.albedo_color = cfg.color
 	lamp_mat.emission_enabled = true
 	lamp_mat.emission = cfg.color
-	lamp_mat.emission_energy_multiplier = 3.0  # Bloomでにじむよう強化
+	lamp_mat.emission_energy_multiplier = 4.0  # Bloomでにじむよう強化
 	lamp_mesh.material = lamp_mat
 	parent.add_child(lamp_mesh)
 

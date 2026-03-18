@@ -731,7 +731,7 @@ func _setup_atmosphere_particles() -> void:
 	# ── 3. ボケパーティクル（HD-2D定番：柔らかい光の玉）──
 	var bokeh := GPUParticles3D.new()
 	bokeh.name = "HD2D_Bokeh"
-	bokeh.amount = 10
+	bokeh.amount = 8
 	bokeh.lifetime = 8.0
 	bokeh.visibility_aabb = AABB(Vector3(-15, -1, -15), Vector3(30, 10, 30))
 

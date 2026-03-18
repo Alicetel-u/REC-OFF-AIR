@@ -24,7 +24,7 @@ uniform float fade_amount : hint_range(0.0, 1.0) = 0.3;
 uniform float dirt_amount : hint_range(0.0, 1.0) = 0.15;
 // ほんのり発光（暗闘でシルエットが浮かぶ程度）
 uniform vec4 glow_color : source_color = vec4(0.3, 0.35, 0.5, 1.0);
-uniform float glow_strength : hint_range(0.0, 1.0) = 0.25;
+uniform float glow_strength : hint_range(0.0, 1.0) = 0.4;
 
 // ハッシュ関数（ランダム値生成）
 float hash(vec2 p) {

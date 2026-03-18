@@ -5,8 +5,8 @@ const WALK_SPEED     := 4.0
 const DASH_SPEED     := 8.0
 const GRAVITY        := 9.8
 const MOUSE_SENS     := 0.002
-const BOB_FREQ       := 2.2
-const BOB_AMP        := 0.06
+const BOB_FREQ       := 2.0   # やや遅め（重い足取り）
+const BOB_AMP        := 0.08  # やや大きめ（不安定感）
 const BATTERY_DRAIN  := 0.045   # 懐中電灯ON時の消耗 /sec
 const BATTERY_CHARGE := 0.018   # 懐中電灯OFF時の回復 /sec
 

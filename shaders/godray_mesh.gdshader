@@ -5,7 +5,7 @@ render_mode blend_add, unshaded, cull_disabled, depth_draw_never;
 // 加算ブレンドで半透明の光の筋を表現
 // MeshInstance3D（円錐や板）にアタッチして使用
 
-uniform vec4 ray_color : source_color = vec4(1.0, 0.95, 0.8, 0.15);
+uniform vec4 ray_color : source_color = vec4(1.0, 0.95, 0.8, 0.10);
 uniform float intensity : hint_range(0.0, 3.0) = 1.0;
 uniform float fade_power : hint_range(0.1, 5.0) = 2.0;
 uniform float scroll_speed : hint_range(0.0, 1.0) = 0.05;

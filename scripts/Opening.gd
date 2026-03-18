@@ -415,7 +415,7 @@ func _show_profile() -> void:
 		tw.tween_property(lbl, "modulate:a", 1.0, 0.6)
 		# ボイス再生（空文字列ならスキップ）
 		if i < _profile_voice_ids.size() and _profile_voice_ids[i] != "":
-			_play_op_voice(_profile_voice_ids[i], -4.0)
+			_play_op_voice(_profile_voice_ids[i], -6.0)
 		await tw.finished
 		if _skipped: break
 		if i < _profile_voice_ids.size() and _profile_voice_ids[i] != "":
