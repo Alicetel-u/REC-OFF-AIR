@@ -104,7 +104,7 @@ func _create_materials() -> void:
 	mat_crack.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat_cobweb   = _make_mat(null, Color(0.82, 0.80, 0.72, 0.45), 0.95, Vector3(1, 1, 1))  # やや黄色く
 	mat_cobweb.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat_baseboard = _make_mat(null, Color(0.20, 0.22, 0.24), 0.70, Vector3(1, 1, 1))
+	mat_baseboard = _make_mat(null, Color(0.16, 0.18, 0.20), 0.70, Vector3(1, 1, 1))
 	mat_baseboard.metallic = 0.3
 	mat_baseboard.roughness = 0.75
 	mat_doorframe = _make_mat(null, Color(0.35, 0.25, 0.22), 0.70, Vector3(1, 1, 1))  # 錆びたドアフレーム
@@ -113,10 +113,10 @@ func _create_materials() -> void:
 	# ── 廃村 ──
 	mat_h_ground = _make_mat(null, Color(0.16, 0.13, 0.08), 0.96, Vector3(10, 10, 10))  # 夜の暗い地面
 	mat_h_wood   = _make_mat(TEX_WOOD, Color(0.35, 0.25, 0.15), 0.93, Vector3(3, 3, 3))
-	mat_h_thatch = _make_mat(null, Color(0.36, 0.28, 0.18), 0.95, Vector3(4, 4, 4))  # 暖かい藁色
+	mat_h_thatch = _make_mat(null, Color(0.38, 0.30, 0.20), 0.95, Vector3(4, 4, 4))  # 暖かい藁色
 	mat_h_stone  = _make_mat(TEX_CONCRETE, Color(0.42, 0.38, 0.32), 0.94, Vector3(5, 5, 5))
 	mat_h_moss   = _make_mat(null, Color(0.16, 0.28, 0.10), 0.98, Vector3(6, 6, 6))  # 鮮やかな苔
-	mat_h_blood  = _make_mat(null, Color(0.25, 0.04, 0.02), 0.95, Vector3(1, 1, 1))
+	mat_h_blood  = _make_mat(null, Color(0.25, 0.04, 0.02), 0.92, Vector3(1, 1, 1))
 
 
 # プロシージャル Normal Map（NoiseTexture2D）— 全マテリアル共通で凹凸感を付加
