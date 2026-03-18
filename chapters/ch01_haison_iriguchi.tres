@@ -15,13 +15,13 @@ script = ExtResource("2")
 position = Vector3(0, 3, -14)
 color = Color(0.85, 0.25, 0.10, 1)
 energy = 4.0
-omni_range = 12.0
+omni_range = 15.0
 
 [sub_resource type="Resource" id="light_shrine"]
 script = ExtResource("2")
 position = Vector3(12, 3, -15)
 color = Color(0.9, 0.1, 0.05, 1)
-energy = 2.0
+energy = 2.5
 omni_range = 10.0
 
 [sub_resource type="Resource" id="light_road"]

@@ -87,13 +87,13 @@ func _ready() -> void:
 func _create_materials() -> void:
 	# ── インダストリアル ──
 	mat_floor    = _make_mat(TEX_CONCRETE, Color(0.32, 0.30, 0.28), 0.92, Vector3(6, 6, 6))
-	mat_wall     = _make_mat(TEX_WALL,     Color(0.52, 0.48, 0.42), 0.88, Vector3(3, 2, 3))
+	mat_wall     = _make_mat(TEX_WALL,     Color(0.42, 0.38, 0.34), 0.90, Vector3(3, 2, 3))  # 暗い壁
 	mat_ceiling  = _make_mat(TEX_CONCRETE, Color(0.30, 0.28, 0.26), 0.92, Vector3(4, 4, 4))  # 暗い天井
 	mat_metal    = _make_mat(TEX_CABINET,  Color(0.42, 0.45, 0.48), 0.55, Vector3(1, 1, 1))
 	mat_metal.metallic = 0.5
 	mat_cabinet  = _make_mat(TEX_CABINET2, Color(0.35, 0.40, 0.38), 0.60, Vector3(1, 1, 1))
 	mat_cabinet.metallic = 0.4
-	mat_cargo    = _make_mat(TEX_CARGO,    Color(0.55, 0.42, 0.28), 0.82, Vector3(1, 1, 1))
+	mat_cargo    = _make_mat(TEX_CARGO,    Color(0.55, 0.42, 0.28), 0.85, Vector3(1, 1, 1))
 	mat_barrel   = _make_mat(TEX_BARREL,   Color(0.38, 0.30, 0.20), 0.80, Vector3(1, 1, 1))
 	mat_wood     = _make_mat(TEX_WOOD,     Color(0.52, 0.38, 0.22), 0.85, Vector3(1, 1, 1))
 	mat_pipes    = _make_mat(TEX_PIPES,    Color(0.50, 0.50, 0.52), 0.60, Vector3(2, 2, 2))

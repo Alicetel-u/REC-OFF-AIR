@@ -40,7 +40,7 @@ const CAUGHT_MOTIONS : Array[int] = [
 	MotionPattern.FACE_CLOSE, MotionPattern.UPSIDE_DOWN]
 
 const PATROL_SPEED : float = 0.5
-const ALERT_SPEED  : float = 0.9
+const ALERT_SPEED  : float = 1.1  # 警戒時やや速く
 const CHASE_SPEED  : float = 1.8  # 少し速く（緊張感UP）
 const CHASE_BURST  : float = 4.5   # 瞬間ダッシュ速度
 const CHASE_STRAFE : float = 2.5   # 横移動の速さ

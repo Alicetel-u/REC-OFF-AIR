@@ -1,8 +1,8 @@
 extends CharacterBody3D
 class_name Player
 
-const WALK_SPEED     := 4.0
-const DASH_SPEED     := 8.0
+const WALK_SPEED     := 3.5   # ホラー向け重い足取り
+const DASH_SPEED     := 6.5   # 走りも少し遅め
 const GRAVITY        := 9.8
 const MOUSE_SENS     := 0.002
 const BOB_FREQ       := 2.0   # やや遅め（重い足取り）

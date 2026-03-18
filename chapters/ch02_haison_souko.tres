@@ -31,7 +31,7 @@ omni_range = 28.0
 script = ExtResource("3")
 position = Vector3(-18, 3.5, -14)
 color = Color(0.85, 0.04, 0.04, 1)
-energy = 2.0
+energy = 2.5
 omni_range = 14.0
 
 [sub_resource type="Resource" id="light_ne"]
