@@ -59,7 +59,7 @@ omni_range = 14.0
 script = ExtResource("3")
 position = Vector3(-20, 3.5, 12)
 color = Color(0.5, 0.30, 0.08, 1)
-energy = 1.5
+energy = 2.0
 omni_range = 14.0
 
 ; ── チャプターデータ本体 ──

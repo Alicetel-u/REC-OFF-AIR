@@ -54,7 +54,7 @@ const ALERT_TIME   : float = 5.0  # 警戒→見失いが速い（緊張維持�
 const STATE_VISUALS := {
 	GhostState.PATROL: {"bob_speed": 2.0, "bob_amp": 0.06, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.0},
 	GhostState.ALERT:  {"bob_speed": 2.8, "bob_amp": 0.08, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.4},
-	GhostState.CHASE:  {"bob_speed": 4.5, "bob_amp": 0.10, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
+	GhostState.CHASE:  {"bob_speed": 5.0, "bob_amp": 0.10, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 	GhostState.CAUGHT: {"bob_speed": 0.5, "bob_amp": 0.02, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 }
 
@@ -307,7 +307,7 @@ func _do_patrol(delta: float) -> void:
 		velocity.x = 0.0
 		velocity.z = 0.0
 		patrol_wait += delta
-		if patrol_wait >= 2.5:
+		if patrol_wait >= 3.0:  # 巡回停止を少し長く（不気味さ）
 			patrol_wait = 0.0
 			patrol_idx = (patrol_idx + 1) % patrol_pts.size()
 		if is_instance_valid(player):
