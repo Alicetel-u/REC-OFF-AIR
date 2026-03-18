@@ -120,6 +120,8 @@ var _erratic_dir    : Vector3 = Vector3.ZERO  # 不規則方向
 var custom_model_path : String = ""
 var custom_model_scale : Vector3 = Vector3(1.2, 1.2, 1.2)
 var _physics_ready : bool = false
+var forced_motion : int = -1   # -1=ランダム、0以上=固定モーション
+var forced_state  : int = -1   # -1=通常AI、0以上=状態固定（デバッグ用）
 
 signal ghost_spotted_player
 signal ghost_lost_player
@@ -272,6 +274,13 @@ func _physics_process(delta: float) -> void:
 		return
 	if not is_instance_valid(player):
 		return
+
+	# デバッグ: モーション固定時はAI無効（その場でモーション表示のみ）
+	if forced_motion >= 0:
+		velocity = Vector3.ZERO
+		_update_visuals(delta)
+		return
+
 	if not is_on_floor():
 		velocity.y -= GRAVITY * delta
 
@@ -471,6 +480,9 @@ func _face(target: Vector3) -> void:
 var _prev_ghost_state : int = -1
 
 func _pick_motion_if_changed() -> void:
+	# デバッグ: 状態固定モード
+	if forced_state >= 0 and ghost_state != forced_state:
+		ghost_state = forced_state as GhostState
 	if ghost_state == _prev_ghost_state:
 		return
 	_prev_ghost_state = ghost_state
@@ -481,6 +493,10 @@ func _pick_motion_if_changed() -> void:
 	_levitate_h = 0.0
 	if _ghost_body:
 		_ghost_body.scale = Vector3.ONE
+	# デバッグ: モーション固定
+	if forced_motion >= 0:
+		_current_motion = forced_motion
+		return
 	match ghost_state:
 		GhostState.PATROL:
 			_current_motion = PATROL_MOTIONS[randi() % PATROL_MOTIONS.size()]
@@ -490,7 +506,6 @@ func _pick_motion_if_changed() -> void:
 			_current_motion = CHASE_MOTIONS[randi() % CHASE_MOTIONS.size()]
 		GhostState.CAUGHT:
 			_current_motion = CAUGHT_MOTIONS[randi() % CAUGHT_MOTIONS.size()]
-	# デバッグ: print("[Ghost] state=%d motion=%d" % [ghost_state, _current_motion])
 
 
 # ════════════════════════════════════════════════════════════════
@@ -579,8 +594,8 @@ func _update_visuals(delta: float) -> void:
 			_ghost_body.scale.y = lerp(_ghost_body.scale.y, 0.5, delta * 3.0)
 			base_h = -0.4
 		MotionPattern.FACE_CLOSE:
-			# 顔面ドアップ（CATCHEDで使用）
-			if is_instance_valid(player):
+			# 顔面ドアップ（CATCHEDで使用）— デバッグ固定時はその場で姿勢のみ
+			if is_instance_valid(player) and forced_motion < 0:
 				var face_pos := player.global_position + player.transform.basis.z * -0.5
 				face_pos.y = player.global_position.y + 0.3
 				global_position = global_position.lerp(face_pos, delta * 5.0)

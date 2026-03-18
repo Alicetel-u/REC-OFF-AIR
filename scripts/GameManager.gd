@@ -56,8 +56,15 @@ signal player_won
 signal player_hit(count: int)
 
 
+## デバッグチャプター直接ロード用
+var debug_chapter_path: String = ""
+
 func load_chapter(index: int) -> void:
 	chapter_index = index
+	# デバッグチャプターが指定されていればそちらを優先
+	if not debug_chapter_path.is_empty():
+		current_chapter = load(debug_chapter_path)
+		return
 	if index < chapter_order.size():
 		current_chapter = load(chapter_order[index])
 	else:
@@ -157,5 +164,21 @@ func _load_endings() -> void:
 			if parsed is Dictionary:
 				unlocked_endings = parsed
 
+func load_debug_chapter(path: String) -> void:
+	## デバッグチャプターを直接ロード（タイトル画面のF8、またはコード指定で使用）
+	debug_chapter_path = path
+	chapter_index = 0
+	current_chapter = load(path)
+	items_found = 0
+	hit_count = 0
+	state = State.PLAYING
+	get_tree().reload_current_scene()
+
 func _ready() -> void:
 	_load_endings()
+	# コマンドライン引数: --debug-chapter=res://chapters/xxx.tres
+	# Godot 4: `--` 以降のユーザー引数は get_cmdline_user_args() で取得
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--debug-chapter="):
+			debug_chapter_path = arg.substr("--debug-chapter=".length())
+			print("[Debug] コマンドライン引数からデバッグチャプター設定: %s" % debug_chapter_path)

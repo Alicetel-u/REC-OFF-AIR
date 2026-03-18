@@ -76,6 +76,11 @@ func _ready() -> void:
 			print("[AutoTest] file flag: CP%d %s" % [cp_idx + 1, GameManager.autotest_mode])
 			_go_to_chapter(cp_idx)
 			return
+	# デバッグチャプター指定時: タイトルスキップで直行
+	if not GameManager.debug_chapter_path.is_empty():
+		print("[Debug] デバッグチャプター直行: %s" % GameManager.debug_chapter_path)
+		_go_to_game()
+		return
 	const _DEBUG_SKIP := false
 	if _DEBUG_SKIP or GameManager.autotest_active:
 		if GameManager.autotest_active:

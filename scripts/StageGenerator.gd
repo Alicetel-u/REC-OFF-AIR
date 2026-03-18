@@ -39,6 +39,11 @@ func generate(chapter: Resource) -> Dictionary:
 		if gc.model_path and not gc.model_path.is_empty():
 			ghost.custom_model_path = gc.model_path
 			ghost.custom_model_scale = gc.model_scale
+		# デバッグ: モーション/状態固定
+		if gc.get("forced_motion") != null and gc.forced_motion >= 0:
+			ghost.forced_motion = gc.forced_motion
+		if gc.get("forced_state") != null and gc.forced_state >= 0:
+			ghost.forced_state = gc.forced_state
 		for i in range(gc.patrol_points.size()):
 			var marker := Marker3D.new()
 			marker.name = "Patrol_%d" % i

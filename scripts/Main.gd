@@ -131,6 +131,43 @@ func _ready() -> void:
 	# ローディング画面をフェードアウト
 	await LoadingScreen.fade_out()
 
+	# デバッグチャプター: イントロ・演出を全スキップして即プレイ
+	if chapter.chapter_id.begins_with("debug_"):
+		_intro_skip = true
+		intro_layer.visible = false
+		player.input_disabled = false
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		player.set_head_height(2.5)
+		# ゴーストを即有効化 + 番号ラベル付与
+		const MOTION_NAMES : Array[String] = [
+			"NORMAL", "HEAD_JERK", "SERPENTINE", "FREEZE_BURST",
+			"TREMOR", "SLOW_TURN", "LEVITATE",
+			"LEAN_DASH", "CRAB_WALK", "TELEPORT_FAKE", "CRAWL",
+			"FACE_CLOSE", "UPSIDE_DOWN"]
+		var ghost_idx : int = 0
+		for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+			ghost.process_mode = Node.PROCESS_MODE_INHERIT
+			ghost.visible = true
+			# 頭上に番号+モーション名の3Dラベルを配置
+			if ghost.forced_motion >= 0:
+				var lbl := Label3D.new()
+				var motion_id : int = ghost.forced_motion
+				var name_str : String = MOTION_NAMES[motion_id] if motion_id < MOTION_NAMES.size() else "???"
+				lbl.text = "%d  %s" % [ghost_idx + 1, name_str]
+				lbl.font_size = 48
+				lbl.pixel_size = 0.01
+				lbl.position = Vector3(0, 3.5, 0)
+				lbl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+				lbl.no_depth_test = true
+				lbl.modulate = Color(1, 1, 0.3)
+				lbl.outline_modulate = Color(0, 0, 0)
+				lbl.outline_size = 12
+				ghost.add_child(lbl)
+			ghost_idx += 1
+		_setup_debug_ui()
+		_refresh_debug_label()
+		return
+
 	# 廃村入口チャプターは自動演出シーケンスを実行して次チャプターへ進む
 	var cur_chapter := GameManager.current_chapter
 	if cur_chapter and cur_chapter.chapter_id == "ch01_haison_iriguchi":
@@ -340,6 +377,12 @@ func _input(event: InputEvent) -> void:
 		if SoundManager.chat_voice_muted and SoundManager._chat_voice.playing:
 			SoundManager._chat_voice.stop()
 		_refresh_debug_label()
+		get_viewport().set_input_as_handled()
+		return
+
+	# F8: デバッグチャプター起動（モーションショーケース等）
+	if kc == KEY_F8:
+		GameManager.load_debug_chapter("res://chapters/debug_motion_showcase.tres")
 		get_viewport().set_input_as_handled()
 		return
 
@@ -1221,6 +1264,8 @@ func _show_ghost_alert() -> void:
 
 
 func _run_escape_nav_sequence() -> void:
+	# 自動探索モード中なら自動歩行を停止（みゆきイベントに完全移行）
+	_auto_explore_active = false
 	var voice_dir : String = "res://assets/audio/voice/ch02_souko/"
 	GameManager.ghost_grace = true
 
@@ -2234,6 +2279,7 @@ func _start_auto_explore() -> void:
 	if ch == null:
 		return
 	print("[AutoExplore] 自動探索モード開始: %s" % ch.chapter_name)
+	_auto_explore_active = true
 	# 無敵化（ゴーストは表示するが捕まらない）
 	GameManager.ghost_grace = true
 	# アイテム位置→出口の順に自動歩行
@@ -2249,11 +2295,15 @@ func _start_auto_explore() -> void:
 		await get_tree().create_timer(1.0).timeout
 
 
+var _auto_explore_chat_timer : float = 0.0
+var _auto_explore_active : bool = false  # みゆき遭遇時に停止するためのフラグ
+const AUTO_EXPLORE_CHAT_INTERVAL : float = 8.0  # チャットボイス間隔（秒）
+
 func _auto_explore_walk(target: Vector3) -> void:
 	if not is_instance_valid(player):
 		return
 	var speed : float = 2.8  # ゆっくり自動歩行（臨場感）
-	while is_inside_tree() and is_instance_valid(player):
+	while is_inside_tree() and is_instance_valid(player) and _auto_explore_active:
 		var to := target - player.global_position
 		to.y = 0.0
 		var dist := to.length()
@@ -2266,6 +2316,12 @@ func _auto_explore_walk(target: Vector3) -> void:
 		# カメラを進行方向に向ける
 		var target_yaw := atan2(dir.x, dir.z)
 		player.rotation.y = lerp_angle(player.rotation.y, target_yaw, 0.05)
+		# 定期的にチャットボイスを再生（無音防止）
+		var dt : float = get_physics_process_delta_time()
+		_auto_explore_chat_timer += dt
+		if _auto_explore_chat_timer >= AUTO_EXPLORE_CHAT_INTERVAL:
+			_auto_explore_chat_timer = 0.0
+			hud.trigger_chat_event("moved")
 		await get_tree().physics_frame
 	player.velocity.x = 0.0
 	player.velocity.z = 0.0

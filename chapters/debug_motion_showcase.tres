@@ -1,0 +1,184 @@
+[gd_resource type="Resource" script_class="ChapterData" load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://scripts/ChapterData.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/GhostConfig.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/LightConfig.gd" id="3"]
+
+; ════════════════════════════════════════════════════════════════
+; デバッグ用チャプター: モーションショーケース
+;
+; 配置図（プレイヤー正面から見て左→右）:
+;
+;   前列 (z=-6)  ①NORMAL  ②HEAD_JERK  ③SERPENTINE  ④FREEZE_BURST  ⑤TREMOR  ⑥SLOW_TURN  ⑦LEVITATE
+;   後列 (z=-20) ⑧LEAN_DASH  ⑨CRAB_WALK  ⑩TELEPORT_FAKE  ⑪CRAWL  ⑫FACE_CLOSE  ⑬UPSIDE_DOWN
+;
+;   プレイヤー (z=12)
+; ════════════════════════════════════════════════════════════════
+
+; ── 前列: PATROL & ALERT モーション（z=-6、8m間隔）──
+
+; ① NORMAL
+[sub_resource type="Resource" id="g01"]
+script = ExtResource("2")
+position = Vector3(-24, 0.5, -6)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 0
+forced_state = 0
+
+; ② HEAD_JERK（首カクカク）
+[sub_resource type="Resource" id="g02"]
+script = ExtResource("2")
+position = Vector3(-16, 0.5, -6)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 1
+forced_state = 0
+
+; ③ SERPENTINE（蛇行浮遊）
+[sub_resource type="Resource" id="g03"]
+script = ExtResource("2")
+position = Vector3(-8, 0.5, -6)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 2
+forced_state = 0
+
+; ④ FREEZE_BURST（瞬間停止→急発進）
+[sub_resource type="Resource" id="g04"]
+script = ExtResource("2")
+position = Vector3(0, 0.5, -6)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 3
+forced_state = 0
+
+; ⑤ TREMOR（ブルブル震え）
+[sub_resource type="Resource" id="g05"]
+script = ExtResource("2")
+position = Vector3(8, 0.5, -6)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 4
+forced_state = 1
+
+; ⑥ SLOW_TURN（首ゆっくり回転）
+[sub_resource type="Resource" id="g06"]
+script = ExtResource("2")
+position = Vector3(16, 0.5, -6)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 5
+forced_state = 1
+
+; ⑦ LEVITATE（浮上）
+[sub_resource type="Resource" id="g07"]
+script = ExtResource("2")
+position = Vector3(24, 0.5, -6)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 6
+forced_state = 1
+
+; ── 後列: CHASE & CAUGHT モーション（z=-20、8m間隔）──
+
+; ⑧ LEAN_DASH（前傾ダッシュ）
+[sub_resource type="Resource" id="g08"]
+script = ExtResource("2")
+position = Vector3(-20, 0.5, -20)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 7
+forced_state = 2
+
+; ⑨ CRAB_WALK（カニ歩き）
+[sub_resource type="Resource" id="g09"]
+script = ExtResource("2")
+position = Vector3(-12, 0.5, -20)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 8
+forced_state = 2
+
+; ⑩ TELEPORT_FAKE（テレポートフェイク ※未実装）
+[sub_resource type="Resource" id="g10"]
+script = ExtResource("2")
+position = Vector3(-4, 0.5, -20)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 9
+forced_state = 2
+
+; ⑪ CRAWL（四つん這い）
+[sub_resource type="Resource" id="g11"]
+script = ExtResource("2")
+position = Vector3(4, 0.5, -20)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 10
+forced_state = 2
+
+; ⑫ FACE_CLOSE（顔面ドアップ）
+[sub_resource type="Resource" id="g12"]
+script = ExtResource("2")
+position = Vector3(12, 0.5, -20)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 11
+forced_state = 3
+
+; ⑬ UPSIDE_DOWN（逆さま）
+[sub_resource type="Resource" id="g13"]
+script = ExtResource("2")
+position = Vector3(20, 0.5, -20)
+patrol_points = PackedVector3Array()
+model_path = "res://assets/models/characters/Miyuki.glb"
+model_scale = Vector3(1.5, 1.5, 1.5)
+forced_motion = 12
+forced_state = 3
+
+; ── 照明（明るめ・全体を均等に照らす）──
+[sub_resource type="Resource" id="light_center"]
+script = ExtResource("3")
+position = Vector3(0, 8.0, -10)
+color = Color(1.0, 0.95, 0.85, 1)
+energy = 10.0
+omni_range = 60.0
+
+; ════════════════════════════════════════════════════════════════
+[resource]
+script = ExtResource("1")
+chapter_id = "debug_motion_showcase"
+chapter_name = "デバッグ: モーション一覧"
+location_text = "デバッグルーム"
+date_text = "DEBUG"
+stage_scene_path = "res://scenes/DebugStage.tscn"
+player_spawn = Vector3(0, 1.0, 12)
+ghost_configs = [SubResource("g01"), SubResource("g02"), SubResource("g03"), SubResource("g04"), SubResource("g05"), SubResource("g06"), SubResource("g07"), SubResource("g08"), SubResource("g09"), SubResource("g10"), SubResource("g11"), SubResource("g12"), SubResource("g13")]
+item_positions = PackedVector3Array()
+exit_position = Vector3(0, 1.5, 30)
+lights = [SubResource("light_center")]
+ambient_light_energy = 0.4
+directional_light_energy = 0.6
+background_color = Color(0.15, 0.15, 0.2, 1)
+fog_enabled = false
+vhs_overlay = false
+glow_enabled = true
+glow_intensity = 1.0
+glow_bloom = 0.2
+glow_blend_mode = 2
+glow_hdr_threshold = 0.8
+monologue_lines = PackedStringArray()
+next_chapter_id = ""
