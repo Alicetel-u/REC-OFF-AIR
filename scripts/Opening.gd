@@ -1081,8 +1081,9 @@ const CHAPTER_INFO : Array[Dictionary] = [
 		{"name": "CP1-4  逃走と反転", "sub": "バス停へ逃走→村の奥へ", "section": 3},
 	]},
 	{"name": "CP2  廃倉庫", "sub": "証拠のVHSテープ", "icon": "🏚", "order_index": 1, "sections": [
-		{"name": "CP2-1  廃倉庫探索", "sub": "VHS収集＋ゴースト", "section": 0},
-		{"name": "CP2-2  ブラウン管の恐怖", "sub": "VHS映像→神社への動機", "section": 1},
+		{"name": "CP2-1  ストーリー", "sub": "廃倉庫への侵入", "section": 0},
+		{"name": "CP2-2  廃倉庫探索", "sub": "VHS収集＋ゴースト", "section": 1},
+		{"name": "CP2-3  ストーリー", "sub": "ブラウン管の恐怖→神社へ", "section": 2},
 	]},
 	{"name": "CP3  村の探索", "sub": "10FPSの呪い", "icon": "🏘", "order_index": 2, "sections": [
 		{"name": "CP3-1  村探索", "sub": "3つの道具を集める", "section": 0},

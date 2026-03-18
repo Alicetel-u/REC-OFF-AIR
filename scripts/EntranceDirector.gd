@@ -1398,11 +1398,12 @@ func _stage_swap(scene_path: String, spawn: Array) -> void:
 	if stage:
 		_dim_lights_recursive(stage, 0.08)
 
-	# トイレでは懐中電灯を控えめに（蛍光灯がメイン光源）
+	# トイレでは懐中電灯を控えめに（蛍光灯がメイン光源）+ 視点高め
 	if is_instance_valid(player):
 		if "Toilet" in scene_path or "toilet" in scene_path:
 			player.flashlight.light_energy = _flash_orig_energy * 0.25
 			player.flashlight.spot_range = 20.0
+			player.set_head_height(2.0)
 		else:
 			player.flashlight.light_energy = _flash_orig_energy
 			player.flashlight.spot_range = 80.0

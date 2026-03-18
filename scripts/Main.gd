@@ -60,11 +60,20 @@ func _ready() -> void:
 	# items_total を generate() より前に設定（Exit._ready() が参照するため）
 	GameManager.items_total = chapter.item_positions.size()
 	print("[Main] items_total set to: ", GameManager.items_total)
-	# つなぎ演出（start_section==1）の場合、ステージ生成をスキップ（GPUメモリ節約）
-	# ※CP1（廃村入口）では Section 1 は商店街パートの開始地点なので、スキップ対象から除外する
-	if GameManager.start_section == 1 and chapter.chapter_id != "ch01_haison_iriguchi":
+	# CP2 section 2: 脱出シネマティックのみ（ステージ生成スキップ）
+	if GameManager.start_section == 2 and chapter.chapter_id == "ch02_haison_souko":
 		GameManager.start_section = 0
-		# YouTubeChrome・弾幕をHUDに接続（chatイベント用）
+		hud.set_chrome($YouTubeChrome)
+		_setup_danmaku()
+		hud.danmaku_func = Callable(self, "_spawn_danmaku")
+		await LoadingScreen.fade_out()
+		await _play_souko_exit()
+		GameManager.advance_to_next_chapter()
+		return
+	# つなぎ演出（ステージ生成スキップ）
+	# CP1 Section 1 は商店街パート、CP2 Section 1 はプレイアブル → スキップ対象外
+	if GameManager.start_section == 1 and chapter.chapter_id not in ["ch01_haison_iriguchi", "ch02_haison_souko"]:
+		GameManager.start_section = 0
 		hud.set_chrome($YouTubeChrome)
 		_setup_danmaku()
 		hud.danmaku_func = Callable(self, "_spawn_danmaku")
@@ -206,8 +215,8 @@ func _ready() -> void:
 			player.set_head_height(2.5)
 		else:
 			player.set_head_height(0.7)
-		# CP2: 紙芝居演出→暗転→操作説明→自由移動
-		if cur_chapter.chapter_id == "ch02_haison_souko":
+		# CP2: 紙芝居演出→暗転→操作説明→自由移動（section 0のみ）
+		if cur_chapter.chapter_id == "ch02_haison_souko" and GameManager.start_section == 0:
 			var cam := player.get_node_or_null("Head/Camera3D")
 			if cam:
 				cam.current = false
@@ -215,6 +224,9 @@ func _ready() -> void:
 			await _show_controls_guide()
 			if cam:
 				cam.current = true
+		# CP2 section 1使用後リセット
+		if cur_chapter.chapter_id == "ch02_haison_souko" and GameManager.start_section == 1:
+			GameManager.start_section = 0
 		# プレイアブル: 即操作可能
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		player.input_disabled = false
@@ -1266,47 +1278,21 @@ func _show_ghost_alert() -> void:
 func _run_escape_nav_sequence() -> void:
 	# 自動探索モード中なら自動歩行を停止（みゆきイベントに完全移行）
 	_auto_explore_active = false
-	var voice_dir : String = "res://assets/audio/voice/ch02_souko/"
 	GameManager.ghost_grace = true
 
-	# みゆきに気づく
-	SoundManager.play_voice(voice_dir + "v109.wav")
-	hud.show_monologue("……急に空気が冷たくなった……？")
-	await get_tree().create_timer(2.5).timeout
-
-	if is_instance_valid(hud):
-		SoundManager.play_voice(voice_dir + "v110.wav")
-		hud.show_monologue("え……みゆき、ちゃん……？　なんで動いて……")
+	# テキストモノローグのみ（ボイスはCP2-3紙芝居で再生するため重複回避）
+	hud.show_monologue("……！？　何か来る……！！")
 	await get_tree().create_timer(3.0).timeout
 
 	if is_instance_valid(hud):
-		SoundManager.play_voice(voice_dir + "v111.wav")
-		hud.show_monologue("こっち見てる……！　うそでしょ、来ないで！！")
-	await get_tree().create_timer(3.5).timeout
-	if is_instance_valid(hud):
-		hud.hide_monologue()
-
-	await get_tree().create_timer(2.0).timeout
-
-	# セリフ: 入口から逃げようとする
-	if is_instance_valid(hud):
-		SoundManager.play_voice(voice_dir + "v112.wav")
-		hud.show_monologue("入口！　入口から逃げないと……！")
+		hud.show_monologue("逃げないと……出口を探さなきゃ……！")
 	await get_tree().create_timer(3.0).timeout
 
-	# セリフ: 入口が塞がっている
-	if is_instance_valid(hud):
-		SoundManager.play_voice(voice_dir + "v113.wav")
-		hud.show_monologue("嘘……入口が塞がってる！？　来た道がない！！")
-	await get_tree().create_timer(4.0).timeout
-
-	# 出口ナビ矢印（緑）→ 最初から出口を指して一度だけ表示
+	# 出口ナビ矢印（緑）
 	var exit_pos : Vector3 = GameManager.current_chapter.exit_position if GameManager.current_chapter else Vector3(23, 1.5, 15)
 	if is_instance_valid(hud):
-		SoundManager.play_voice(voice_dir + "v114.wav")
-		hud.show_monologue("別の出口を探さなきゃ……！！")
 		hud.start_nav(exit_pos, "EXIT", Color(0.2, 0.85, 0.3), player)
-	await get_tree().create_timer(2.5).timeout
+	await get_tree().create_timer(2.0).timeout
 
 	if is_instance_valid(hud):
 		hud.hide_monologue()
@@ -2238,9 +2224,9 @@ func _process(_delta: float) -> void:
 		if is_instance_valid(_vhs_rect) and _vhs_rect.material:
 			var mat : ShaderMaterial = _vhs_rect.material as ShaderMaterial
 			if mat:
-				mat.set_shader_parameter("noise_intensity", 0.08 + proximity * 0.25)
-				mat.set_shader_parameter("chroma_boost", proximity * 0.5)
-				mat.set_shader_parameter("distortion", proximity * 0.3)
+				mat.set_shader_parameter("noise_intensity", 0.08 + proximity * 0.12)
+				mat.set_shader_parameter("chroma_boost", proximity * 0.035)
+				mat.set_shader_parameter("distortion", proximity * 0.06)
 		# ミニマップホラー化: ゴースト接近でノイズ→消失
 		var minimap_layer := get_node_or_null("MinimapLayer")
 		if minimap_layer and minimap_layer.get_child_count() > 0:
