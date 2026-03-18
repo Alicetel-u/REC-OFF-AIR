@@ -34,6 +34,7 @@ const BUILDING_COLOR := Color(0.2, 0.35, 0.2, 0.45)
 
 var _player: Node3D
 var _exit_pos: Vector3
+var _exit_visible: bool = true
 var _item_positions: Array
 var _ghost_nodes: Array
 var _map_min: Vector2
@@ -64,6 +65,14 @@ func setup(p_player: Node3D, p_exit: Vector3, p_items: Array,
 	size = Vector2(MAP_SIZE, MAP_SIZE)
 	_noise_seed = randi()
 	
+func hide_exit() -> void:
+	_exit_visible = false
+
+func show_exit(pos: Vector3 = Vector3.ZERO) -> void:
+	if pos != Vector3.ZERO:
+		_exit_pos = pos
+	_exit_visible = true
+
 func update_items(p_items: Array) -> void:
 	_item_positions = p_items
 	queue_redraw()
@@ -223,12 +232,13 @@ func _draw() -> void:
 		draw_circle(_footprints[i], 1.5, Color(FOOTPRINT_COLOR.r, FOOTPRINT_COLOR.g, FOOTPRINT_COLOR.b, alpha))
 
 	# ── 出口（パルス□） ──
-	var exit_p : Vector2 = _world_to_map(_exit_pos)
-	var exit_pulse : float = 0.5 + 0.5 * sin(_time * 3.0)
-	draw_circle(exit_p, 12.0 + exit_pulse * 4.0, EXIT_GLOW)
-	draw_rect(Rect2(exit_p - Vector2(6, 6), Vector2(12, 12)), EXIT_COLOR, false, 2.0)
-	draw_circle(exit_p, 2.0, EXIT_COLOR)
-	_draw_label(exit_p + Vector2(0, -14), "EXIT", EXIT_COLOR)
+	if _exit_visible:
+		var exit_p : Vector2 = _world_to_map(_exit_pos)
+		var exit_pulse : float = 0.5 + 0.5 * sin(_time * 3.0)
+		draw_circle(exit_p, 12.0 + exit_pulse * 4.0, EXIT_GLOW)
+		draw_rect(Rect2(exit_p - Vector2(6, 6), Vector2(12, 12)), EXIT_COLOR, false, 2.0)
+		draw_circle(exit_p, 2.0, EXIT_COLOR)
+		_draw_label(exit_p + Vector2(0, -14), "EXIT", EXIT_COLOR)
 
 	# ── 未取得アイテム（パルス◇） ──
 	# _item_positions は Vector3 の配列 or Node3D の配列

@@ -577,8 +577,8 @@ func _apply_environment(chapter: Resource) -> void:
 		_add_bulb_lights()
 		_add_cp1_debris()
 
-	# ── VHS オーバーレイ ──
-	if chapter.vhs_overlay:
+	# ── VHS オーバーレイ（CP2 section 1 はクリーン状態で開始） ──
+	if chapter.vhs_overlay and not (chapter.chapter_id == "ch02_haison_souko" and GameManager.start_section == 1):
 		_setup_vhs_overlay()
 	else:
 		_remove_vhs_overlay()
@@ -1088,7 +1088,12 @@ func _on_item_for_ghost_awaken(count: int, total: int) -> void:
 		return
 	_ghosts_awakened = true
 	GameManager.ghost_grace = true
-	# ゴーストをプレイヤーから離れた位置にテレポートしてから有効化
+	# CP2: ホラー遭遇イベントを起動（ゴーストはイベント内で有効化）
+	var cur_ch := GameManager.current_chapter
+	if cur_ch and cur_ch.chapter_id == "ch02_haison_souko":
+		_run_cp2_horror_encounter()
+		return
+	# CP2以外: 従来のフェードイン有効化
 	var player_pos := player.global_position
 	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
 		var gpos : Vector3 = ghost.global_position
@@ -1103,7 +1108,6 @@ func _on_item_for_ghost_awaken(count: int, total: int) -> void:
 		ghost.visible = true
 		ghost.process_mode = Node.PROCESS_MODE_INHERIT
 		_fade_in_ghost(ghost)
-	# ghost_grace はみゆき遭遇演出（_run_escape_nav_sequence）終了後に解除
 
 
 func _fade_in_ghost(ghost: Node) -> void:
@@ -1158,6 +1162,10 @@ var _ghost_alert_shown := false
 func _on_ghost_spotted() -> void:
 	hud.trigger_chat_event("ghost_spotted")
 	ScenarioManager.trigger("ghost_spotted")
+	# CP2: ホラー遭遇イベントで直接管理するため、ghost_spotted経由の警告はスキップ
+	var cur_ch := GameManager.current_chapter
+	if cur_ch and cur_ch.chapter_id == "ch02_haison_souko":
+		return
 	if not _ghost_alert_shown:
 		_ghost_alert_shown = true
 		_show_ghost_alert()
@@ -1276,28 +1284,234 @@ func _show_ghost_alert() -> void:
 
 
 func _run_escape_nav_sequence() -> void:
-	# 自動探索モード中なら自動歩行を停止（みゆきイベントに完全移行）
 	_auto_explore_active = false
 	GameManager.ghost_grace = true
 
-	# テキストモノローグのみ（ボイスはCP2-3紙芝居で再生するため重複回避）
-	hud.show_monologue("……！？　何か来る……！！")
-	await get_tree().create_timer(3.0).timeout
+	# ゴーストを有効化（追跡開始）
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		ghost.process_mode = Node.PROCESS_MODE_INHERIT
 
-	if is_instance_valid(hud):
-		hud.show_monologue("逃げないと……出口を探さなきゃ……！")
-	await get_tree().create_timer(3.0).timeout
+	# プレイヤー操作可能に
+	player.input_disabled = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
-	# 出口ナビ矢印（緑）
-	var exit_pos : Vector3 = GameManager.current_chapter.exit_position if GameManager.current_chapter else Vector3(23, 1.5, 15)
+	# ── ナビ矢印を入口方向に設定（ミニマップも入口のまま）──
+	var entrance_pos : Vector3 = GameManager.current_chapter.player_spawn if GameManager.current_chapter else Vector3(0, 1, 15)
 	if is_instance_valid(hud):
-		hud.start_nav(exit_pos, "EXIT", Color(0.2, 0.85, 0.3), player)
-	await get_tree().create_timer(2.0).timeout
+		hud.show_monologue("入口！　入口から逃げないと……！")
+		hud.start_nav(entrance_pos, "入口", Color(0.2, 0.85, 0.3), player)
+	await get_tree().create_timer(3.0).timeout
+	if not is_inside_tree():
+		return
 
 	if is_instance_valid(hud):
 		hud.hide_monologue()
-	await get_tree().create_timer(3.0).timeout
+
+	# ── grace解除（ゴーストに捕まるようになる）──
 	GameManager.ghost_grace = false
+
+	# ── 入口到達を監視（プレイヤーが入口付近に来たら「開かない」イベント）──
+	await _wait_for_entrance_arrival(entrance_pos)
+	if not is_inside_tree():
+		return
+
+	# ── 入口が開かない！ ──
+	player.input_disabled = true
+	SoundManager.play_sfx_file("door/doorClose_4.ogg")
+	player.start_camera_shake(0.5, 0.6)
+	if is_instance_valid(hud):
+		hud.show_monologue("嘘……入口が塞がってる！？　来た道がない！！")
+	_add_chat_safe("扉開かないの！？", "視聴者A")
+	await get_tree().create_timer(0.5).timeout
+	_add_chat_safe("終わった……", "名無しさん")
+	await get_tree().create_timer(2.5).timeout
+	if not is_inside_tree():
+		return
+
+	# ── ナビ矢印ぐるぐる + ミニマップ出口消去 ──
+	if is_instance_valid(hud):
+		hud.start_spinning()
+		hud.show_monologue("どこから出れば……！？")
+	var minimap_layer := get_node_or_null("MinimapLayer")
+	if minimap_layer and minimap_layer.get_child_count() > 0:
+		var minimap = minimap_layer.get_child(0)
+		if minimap.has_method("hide_exit"):
+			minimap.hide_exit()
+	_add_chat_safe("別の出口探して！", "ゆきんこ77")
+	await get_tree().create_timer(2.0).timeout
+	if not is_inside_tree():
+		return
+
+	if is_instance_valid(hud):
+		hud.hide_monologue()
+	player.input_disabled = false
+
+	# ── 60秒後に真の出口を表示（自力で見つければ待たなくてOK）──
+	_schedule_real_exit_reveal(60.0)
+
+
+func _wait_for_entrance_arrival(entrance_pos: Vector3) -> void:
+	## プレイヤーが入口付近(5m以内)に来るまで待機
+	while is_inside_tree() and is_instance_valid(player):
+		var dist := player.global_position.distance_to(entrance_pos)
+		if dist < 5.0:
+			break
+		await get_tree().physics_frame
+
+
+func _schedule_real_exit_reveal(delay: float) -> void:
+	## delay秒後に真の出口をナビ矢印+ミニマップに表示
+	await get_tree().create_timer(delay).timeout
+	if not is_inside_tree():
+		return
+	var exit_pos : Vector3 = GameManager.current_chapter.exit_position if GameManager.current_chapter else Vector3(23, 1.5, 15)
+	if is_instance_valid(hud):
+		hud.stop_spinning()
+		hud.retarget_nav(exit_pos, "EXIT")
+		if is_instance_valid(hud._nav_poly):
+			hud._nav_poly.color = Color(0.2, 0.85, 0.3)
+		if is_instance_valid(hud._nav_title_lbl):
+			hud._nav_title_lbl.add_theme_color_override("font_color", Color(0.2, 0.85, 0.3))
+		hud.show_monologue("……あっちに何か見える……出口か！？")
+	_add_chat_safe("あっちじゃない！？", "ゆきんこ77")
+	var minimap_layer := get_node_or_null("MinimapLayer")
+	if minimap_layer and minimap_layer.get_child_count() > 0:
+		var minimap = minimap_layer.get_child(0)
+		if minimap.has_method("show_exit"):
+			minimap.show_exit(exit_pos)
+	await get_tree().create_timer(4.0).timeout
+	if is_instance_valid(hud):
+		hud.hide_monologue()
+
+
+## ════════════════════════════════════════════════════════════════
+## CP2 ホラー遭遇イベント（VHS取得→暗闇→懐中電灯カチカチ→みゆき登場→逃げろ）
+## ════════════════════════════════════════════════════════════════
+
+func _run_cp2_horror_encounter() -> void:
+	_auto_explore_active = false
+	player.input_disabled = true
+	var voice_dir : String = "res://assets/audio/voice/ch02_souko/"
+
+	# ── 他の演出を停止（干渉防止） ──
+	SoundManager.stop_voice()
+	SoundManager.stop_chat_voice()
+	if is_instance_valid(hud):
+		hud.hide_monologue()
+
+	# ── 1. ミニマップ出口マーカーを消す ──
+	var minimap_layer := get_node_or_null("MinimapLayer")
+	if minimap_layer and minimap_layer.get_child_count() > 0:
+		var minimap = minimap_layer.get_child(0)
+		if minimap.has_method("hide_exit"):
+			minimap.hide_exit()
+
+	# ── 2. 照明を暗くする ──
+	_dim_all_lights(0.3, 2.0)
+	await get_tree().create_timer(2.0).timeout
+	if not is_inside_tree():
+		return
+
+	# ── 3. 懐中電灯が強制的に消える ──
+	SoundManager.play_sfx_file("metal/impactMetal_heavy_003.ogg")
+	player.flashlight_on = false
+	player.flashlight.visible = false
+	player.start_camera_shake(0.3, 0.4)
+	await get_tree().create_timer(0.5).timeout
+	if not is_inside_tree():
+		return
+
+	# ── 4. 完全暗闇 + ボイス ──
+	SoundManager.play_voice(voice_dir + "v115.wav")
+	if is_instance_valid(hud):
+		hud.show_monologue("え……懐中電灯が……つかない！")
+	_add_chat_safe("映像真っ暗なんだけど", "視聴者A")
+	await get_tree().create_timer(1.0).timeout
+	_add_chat_safe("こわ", "名無しさん")
+	await get_tree().create_timer(2.0).timeout
+	if not is_inside_tree():
+		return
+
+	# ── 5. 懐中電灯カチカチ（3回失敗）+ ボイス ──
+	SoundManager.play_voice(voice_dir + "v116.wav")
+	if is_instance_valid(hud):
+		hud.show_monologue("お願い、ついて……！")
+	for i in range(3):
+		if not is_inside_tree():
+			return
+		SoundManager.play_sfx_file("metal/metalClick.ogg", -6.0)
+		await get_tree().create_timer(0.8).timeout
+	_add_chat_safe("やばいやばい", "ゆきんこ77")
+	await get_tree().create_timer(1.0).timeout
+	if not is_inside_tree():
+		return
+
+	# ── 6. みゆきをプレイヤー正面3mにテレポート（まだ暗闇） ──
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		var forward : Vector3 = -player.transform.basis.z.normalized()
+		forward.y = 0
+		if forward.length() < 0.01:
+			forward = Vector3(0, 0, -1)
+		forward = forward.normalized()
+		ghost.global_position = player.global_position + forward * 3.0
+		ghost.global_position.y = player.global_position.y - 0.5  # 足元から立つ
+		# プレイヤーの方を向かせる
+		var look_target := player.global_position
+		look_target.y = ghost.global_position.y
+		ghost.look_at(look_target, Vector3.UP)
+		ghost.rotation.y += PI * 0.5  # Ghost.gdの向き補正
+		# モーション固定: NORMAL（不気味に直立）
+		ghost.forced_motion = Ghost.MotionPattern.NORMAL
+		ghost.forced_state = Ghost.GhostState.CAUGHT
+		ghost.process_mode = Node.PROCESS_MODE_DISABLED
+		ghost.visible = true
+	if is_instance_valid(hud):
+		hud.hide_monologue()
+	await get_tree().create_timer(0.3).timeout
+	if not is_inside_tree():
+		return
+
+	# ── 7. 点灯 → みゆきが目の前 ──
+	SoundManager.play_sfx_file("metal/metalClick.ogg", -2.0)
+	await get_tree().create_timer(0.15).timeout
+	player.flashlight_on = true
+	player.flashlight.visible = true
+
+	# 1.0秒の静寂（みゆきが懐中電灯に照らされて見える — 最も怖い瞬間）
+	await get_tree().create_timer(1.0).timeout
+	if not is_inside_tree():
+		return
+
+	# ── 8. 悲鳴 + 衝撃 ──
+	SoundManager.play_voice(voice_dir + "v117.wav")
+	SoundManager.play_sfx_file("metal/impactMetal_heavy_000.ogg")
+	SoundManager.play_monster_growl(0.0)
+	player.start_camera_shake(1.0, 0.8)
+	if is_instance_valid(hud):
+		hud._do_scare_flash(Color(0.8, 0.0, 0.0))
+	_add_chat_safe("うわああああ！！！！", "視聴者A")
+	await get_tree().create_timer(0.3).timeout
+	_add_chat_safe("逃げてーーー！！！", "ゆきんこ77")
+	_add_chat_safe("wwwwwwww配信事故", "配信民99")
+	await get_tree().create_timer(0.5).timeout
+	if not is_inside_tree():
+		return
+
+	# ── 9. みゆきのモーション固定を解除（通常AI用） ──
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		ghost.forced_motion = -1
+		ghost.forced_state = -1
+
+	# ── 10.「逃 げ ろ」演出 ──
+	_ghost_alert_shown = true
+	_show_ghost_alert()
+	# _show_ghost_alert 完了後 → _run_escape_nav_sequence
+	# → ゴーストAI有効化, 操作可能, ナビ矢印, ghost_grace解除
+
+
+func _add_chat_safe(msg: String, user: String) -> void:
+	if is_instance_valid(hud):
+		hud._add_chat(msg, user)
 
 
 func _on_ghost_lost() -> void:
@@ -1310,18 +1524,11 @@ func _on_item_collected_warehouse(count: int, total: int) -> void:
 		return
 	# ポラロイド演出を先に完了させてからセリフを流す
 	await _show_item_acquired(count, total)
-	# 最初の1個だけセリフ演出を流す（ポラロイド後）
-	if count == 1:
-		_run_chapter_opening_background("ch02_haison_souko_found")
-	# VHS回収後: 照明を暗くする（「何かが変わった」感）
-	_dim_all_lights(0.5, 3.0)
-
-	# 全VHS回収で脱出演出
-	if count >= total and total > 0:
-		hud.show_monologue("全部見つけた……！ ここを出ないと！")
-		await get_tree().create_timer(3.0).timeout
-		if is_instance_valid(hud):
-			hud.hide_monologue()
+	# VHS全回収時はホラー遭遇イベントに移行するためfound演出をスキップ
+	if count >= total:
+		return
+	# まだ残りがある場合のみfound演出
+	_run_chapter_opening_background("ch02_haison_souko_found")
 
 
 ## ステージ内の全ライトを暗くする（恐怖演出用）
@@ -1669,7 +1876,9 @@ func _setup_minimap_delayed(map_min: Vector2, map_max: Vector2) -> void:
 	minimap.position = Vector2(686, 344)
 	minimap.modulate.a = 0.0
 	canvas.add_child(minimap)
-	minimap.setup(player, chapter.exit_position, items, ghosts, map_min, map_max)
+	# CP2: ミニマップの出口をスタート地点に設定（VHS取得時に消す）
+	var minimap_exit : Vector3 = chapter.player_spawn if chapter.chapter_id == "ch02_haison_souko" else chapter.exit_position
+	minimap.setup(player, minimap_exit, items, ghosts, map_min, map_max)
 	if chapter.chapter_id == "ch02_haison_souko":
 		minimap.add_warehouse_walls()
 	# フェードイン
@@ -2224,9 +2433,9 @@ func _process(_delta: float) -> void:
 		if is_instance_valid(_vhs_rect) and _vhs_rect.material:
 			var mat : ShaderMaterial = _vhs_rect.material as ShaderMaterial
 			if mat:
-				mat.set_shader_parameter("noise_intensity", 0.08 + proximity * 0.12)
-				mat.set_shader_parameter("chroma_boost", proximity * 0.035)
-				mat.set_shader_parameter("distortion", proximity * 0.06)
+				mat.set_shader_parameter("noise_intensity", 0.06 + proximity * 0.04)
+				mat.set_shader_parameter("chroma_boost", proximity * 0.008)
+				mat.set_shader_parameter("distortion", proximity * 0.012)
 		# ミニマップホラー化: ゴースト接近でノイズ→消失
 		var minimap_layer := get_node_or_null("MinimapLayer")
 		if minimap_layer and minimap_layer.get_child_count() > 0:

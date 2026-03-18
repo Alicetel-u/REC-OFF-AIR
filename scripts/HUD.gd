@@ -70,6 +70,8 @@ var _nav_title_lbl  : Label      = null
 var _nav_dist_lbl   : Label      = null
 var _nav_target     : Vector3    = Vector3.ZERO
 var _nav_active     : bool       = false
+var _nav_spinning   : bool       = false  # ぐるぐるモード（出口不明パニック）
+var _nav_spin_t     : float      = 0.0
 var _nav_color      : Color      = Color(0.2, 0.85, 0.3)
 signal nav_reached
 
@@ -614,6 +616,15 @@ func _build_nav_arrow() -> void:
 
 
 func _update_nav_arrow() -> void:
+	# ぐるぐるモード: ランダム方向に不規則回転
+	if _nav_spinning:
+		_nav_spin_t += get_process_delta_time()
+		if is_instance_valid(_nav_poly):
+			_nav_poly.rotation = _nav_spin_t * 5.0 + sin(_nav_spin_t * 3.7) * 2.0
+		if is_instance_valid(_nav_dist_lbl):
+			_nav_dist_lbl.text = "??m"
+		return
+
 	var player_pos := _player_ref.global_position
 	var to_target := _nav_target - player_pos
 	to_target.y = 0.0
@@ -630,6 +641,20 @@ func _update_nav_arrow() -> void:
 
 	if is_instance_valid(_nav_poly):
 		_nav_poly.rotation = PI - rel_angle
+
+
+func start_spinning() -> void:
+	_nav_spinning = true
+	_nav_spin_t = 0.0
+	if is_instance_valid(_nav_title_lbl):
+		_nav_title_lbl.text = "???"
+		_nav_title_lbl.add_theme_color_override("font_color", Color(0.9, 0.2, 0.1))
+	if is_instance_valid(_nav_poly):
+		_nav_poly.color = Color(0.9, 0.2, 0.1)
+
+
+func stop_spinning() -> void:
+	_nav_spinning = false
 
 
 # ════════════════════════════════════════════════════════════════
