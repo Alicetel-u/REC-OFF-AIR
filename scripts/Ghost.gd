@@ -46,9 +46,9 @@ const CHASE_BURST  : float = 5.5
 const CHASE_STRAFE : float = 3.5
 const GRAVITY      : float = 9.8
 const SIGHT_RANGE  : float = 20.0
-const PROX_DETECT  : float = 5.5  # 近接検知を広めに
-const CATCH_DIST   : float = 1.8  # 捕獲範囲少し広く
-const ALERT_TIME   : float = 5.0  # 警戒→見失いが速い（緊張維持）
+const PROX_DETECT  : float = 6.0
+const CATCH_DIST   : float = 2.0
+const ALERT_TIME   : float = 4.0
 
 # 状態別ビジュアルパラメータ
 const STATE_VISUALS := {

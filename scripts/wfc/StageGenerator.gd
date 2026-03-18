@@ -94,11 +94,11 @@ func _create_materials() -> void:
 	mat_cabinet  = _make_mat(TEX_CABINET2, Color(0.30, 0.35, 0.33), 0.62, Vector3(1, 1, 1))
 	mat_cabinet.metallic = 0.35
 	mat_cargo    = _make_mat(TEX_CARGO,    Color(0.55, 0.42, 0.28), 0.85, Vector3(2, 2, 2))
-	mat_barrel   = _make_mat(TEX_BARREL,   Color(0.38, 0.30, 0.20), 0.80, Vector3(2, 2, 2))
+	mat_barrel   = _make_mat(TEX_BARREL,   Color(0.35, 0.28, 0.18), 0.82, Vector3(2, 2, 2))
 	mat_wood     = _make_mat(TEX_WOOD,     Color(0.38, 0.28, 0.16), 0.90, Vector3(1, 1, 1))
 	mat_pipes    = _make_mat(TEX_PIPES,    Color(0.50, 0.50, 0.52), 0.60, Vector3(3, 3, 3))
 	mat_pipes.metallic = 0.4
-	mat_fabric   = _make_mat(null, Color(0.22, 0.18, 0.14), 0.95, Vector3(1, 1, 1))  # 汚れた布
+	mat_fabric   = _make_mat(null, Color(0.20, 0.16, 0.12), 0.95, Vector3(1, 1, 1))
 	mat_blood    = _make_mat(null, Color(0.20, 0.02, 0.01), 0.94, Vector3(1, 1, 1))  # より暗い乾いた血
 	mat_crack    = _make_mat(null, Color(0.06, 0.05, 0.03, 0.8), 0.95, Vector3(1, 1, 1))
 	mat_crack.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -112,7 +112,7 @@ func _create_materials() -> void:
 
 	# ── 廃村 ──
 	mat_h_ground = _make_mat(null, Color(0.16, 0.13, 0.08), 0.96, Vector3(10, 10, 10))  # 夜の暗い地面
-	mat_h_wood   = _make_mat(TEX_WOOD, Color(0.35, 0.25, 0.15), 0.93, Vector3(3, 3, 3))
+	mat_h_wood   = _make_mat(TEX_WOOD, Color(0.36, 0.24, 0.16), 0.93, Vector3(3, 3, 3))
 	mat_h_thatch = _make_mat(null, Color(0.38, 0.30, 0.20), 0.95, Vector3(4, 4, 4))  # 暖かい藁色
 	mat_h_stone  = _make_mat(TEX_CONCRETE, Color(0.40, 0.36, 0.30), 0.94, Vector3(5, 5, 5))
 	mat_h_moss   = _make_mat(null, Color(0.16, 0.28, 0.10), 0.98, Vector3(6, 6, 6))  # 鮮やかな苔

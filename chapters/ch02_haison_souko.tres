@@ -60,7 +60,7 @@ script = ExtResource("3")
 position = Vector3(-20, 3.5, 12)
 color = Color(0.6, 0.35, 0.12, 1)
 energy = 2.0
-omni_range = 14.0
+omni_range = 16.0
 
 ; ── チャプターデータ本体 ──
 [resource]
