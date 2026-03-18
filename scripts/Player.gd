@@ -4,7 +4,7 @@ class_name Player
 const WALK_SPEED     := 3.5   # ホラー向け重い足取り
 const DASH_SPEED     := 6.5   # 走りも少し遅め
 const GRAVITY        := 9.8
-const MOUSE_SENS     := 0.002
+const MOUSE_SENS     := 0.0018  # やや鈍く（カメラの重み感）
 const BOB_FREQ       := 2.0   # やや遅め（重い足取り）
 const BOB_AMP        := 0.08  # やや大きめ（不安定感）
 const BATTERY_DRAIN  := 0.045   # 懐中電灯ON時の消耗 /sec

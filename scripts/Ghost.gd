@@ -52,8 +52,8 @@ const ALERT_TIME   : float = 5.0  # 警戒→見失いが速い（緊張維持�
 
 # 状態別ビジュアルパラメータ
 const STATE_VISUALS := {
-	GhostState.PATROL: {"bob_speed": 2.0, "bob_amp": 0.06, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.0},
-	GhostState.ALERT:  {"bob_speed": 2.8, "bob_amp": 0.08, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.4},
+	GhostState.PATROL: {"bob_speed": 2.0, "bob_amp": 0.07, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.0},
+	GhostState.ALERT:  {"bob_speed": 3.2, "bob_amp": 0.08, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.4},
 	GhostState.CHASE:  {"bob_speed": 5.0, "bob_amp": 0.10, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 	GhostState.CAUGHT: {"bob_speed": 0.5, "bob_amp": 0.02, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 }
@@ -157,7 +157,7 @@ func _init_visuals() -> void:
 	_ghost_body = get_node_or_null("GhostBody")
 	_ghost_light = get_node_or_null("GhostLight") as OmniLight3D
 	_bob_phase = randf() * TAU
-	_flicker_next = randf_range(4.0, 12.0)
+	_flicker_next = randf_range(2.0, 8.0)
 
 	if not _ghost_body:
 		return
