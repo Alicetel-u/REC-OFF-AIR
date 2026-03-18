@@ -53,8 +53,8 @@ const ALERT_TIME   : float = 5.0  # 警戒→見失いが速い（緊張維持�
 # 状態別ビジュアルパラメータ
 const STATE_VISUALS := {
 	GhostState.PATROL: {"bob_speed": 1.8, "bob_amp": 0.07, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.0},
-	GhostState.ALERT:  {"bob_speed": 3.2, "bob_amp": 0.09, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.4},
-	GhostState.CHASE:  {"bob_speed": 5.0, "bob_amp": 0.10, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
+	GhostState.ALERT:  {"bob_speed": 3.5, "bob_amp": 0.09, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.4},
+	GhostState.CHASE:  {"bob_speed": 5.0, "bob_amp": 0.12, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 	GhostState.CAUGHT: {"bob_speed": 0.5, "bob_amp": 0.04, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 }
 
@@ -634,7 +634,7 @@ func _update_visuals(delta: float) -> void:
 		_fake_rush_timer += delta
 		if _fake_rush_timer >= _fake_rush_next:
 			_fake_rush_timer = 0.0
-			_fake_rush_next = randf_range(6.0, 14.0)
+			_fake_rush_next = randf_range(5.0, 10.0)
 			_do_fake_rush()
 
 

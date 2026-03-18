@@ -88,7 +88,7 @@ func _create_materials() -> void:
 	# ── インダストリアル ──
 	mat_floor    = _make_mat(TEX_CONCRETE, Color(0.25, 0.23, 0.21), 0.94, Vector3(8, 8, 8))  # 暗い床
 	mat_wall     = _make_mat(TEX_WALL,     Color(0.42, 0.38, 0.34), 0.90, Vector3(4, 3, 4))  # 暗い壁
-	mat_ceiling  = _make_mat(TEX_CONCRETE, Color(0.30, 0.28, 0.26), 0.92, Vector3(4, 4, 4))  # 暗い天井
+	mat_ceiling  = _make_mat(TEX_CONCRETE, Color(0.30, 0.28, 0.26), 0.92, Vector3(5, 5, 5))  # 暗い天井
 	mat_metal    = _make_mat(TEX_CABINET,  Color(0.42, 0.45, 0.48), 0.60, Vector3(1, 1, 1))
 	mat_metal.metallic = 0.5
 	mat_cabinet  = _make_mat(TEX_CABINET2, Color(0.35, 0.40, 0.38), 0.60, Vector3(1, 1, 1))
@@ -102,7 +102,7 @@ func _create_materials() -> void:
 	mat_blood    = _make_mat(null, Color(0.20, 0.02, 0.01), 0.94, Vector3(1, 1, 1))  # より暗い乾いた血
 	mat_crack    = _make_mat(null, Color(0.08, 0.06, 0.04, 0.8), 0.95, Vector3(1, 1, 1))
 	mat_crack.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat_cobweb   = _make_mat(null, Color(0.80, 0.80, 0.78, 0.45), 0.95, Vector3(1, 1, 1))  # 見えやすく
+	mat_cobweb   = _make_mat(null, Color(0.82, 0.80, 0.72, 0.45), 0.95, Vector3(1, 1, 1))  # やや黄色く
 	mat_cobweb.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat_baseboard = _make_mat(null, Color(0.20, 0.22, 0.24), 0.70, Vector3(1, 1, 1))
 	mat_baseboard.metallic = 0.3
@@ -115,7 +115,7 @@ func _create_materials() -> void:
 	mat_h_thatch = _make_mat(null, Color(0.36, 0.28, 0.18), 0.95, Vector3(3, 3, 3))  # 暖かい藁色
 	mat_h_stone  = _make_mat(TEX_CONCRETE, Color(0.42, 0.38, 0.32), 0.96, Vector3(5, 5, 5))
 	mat_h_moss   = _make_mat(null, Color(0.18, 0.25, 0.10), 0.98, Vector3(6, 6, 6))  # 鮮やかな苔
-	mat_h_blood  = _make_mat(null, Color(0.30, 0.03, 0.01), 0.95, Vector3(1, 1, 1))
+	mat_h_blood  = _make_mat(null, Color(0.25, 0.04, 0.02), 0.95, Vector3(1, 1, 1))
 
 
 # プロシージャル Normal Map（NoiseTexture2D）— 全マテリアル共通で凹凸感を付加
@@ -1219,7 +1219,7 @@ func _create_room_light(parent: Node3D, room_name: String, cfg: Dictionary) -> v
 	# 天井ランプメッシュ — Bloom対応でemission強化
 	var lamp_mesh := CSGBox3D.new()
 	lamp_mesh.name = "LampFixture_%s" % room_name
-	lamp_mesh.size = Vector3(1.2, 0.08, 0.15)
+	lamp_mesh.size = Vector3(1.5, 0.08, 0.18)  # 少し大きく目立つ
 	lamp_mesh.position = Vector3(0, _ceil_h - 0.04, 0)
 	var lamp_mat := StandardMaterial3D.new()
 	lamp_mat.albedo_color = cfg.color
