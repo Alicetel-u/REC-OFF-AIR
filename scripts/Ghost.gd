@@ -52,7 +52,7 @@ const ALERT_TIME   : float = 5.0  # 警戒→見失いが速い（緊張維持�
 
 # 状態別ビジュアルパラメータ
 const STATE_VISUALS := {
-	GhostState.PATROL: {"bob_speed": 2.0, "bob_amp": 0.07, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.0},
+	GhostState.PATROL: {"bob_speed": 1.8, "bob_amp": 0.07, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.0},
 	GhostState.ALERT:  {"bob_speed": 3.2, "bob_amp": 0.08, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.4},
 	GhostState.CHASE:  {"bob_speed": 5.0, "bob_amp": 0.10, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 	GhostState.CAUGHT: {"bob_speed": 0.5, "bob_amp": 0.04, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
@@ -111,7 +111,7 @@ var _levitate_h     : float = 0.0  # LEVITATEパターン用の蓄積高さ
 var _growl_interval : float = 5.0
 # ── フェイクラッシュ演出用 ──
 var _fake_rush_timer : float = 0.0
-var _fake_rush_next  : float = 8.0
+var _fake_rush_next  : float = 6.0
 var _fake_rushing     : bool  = false
 # ── 不規則追跡用 ──
 var _erratic_timer  : float = 0.0   # 次の行動切替までのタイマー
@@ -382,7 +382,7 @@ func _do_chase(delta: float) -> void:
 	_erratic_timer -= delta
 	if _erratic_timer <= 0.0:
 		# 新しいブレパターンを生成
-		_erratic_timer = randf_range(0.08, 0.3)
+		_erratic_timer = randf_range(0.05, 0.25)
 		var roll := randf()
 		if roll < 0.25:  # 急停止の確率UP（不気味さ）
 			# 急停止（ピタッと止まる不気味さ）
