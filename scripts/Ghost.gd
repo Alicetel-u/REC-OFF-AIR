@@ -43,9 +43,9 @@ const PATROL_SPEED : float = 0.7
 const ALERT_SPEED  : float = 1.2
 const CHASE_SPEED  : float = 1.9
 const CHASE_BURST  : float = 5.5
-const CHASE_STRAFE : float = 3.0   # 横移動の速さ
+const CHASE_STRAFE : float = 3.5
 const GRAVITY      : float = 9.8
-const SIGHT_RANGE  : float = 22.0  # 視界狭め（接近されやすい）
+const SIGHT_RANGE  : float = 20.0
 const PROX_DETECT  : float = 5.5  # 近接検知を広めに
 const CATCH_DIST   : float = 1.8  # 捕獲範囲少し広く
 const ALERT_TIME   : float = 5.0  # 警戒→見失いが速い（緊張維持）
@@ -55,7 +55,7 @@ const STATE_VISUALS := {
 	GhostState.PATROL: {"bob_speed": 1.6, "bob_amp": 0.08, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.0},
 	GhostState.ALERT:  {"bob_speed": 3.5, "bob_amp": 0.10, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.4},
 	GhostState.CHASE:  {"bob_speed": 5.5, "bob_amp": 0.14, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
-	GhostState.CAUGHT: {"bob_speed": 0.3, "bob_amp": 0.04, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
+	GhostState.CAUGHT: {"bob_speed": 0.2, "bob_amp": 0.04, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 }
 
 # 人型キャラクターモデルのパス（FBX）

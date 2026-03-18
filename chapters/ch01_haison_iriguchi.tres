@@ -8,7 +8,7 @@ script = ExtResource("2")
 position = Vector3(5.2, 4.0, 14.8)
 color = Color(1.0, 0.92, 0.72, 1)
 energy = 6.0
-omni_range = 14.0
+omni_range = 16.0
 
 [sub_resource type="Resource" id="light_gate"]
 script = ExtResource("2")
