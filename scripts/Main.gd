@@ -1295,11 +1295,16 @@ func _run_escape_nav_sequence() -> void:
 	player.input_disabled = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
-	# ── ナビ矢印を入口方向に設定（ミニマップも入口のまま）──
+	# ── ナビ矢印を入口方向に設定 + ミニマップにも入口を表示 ──
 	var entrance_pos : Vector3 = GameManager.current_chapter.player_spawn if GameManager.current_chapter else Vector3(0, 1, 15)
 	if is_instance_valid(hud):
 		hud.show_monologue("入口！　入口から逃げないと……！")
 		hud.start_nav(entrance_pos, "入口", Color(0.2, 0.85, 0.3), player)
+	var minimap_layer := get_node_or_null("MinimapLayer")
+	if minimap_layer and minimap_layer.get_child_count() > 0:
+		var minimap = minimap_layer.get_child(0)
+		if minimap.has_method("show_exit"):
+			minimap.show_exit(entrance_pos)
 	await get_tree().create_timer(3.0).timeout
 	if not is_inside_tree():
 		return
@@ -1315,29 +1320,59 @@ func _run_escape_nav_sequence() -> void:
 	if not is_inside_tree():
 		return
 
-	# ── 入口が開かない！ ──
+	# ── 入口が開かない！（みゆきも停止） ──
+	var voice_dir : String = "res://assets/audio/voice/ch02_souko/"
 	player.input_disabled = true
-	SoundManager.play_sfx_file("door/doorClose_4.ogg")
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		ghost.process_mode = Node.PROCESS_MODE_DISABLED
+
+	# 入口が消えている
+	SoundManager.play_sfx_file("metal/impactMetal_heavy_000.ogg")
 	player.start_camera_shake(0.5, 0.6)
+	SoundManager.play_voice(voice_dir + "v118.wav")
 	if is_instance_valid(hud):
-		hud.show_monologue("嘘……入口が塞がってる！？　来た道がない！！")
-	_add_chat_safe("扉開かないの！？", "視聴者A")
+		hud.show_monologue("え……入口が、ない……？さっきここから入ったのに……壁しかない！！")
+	_add_chat_safe("え？入口消えた！？", "視聴者A")
 	await get_tree().create_timer(0.5).timeout
-	_add_chat_safe("終わった……", "名無しさん")
+	_add_chat_safe("壁になってる……", "ガクブル太郎")
+	await get_tree().create_timer(0.3).timeout
+	_add_chat_safe("閉じ込められた？", "配信民99")
+	await get_tree().create_timer(3.0).timeout
+	if not is_inside_tree():
+		return
+
+	# 懐中電灯が消える
+	SoundManager.play_sfx_file("metal/impactMetal_heavy_003.ogg")
+	player.flashlight_on = false
+	player.flashlight.visible = false
+	player.start_camera_shake(0.3, 0.4)
+	SoundManager.play_voice(voice_dir + "v119.wav")
+	if is_instance_valid(hud):
+		hud.show_monologue("嘘……懐中電灯まで消えた……何も見えない……")
+	_add_chat_safe("真っ暗！！", "視聴者A")
+	await get_tree().create_timer(0.3).timeout
+	_add_chat_safe("映像どこ！？", "ゆきんこ77")
+	await get_tree().create_timer(0.3).timeout
+	_add_chat_safe("ガチでやばい", "深夜組")
+	await get_tree().create_timer(0.3).timeout
+	_add_chat_safe("配信事故だろこれ", "配信民99")
 	await get_tree().create_timer(2.5).timeout
 	if not is_inside_tree():
 		return
 
-	# ── ナビ矢印ぐるぐる + ミニマップ出口消去 ──
+	# 自分を奮い立たせる → ナビぐるぐる + ミニマップ消去
+	SoundManager.play_voice(voice_dir + "v120.wav")
 	if is_instance_valid(hud):
 		hud.start_spinning()
-		hud.show_monologue("どこから出れば……！？")
-	var minimap_layer := get_node_or_null("MinimapLayer")
-	if minimap_layer and minimap_layer.get_child_count() > 0:
-		var minimap = minimap_layer.get_child(0)
-		if minimap.has_method("hide_exit"):
-			minimap.hide_exit()
-	_add_chat_safe("別の出口探して！", "ゆきんこ77")
+		hud.show_monologue("どこかに出口があるはず……落ち着け、落ち着け私……")
+	var ml2 := get_node_or_null("MinimapLayer")
+	if ml2 and ml2.get_child_count() > 0:
+		var mm2 = ml2.get_child(0)
+		if mm2.has_method("hide_exit"):
+			mm2.hide_exit()
+	_add_chat_safe("別の出口探して！", "ホラー好き太郎")
+	await get_tree().create_timer(0.3).timeout
+	_add_chat_safe("壁沿いに歩いて！", "ゆきんこ77")
 	await get_tree().create_timer(2.0).timeout
 	if not is_inside_tree():
 		return
@@ -1345,6 +1380,9 @@ func _run_escape_nav_sequence() -> void:
 	if is_instance_valid(hud):
 		hud.hide_monologue()
 	player.input_disabled = false
+	# みゆき再開
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		ghost.process_mode = Node.PROCESS_MODE_INHERIT
 
 	# ── 60秒後に真の出口を表示（自力で見つければ待たなくてOK）──
 	_schedule_real_exit_reveal(60.0)
@@ -1365,6 +1403,19 @@ func _schedule_real_exit_reveal(delay: float) -> void:
 	if not is_inside_tree():
 		return
 	var exit_pos : Vector3 = GameManager.current_chapter.exit_position if GameManager.current_chapter else Vector3(23, 1.5, 15)
+	var voice_dir2 : String = "res://assets/audio/voice/ch02_souko/"
+
+	# 真の出口にライトを設置（暗闇の中で発見しやすく）
+	var exit_light := OmniLight3D.new()
+	exit_light.position = exit_pos + Vector3(0, 2.0, 0)
+	exit_light.light_color = Color(0.2, 0.9, 0.3)
+	exit_light.light_energy = 0.0
+	exit_light.omni_range = 12.0
+	get_parent().add_child(exit_light) if get_parent() else add_child(exit_light)
+	# ライトをじわっと点灯
+	var tw_light := create_tween()
+	tw_light.tween_property(exit_light, "light_energy", 3.0, 2.0)
+
 	if is_instance_valid(hud):
 		hud.stop_spinning()
 		hud.retarget_nav(exit_pos, "EXIT")
@@ -1372,8 +1423,10 @@ func _schedule_real_exit_reveal(delay: float) -> void:
 			hud._nav_poly.color = Color(0.2, 0.85, 0.3)
 		if is_instance_valid(hud._nav_title_lbl):
 			hud._nav_title_lbl.add_theme_color_override("font_color", Color(0.2, 0.85, 0.3))
-		hud.show_monologue("……あっちに何か見える……出口か！？")
+		SoundManager.play_voice(voice_dir2 + "v121.wav")
+		hud.show_monologue("……あっちに風を感じる……出口か！？")
 	_add_chat_safe("あっちじゃない！？", "ゆきんこ77")
+	_add_chat_safe("行け行け！！", "視聴者A")
 	var minimap_layer := get_node_or_null("MinimapLayer")
 	if minimap_layer and minimap_layer.get_child_count() > 0:
 		var minimap = minimap_layer.get_child(0)
@@ -1460,9 +1513,9 @@ func _run_cp2_horror_encounter() -> void:
 		look_target.y = ghost.global_position.y
 		ghost.look_at(look_target, Vector3.UP)
 		ghost.rotation.y += PI * 0.5  # Ghost.gdの向き補正
-		# モーション固定: NORMAL（不気味に直立）
+		# モーション固定: NORMAL + PATROL（直立・等倍サイズ）
 		ghost.forced_motion = Ghost.MotionPattern.NORMAL
-		ghost.forced_state = Ghost.GhostState.CAUGHT
+		ghost.forced_state = Ghost.GhostState.PATROL
 		ghost.process_mode = Node.PROCESS_MODE_DISABLED
 		ghost.visible = true
 	if is_instance_valid(hud):
@@ -1471,14 +1524,40 @@ func _run_cp2_horror_encounter() -> void:
 	if not is_inside_tree():
 		return
 
-	# ── 7. 点灯 → みゆきが目の前 ──
+	# ── 7. 点灯 → みゆきが目の前（視線ロック） ──
 	SoundManager.play_sfx_file("metal/metalClick.ogg", -2.0)
 	await get_tree().create_timer(0.15).timeout
 	player.flashlight_on = true
 	player.flashlight.visible = true
 
-	# 1.0秒の静寂（みゆきが懐中電灯に照らされて見える — 最も怖い瞬間）
-	await get_tree().create_timer(1.0).timeout
+	# 2.0秒間みゆきをプレイヤーの顔面に張り付かせる（どこを向いても視界を塞ぐ）
+	var _lock_t : float = 0.0
+	# みゆきのスケールを一時的に大きく
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		var body : Node3D = ghost.get_node_or_null("GhostBody")
+		if body:
+			body.scale = Vector3(1.8, 1.8, 1.8)
+	while _lock_t < 2.0 and is_inside_tree() and is_instance_valid(player):
+		var dt : float = get_process_delta_time()
+		_lock_t += dt
+		for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+			if not is_instance_valid(ghost):
+				continue
+			# カメラの正面2.5mに配置
+			var cam_pos : Vector3 = player.head.global_position
+			var cam_forward : Vector3 = -player.head.global_transform.basis.z.normalized()
+			ghost.global_position = cam_pos + cam_forward * 2.5
+			# みゆきの顔をカメラに向ける
+			var look_tgt := cam_pos
+			look_tgt.y = ghost.global_position.y
+			ghost.look_at(look_tgt, Vector3.UP)
+			ghost.rotation.y += PI * 0.5
+		await get_tree().process_frame
+	# スケールを戻す
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		var body : Node3D = ghost.get_node_or_null("GhostBody")
+		if body:
+			body.scale = Vector3.ONE
 	if not is_inside_tree():
 		return
 
@@ -1491,22 +1570,58 @@ func _run_cp2_horror_encounter() -> void:
 		hud._do_scare_flash(Color(0.8, 0.0, 0.0))
 	_add_chat_safe("うわああああ！！！！", "視聴者A")
 	await get_tree().create_timer(0.3).timeout
-	_add_chat_safe("逃げてーーー！！！", "ゆきんこ77")
-	_add_chat_safe("wwwwwwww配信事故", "配信民99")
+	_add_chat_safe("なにあれ！！！", "名無しさん")
 	await get_tree().create_timer(0.5).timeout
 	if not is_inside_tree():
 		return
 
-	# ── 9. みゆきのモーション固定を解除（通常AI用） ──
-	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
-		ghost.forced_motion = -1
-		ghost.forced_state = -1
+	# ── 8.5. みゆき認識 — トイレから追ってきた恐怖 ──
+	SoundManager.play_voice(voice_dir + "v123.wav")
+	if is_instance_valid(hud):
+		hud.show_monologue("みゆき……ちゃん……？　なんで……トイレにいたはずなのに……")
+	_add_chat_safe("トイレの人形！？", "配信民99")
+	await get_tree().create_timer(0.5).timeout
+	_add_chat_safe("追いかけてきた！？", "ゆきんこ77")
+	await get_tree().create_timer(0.5).timeout
+	_add_chat_safe("ガチじゃん……", "幽霊ガチ勢")
+	await get_tree().create_timer(3.0).timeout
+	if not is_inside_tree():
+		return
 
-	# ── 10.「逃 げ ろ」演出 ──
+	SoundManager.play_voice(voice_dir + "v124.wav")
+	if is_instance_valid(hud):
+		hud.show_monologue("こっち見てる……動いてる……来ないで来ないで来ないでっ！！")
+	player.start_camera_shake(0.4, 1.0)
+	_add_chat_safe("逃げてーーー！！！", "ゆきんこ77")
+	await get_tree().create_timer(0.5).timeout
+	_add_chat_safe("wwwwwwww配信事故", "配信民99")
+	await get_tree().create_timer(0.5).timeout
+	_add_chat_safe("走れ走れ走れ！！", "ホラー好き太郎")
+	await get_tree().create_timer(0.5).timeout
+	_add_chat_safe("鳥肌やばい", "深夜組")
+	await get_tree().create_timer(2.5).timeout
+	if not is_inside_tree():
+		return
+
+	if is_instance_valid(hud):
+		hud.hide_monologue()
+
+	# ── 9. みゆき即CHASE開始（モーションNORMAL固定 + AI有効） ──
+	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		ghost.forced_motion = Ghost.MotionPattern.NORMAL
+		ghost.motion_lock_only = true
+		ghost.forced_state = -1
+		ghost.ghost_state = Ghost.GhostState.CHASE
+		ghost._prev_ghost_state = -1
+		ghost._stuck_timer = 0.0
+		ghost._stuck_last_pos = ghost.global_position
+		ghost.process_mode = Node.PROCESS_MODE_INHERIT  # 即追跡開始
+
+	# ── 10.「逃 げ ろ」演出（awaitで完了を待つ） ──
 	_ghost_alert_shown = true
-	_show_ghost_alert()
-	# _show_ghost_alert 完了後 → _run_escape_nav_sequence
-	# → ゴーストAI有効化, 操作可能, ナビ矢印, ghost_grace解除
+	await _show_ghost_alert()
+	# _show_ghost_alert 完了後 → _run_escape_nav_sequence が呼ばれる
+	# → 操作可能, ナビ矢印, ghost_grace解除
 
 
 func _add_chat_safe(msg: String, user: String) -> void:
@@ -1978,8 +2093,9 @@ func _show_caught() -> void:
 	player.input_disabled = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-	# デバッグ: バッドエンド演出スキップ（即タイトルへ戻る）
-	if _DEBUG_CHAPTER_SKIP:
+	# デバッグ: バッドエンド演出スキップ（CP2以外のみ — CP2はバッドエンド演出を見せる）
+	var _is_cp2 : bool = GameManager.current_chapter != null and GameManager.current_chapter.chapter_id == "ch02_haison_souko"
+	if _DEBUG_CHAPTER_SKIP and not _is_cp2:
 		print("[Debug] バッドエンド演出スキップ → タイトルへ")
 		SoundManager.stop_all()
 		await get_tree().create_timer(0.5).timeout

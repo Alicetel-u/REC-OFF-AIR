@@ -79,75 +79,7 @@
         },
         {
             "type": "_comment",
-            "_": "── 入口が消えている ──"
-        },
-        {
-            "type": "say",
-            "text": "え……？　嘘でしょ、扉は？　どこ！？　入ってきたところ、壁になってるんだけど！！",
-            "voice": "v108a"
-        },
-        {
-            "type": "wait",
-            "sec": 6.0
-        },
-        {
-            "type": "camera_shake",
-            "intensity": 0.2,
-            "dur": 0.4
-        },
-        {
-            "type": "say_clear"
-        },
-        {
-            "type": "say",
-            "text": "閉じ込められた……？　なんで、さっきまで扉があったのに……！",
-            "voice": "v108b"
-        },
-        {
-            "type": "wait",
-            "sec": 5.5
-        },
-        {
-            "type": "chat",
-            "msg": "え？扉消えた！？",
-            "user": "視聴者A",
-            "voice": "c030"
-        },
-        {
-            "type": "wait",
-            "sec": 0.3
-        },
-        {
-            "type": "chat",
-            "msg": "やばいやばいやばい",
-            "user": "配信民99",
-            "utype": "member",
-            "voice": "c031"
-        },
-        {
-            "type": "wait",
-            "sec": 0.3
-        },
-        {
-            "type": "chat",
-            "msg": "壁になってるってどういうこと",
-            "user": "まっちゃん",
-            "voice": "c032"
-        },
-        {
-            "type": "wait",
-            "sec": 0.3
-        },
-        {
-            "type": "chat",
-            "msg": "閉じ込められた",
-            "user": "K",
-            "utype": "horror",
-            "voice": "c033"
-        },
-        {
-            "type": "wait",
-            "sec": 1.0
+            "_": "── PHASE 1 閉じ込めセリフ削除（CP2-2偽入口イベントで処理済み） ──"
         },
         {
             "type": "_comment",

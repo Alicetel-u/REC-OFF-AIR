@@ -122,6 +122,9 @@ var custom_model_scale : Vector3 = Vector3(1.2, 1.2, 1.2)
 var _physics_ready : bool = false
 var forced_motion : int = -1   # -1=ランダム、0以上=固定モーション
 var forced_state  : int = -1   # -1=通常AI、0以上=状態固定（デバッグ用）
+var motion_lock_only : bool = false  # true=モーションのみ固定、AIは有効（CP2用）
+var _stuck_timer : float = 0.0      # スタック検知用
+var _stuck_last_pos : Vector3 = Vector3.ZERO
 
 signal ghost_spotted_player
 signal ghost_lost_player
@@ -275,8 +278,9 @@ func _physics_process(delta: float) -> void:
 	if not is_instance_valid(player):
 		return
 
-	# デバッグ: モーション固定時はAI無効（その場でモーション表示のみ）
-	if forced_motion >= 0:
+	# デバッグ: モーション固定＋AI無効（デバッグショーケース用）
+	# motion_lock_only=true の場合はモーション固定だがAIは有効（CP2用）
+	if forced_motion >= 0 and not motion_lock_only:
 		velocity = Vector3.ZERO
 		_update_visuals(delta)
 		return
@@ -302,6 +306,25 @@ func _physics_process(delta: float) -> void:
 	elif is_inside_tree():
 		_physics_ready = true
 	_update_visuals(delta)
+
+	# ── スタック検知: 2秒間ほぼ動いていなければ巡回ポイントにワープ ──
+	if ghost_state in [GhostState.CHASE, GhostState.ALERT, GhostState.PATROL]:
+		_stuck_timer += delta
+		if _stuck_timer >= 2.0:
+			_stuck_timer = 0.0
+			var move_dist : float = global_position.distance_to(_stuck_last_pos)
+			if move_dist < 0.3 and is_instance_valid(player) and not patrol_pts.is_empty():
+				# 巡回ポイントの中からプレイヤーに最も近い地点にワープ（通れる場所のみ）
+				var best_pt := patrol_pts[0]
+				var best_dist : float = player.global_position.distance_to(best_pt)
+				for pt in patrol_pts:
+					var d : float = player.global_position.distance_to(pt)
+					if d < best_dist:
+						best_dist = d
+						best_pt = pt
+				print("[Ghost] スタック検知 → 巡回ポイントへワープ: (%.1f, %.1f, %.1f)" % [best_pt.x, best_pt.y, best_pt.z])
+				global_position = best_pt
+			_stuck_last_pos = global_position
 
 
 # ---- 巡回 ----
@@ -376,10 +399,12 @@ func _do_chase(delta: float) -> void:
 	var tgt := player.global_position
 	tgt.y = global_position.y
 
-	# 接触判定: Y軸を無視した水平距離
+	# 接触判定: Y軸を無視した水平距離（ghost_grace中はキャッチしない）
 	var ghost_xz := Vector2(global_position.x, global_position.z)
 	var player_xz := Vector2(player.global_position.x, player.global_position.z)
 	if ghost_xz.distance_to(player_xz) <= CATCH_DIST:
+		if GameManager.ghost_grace:
+			return  # grace中は素通り（CAUGHT状態にしない）
 		ghost_state = GhostState.CAUGHT
 		GameManager.trigger_caught()
 		return
