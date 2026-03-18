@@ -41,7 +41,7 @@ const CAUGHT_MOTIONS : Array[int] = [
 
 const PATROL_SPEED : float = 0.6
 const ALERT_SPEED  : float = 1.1  # 警戒時やや速く
-const CHASE_SPEED  : float = 1.8  # 少し速く（緊張感UP）
+const CHASE_SPEED  : float = 1.9
 const CHASE_BURST  : float = 5.0   # 瞬間ダッシュ速度
 const CHASE_STRAFE : float = 3.0   # 横移動の速さ
 const GRAVITY      : float = 9.8
@@ -55,7 +55,7 @@ const STATE_VISUALS := {
 	GhostState.PATROL: {"bob_speed": 1.8, "bob_amp": 0.07, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.0},
 	GhostState.ALERT:  {"bob_speed": 3.5, "bob_amp": 0.09, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.4},
 	GhostState.CHASE:  {"bob_speed": 5.0, "bob_amp": 0.12, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
-	GhostState.CAUGHT: {"bob_speed": 0.5, "bob_amp": 0.04, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
+	GhostState.CAUGHT: {"bob_speed": 0.3, "bob_amp": 0.04, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 }
 
 # 人型キャラクターモデルのパス（FBX）
@@ -621,7 +621,7 @@ func _update_visuals(delta: float) -> void:
 	# ── 接近膨張 ──
 	if is_instance_valid(player) and not _fake_rushing:
 		var dist := global_position.distance_to(player.global_position)
-		var swell : float = clampf(1.0 + (1.0 - dist / SIGHT_RANGE) * 0.35, 1.0, 1.5)
+		var swell : float = clampf(1.0 + (1.0 - dist / SIGHT_RANGE) * 0.40, 1.0, 1.5)
 		if ghost_state == GhostState.CAUGHT:
 			swell = 2.5
 		if _current_motion == MotionPattern.CRAWL:
