@@ -2196,17 +2196,19 @@ func _process(_delta: float) -> void:
 				mat.set_shader_parameter("chroma_boost", proximity * 0.5)
 				mat.set_shader_parameter("distortion", proximity * 0.3)
 		# ミニマップホラー化: ゴースト接近でノイズ→消失
-		var minimap := get_node_or_null("MinimapLayer")
-		if minimap:
-			if proximity > 0.7:
-				minimap.visible = fmod(Time.get_ticks_msec() / 100.0, 1.0) > 0.3  # ちらつき
-				minimap.modulate.a = 0.4
-			elif proximity > 0.3:
-				minimap.visible = true
-				minimap.modulate.a = lerp(1.0, 0.3, (proximity - 0.3) / 0.4)
-			else:
-				minimap.visible = true
-				minimap.modulate.a = 1.0
+		var minimap_layer := get_node_or_null("MinimapLayer")
+		if minimap_layer and minimap_layer.get_child_count() > 0:
+			var minimap_ctrl : Control = minimap_layer.get_child(0) as Control
+			if minimap_ctrl:
+				if proximity > 0.7:
+					minimap_ctrl.visible = fmod(Time.get_ticks_msec() / 100.0, 1.0) > 0.3
+					minimap_ctrl.modulate.a = 0.4
+				elif proximity > 0.3:
+					minimap_ctrl.visible = true
+					minimap_ctrl.modulate.a = lerp(1.0, 0.3, (proximity - 0.3) / 0.4)
+				else:
+					minimap_ctrl.visible = true
+					minimap_ctrl.modulate.a = 1.0
 
 	# デバッグラベルのプレイヤー座標をリアルタイム更新
 	if _DEBUG_CHAPTER_SKIP and is_instance_valid(_debug_label) and is_instance_valid(player):
