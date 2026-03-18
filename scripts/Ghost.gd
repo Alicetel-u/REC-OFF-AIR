@@ -42,12 +42,12 @@ const CAUGHT_MOTIONS : Array[int] = [
 const PATROL_SPEED : float = 0.5
 const ALERT_SPEED  : float = 1.1  # 警戒時やや速く
 const CHASE_SPEED  : float = 1.8  # 少し速く（緊張感UP）
-const CHASE_BURST  : float = 4.5   # 瞬間ダッシュ速度
-const CHASE_STRAFE : float = 2.5   # 横移動の速さ
+const CHASE_BURST  : float = 5.0   # 瞬間ダッシュ速度
+const CHASE_STRAFE : float = 3.0   # 横移動の速さ
 const GRAVITY      : float = 9.8
 const SIGHT_RANGE  : float = 22.0  # 視界狭め（接近されやすい）
 const PROX_DETECT  : float = 5.5  # 近接検知を広めに
-const CATCH_DIST   : float = 1.5
+const CATCH_DIST   : float = 1.8  # 捕獲範囲少し広く
 const ALERT_TIME   : float = 5.0  # 警戒→見失いが速い（緊張維持）
 
 # 状態別ビジュアルパラメータ

@@ -2252,7 +2252,7 @@ func _start_auto_explore() -> void:
 func _auto_explore_walk(target: Vector3) -> void:
 	if not is_instance_valid(player):
 		return
-	var speed : float = 3.2  # WALK_SPEED * 0.8
+	var speed : float = 2.8  # ゆっくり自動歩行（臨場感）
 	while is_inside_tree() and is_instance_valid(player):
 		var to := target - player.global_position
 		to.y = 0.0
