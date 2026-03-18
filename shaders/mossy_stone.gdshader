@@ -2,7 +2,7 @@ shader_type spatial;
 
 uniform vec3 base_color : source_color = vec3(0.35, 0.35, 0.33);
 uniform vec3 moss_color : source_color = vec3(0.08, 0.12, 0.04);
-uniform float moss_strength : hint_range(0.0, 1.0) = 0.6;
+uniform float moss_strength : hint_range(0.0, 1.0) = 0.7;
 uniform float stone_roughness : hint_range(0.0, 1.0) = 0.95;
 
 // PBR テクスチャ（Poly Haven CC0）

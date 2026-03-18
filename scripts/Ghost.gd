@@ -41,7 +41,7 @@ const CAUGHT_MOTIONS : Array[int] = [
 
 const PATROL_SPEED : float = 0.5
 const ALERT_SPEED  : float = 0.9
-const CHASE_SPEED  : float = 1.6
+const CHASE_SPEED  : float = 1.8  # 少し速く（緊張感UP）
 const CHASE_BURST  : float = 4.5   # 瞬間ダッシュ速度
 const CHASE_STRAFE : float = 2.5   # 横移動の速さ
 const GRAVITY      : float = 9.8
@@ -384,7 +384,7 @@ func _do_chase(delta: float) -> void:
 		# 新しいブレパターンを生成
 		_erratic_timer = randf_range(0.08, 0.3)
 		var roll := randf()
-		if roll < 0.15:
+		if roll < 0.25:  # 急停止の確率UP（不気味さ）
 			# 急停止（ピタッと止まる不気味さ）
 			_erratic_mode = 2
 		elif roll < 0.35:
@@ -615,7 +615,7 @@ func _update_visuals(delta: float) -> void:
 	_flicker_t += delta
 	if _flicker_t >= _flicker_next:
 		_flicker_t = 0.0
-		_flicker_next = randf_range(3.0, 10.0)
+		_flicker_next = randf_range(2.0, 7.0)  # より頻繁にちらつく
 		_do_flicker()
 
 	# ── 接近膨張 ──

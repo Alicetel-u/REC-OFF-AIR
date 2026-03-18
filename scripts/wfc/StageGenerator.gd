@@ -106,12 +106,12 @@ func _create_materials() -> void:
 	mat_cobweb.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat_baseboard = _make_mat(null, Color(0.20, 0.22, 0.24), 0.70, Vector3(1, 1, 1))
 	mat_baseboard.metallic = 0.5
-	mat_doorframe = _make_mat(null, Color(0.30, 0.32, 0.35), 0.65, Vector3(1, 1, 1))
+	mat_doorframe = _make_mat(null, Color(0.35, 0.25, 0.22), 0.70, Vector3(1, 1, 1))  # 錆びたドアフレーム
 	mat_doorframe.metallic = 0.4
 
 	# ── 廃村 ──
 	mat_h_ground = _make_mat(null, Color(0.22, 0.18, 0.10), 0.98, Vector3(8, 8, 8))
-	mat_h_wood   = _make_mat(TEX_WOOD, Color(0.28, 0.20, 0.12), 0.95, Vector3(2, 2, 2))
+	mat_h_wood   = _make_mat(TEX_WOOD, Color(0.35, 0.25, 0.15), 0.95, Vector3(2, 2, 2))
 	mat_h_thatch = _make_mat(null, Color(0.32, 0.24, 0.14), 0.97, Vector3(3, 3, 3))
 	mat_h_stone  = _make_mat(TEX_CONCRETE, Color(0.38, 0.34, 0.28), 0.96, Vector3(4, 4, 4))
 	mat_h_moss   = _make_mat(null, Color(0.14, 0.18, 0.08), 0.98, Vector3(5, 5, 5))
@@ -1252,7 +1252,7 @@ func _cyl(parent: Node3D, n: String, r: float, h: float, pos: Vector3,
 	c.name = n
 	c.radius = r
 	c.height = h
-	c.sides = 12
+	c.sides = 16  # より滑らかな円柱
 	c.position = pos
 	c.use_collision = true
 	c.material = mat
