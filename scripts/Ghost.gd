@@ -39,7 +39,7 @@ const CHASE_MOTIONS : Array[int] = [
 const CAUGHT_MOTIONS : Array[int] = [
 	MotionPattern.FACE_CLOSE, MotionPattern.UPSIDE_DOWN]
 
-const PATROL_SPEED : float = 0.5
+const PATROL_SPEED : float = 0.6
 const ALERT_SPEED  : float = 1.1  # 警戒時やや速く
 const CHASE_SPEED  : float = 1.8  # 少し速く（緊張感UP）
 const CHASE_BURST  : float = 5.0   # 瞬間ダッシュ速度
@@ -55,7 +55,7 @@ const STATE_VISUALS := {
 	GhostState.PATROL: {"bob_speed": 2.0, "bob_amp": 0.07, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.0},
 	GhostState.ALERT:  {"bob_speed": 3.2, "bob_amp": 0.08, "target_lean":  0.0, "sway_amp": 0.0, "rage": 0.4},
 	GhostState.CHASE:  {"bob_speed": 5.0, "bob_amp": 0.10, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
-	GhostState.CAUGHT: {"bob_speed": 0.5, "bob_amp": 0.02, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
+	GhostState.CAUGHT: {"bob_speed": 0.5, "bob_amp": 0.04, "target_lean":  0.0, "sway_amp": 0.0, "rage": 1.0},
 }
 
 # 人型キャラクターモデルのパス（FBX）
