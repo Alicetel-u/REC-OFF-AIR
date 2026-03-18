@@ -623,7 +623,7 @@ func _update_visuals(delta: float) -> void:
 		var dist := global_position.distance_to(player.global_position)
 		var swell : float = clampf(1.0 + (1.0 - dist / SIGHT_RANGE) * 0.35, 1.0, 1.5)
 		if ghost_state == GhostState.CAUGHT:
-			swell = 2.0
+			swell = 2.5
 		_ghost_body.scale = Vector3(swell, swell, swell)
 
 	# ── フェイクラッシュ（CHASE/ALERT中にランダム発動）──
@@ -641,7 +641,7 @@ func _do_fake_rush() -> void:
 	if not _ghost_body or not is_instance_valid(player):
 		return
 	_fake_rushing = true
-	SoundManager.play_monster_growl(-1.0)
+	SoundManager.play_monster_growl(0.0)  # フェイクラッシュは最大音量で驚かす
 
 	# プレイヤー方向のローカルベクトル
 	var rush_local := global_transform.basis.inverse() * (player.global_position - global_position).normalized()

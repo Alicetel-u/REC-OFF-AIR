@@ -671,7 +671,7 @@ func _setup_atmosphere_particles() -> void:
 	# ── 1. 塵・埃パーティクル ──
 	var dust := GPUParticles3D.new()
 	dust.name = "HD2D_Dust"
-	dust.amount = 60
+	dust.amount = 40
 	dust.lifetime = 6.0
 	dust.visibility_aabb = AABB(Vector3(-15, -3, -15), Vector3(30, 8, 30))
 
@@ -699,7 +699,7 @@ func _setup_atmosphere_particles() -> void:
 	# ── 2. 地面の霧パーティクル ──
 	var fog := GPUParticles3D.new()
 	fog.name = "HD2D_GroundFog"
-	fog.amount = 12
+	fog.amount = 8
 	fog.lifetime = 12.0
 	fog.visibility_aabb = AABB(Vector3(-20, -1, -20), Vector3(40, 4, 40))
 
@@ -799,7 +799,7 @@ func _setup_vhs_overlay() -> void:
 	var mat := ShaderMaterial.new()
 	mat.shader = shader
 	mat.set_shader_parameter("shake_intensity", 0.005)
-	mat.set_shader_parameter("noise_intensity", 0.08)
+	mat.set_shader_parameter("noise_intensity", 0.06)
 	_vhs_rect.material = mat
 	_vhs_layer.add_child(_vhs_rect)
 

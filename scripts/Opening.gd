@@ -562,7 +562,7 @@ func _show_dm() -> void:
 		tw_in.tween_property(msg_label, "modulate:a", 1.0, 0.5)
 		# DMボイス再生（Kと同じ冥鳴ひまり音声）
 		if dm_voice_idx < _dm_voice_ids.size():
-			_play_op_voice(_dm_voice_ids[dm_voice_idx], 10.0)
+			_play_op_voice(_dm_voice_ids[dm_voice_idx], 8.0)
 			dm_voice_idx += 1
 		await tw_in.finished
 		if _skipped: break

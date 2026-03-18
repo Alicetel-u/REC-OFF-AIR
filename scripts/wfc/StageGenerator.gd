@@ -1187,7 +1187,7 @@ func _add_room_lights_haison() -> void:
 
 # 影を有効化する重要な部屋（合計4-6個に抑える）
 const SHADOW_ROOMS := [
-	"CONTROL_RM", "WORKSHOP", "ENTRANCE", "SHRINE", "EXIT_HALL", "FURNACE"
+	"CONTROL_RM", "WORKSHOP", "ENTRANCE", "SHRINE", "EXIT_HALL", "FURNACE", "GENERATOR"
 ]
 
 func _create_room_light(parent: Node3D, room_name: String, cfg: Dictionary) -> void:
