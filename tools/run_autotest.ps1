@@ -34,7 +34,11 @@ public class AutoTestWin {
 }
 "@
 
-$hwnd = [AutoTestWin]::FindWindow([NullString]::Value, "Ghost Streamer (DEBUG)")
+# ウィンドウタイトルで探す（複数候補）
+$hwnd = [AutoTestWin]::FindWindow([NullString]::Value, "REC:OFF:AIR (DEBUG)")
+if ($hwnd -eq [IntPtr]::Zero) {
+    $hwnd = [AutoTestWin]::FindWindow([NullString]::Value, "Ghost Streamer (DEBUG)")
+}
 if ($hwnd -eq [IntPtr]::Zero) {
     Write-Host "[AutoTest] ERROR: Game window not found"
     if (-not $proc.HasExited) { $proc | Stop-Process -Force -ErrorAction SilentlyContinue }

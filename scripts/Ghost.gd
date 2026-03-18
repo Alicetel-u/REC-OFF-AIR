@@ -45,7 +45,7 @@ const CHASE_SPEED  : float = 1.8  # 少し速く（緊張感UP）
 const CHASE_BURST  : float = 4.5   # 瞬間ダッシュ速度
 const CHASE_STRAFE : float = 2.5   # 横移動の速さ
 const GRAVITY      : float = 9.8
-const SIGHT_RANGE  : float = 25.0
+const SIGHT_RANGE  : float = 22.0  # 視界狭め（接近されやすい）
 const PROX_DETECT  : float = 5.5  # 近接検知を広めに
 const CATCH_DIST   : float = 1.5
 const ALERT_TIME   : float = 5.0  # 警戒→見失いが速い（緊張維持）
@@ -359,7 +359,7 @@ func _do_chase(delta: float) -> void:
 	_growl_timer += delta
 	if _growl_timer >= _growl_interval:
 		_growl_timer = 0.0
-		_growl_interval = randf_range(3.0, 6.0)
+		_growl_interval = randf_range(2.0, 5.0)  # より頻繁に唸る
 		var dist := global_position.distance_to(player.global_position)
 		SoundManager.play_monster_growl(-3.0 if dist < 8.0 else -10.0)
 
