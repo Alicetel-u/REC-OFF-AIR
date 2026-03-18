@@ -1285,6 +1285,13 @@ func _on_item_collected_warehouse(count: int, total: int) -> void:
 	# VHS回収後: 照明を暗くする（「何かが変わった」感）
 	_dim_all_lights(0.5, 3.0)
 
+	# 全VHS回収で脱出演出
+	if count >= total and total > 0:
+		hud.show_monologue("全部見つけた……！ ここを出ないと！")
+		await get_tree().create_timer(3.0).timeout
+		if is_instance_valid(hud):
+			hud.hide_monologue()
+
 
 ## ステージ内の全ライトを暗くする（恐怖演出用）
 func _dim_all_lights(multiplier: float, duration: float) -> void:
@@ -1299,13 +1306,6 @@ func _dim_lights_recursive(node: Node, mult: float, dur: float) -> void:
 		tw.tween_property(node, "light_energy", node.light_energy * mult, dur)
 	for child in node.get_children():
 		_dim_lights_recursive(child, mult, dur)
-
-	# 全VHS回収で脱出演出
-	if count >= total and total > 0:
-		hud.show_monologue("全部見つけた……！ ここを出ないと！")
-		await get_tree().create_timer(3.0).timeout
-		if is_instance_valid(hud):
-			hud.hide_monologue()
 
 
 func _on_item_collected_village(count: int, _total: int) -> void:
