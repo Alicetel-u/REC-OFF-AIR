@@ -1892,6 +1892,8 @@ func _setup_minimap(map_min: Vector2, map_max: Vector2) -> void:
 	if chapter.chapter_id == "ch02_haison_souko":
 		minimap.add_warehouse_walls()
 	elif chapter.chapter_id == "ch02_mura_tansaku":
+		# CP3: 出口はアイテム全回収後に _reveal_mura_exit() で表示するため初期非表示
+		minimap.hide_exit()
 		# MapGenerator は Main > Stage > MapGenerator にある
 		# _build() が 0.1s遅延で実行されるため、grid完成を待つ
 		_populate_village_minimap(minimap)
@@ -1931,11 +1933,15 @@ func _show_mura_objective() -> void:
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root_ctrl.add_child(dim)
 
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root_ctrl.add_child(center)
+
 	var vbox := VBoxContainer.new()
-	vbox.set_anchors_preset(Control.PRESET_CENTER)
 	vbox.add_theme_constant_override("separation", 18)
 	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root_ctrl.add_child(vbox)
+	center.add_child(vbox)
 
 	var title_lbl := Label.new()
 	title_lbl.text = "アイテムを探せ！"
