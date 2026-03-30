@@ -27,7 +27,9 @@ var _monster_idx   : int = 0
 
 var _voice      : AudioStreamPlayer = null
 var _chat_voice : AudioStreamPlayer = null
-var chat_voice_muted : bool = false  ## デバッグ: チャット音声ミュート
+var chat_voice_muted : bool = false  ## チャット音声ミュート（設定パネルでトグル）
+
+const SETTINGS_PATH := "user://settings.json"
 var _chat_voice_queue : Array[Dictionary] = []  ## チャットボイスキュー（順番待ち）
 var _bgm        : AudioStreamPlayer = null
 var _sfx        : AudioStreamPlayer = null
@@ -43,6 +45,22 @@ func _ready() -> void:
 	_bgm        = _make_player(0.0)
 	_sfx        = _make_player(0.0)
 	_scan_all()
+	_load_settings()
+
+
+func save_settings() -> void:
+	var f := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
+	if f:
+		f.store_string(JSON.stringify({"chat_voice_muted": chat_voice_muted}))
+
+
+func _load_settings() -> void:
+	if FileAccess.file_exists(SETTINGS_PATH):
+		var f := FileAccess.open(SETTINGS_PATH, FileAccess.READ)
+		if f:
+			var parsed = JSON.parse_string(f.get_as_text())
+			if parsed is Dictionary and parsed.has("chat_voice_muted"):
+				chat_voice_muted = bool(parsed["chat_voice_muted"])
 
 
 func _process(delta: float) -> void:
