@@ -236,10 +236,9 @@ func _ready() -> void:
 		# CP2廃倉庫: 自由移動開始後のバックグラウンドコメント
 		if cur_chapter.chapter_id == "ch02_haison_souko":
 			_run_chapter_opening_background("ch02_haison_souko_free")
-		# CP3村の探索: バックグラウンドで開始演出（操作を止めない）
-		# NOTE: CP3演出一時無効化
-		#if cur_chapter.chapter_id == "ch02_mura_tansaku":
-		#	_run_chapter_opening_background("ch02_mura_tansaku_start")
+		# CP3村の探索: アイテム探索目標画面を表示（非ブロック）
+		if cur_chapter.chapter_id == "ch02_mura_tansaku":
+			_show_mura_objective()
 	elif cur_chapter:
 		# シネマティック: JSON演出を実行
 		await _run_chapter_opening(cur_chapter.chapter_id)
@@ -1661,26 +1660,26 @@ func _dim_lights_recursive(node: Node, mult: float, dur: float) -> void:
 		_dim_lights_recursive(child, mult, dur)
 
 
-func _on_item_collected_village(count: int, _total: int) -> void:
+func _on_item_collected_village(count: int, total: int) -> void:
 	## CP3 村の探索チャプター専用：アイテム回収時にミニマップを更新
 	if not (GameManager.current_chapter and GameManager.current_chapter.chapter_id == "ch02_mura_tansaku"):
 		return
-	
-	# ミニマップレイヤーを探して更新
+
+	# ミニマップのアイテムを Node3D 参照で更新
+	# （Node3Dが queue_free されると is_instance_valid=false → ミニマップから自動消去）
 	var minimap_layer := get_node_or_null("MinimapLayer")
-	if not minimap_layer:
-		return
-	var minimap = minimap_layer.get_child(0)
-	if not is_instance_valid(minimap) or not minimap.has_method("update_items"):
-		return
-		
-	# 現在残っているアイテムの座標リストを作成
-	var items : Array = []
-	for node in get_tree().get_nodes_in_group("village_item"):
-		if is_instance_valid(node) and not node.is_queued_for_deletion():
-			items.append(node.global_position)
-	
-	minimap.update_items(items)
+	if minimap_layer and minimap_layer.get_child_count() > 0:
+		var minimap = minimap_layer.get_child(0)
+		if is_instance_valid(minimap) and minimap.has_method("update_items"):
+			var items : Array = []
+			for node in get_tree().get_nodes_in_group("village_item"):
+				if is_instance_valid(node) and not node.is_queued_for_deletion():
+					items.append(node)  # Node3D参照（座標ではなくノード自体）
+			minimap.update_items(items)
+
+	# 全アイテム回収時: 出口を出現させる
+	if count >= total:
+		_reveal_mura_exit()
 
 
 func _show_item_acquired(count: int, total: int) -> void:
@@ -1872,7 +1871,7 @@ func _setup_minimap(map_min: Vector2, map_max: Vector2) -> void:
 	if chapter.chapter_id == "ch02_mura_tansaku":
 		for node in get_tree().get_nodes_in_group("village_item"):
 			if is_instance_valid(node):
-				items.append(node.global_position)
+				items.append(node)  # Node3D参照（回収後queue_free → 自動消去）
 	elif chapter.chapter_id != "ch02_haison_souko":
 		# CP2以外は座標配列として扱う
 		for v in chapter.item_positions:
@@ -1912,6 +1911,89 @@ func _populate_village_minimap(minimap: Control) -> void:
 			structures.append(child)
 	if structures.size() > 0:
 		minimap.add_manual_buildings(structures)
+
+
+func _show_mura_objective() -> void:
+	## CP3村の探索: アイテム探索目標画面を非同期で表示（操作を止めない）
+	var canvas := CanvasLayer.new()
+	canvas.layer = 100
+	get_tree().root.add_child(canvas)
+
+	var root_ctrl := Control.new()
+	root_ctrl.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root_ctrl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root_ctrl.modulate.a = 0.0
+	canvas.add_child(root_ctrl)
+
+	var dim := ColorRect.new()
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0, 0, 0, 0.72)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root_ctrl.add_child(dim)
+
+	var vbox := VBoxContainer.new()
+	vbox.set_anchors_preset(Control.PRESET_CENTER)
+	vbox.add_theme_constant_override("separation", 18)
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root_ctrl.add_child(vbox)
+
+	var title_lbl := Label.new()
+	title_lbl.text = "アイテムを探せ！"
+	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title_lbl.add_theme_font_size_override("font_size", 42)
+	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
+	title_lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+	title_lbl.add_theme_constant_override("shadow_offset_x", 2)
+	title_lbl.add_theme_constant_override("shadow_offset_y", 2)
+	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(title_lbl)
+
+	var sub_lbl := Label.new()
+	sub_lbl.text = "%d 個のアイテムを集めて村の謎を解け" % GameManager.items_total
+	sub_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sub_lbl.add_theme_font_size_override("font_size", 20)
+	sub_lbl.add_theme_color_override("font_color", Color(0.85, 0.82, 0.78))
+	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(sub_lbl)
+
+	var tw_in := create_tween()
+	tw_in.tween_property(root_ctrl, "modulate:a", 1.0, 0.6)
+	await tw_in.finished
+	await get_tree().create_timer(2.5).timeout
+	var tw_out := create_tween()
+	tw_out.tween_property(root_ctrl, "modulate:a", 0.0, 1.0).set_trans(Tween.TRANS_SINE)
+	await tw_out.finished
+	canvas.queue_free()
+
+
+func _reveal_mura_exit() -> void:
+	## CP3: 全アイテム回収時に出口を出現させる（ライト点灯 + ミニマップ + ナビ + メッセージ）
+	if not is_inside_tree():
+		return
+	var exit_pos : Vector3 = GameManager.current_chapter.exit_position if GameManager.current_chapter else Vector3.ZERO
+
+	# 出口ライトを点灯
+	var exit_node : Node3D = stage_gen.exit_node
+	if is_instance_valid(exit_node):
+		var exit_light : Node = exit_node.get_node_or_null("ExitLight")
+		if exit_light:
+			var tw_light := create_tween()
+			tw_light.tween_property(exit_light, "light_energy", 3.0, 2.0)
+
+	# ミニマップに出口を表示
+	var minimap_layer := get_node_or_null("MinimapLayer")
+	if minimap_layer and minimap_layer.get_child_count() > 0:
+		var mm = minimap_layer.get_child(0)
+		if is_instance_valid(mm) and mm.has_method("show_exit"):
+			mm.show_exit(exit_pos)
+
+	# ナビ矢印を出口方向へ + モノローグ
+	if is_instance_valid(hud):
+		hud.retarget_nav(exit_pos, "EXIT")
+		hud.show_monologue("全部集めた……出口を探せ！")
+	await get_tree().create_timer(3.0).timeout
+	if is_instance_valid(hud):
+		hud.hide_monologue()
 
 
 func _show_controls_guide() -> void:
@@ -2028,6 +2110,9 @@ func _play_mura_exit() -> void:
 	## CP3村の探索ゴール到達時のつなぎ演出（紙芝居）
 	player.input_disabled = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	# ボイス・チャットボイスを停止
+	SoundManager.stop_voice()
+	SoundManager.stop_chat_voice()
 	# ゴーストを無効化（みゆきの唸り声・金属音を止める）
 	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
 		ghost.process_mode = Node.PROCESS_MODE_DISABLED
