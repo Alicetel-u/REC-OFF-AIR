@@ -2008,9 +2008,8 @@ func _play_souko_exit() -> void:
 	_souko_exiting = true
 	player.input_disabled = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	# HUD・ナビ矢印を非表示にする（紙芝居中に残らないように）
+	# ナビ矢印を停止（HUD自体は非表示にしない — narrationボックスが見えなくなるため）
 	if is_instance_valid(hud):
-		hud.visible = false
 		hud.stop_nav()
 	# ミニマップを非表示にする（紙芝居演出中に残らないように）
 	var minimap_layer := get_node_or_null("MinimapLayer")
