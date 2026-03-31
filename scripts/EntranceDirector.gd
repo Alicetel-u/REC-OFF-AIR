@@ -469,6 +469,10 @@ func run_from_path(json_path: String) -> void:
 
 			"play_ending":
 				await _play_ending(ev)
+				# エンドクレジット（credits フィールドがあれば再生）
+				var credits_data : Dictionary = ev.get("credits", {})
+				if not credits_data.is_empty():
+					await _show_credits(credits_data)
 				# BAD END後: フローチャート表示 + 選択肢
 				var pe_return : String = ev.get("return_label", "")
 				var pe_eid : String = ev.get("id", "")
@@ -1838,3 +1842,157 @@ func _miyuki_despawn() -> void:
 	_miyuki_convulsion = 0.0
 	_miyuki_track = false
 	_miyuki_shader_mat = null
+
+
+## ──────────────────────────────────────────────────────
+## エンドクレジットロール
+## JSON credits フィールド: { title, scroll_speed, entries: [{role, name, style}] }
+## style: "" (通常) / "game_title" (大タイトル) / "section" (区切り) / "whisper" (余韻)
+## ──────────────────────────────────────────────────────
+func _show_credits(credits_data: Dictionary) -> void:
+	var entries : Array = credits_data.get("entries", [])
+	var title_text : String = credits_data.get("title", "— STAFF ROLL —")
+	var scroll_speed : float = float(credits_data.get("scroll_speed", 38))
+
+	var canvas := CanvasLayer.new()
+	canvas.layer = 165
+	get_tree().root.add_child(canvas)
+
+	var container := Control.new()
+	container.anchors_preset = Control.PRESET_FULL_RECT
+	container.modulate.a = 0.0
+	canvas.add_child(container)
+
+	# 黒背景
+	var bg := ColorRect.new()
+	bg.anchors_preset = Control.PRESET_FULL_RECT
+	bg.color = Color(0.0, 0.0, 0.015, 1.0)
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	container.add_child(bg)
+
+	# スキップフラグ（辞書経由で参照渡し）
+	var _skip := {"v": false}
+
+	# スキップボタン
+	var skip_btn := Button.new()
+	skip_btn.text = "スキップ ▶▶"
+	skip_btn.size = Vector2(140.0, 34.0)
+	skip_btn.position = Vector2(1120.0, 20.0)
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.04, 0.04, 0.07, 0.75)
+	sb.border_color = Color(0.5, 0.42, 0.55, 0.6)
+	sb.set_border_width_all(1)
+	sb.set_corner_radius_all(3)
+	skip_btn.add_theme_stylebox_override("normal", sb)
+	skip_btn.add_theme_font_size_override("font_size", 13)
+	skip_btn.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
+	skip_btn.pressed.connect(func() -> void: _skip.v = true)
+	container.add_child(skip_btn)
+
+	# クレジット用 VBox（画面下から流れ上がる）
+	var vbox := VBoxContainer.new()
+	vbox.custom_minimum_size = Vector2(760.0, 0.0)
+	vbox.position = Vector2(260.0, 780.0)
+	container.add_child(vbox)
+
+	# タイトル行
+	var tlbl := Label.new()
+	tlbl.text = title_text
+	tlbl.size_flags_horizontal = Control.SIZE_FILL
+	tlbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tlbl.add_theme_font_size_override("font_size", 20)
+	tlbl.add_theme_color_override("font_color", Color(0.58, 0.52, 0.65))
+	vbox.add_child(tlbl)
+
+	var sp0 := Control.new()
+	sp0.custom_minimum_size = Vector2(0.0, 50.0)
+	vbox.add_child(sp0)
+
+	# エントリー
+	for entry in entries:
+		var role : String = entry.get("role", "")
+		var ntext : String = entry.get("name", "")
+		var style : String = entry.get("style", "")
+
+		if role == "" and ntext == "":
+			var gap := Control.new()
+			gap.custom_minimum_size = Vector2(0.0, 24.0)
+			vbox.add_child(gap)
+			continue
+
+		var row := HBoxContainer.new()
+		row.size_flags_horizontal = Control.SIZE_FILL
+		vbox.add_child(row)
+
+		if role != "" and ntext != "":
+			var rlbl := Label.new()
+			rlbl.text = role
+			rlbl.custom_minimum_size = Vector2(330.0, 0.0)
+			rlbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			rlbl.add_theme_font_size_override("font_size", 14)
+			rlbl.add_theme_color_override("font_color", Color(0.48, 0.48, 0.55))
+			row.add_child(rlbl)
+			var sep := Label.new()
+			sep.text = "  ─  "
+			sep.add_theme_font_size_override("font_size", 14)
+			sep.add_theme_color_override("font_color", Color(0.28, 0.28, 0.32))
+			row.add_child(sep)
+
+		var nlbl := Label.new()
+		match style:
+			"game_title":
+				nlbl.add_theme_font_size_override("font_size", 30)
+				nlbl.add_theme_color_override("font_color", Color(0.92, 0.90, 0.95))
+			"whisper":
+				nlbl.add_theme_font_size_override("font_size", 16)
+				nlbl.add_theme_color_override("font_color", Color(0.52, 0.42, 0.60))
+			"section":
+				nlbl.add_theme_font_size_override("font_size", 13)
+				nlbl.add_theme_color_override("font_color", Color(0.42, 0.42, 0.50))
+			_:
+				nlbl.add_theme_font_size_override("font_size", 17)
+				nlbl.add_theme_color_override("font_color", Color(0.88, 0.87, 0.92))
+		if role == "":
+			nlbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			nlbl.size_flags_horizontal = Control.SIZE_FILL
+		nlbl.text = ntext
+		row.add_child(nlbl)
+
+		var gap2 := Control.new()
+		gap2.custom_minimum_size = Vector2(0.0, 10.0)
+		vbox.add_child(gap2)
+
+	# 末尾の余白
+	var tail := Control.new()
+	tail.custom_minimum_size = Vector2(0.0, 500.0)
+	vbox.add_child(tail)
+
+	# フェードイン
+	var tw_in := create_tween()
+	tw_in.tween_property(container, "modulate:a", 1.0, 2.5).set_trans(Tween.TRANS_SINE)
+	await tw_in.finished
+
+	# レイアウト確定を待つ
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	# スクロール
+	var total_h : float = vbox.size.y
+	var end_y : float = -total_h
+	var scroll_dur : float = (780.0 - end_y) / scroll_speed
+
+	var tw_scroll := create_tween()
+	tw_scroll.tween_property(vbox, "position:y", end_y, scroll_dur).set_trans(Tween.TRANS_LINEAR)
+
+	while tw_scroll.is_running():
+		if _skip.v:
+			tw_scroll.kill()
+			break
+		await get_tree().process_frame
+
+	# フェードアウト
+	var tw_out := create_tween()
+	tw_out.tween_property(container, "modulate:a", 0.0, 2.5).set_trans(Tween.TRANS_SINE)
+	await tw_out.finished
+
+	canvas.queue_free()

@@ -19,8 +19,8 @@ const FLOW_NODES : Array[Dictionary] = [
 	 "pos": Vector2(400, 380), "tag": "BAD END"},
 	{"id": "bad_ido", "ending_id": "bad_ido", "name": "アナタノカワリニ", "type": "bad",
 	 "pos": Vector2(600, 310), "tag": "BAD END"},
-	{"id": "true_archive", "ending_id": "true_archive", "name": "永遠のアーカイブ", "type": "ending",
-	 "pos": Vector2(600, 420), "tag": "TRUE END"},
+	{"id": "true_bad_end", "ending_id": "true_bad_end", "name": "視線ノ供物", "type": "ending",
+	 "pos": Vector2(600, 420), "tag": "TRUE BAD END"},
 	{"id": "bad_predator", "ending_id": "bad_predator", "name": "盲目の捕食者", "type": "bad",
 	 "pos": Vector2(600, 530), "tag": "BAD END"},
 	{"id": "normal_end", "ending_id": "normal_end", "name": "???", "type": "ending",
@@ -41,7 +41,7 @@ const FLOW_CONNS : Array[Array] = [
 	["cp2", "bad_eien", "bad"],
 	["cp3", "bad_eien", "bad"],
 	["cp3", "bad_ido", "bad"],
-	["cp3", "true_archive", "ending"],
+	["cp3", "true_bad_end", "ending"],
 	["cp3", "bad_predator", "bad"],
 	["cp5", "normal_end", "ending"],
 	["cp5", "true_end", "ending"],
@@ -62,9 +62,10 @@ const COL_LINE_BAD    := Color(0.5, 0.08, 0.08, 0.5)
 const COL_LINE_END    := Color(0.3, 0.4, 0.35, 0.5)
 const COL_TEXT         := Color(0.92, 0.92, 0.95)
 const COL_TEXT_DIM     := Color(0.32, 0.32, 0.4)
-const COL_TAG_RED     := Color(0.85, 0.18, 0.12)
-const COL_TAG_NORMAL  := Color(0.3, 0.65, 0.85)
-const COL_TAG_TRUE    := Color(0.85, 0.75, 0.3)
+const COL_TAG_RED      := Color(0.85, 0.18, 0.12)
+const COL_TAG_NORMAL   := Color(0.3, 0.65, 0.85)
+const COL_TAG_TRUE     := Color(0.85, 0.75, 0.3)
+const COL_TAG_TRUE_BAD := Color(0.72, 0.22, 0.68)
 
 var _current_ending_id : String = ""
 var _root : Control = null
@@ -589,10 +590,11 @@ func _get_tag_color(tag: String, unlocked: bool) -> Color:
 	if not unlocked:
 		return COL_TEXT_DIM
 	match tag:
-		"NORMAL END": return COL_TAG_NORMAL
-		"TRUE END":   return COL_TAG_TRUE
-		"BAD END":    return COL_TAG_RED
-		_:            return COL_TAG_RED
+		"NORMAL END":   return COL_TAG_NORMAL
+		"TRUE END":     return COL_TAG_TRUE
+		"TRUE BAD END": return COL_TAG_TRUE_BAD
+		"BAD END":      return COL_TAG_RED
+		_:              return COL_TAG_RED
 
 
 func _get_chapter_index(id: String) -> int:
