@@ -1358,6 +1358,7 @@
                 {
                     "title": "奉　納",
                     "mood": "cold",
+                    "image": "res://assets/textures/true_bad_shrine.png",
                     "wait": 2.0,
                     "lines": [
                         {
@@ -1397,6 +1398,7 @@
                 {
                     "title": "── 定点映像 ──",
                     "mood": "dark",
+                    "image": "res://assets/textures/true_bad_shrine.png",
                     "wait": 2.0,
                     "lines": [
                         {
@@ -1416,6 +1418,7 @@
                 {
                     "title": "",
                     "mood": "fear",
+                    "image": "res://assets/textures/true_bad_hand.png",
                     "wait": 1.5,
                     "lines": [
                         {
@@ -1435,6 +1438,7 @@
                 {
                     "title": "",
                     "mood": "fear",
+                    "image": "res://assets/textures/true_bad_hand.png",
                     "wait": 1.0,
                     "lines": [
                         {
