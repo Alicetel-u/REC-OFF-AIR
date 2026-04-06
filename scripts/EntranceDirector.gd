@@ -97,6 +97,10 @@ func cleanup() -> void:
 # メインシーケンス（JSON 駆動）
 # ════════════════════════════════════════════════════════════════════
 
+## 指定ラベルからシーケンスを開始する（デバッグ直行用）
+## set() で渡してから run_from_path() を呼ぶこと
+var start_label : String = ""
+
 func run() -> void:
 	await run_from_path(DIALOGUE_JSON)
 
@@ -171,6 +175,19 @@ func run_from_path(json_path: String) -> void:
 				var ev2 : Dictionary = events[i2]
 				if ev2.get("type", "") == "label":
 					label_map[ev2.get("name", "")] = i2
+
+	# start_label 指定時: そのラベルまでスキップしてから開始
+	if start_label != "" and start_label in label_map:
+		var jump_idx : int = label_map[start_label]
+		events = events.slice(jump_idx)
+		label_map.clear()
+		for i3 in range(events.size()):
+			if events[i3].get("type", "") == "label":
+				label_map[events[i3].get("name", "")] = i3
+		start_label = ""
+		# 画面は暗転状態で開始
+		_ensure_fade_layer()
+		_fade_rect.color = Color(0, 0, 0, 1)
 
 	var idx := 0
 	while idx < events.size():
@@ -1860,13 +1877,13 @@ func _show_credits(credits_data: Dictionary) -> void:
 
 	var container := Control.new()
 	container.anchors_preset = Control.PRESET_FULL_RECT
-	container.modulate.a = 0.0
+	container.modulate.a = 1.0  # コンテナは即不透明（背景が透けて下が見えるバグ防止）
 	canvas.add_child(container)
 
-	# 黒背景
+	# 黒背景（即全画面を覆う）
 	var bg := ColorRect.new()
 	bg.anchors_preset = Control.PRESET_FULL_RECT
-	bg.color = Color(0.0, 0.0, 0.015, 1.0)
+	bg.color = Color(0.0, 0.0, 0.0, 1.0)
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	container.add_child(bg)
 
@@ -1967,9 +1984,10 @@ func _show_credits(credits_data: Dictionary) -> void:
 	tail.custom_minimum_size = Vector2(0.0, 500.0)
 	vbox.add_child(tail)
 
-	# フェードイン
+	# テキストだけフェードイン（bg は既に不透明なので container は触らない）
+	vbox.modulate.a = 0.0
 	var tw_in := create_tween()
-	tw_in.tween_property(container, "modulate:a", 1.0, 2.5).set_trans(Tween.TRANS_SINE)
+	tw_in.tween_property(vbox, "modulate:a", 1.0, 2.5).set_trans(Tween.TRANS_SINE)
 	await tw_in.finished
 
 	# レイアウト確定を待つ
@@ -1990,9 +2008,9 @@ func _show_credits(credits_data: Dictionary) -> void:
 			break
 		await get_tree().process_frame
 
-	# フェードアウト
+	# テキストだけフェードアウト（背景黒は最後まで維持）
 	var tw_out := create_tween()
-	tw_out.tween_property(container, "modulate:a", 0.0, 2.5).set_trans(Tween.TRANS_SINE)
+	tw_out.tween_property(vbox, "modulate:a", 0.0, 2.5).set_trans(Tween.TRANS_SINE)
 	await tw_out.finished
 
 	canvas.queue_free()

@@ -1019,10 +1019,6 @@
         },
         {
             "type": "say_clear"
-        },
-        {
-            "type": "fade_clear",
-            "dur": 1.5
         }
     ],
     "chat_voice_dir": "res://assets/audio/voice/ch02_souko_chat/"

@@ -1356,22 +1356,21 @@
             "return_label": "cp3_choice",
             "sections": [
                 {
-                    "title": "奉　納",
+                    "title": "生　還",
                     "mood": "cold",
-                    "image": "res://assets/textures/true_bad_shrine.png",
                     "wait": 2.0,
                     "lines": [
                         {
-                            "text": "スマホを神社の祠の石台に置いた。",
+                            "text": "神社を飛び出して、山を一気に駆け下りた。",
                             "pause": 3.5
                         },
                         {
-                            "text": "最後のお札を貼り付けた瞬間、画面の中のみゆきが静止した。",
+                            "text": "スマホは置いてきた。配信も止まった。",
                             "pause": 4.0
                         },
                         {
-                            "text": "配信は……まだつながっている。",
-                            "pause": 3.5
+                            "text": "全部終わった。そう思っていた。",
+                            "pause": 4.5
                         }
                     ]
                 },
@@ -1381,98 +1380,144 @@
                     "wait": 1.5,
                     "lines": [
                         {
-                            "text": "私は一目散に山を駆け下りた。",
+                            "text": "自宅に帰り着いて、ソファに倒れ込んだ。",
                             "pause": 3.5
                         },
                         {
-                            "text": "振り返らなかった。振り返れなかった。",
-                            "pause": 4.0
-                        },
-                        {
-                            "text": "同接は……まだ増えている。",
-                            "pause": 3.5,
-                            "emphasis": true
-                        }
-                    ]
-                },
-                {
-                    "title": "── 定点映像 ──",
-                    "mood": "dark",
-                    "image": "res://assets/textures/true_bad_shrine.png",
-                    "wait": 2.0,
-                    "lines": [
-                        {
-                            "text": "カメラが切り替わる。",
+                            "text": "サブのスマホが、震えた。",
                             "pause": 3.0
                         },
                         {
-                            "text": "誰もいなくなった神社の境内。",
-                            "pause": 3.5
+                            "text": "通知：『しゅっちさんのライブ配信が始まりました』",
+                            "pause": 5.0,
+                            "emphasis": true
                         },
                         {
-                            "text": "石灯籠の灯だけが、ゆっくりと揺れている。",
-                            "pause": 4.0
+                            "text": "配信用スマホは——霧原神社に置いてきたのに。",
+                            "pause": 5.0
                         }
                     ]
                 },
                 {
                     "title": "",
                     "mood": "fear",
-                    "image": "res://assets/textures/true_bad_hand.png",
+                    "image": "res://assets/textures/true_bad_shrine.png",
                     "wait": 1.5,
                     "lines": [
                         {
-                            "text": "……何かが、近づいてくる。",
-                            "pause": 3.5
+                            "text": "震える手でタップした。",
+                            "pause": 3.0
                         },
                         {
-                            "text": "足音はない。影もない。",
-                            "pause": 3.5
+                            "text": "画面に映っていたのは——自分の部屋だった。",
+                            "pause": 5.0,
+                            "emphasis": true
                         },
                         {
-                            "text": "ただ、空気が──歪んでいく。",
-                            "pause": 4.0
+                            "text": "カメラの位置がおかしい。自分では設置できない角度だ。",
+                            "pause": 4.5
+                        },
+                        {
+                            "text": "誰かが、今この瞬間——私の部屋を配信している。",
+                            "pause": 5.0
+                        },
+                        {
+                            "text": "同接数：89,452人。",
+                            "pause": 4.0,
+                            "emphasis": true
                         }
                     ]
                 },
                 {
                     "title": "",
                     "mood": "fear",
-                    "image": "res://assets/textures/true_bad_hand.png",
-                    "wait": 1.0,
+                    "image": "res://assets/textures/true_bad_eyes.jpg",
+                    "wait": 0.5,
+                    "typewriter": "K ：「 よ う こ そ 」",
                     "lines": [
                         {
-                            "text": "首のない影が、スマホの画面を覗き込む。",
+                            "text": "チャット欄を見た。",
+                            "pause": 3.0
+                        },
+                        {
+                            "text": "固定コメント——ユーザー名「K」。",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "『今夜から、あなたの家が次の配信スタジオになります。』",
+                            "pause": 5.5,
+                            "emphasis": true
+                        },
+                        {
+                            "text": "その下に流れ続けるチャット——全員が同じ文字を打っていた。",
                             "pause": 4.0
                         },
                         {
-                            "text": "あなたのことが、見えるよ。",
-                            "pause": 3.5,
+                            "text": "『見てるよ』『見てるよ』『見てるよ』『見てるよ』——",
+                            "pause": 5.5,
+                            "emphasis": true
+                        }
+                    ]
+                },
+                {
+                    "title": "── 後日談 ──",
+                    "mood": "dark",
+                    "image": "res://assets/textures/true_bad_eyes.jpg",
+                    "wait": 2.0,
+                    "typewriter": "K は 最 初 か ら 知 っ て い た",
+                    "lines": [
+                        {
+                            "text": "最初にDMを送ってきたアカウントは、翌朝には消えていた。",
+                            "pause": 4.5
+                        },
+                        {
+                            "text": "同じ手口で廃村に誘い込まれた配信者が、過去に少なくとも6人いた。",
+                            "pause": 5.0
+                        },
+                        {
+                            "text": "全員、配信を停止した後、行方不明になっている。",
+                            "pause": 5.0,
                             "emphasis": true
                         },
                         {
-                            "text": "ずっと……みていてね。",
-                            "pause": 4.0,
-                            "emphasis": true
+                            "text": "Kは——霧原村の怪異を管理・運用する組織の窓口だった。",
+                            "pause": 5.5
                         },
                         {
-                            "text": "ふふ……",
-                            "pause": 3.5
+                            "text": "彼らは『視聴者数』を指標に、怪異の強度を調整していた。",
+                            "pause": 5.0
+                        },
+                        {
+                            "text": "しゅっちは、7人目の配信スタジオになった。",
+                            "pause": 6.0,
+                            "emphasis": true
                         }
                     ]
                 },
                 {
                     "title": "",
                     "mood": "dark",
-                    "wait": 2.0,
+                    "wait": 3.0,
                     "lines": [
                         {
-                            "text": "配信は、今もつながっている。",
-                            "pause": 3.5
+                            "text": "チャンネル『@shucchi_horror』は現在も更新されている。",
+                            "pause": 4.5
                         },
                         {
-                            "text": "同接数：？？？？？",
-                            "pause": 5.0,
+                            "text": "配信者は画面に映らない。声もない。",
+                            "pause": 4.0
+                        },
+                        {
+                            "text": "ただ——誰かの生活空間が、毎晩24時間、垂れ流されている。",
+                            "pause": 5.5
+                        },
+                        {
+                            "text": "最新のサムネイルは、暗闇の中で無数の赤い目に囲まれた少女の後ろ姿。",
+                            "pause": 5.0
+                        },
+                        {
+                            "text": "コメント欄には、今日も『見てるよ』が積み重なっていく。",
+                            "pause": 6.0,
                             "emphasis": true
                         }
                     ]
@@ -1480,7 +1525,7 @@
             ],
             "credits": {
                 "title": "— STAFF ROLL —",
-                "scroll_speed": 38,
+                "scroll_speed": 30,
                 "entries": [
                     {"role": "", "name": "REC : OFF : AIR", "style": "game_title"},
                     {"role": "", "name": ""},
@@ -1493,11 +1538,14 @@
                     {"role": "音声合成", "name": "VOICEVOX"},
                     {"role": "", "name": ""},
                     {"role": "", "name": "── SPECIAL THANKS ──", "style": "section"},
-                    {"role": "", "name": "視聴者のみなさんへ"},
                     {"role": "", "name": ""},
-                    {"role": "", "name": "この配信を最後まで見てくれて、ありがとう。"},
+                    {"role": "", "name": "この配信を最後まで見てくれたあなたへ。"},
                     {"role": "", "name": ""},
-                    {"role": "", "name": "…みゆきちゃんも、きっと喜んでいるはずだから。", "style": "whisper"},
+                    {"role": "", "name": ""},
+                    {"role": "", "name": "── K より ──", "style": "section"},
+                    {"role": "", "name": ""},
+                    {"role": "", "name": "「ご視聴ありがとうございました。」", "style": "whisper"},
+                    {"role": "", "name": "「また見てくださいね。」", "style": "whisper"},
                     {"role": "", "name": ""},
                     {"role": "", "name": ""},
                     {"role": "", "name": "REC : OFF : AIR", "style": "whisper"}

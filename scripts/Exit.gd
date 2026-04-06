@@ -35,6 +35,9 @@ func _on_item_collected(count: int, total: int) -> void:
 ## ゴール到達時の演出コールバック（Main.gd から設定）
 ## 設定されている場合、演出完了後に遷移する
 var on_exit_callback : Callable = Callable()
+## true にするとコールバック後の advance_to_next_chapter() をスキップする
+## （コールバック内でエンディング遷移まで完結する場合に使用）
+var skip_advance : bool = false
 
 func _on_body_entered(body: Node3D) -> void:
 	if not body.is_in_group("player"):
@@ -49,7 +52,8 @@ func _on_body_entered(body: Node3D) -> void:
 			GameManager.ofuda_count -= 1
 		if on_exit_callback.is_valid():
 			await on_exit_callback.call()
-		GameManager.advance_to_next_chapter()
+		if not skip_advance:
+			GameManager.advance_to_next_chapter()
 	else:
 		_show_locked_message()
 

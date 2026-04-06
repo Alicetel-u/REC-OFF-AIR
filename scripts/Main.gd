@@ -53,14 +53,14 @@ func _ready() -> void:
 		push_error("Main: chapter data failed to load — aborting _ready()")
 		return
 
-	# CP3 村の探索: JSON外部定義から読み込み
-	if chapter.chapter_id == "ch02_mura_tansaku":
-		_apply_mura_config(chapter)
+	# [CP3村探索廃止] CP3 村の探索: JSON外部定義から読み込み（村探索廃止のためコメントアウト）
+	#if chapter.chapter_id == "ch02_mura_tansaku":
+	#	_apply_mura_config(chapter)
 
 	# items_total を generate() より前に設定（Exit._ready() が参照するため）
 	GameManager.items_total = chapter.item_positions.size()
 	print("[Main] items_total set to: ", GameManager.items_total)
-	# CP2 section 2: 脱出シネマティックのみ（ステージ生成スキップ）
+	# CP2 section 2: souko exit + mura exit（CP3-2 神社階段まで）連鎖
 	if GameManager.start_section == 2 and chapter.chapter_id == "ch02_haison_souko":
 		GameManager.start_section = 0
 		hud.set_chrome($YouTubeChrome)
@@ -68,19 +68,37 @@ func _ready() -> void:
 		hud.danmaku_func = Callable(self, "_spawn_danmaku")
 		await LoadingScreen.fade_out()
 		await _play_souko_exit()
-		GameManager.advance_to_next_chapter()
 		return
-	# つなぎ演出（ステージ生成スキップ）
-	# CP1 Section 1 は商店街パート、CP2 Section 1 はプレイアブル → スキップ対象外
-	if GameManager.start_section == 1 and chapter.chapter_id not in ["ch01_haison_iriguchi", "ch02_haison_souko"]:
+	# CP2 section 3: CP3-2（神社階段→3択）デバッグ直行（ソウコ脱出演出スキップ）
+	if GameManager.start_section == 3 and chapter.chapter_id == "ch02_haison_souko":
 		GameManager.start_section = 0
 		hud.set_chrome($YouTubeChrome)
 		_setup_danmaku()
 		hud.danmaku_func = Callable(self, "_spawn_danmaku")
 		await LoadingScreen.fade_out()
-		await _play_mura_exit() if chapter.chapter_id == "ch02_mura_tansaku" else _play_souko_exit()
-		GameManager.advance_to_next_chapter()
+		await _play_mura_exit()
 		return
+	# CP2 section 4: 3択（cp3_choice）デバッグ直行（神社階段演出もスキップ）
+	if GameManager.start_section == 4 and chapter.chapter_id == "ch02_haison_souko":
+		GameManager.start_section = 0
+		hud.set_chrome($YouTubeChrome)
+		_setup_danmaku()
+		hud.danmaku_func = Callable(self, "_spawn_danmaku")
+		await LoadingScreen.fade_out()
+		player.input_disabled = true
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		await _run_chapter_opening_from_label("ch02_mura_tansaku_exit", "cp3_choice")
+		return
+	# [CP3村探索廃止] start_section==1 でmura_tansaku直接再生するパス（廃止）
+	#if GameManager.start_section == 1 and chapter.chapter_id not in ["ch01_haison_iriguchi", "ch02_haison_souko"]:
+	#	GameManager.start_section = 0
+	#	hud.set_chrome($YouTubeChrome)
+	#	_setup_danmaku()
+	#	hud.danmaku_func = Callable(self, "_spawn_danmaku")
+	#	await LoadingScreen.fade_out()
+	#	await _play_mura_exit() if chapter.chapter_id == "ch02_mura_tansaku" else _play_souko_exit()
+	#	GameManager.advance_to_next_chapter()
+	#	return
 	var result: Dictionary = stage_gen.generate(chapter)
 
 	# プレイヤー位置をチャプターデータに合わせる
@@ -129,9 +147,9 @@ func _ready() -> void:
 		player.flashlight.visible  = false
 		player.flashlight_on       = false
 
-	# CP2 村の探索: 出口方向（+Z）を向く
-	if chapter.chapter_id == "ch02_mura_tansaku":
-		player.rotation.y = PI  # +Z方向（出口方面）を向く
+	# [CP3村探索廃止] CP3 村の探索: 出口方向（+Z）を向く
+	#if chapter.chapter_id == "ch02_mura_tansaku":
+	#	player.rotation.y = PI  # +Z方向（出口方面）を向く
 
 	_setup_debug_ui()
 
@@ -185,33 +203,22 @@ func _ready() -> void:
 
 	# プレイアブルチャプター（CP2・CP3）はJSON演出なし → 即プレイ開始
 	var is_cinematic : bool = cur_chapter != null and cur_chapter.chapter_id in AUTO_PROGRESS_CHAPTERS
-	var is_playable : bool = cur_chapter != null and cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku"]
+	var is_playable : bool = cur_chapter != null and cur_chapter.chapter_id in ["ch02_haison_souko"]
 
 	if is_playable:
 		# start_section==1 のつなぎ演出は _ready() 冒頭で処理済み
-		# CP3 村の探索: 即プレイアブル + バックグラウンドで演出
-		if cur_chapter.chapter_id == "ch02_mura_tansaku":
-			# BGM「静寂ノ境界」を流す
-			SoundManager.play_bgm("res://assets/audio/bgm/静寂ノ境界.mp3", -12.0, 1.0, 3.0)
-			# ゴースト有効化（grace付き）
-			GameManager.ghost_grace = true
-			for ghost: Node in get_tree().get_nodes_in_group("ghost"):
-				ghost.process_mode = Node.PROCESS_MODE_INHERIT
-				ghost.visible = true
-			get_tree().create_timer(15.0).timeout.connect(func() -> void:
-				GameManager.ghost_grace = false)
-			# NOTE: CP3エフェクト一時無効化
-			#var vhs_mat := _setup_encoding_vhs_overlay()
-			#var enc_err := preload("res://scripts/EncodingError.gd").new()
-			#enc_err.name = "EncodingError"
-			#var chrome_ref := get_node_or_null("YouTubeChrome")
-			#enc_err.setup(player, vhs_mat, chrome_ref)
-			#add_child(enc_err)
-			#enc_err.gauge_changed.connect(hud.on_encoding_error_changed)
-			#enc_err.gauge_maxed.connect(_on_encoding_error_maxed)
-		
-		# 廃倉庫・村の探索パートでは視点を高くする（ユーザー要望）
-		if cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku"]:
+		# [CP3村探索廃止] CP3 村の探索: 即プレイアブル + バックグラウンドで演出
+		#if cur_chapter.chapter_id == "ch02_mura_tansaku":
+		#	SoundManager.play_bgm("res://assets/audio/bgm/静寂ノ境界.mp3", -12.0, 1.0, 3.0)
+		#	GameManager.ghost_grace = true
+		#	for ghost: Node in get_tree().get_nodes_in_group("ghost"):
+		#		ghost.process_mode = Node.PROCESS_MODE_INHERIT
+		#		ghost.visible = true
+		#	get_tree().create_timer(15.0).timeout.connect(func() -> void:
+		#		GameManager.ghost_grace = false)
+
+		# 廃倉庫パートでは視点を高くする（ユーザー要望）
+		if cur_chapter.chapter_id in ["ch02_haison_souko"]:
 			player.set_head_height(2.5)
 		else:
 			player.set_head_height(0.7)
@@ -236,9 +243,9 @@ func _ready() -> void:
 		# CP2廃倉庫: 自由移動開始後のバックグラウンドコメント
 		if cur_chapter.chapter_id == "ch02_haison_souko":
 			_run_chapter_opening_background("ch02_haison_souko_free")
-		# CP3村の探索: アイテム探索目標画面を表示（非ブロック）
-		if cur_chapter.chapter_id == "ch02_mura_tansaku":
-			_show_mura_objective()
+		# [CP3村探索廃止] CP3村の探索: アイテム探索目標画面を表示（非ブロック）
+		#if cur_chapter.chapter_id == "ch02_mura_tansaku":
+		#	_show_mura_objective()
 	elif cur_chapter:
 		# シネマティック: JSON演出を実行
 		await _run_chapter_opening(cur_chapter.chapter_id)
@@ -266,21 +273,24 @@ func _ready() -> void:
 	# ゴーストはVHS2個回収で有効化（_on_ghosts_awaken で処理）
 	GameManager.item_collected.connect(_on_item_for_ghost_awaken)
 	GameManager.item_collected.connect(_on_item_collected_warehouse)
-	GameManager.item_collected.connect(_on_item_collected_village)
+	# [CP3村探索廃止] 村アイテム収集コールバックはCP3廃止のためコメントアウト
+	#GameManager.item_collected.connect(_on_item_collected_village)
 
-	# CP2廃倉庫: ゴール到達時にv103,v104演出を挟んでから遷移
+	# CP2廃倉庫: ゴール到達時にsouko_exit→mura_exit（CP3-2紙芝居）を連鎖して遷移
+	# skip_advance=true でエンディング遷移はコールバック内で完結させる
 	if cur_chapter and cur_chapter.chapter_id == "ch02_haison_souko":
 		stage_gen.exit_node.on_exit_callback = Callable(self, "_play_souko_exit")
-	# CP3村の探索: ゴール到達時にクリア演出を挟んでから遷移
-	if cur_chapter and cur_chapter.chapter_id == "ch02_mura_tansaku":
-		stage_gen.exit_node.on_exit_callback = Callable(self, "_play_mura_exit")
+		stage_gen.exit_node.skip_advance = true
+	# [CP3村探索廃止] CP3村探索ゴール時コールバック（廃止）
+	#if cur_chapter and cur_chapter.chapter_id == "ch02_mura_tansaku":
+	#	stage_gen.exit_node.on_exit_callback = Callable(self, "_play_mura_exit")
 
-	# ミニマップ: CP2は演出後にフェードイン、CP3は即表示
+	# ミニマップ: CP2は演出後にフェードイン
 	if cur_chapter and cur_chapter.chapter_id == "ch02_haison_souko":
 		_setup_minimap_delayed(Vector2(-25, -18), Vector2(25, 18))
-	if cur_chapter and cur_chapter.chapter_id == "ch02_mura_tansaku":
-		# 村のマップは広いため、表示範囲を広げる (-80, -80) から (120, 120)
-		_setup_minimap(Vector2(-80, -80), Vector2(120, 120))
+	# [CP3村探索廃止] CP3村ミニマップ（廃止）
+	#if cur_chapter and cur_chapter.chapter_id == "ch02_mura_tansaku":
+	#	_setup_minimap(Vector2(-80, -80), Vector2(120, 120))
 
 	# ナビ矢印用: プレイヤー参照をHUDに渡す
 	hud._player_ref = player
@@ -356,8 +366,22 @@ func _run_chapter_opening(chapter_id: String) -> void:
 	director.set("player", player)
 	director.set("hud", hud)
 	add_child(director)
-	# EntranceDirector.run() は DIALOGUE_JSON 定数を使うため、
-	# 動的パスは _run_from_path() で渡す
+	await director.run_from_path(path)
+	director.cleanup()
+	remove_child(director)
+	director.queue_free()
+
+
+func _run_chapter_opening_from_label(chapter_id: String, label: String) -> void:
+	## 指定ラベルからシーケンスを開始（デバッグ直行用）
+	var path := "res://dialogue/%s.json" % chapter_id
+	if not FileAccess.file_exists(path):
+		return
+	var director: Node = EntranceDirectorScript.new()
+	director.set("player", player)
+	director.set("hud", hud)
+	director.set("start_label", label)
+	add_child(director)
 	await director.run_from_path(path)
 	director.cleanup()
 	remove_child(director)
@@ -455,47 +479,41 @@ func _unhandled_input(event: InputEvent) -> void:
 
 # ──────────────────────────────────────────────
 # ──────────────────────────────────────────────
-# CP3設定: JSONから読み込み
+# [CP3村探索廃止] CP3設定: JSONから読み込み（廃止のためコメントアウト）
 # ──────────────────────────────────────────────
 
-func _apply_mura_config(chapter: Resource) -> void:
-	var cfg := _load_json("res://dialogue/ch02_mura_items_config.json")
-	if cfg.is_empty():
-		push_warning("Main: ch02_mura_items_config.json が読み込めません、フォールバック")
-		return
-
-	# ステージ・スポーン・出口
-	if cfg.has("stage_scene_path"):
-		chapter.stage_scene_path = cfg["stage_scene_path"]
-	if cfg.has("player_spawn"):
-		var sp : Array = cfg["player_spawn"]
-		chapter.player_spawn = Vector3(sp[0], sp[1], sp[2])
-	if cfg.has("exit_position"):
-		var ep : Array = cfg["exit_position"]
-		chapter.exit_position = Vector3(ep[0], ep[1], ep[2])
-
-	# アイテム座標
-	if cfg.has("items"):
-		var items_arr : Array = cfg["items"]
-		var positions := PackedVector3Array()
-		for item_data in items_arr:
-			var p : Array = item_data["position"]
-			positions.append(Vector3(p[0], p[1], p[2]))
-		chapter.item_positions = positions
-
-	# ゴースト
-	if cfg.has("ghosts"):
-		var GhostConfigScript := preload("res://scripts/GhostConfig.gd")
-		var ghost_configs : Array[Resource] = []
-		for gd_data in cfg["ghosts"]:
-			var gc := GhostConfigScript.new()
-			var gp : Array = gd_data["position"]
-			gc.position = Vector3(gp[0], gp[1], gp[2])
-			gc.model_path = gd_data.get("model", "res://assets/models/characters/Miyuki.glb")
-			var s : float = float(gd_data.get("scale", 3))
-			gc.model_scale = Vector3(s, s, s)
-			ghost_configs.append(gc)
-		chapter.ghost_configs = ghost_configs
+#func _apply_mura_config(chapter: Resource) -> void:
+#	var cfg := _load_json("res://dialogue/ch02_mura_items_config.json")
+#	if cfg.is_empty():
+#		push_warning("Main: ch02_mura_items_config.json が読み込めません、フォールバック")
+#		return
+#	if cfg.has("stage_scene_path"):
+#		chapter.stage_scene_path = cfg["stage_scene_path"]
+#	if cfg.has("player_spawn"):
+#		var sp : Array = cfg["player_spawn"]
+#		chapter.player_spawn = Vector3(sp[0], sp[1], sp[2])
+#	if cfg.has("exit_position"):
+#		var ep : Array = cfg["exit_position"]
+#		chapter.exit_position = Vector3(ep[0], ep[1], ep[2])
+#	if cfg.has("items"):
+#		var items_arr : Array = cfg["items"]
+#		var positions := PackedVector3Array()
+#		for item_data in items_arr:
+#			var p : Array = item_data["position"]
+#			positions.append(Vector3(p[0], p[1], p[2]))
+#		chapter.item_positions = positions
+#	if cfg.has("ghosts"):
+#		var GhostConfigScript := preload("res://scripts/GhostConfig.gd")
+#		var ghost_configs : Array[Resource] = []
+#		for gd_data in cfg["ghosts"]:
+#			var gc := GhostConfigScript.new()
+#			var gp : Array = gd_data["position"]
+#			gc.position = Vector3(gp[0], gp[1], gp[2])
+#			gc.model_path = gd_data.get("model", "res://assets/models/characters/Miyuki.glb")
+#			var s : float = float(gd_data.get("scale", 3))
+#			gc.model_scale = Vector3(s, s, s)
+#			ghost_configs.append(gc)
+#		chapter.ghost_configs = ghost_configs
 
 
 func _load_json(path: String) -> Dictionary:
@@ -1660,26 +1678,21 @@ func _dim_lights_recursive(node: Node, mult: float, dur: float) -> void:
 		_dim_lights_recursive(child, mult, dur)
 
 
-func _on_item_collected_village(count: int, total: int) -> void:
-	## CP3 村の探索チャプター専用：アイテム回収時にミニマップを更新
-	if not (GameManager.current_chapter and GameManager.current_chapter.chapter_id == "ch02_mura_tansaku"):
-		return
-
-	# ミニマップのアイテムを Node3D 参照で更新
-	# （Node3Dが queue_free されると is_instance_valid=false → ミニマップから自動消去）
-	var minimap_layer := get_node_or_null("MinimapLayer")
-	if minimap_layer and minimap_layer.get_child_count() > 0:
-		var minimap = minimap_layer.get_child(0)
-		if is_instance_valid(minimap) and minimap.has_method("update_items"):
-			var items : Array = []
-			for node in get_tree().get_nodes_in_group("village_item"):
-				if is_instance_valid(node) and not node.is_queued_for_deletion():
-					items.append(node)  # Node3D参照（座標ではなくノード自体）
-			minimap.update_items(items)
-
-	# 全アイテム回収時: 出口を出現させる
-	if count >= total:
-		_reveal_mura_exit()
+## [CP3村探索廃止] _on_item_collected_village — CP3廃止のためコメントアウト
+#func _on_item_collected_village(count: int, total: int) -> void:
+#	if not (GameManager.current_chapter and GameManager.current_chapter.chapter_id == "ch02_mura_tansaku"):
+#		return
+#	var minimap_layer := get_node_or_null("MinimapLayer")
+#	if minimap_layer and minimap_layer.get_child_count() > 0:
+#		var minimap = minimap_layer.get_child(0)
+#		if is_instance_valid(minimap) and minimap.has_method("update_items"):
+#			var items : Array = []
+#			for node in get_tree().get_nodes_in_group("village_item"):
+#				if is_instance_valid(node) and not node.is_queued_for_deletion():
+#					items.append(node)
+#			minimap.update_items(items)
+#	if count >= total:
+#		_reveal_mura_exit()
 
 
 func _show_item_acquired(count: int, total: int) -> void:
@@ -1868,11 +1881,13 @@ func _setup_minimap(map_min: Vector2, map_max: Vector2) -> void:
 	# CP3: VillageItemノード自体を渡す（回収=queue_freeで自動消失）
 	# それ以外: Vector3座標を渡す（カウンタ方式フォールバック）
 	var items : Array = []
-	if chapter.chapter_id == "ch02_mura_tansaku":
-		for node in get_tree().get_nodes_in_group("village_item"):
-			if is_instance_valid(node):
-				items.append(node)  # Node3D参照（回収後queue_free → 自動消去）
-	elif chapter.chapter_id != "ch02_haison_souko":
+	# [CP3村探索廃止] mura_tansaku専用アイテム処理は廃止
+	#if chapter.chapter_id == "ch02_mura_tansaku":
+	#	for node in get_tree().get_nodes_in_group("village_item"):
+	#		if is_instance_valid(node):
+	#			items.append(node)
+	#el
+	if chapter.chapter_id != "ch02_haison_souko":
 		# CP2以外は座標配列として扱う
 		for v in chapter.item_positions:
 			items.append(v)
@@ -1891,115 +1906,96 @@ func _setup_minimap(map_min: Vector2, map_max: Vector2) -> void:
 	# 構造物データを追加
 	if chapter.chapter_id == "ch02_haison_souko":
 		minimap.add_warehouse_walls()
-	elif chapter.chapter_id == "ch02_mura_tansaku":
-		# CP3: 出口はアイテム全回収後に _reveal_mura_exit() で表示するため初期非表示
-		minimap.hide_exit()
-		# MapGenerator は Main > Stage > MapGenerator にある
-		# _build() が 0.1s遅延で実行されるため、grid完成を待つ
-		_populate_village_minimap(minimap)
+	# [CP3村探索廃止] mura_tansaku ミニマップ構造物は廃止
+	#elif chapter.chapter_id == "ch02_mura_tansaku":
+	#	minimap.hide_exit()
+	#	_populate_village_minimap(minimap)
 
 
-func _populate_village_minimap(minimap: Control) -> void:
-	## CP3: 手動配置の建物・壁をミニマップに追加
-	await get_tree().create_timer(0.3).timeout
-	if not is_instance_valid(minimap):
-		return
-	var stage_node : Node = get_node_or_null("Stage")
-	if stage_node == null:
-		return
-	var structures : Array = []
-	for child in stage_node.get_children():
-		if child.name.begins_with("ManualBuilding") or child.name.begins_with("Concrete"):
-			structures.append(child)
-	if structures.size() > 0:
-		minimap.add_manual_buildings(structures)
+## [CP3村探索廃止] _populate_village_minimap（廃止）
+#func _populate_village_minimap(minimap: Control) -> void:
+#	await get_tree().create_timer(0.3).timeout
+#	if not is_instance_valid(minimap):
+#		return
+#	var stage_node : Node = get_node_or_null("Stage")
+#	if stage_node == null:
+#		return
+#	var structures : Array = []
+#	for child in stage_node.get_children():
+#		if child.name.begins_with("ManualBuilding") or child.name.begins_with("Concrete"):
+#			structures.append(child)
+#	if structures.size() > 0:
+#		minimap.add_manual_buildings(structures)
 
 
-func _show_mura_objective() -> void:
-	## CP3村の探索: アイテム探索目標画面を非同期で表示（操作を止めない）
-	var canvas := CanvasLayer.new()
-	canvas.layer = 100
-	get_tree().root.add_child(canvas)
-
-	var root_ctrl := Control.new()
-	root_ctrl.set_anchors_preset(Control.PRESET_FULL_RECT)
-	root_ctrl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root_ctrl.modulate.a = 0.0
-	canvas.add_child(root_ctrl)
-
-	var dim := ColorRect.new()
-	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
-	dim.color = Color(0, 0, 0, 0.72)
-	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root_ctrl.add_child(dim)
-
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root_ctrl.add_child(center)
-
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 18)
-	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	center.add_child(vbox)
-
-	var title_lbl := Label.new()
-	title_lbl.text = "アイテムを探せ！"
-	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_lbl.add_theme_font_size_override("font_size", 42)
-	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
-	title_lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
-	title_lbl.add_theme_constant_override("shadow_offset_x", 2)
-	title_lbl.add_theme_constant_override("shadow_offset_y", 2)
-	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(title_lbl)
-
-	var sub_lbl := Label.new()
-	sub_lbl.text = "%d 個のアイテムを集めて村の謎を解け" % GameManager.items_total
-	sub_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sub_lbl.add_theme_font_size_override("font_size", 20)
-	sub_lbl.add_theme_color_override("font_color", Color(0.85, 0.82, 0.78))
-	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(sub_lbl)
-
-	var tw_in := create_tween()
-	tw_in.tween_property(root_ctrl, "modulate:a", 1.0, 0.6)
-	await tw_in.finished
-	await get_tree().create_timer(2.5).timeout
-	var tw_out := create_tween()
-	tw_out.tween_property(root_ctrl, "modulate:a", 0.0, 1.0).set_trans(Tween.TRANS_SINE)
-	await tw_out.finished
-	canvas.queue_free()
+## [CP3村探索廃止] _show_mura_objective（廃止）
+#func _show_mura_objective() -> void:
+#	var canvas := CanvasLayer.new()
+#	canvas.layer = 100
+#	get_tree().root.add_child(canvas)
+#	var root_ctrl := Control.new()
+#	root_ctrl.set_anchors_preset(Control.PRESET_FULL_RECT)
+#	root_ctrl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+#	root_ctrl.modulate.a = 0.0
+#	canvas.add_child(root_ctrl)
+#	var dim := ColorRect.new()
+#	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+#	dim.color = Color(0, 0, 0, 0.72)
+#	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+#	root_ctrl.add_child(dim)
+#	var center := CenterContainer.new()
+#	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+#	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+#	root_ctrl.add_child(center)
+#	var vbox := VBoxContainer.new()
+#	vbox.add_theme_constant_override("separation", 18)
+#	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+#	center.add_child(vbox)
+#	var title_lbl := Label.new()
+#	title_lbl.text = "アイテムを探せ！"
+#	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+#	title_lbl.add_theme_font_size_override("font_size", 42)
+#	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
+#	vbox.add_child(title_lbl)
+#	var sub_lbl := Label.new()
+#	sub_lbl.text = "%d 個のアイテムを集めて村の謎を解け" % GameManager.items_total
+#	sub_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+#	sub_lbl.add_theme_font_size_override("font_size", 20)
+#	sub_lbl.add_theme_color_override("font_color", Color(0.85, 0.82, 0.78))
+#	sub_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+#	vbox.add_child(sub_lbl)
+#	var tw_in := create_tween()
+#	tw_in.tween_property(root_ctrl, "modulate:a", 1.0, 0.6)
+#	await tw_in.finished
+#	await get_tree().create_timer(2.5).timeout
+#	var tw_out := create_tween()
+#	tw_out.tween_property(root_ctrl, "modulate:a", 0.0, 1.0).set_trans(Tween.TRANS_SINE)
+#	await tw_out.finished
+#	canvas.queue_free()
 
 
-func _reveal_mura_exit() -> void:
-	## CP3: 全アイテム回収時に出口を出現させる（ライト点灯 + ミニマップ + ナビ + メッセージ）
-	if not is_inside_tree():
-		return
-	var exit_pos : Vector3 = GameManager.current_chapter.exit_position if GameManager.current_chapter else Vector3.ZERO
-
-	# 出口ライトを点灯
-	var exit_node : Node3D = stage_gen.exit_node
-	if is_instance_valid(exit_node):
-		var exit_light : Node = exit_node.get_node_or_null("ExitLight")
-		if exit_light:
-			var tw_light := create_tween()
-			tw_light.tween_property(exit_light, "light_energy", 3.0, 2.0)
-
-	# ミニマップに出口を表示
-	var minimap_layer := get_node_or_null("MinimapLayer")
-	if minimap_layer and minimap_layer.get_child_count() > 0:
-		var mm = minimap_layer.get_child(0)
-		if is_instance_valid(mm) and mm.has_method("show_exit"):
-			mm.show_exit(exit_pos)
-
-	# ナビ矢印を出口方向へ + モノローグ
-	if is_instance_valid(hud):
-		hud.retarget_nav(exit_pos, "EXIT")
-		hud.show_monologue("全部集めた……出口を探せ！")
-	await get_tree().create_timer(3.0).timeout
-	if is_instance_valid(hud):
-		hud.hide_monologue()
+## [CP3村探索廃止] _reveal_mura_exit（廃止）
+#func _reveal_mura_exit() -> void:
+#	if not is_inside_tree():
+#		return
+#	var exit_pos : Vector3 = GameManager.current_chapter.exit_position if GameManager.current_chapter else Vector3.ZERO
+#	var exit_node : Node3D = stage_gen.exit_node
+#	if is_instance_valid(exit_node):
+#		var exit_light : Node = exit_node.get_node_or_null("ExitLight")
+#		if exit_light:
+#			var tw_light := create_tween()
+#			tw_light.tween_property(exit_light, "light_energy", 3.0, 2.0)
+#	var minimap_layer := get_node_or_null("MinimapLayer")
+#	if minimap_layer and minimap_layer.get_child_count() > 0:
+#		var mm = minimap_layer.get_child(0)
+#		if is_instance_valid(mm) and mm.has_method("show_exit"):
+#			mm.show_exit(exit_pos)
+#	if is_instance_valid(hud):
+#		hud.retarget_nav(exit_pos, "EXIT")
+#		hud.show_monologue("全部集めた……出口を探せ！")
+#	await get_tree().create_timer(3.0).timeout
+#	if is_instance_valid(hud):
+#		hud.hide_monologue()
 
 
 func _show_controls_guide() -> void:
@@ -2108,8 +2104,10 @@ func _play_souko_exit() -> void:
 		ghost.process_mode = Node.PROCESS_MODE_DISABLED
 		ghost.visible = false
 	await _run_chapter_opening("ch02_haison_souko_exit")
-	player.input_disabled = false
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	# CP3村探索をスキップしてそのままCP3-2（神社階段→3択→エンディング）へ直行
+	await _play_mura_exit()
+	# エンディング遷移は _play_mura_exit 内で完結するため、ここでは操作復帰しない
+	# （skip_advance=true でExit.gdからの advance_to_next_chapter もスキップ済み）
 
 
 func _play_mura_exit() -> void:

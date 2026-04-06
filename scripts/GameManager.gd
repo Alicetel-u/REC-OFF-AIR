@@ -43,7 +43,8 @@ var chapter_index: int = 0
 var chapter_order: Array[String] = [
 	"res://chapters/ch01_haison_iriguchi.tres",   # CP1: 廃村入口→トイレ
 	"res://chapters/ch02_haison_souko.tres",      # CP2: 廃倉庫 ─ 保存された絶叫
-	"res://chapters/ch02_mura_tansaku.tres",      # CP3: 村の探索（マップのみ）
+	# CP3村探索は廃止 — CP2クリア後にCP3-2紙芝居(ch02_mura_tansaku_exit)へ直接遷移
+	#"res://chapters/ch02_mura_tansaku.tres",      # CP3: 村の探索（マップのみ）
 ]
 
 ## ── エンディング集 ──

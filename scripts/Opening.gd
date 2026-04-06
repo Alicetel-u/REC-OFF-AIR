@@ -61,11 +61,11 @@ func _ready() -> void:
 			GameManager.autotest_mode = "skip"
 			_go_to_game()
 			return
-		# "3-2" → CP3-2（クリア演出のみ確認）
+		# "3-2" → CP3-2（神社階段→3択 デバッグ直行）
 		if at_content == "3-2":
-			GameManager.start_section = 1
-			print("[AutoTest] file flag: CP3-2 クリア演出確認")
-			_go_to_chapter(2)
+			GameManager.start_section = 3
+			print("[AutoTest] file flag: CP3-2 神社階段デバッグ直行")
+			_go_to_chapter(1)
 			return
 		# "3s" → CP3即クリア, "3" → CP3自動プレイ
 		var skip_mode : bool = at_content.ends_with("s")
@@ -105,17 +105,22 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		print("[AutoTest] ===== F11: タイトルからオートテスト開始 =====")
 		_go_to_game()
 		return
-	# F1〜F3: チャプター直接ジャンプ、F4: CP3-2
+	# F1: CP1、F2: CP2、F3: CP3-1（神社階段）、F4: CP3-2（3択直行）
 	var idx := -1
 	match kc:
 		KEY_F1: idx = 0
 		KEY_F2: idx = 1
-		KEY_F3: idx = 2
+		KEY_F3:
+			get_viewport().set_input_as_handled()
+			GameManager.start_section = 3
+			print("[Debug] タイトルから CP3-1（神社階段）へジャンプ")
+			_go_to_chapter(1)
+			return
 		KEY_F4:
 			get_viewport().set_input_as_handled()
-			GameManager.start_section = 1
-			print("[Debug] タイトルから CP3-2 へジャンプ")
-			_go_to_chapter(2)
+			GameManager.start_section = 4
+			print("[Debug] タイトルから CP3-2（3択直行）へジャンプ")
+			_go_to_chapter(1)
 			return
 	if idx >= 0:
 		get_viewport().set_input_as_handled()
@@ -1085,9 +1090,9 @@ const CHAPTER_INFO : Array[Dictionary] = [
 		{"name": "CP2-2  廃倉庫探索", "sub": "VHS収集＋ゴースト", "section": 1},
 		{"name": "CP2-3  ストーリー", "sub": "ブラウン管の恐怖→神社へ", "section": 2},
 	]},
-	{"name": "CP3  村の探索", "sub": "10FPSの呪い", "icon": "🏘", "order_index": 2, "sections": [
-		{"name": "CP3-1  村探索", "sub": "3つの道具を集める", "section": 0},
-		{"name": "CP3-2  霧原神社", "sub": "神社の階段〜灯籠の秘密", "section": 1},
+	{"name": "CP3  霧原神社", "sub": "神社の階段〜灯籠の秘密", "icon": "⛩", "order_index": 1, "sections": [
+		{"name": "CP3-1  霧原神社", "sub": "神社の階段から灯籠まで", "section": 3},
+		{"name": "CP3-2  ３択", "sub": "灯籠のスマホ〜エンディング分岐", "section": 4},
 	]},
 ]
 

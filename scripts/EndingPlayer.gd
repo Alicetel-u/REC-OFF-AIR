@@ -443,6 +443,31 @@ func _play_section(section: Dictionary, idx: int) -> void:
 	else:
 		_section_lbl.add_theme_color_override("font_color", Color(0.6, 0.3, 0.3, 0.0))
 
+	# ── タイプライター演出（typewriterフィールドがあれば中央に叩き込む） ──
+	var typewriter_text : String = section.get("typewriter", "")
+	if typewriter_text != "" and not _skip_requested:
+		_center_big.text = ""
+		_center_big.add_theme_color_override("font_color", Color(0.8, 0.05, 0.05, 0.0))
+		var tw_cshow := create_tween()
+		tw_cshow.tween_property(_center_big, "theme_override_colors/font_color:a", 0.0, 0.0)
+		await tw_cshow.finished
+		var accumulated : String = ""
+		for ch in typewriter_text:
+			if _skip_requested:
+				break
+			accumulated += ch
+			_center_big.text = accumulated
+			var tw_char := create_tween()
+			tw_char.tween_property(_center_big, "theme_override_colors/font_color:a", 0.85, 0.05)
+			await tw_char.finished
+			await _wait(0.12)
+		await _wait(2.0)
+		# フェードアウト
+		var tw_cout := create_tween()
+		tw_cout.tween_property(_center_big, "theme_override_colors/font_color:a", 0.0, 1.5)
+		await tw_cout.finished
+		_center_big.text = ""
+
 	# ── 各行を表示 ──
 	for line_idx in range(lines.size()):
 		if _skip_requested:
