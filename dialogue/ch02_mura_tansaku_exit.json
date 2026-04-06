@@ -1356,168 +1356,189 @@
             "return_label": "cp3_choice",
             "sections": [
                 {
-                    "title": "生　還",
+                    "title": "神社の夜",
                     "mood": "cold",
-                    "wait": 2.0,
-                    "lines": [
-                        {
-                            "text": "神社を飛び出して、山を一気に駆け下りた。",
-                            "pause": 3.5
-                        },
-                        {
-                            "text": "スマホは置いてきた。配信も止まった。",
-                            "pause": 4.0
-                        },
-                        {
-                            "text": "全部終わった。そう思っていた。",
-                            "pause": 4.5
-                        }
-                    ]
-                },
-                {
-                    "title": "",
-                    "mood": "cold",
-                    "wait": 1.5,
-                    "lines": [
-                        {
-                            "text": "自宅に帰り着いて、ソファに倒れ込んだ。",
-                            "pause": 3.5
-                        },
-                        {
-                            "text": "サブのスマホが、震えた。",
-                            "pause": 3.0
-                        },
-                        {
-                            "text": "通知：『しゅっちさんのライブ配信が始まりました』",
-                            "pause": 5.0,
-                            "emphasis": true
-                        },
-                        {
-                            "text": "配信用スマホは——霧原神社に置いてきたのに。",
-                            "pause": 5.0
-                        }
-                    ]
-                },
-                {
-                    "title": "",
-                    "mood": "fear",
                     "image": "res://assets/textures/true_bad_shrine.png",
-                    "wait": 1.5,
+                    "wait": 2.5,
                     "lines": [
                         {
-                            "text": "震える手でタップした。",
+                            "text": "スマホを灯籠の前に置いた。",
                             "pause": 3.0
                         },
                         {
-                            "text": "画面に映っていたのは——自分の部屋だった。",
-                            "pause": 5.0,
+                            "text": "配信は続いている。同接：89,247人。",
+                            "pause": 4.5,
                             "emphasis": true
                         },
                         {
-                            "text": "カメラの位置がおかしい。自分では設置できない角度だ。",
-                            "pause": 4.5
-                        },
-                        {
-                            "text": "誰かが、今この瞬間——私の部屋を配信している。",
-                            "pause": 5.0
-                        },
-                        {
-                            "text": "同接数：89,452人。",
-                            "pause": 4.0,
-                            "emphasis": true
-                        }
-                    ]
-                },
-                {
-                    "title": "",
-                    "mood": "fear",
-                    "image": "res://assets/textures/true_bad_eyes.jpg",
-                    "wait": 0.5,
-                    "typewriter": "K ：「 よ う こ そ 」",
-                    "lines": [
-                        {
-                            "text": "チャット欄を見た。",
-                            "pause": 3.0
-                        },
-                        {
-                            "text": "固定コメント——ユーザー名「K」。",
+                            "text": "早く逃げなければ——そう思いながら、走った。",
                             "pause": 3.5
                         },
                         {
-                            "text": "『今夜から、あなたの家が次の配信スタジオになります。』",
-                            "pause": 5.5,
-                            "emphasis": true
+                            "text": "でも、わかっていた。",
+                            "pause": 2.5
                         },
                         {
-                            "text": "その下に流れ続けるチャット——全員が同じ文字を打っていた。",
-                            "pause": 4.0
-                        },
-                        {
-                            "text": "『見てるよ』『見てるよ』『見てるよ』『見てるよ』——",
-                            "pause": 5.5,
+                            "text": "この配信は、止まらない。",
+                            "pause": 5.0,
                             "emphasis": true
                         }
                     ]
                 },
                 {
-                    "title": "── 後日談 ──",
-                    "mood": "dark",
-                    "image": "res://assets/textures/true_bad_eyes.jpg",
+                    "title": "霧原みゆき",
+                    "mood": "cold",
                     "wait": 2.0,
-                    "typewriter": "K は 最 初 か ら 知 っ て い た",
                     "lines": [
                         {
-                            "text": "最初にDMを送ってきたアカウントは、翌朝には消えていた。",
-                            "pause": 4.5
+                            "text": "霧原みゆき。17歳。",
+                            "pause": 3.5
                         },
                         {
-                            "text": "同じ手口で廃村に誘い込まれた配信者が、過去に少なくとも6人いた。",
-                            "pause": 5.0
-                        },
-                        {
-                            "text": "全員、配信を停止した後、行方不明になっている。",
+                            "text": "20年前——この村の公衆トイレで首を撥ねられた。",
                             "pause": 5.0,
                             "emphasis": true
                         },
                         {
-                            "text": "Kは——霧原村の怪異を管理・運用する組織の窓口だった。",
-                            "pause": 5.5
+                            "text": "犯人は見つかっていない。",
+                            "pause": 3.5
                         },
                         {
-                            "text": "彼らは『視聴者数』を指標に、怪異の強度を調整していた。",
-                            "pause": 5.0
+                            "text": "目撃者も、いなかった。",
+                            "pause": 4.5
                         },
                         {
-                            "text": "しゅっちは、7人目の配信スタジオになった。",
+                            "text": "誰にも見られずに死んだ——それが、すべての始まりだった。",
                             "pause": 6.0,
                             "emphasis": true
                         }
                     ]
                 },
                 {
-                    "title": "",
+                    "title": "呪いの条件",
+                    "mood": "fear",
+                    "wait": 1.5,
+                    "typewriter": "視 線 が 呪 い を 完 成 さ せ る",
+                    "lines": [
+                        {
+                            "text": "霧原の呪いは——視線を喰らう。",
+                            "pause": 4.0,
+                            "emphasis": true
+                        },
+                        {
+                            "text": "死に際に万の目が注がれたとき、呪いは完成する。",
+                            "pause": 4.5
+                        },
+                        {
+                            "text": "みゆきが死んだ夜、見ていた者は——誰もいなかった。",
+                            "pause": 5.0
+                        },
+                        {
+                            "text": "呪いは未完のまま、みゆきの魂を縛り続けた。",
+                            "pause": 4.5
+                        },
+                        {
+                            "text": "20年間——首のない霊として、次を待ち続けた。",
+                            "pause": 6.0,
+                            "emphasis": true
+                        }
+                    ]
+                },
+                {
+                    "title": "赤い目の正体",
+                    "mood": "fear",
+                    "image": "res://assets/textures/true_bad_eyes.jpg",
+                    "wait": 0.5,
+                    "typewriter": "み ん な が ず っ と み て い た",
+                    "lines": [
+                        {
+                            "text": "暗闇の中で無数の目が光っている。",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "怪異の目ではない。",
+                            "pause": 3.5,
+                            "emphasis": true
+                        },
+                        {
+                            "text": "視聴者の目だ。",
+                            "pause": 5.0,
+                            "emphasis": true
+                        },
+                        {
+                            "text": "89,247人。全員が、神社に視線を注いでいた。",
+                            "pause": 5.0
+                        },
+                        {
+                            "text": "みゆきが足りなかったものを——",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "しゅっちが、全部揃えた。",
+                            "pause": 6.0,
+                            "emphasis": true
+                        }
+                    ]
+                },
+                {
+                    "title": "儀式の完成",
+                    "mood": "fear",
+                    "image": "res://assets/textures/true_bad_eyes.jpg",
+                    "wait": 1.0,
+                    "lines": [
+                        {
+                            "text": "廃村の最深部で、89,247の視線が神社に集まった。",
+                            "pause": 5.0
+                        },
+                        {
+                            "text": "みゆきが数年かけて待ち続けた条件が——",
+                            "pause": 4.0
+                        },
+                        {
+                            "text": "生中継のひと晩で、達成された。",
+                            "pause": 5.0,
+                            "emphasis": true
+                        },
+                        {
+                            "text": "みゆきは、解放された。",
+                            "pause": 4.0
+                        },
+                        {
+                            "text": "村に縛られていた呪いは——",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "89,247人の目を通して、外へ出た。",
+                            "pause": 7.0,
+                            "emphasis": true
+                        }
+                    ]
+                },
+                {
+                    "title": "今も、配信中",
                     "mood": "dark",
                     "wait": 3.0,
                     "lines": [
                         {
-                            "text": "チャンネル『@shucchi_horror』は現在も更新されている。",
-                            "pause": 4.5
-                        },
-                        {
-                            "text": "配信者は画面に映らない。声もない。",
+                            "text": "3日後、警察が霧原神社でスマホを発見した。",
                             "pause": 4.0
                         },
                         {
-                            "text": "ただ——誰かの生活空間が、毎晩24時間、垂れ流されている。",
-                            "pause": 5.5
+                            "text": "配信は、ずっと続いていた。",
+                            "pause": 4.0,
+                            "emphasis": true
                         },
                         {
-                            "text": "最新のサムネイルは、暗闇の中で無数の赤い目に囲まれた少女の後ろ姿。",
-                            "pause": 5.0
+                            "text": "しゅっちは、見つかっていない。",
+                            "pause": 4.5
                         },
                         {
-                            "text": "コメント欄には、今日も『見てるよ』が積み重なっていく。",
-                            "pause": 6.0,
+                            "text": "回収したスマホの最後の映像には——",
+                            "pause": 3.5
+                        },
+                        {
+                            "text": "灯籠の前に立つ、首のない影が映っていた。",
+                            "pause": 7.0,
                             "emphasis": true
                         }
                     ]
@@ -1542,7 +1563,7 @@
                     {"role": "", "name": "この配信を最後まで見てくれたあなたへ。"},
                     {"role": "", "name": ""},
                     {"role": "", "name": ""},
-                    {"role": "", "name": "── K より ──", "style": "section"},
+                    {"role": "", "name": "── 霧原村より ──", "style": "section"},
                     {"role": "", "name": ""},
                     {"role": "", "name": "「ご視聴ありがとうございました。」", "style": "whisper"},
                     {"role": "", "name": "「また見てくださいね。」", "style": "whisper"},
