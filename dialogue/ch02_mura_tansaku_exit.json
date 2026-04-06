@@ -1389,7 +1389,7 @@
                 {
                     "title": "霧原みゆき",
                     "mood": "cold",
-                    "image": "res://assets/textures/true_bad_miyuki_face.png",
+                    "image": "res://assets/textures/true_bad_miyuki_face_fixed.png",
                     "wait": 2.0,
                     "lines": [
                         {
@@ -1499,7 +1499,7 @@
                 {
                     "title": "儀式の完成",
                     "mood": "fear",
-                    "image": "res://assets/textures/true_bad_miyuki_face.png",
+                    "image": "res://assets/textures/true_bad_miyuki_face_fixed.png",
                     "wait": 1.0,
                     "lines": [
                         {
