@@ -377,7 +377,7 @@ func play(sections: Array, ending_title: String = "") -> void:
 ## セクション再生
 ## ──────────────────────────────────────────────────────
 func _play_section(section: Dictionary, idx: int) -> void:
-	var section_title : String = section.get("title", "")
+	var section_title : String = ""
 	var lines : Array = section.get("lines", [])
 	var image_path : String = section.get("image", "")
 	var post_wait : float = section.get("wait", 2.0)
@@ -446,6 +446,8 @@ func _play_section(section: Dictionary, idx: int) -> void:
 	# ── タイプライター演出（typewriterフィールドがあれば中央に叩き込む） ──
 	var typewriter_text : String = section.get("typewriter", "")
 	if typewriter_text != "" and not _skip_requested:
+		if mood == "fear":
+			await _glitch_burst(8.0, 1)
 		_center_big.text = ""
 		_center_big.add_theme_color_override("font_color", Color(0.8, 0.05, 0.05, 0.0))
 		var tw_cshow := create_tween()
@@ -460,8 +462,12 @@ func _play_section(section: Dictionary, idx: int) -> void:
 			var tw_char := create_tween()
 			tw_char.tween_property(_center_big, "theme_override_colors/font_color:a", 0.85, 0.05)
 			await tw_char.finished
+			if mood == "fear" and randf() < 0.18:
+				_shake_amount = 3.5
 			await _wait(0.12)
 		await _wait(2.0)
+		if mood == "fear":
+			await _glitch_burst(9.0, 1)
 		# フェードアウト
 		var tw_cout := create_tween()
 		tw_cout.tween_property(_center_big, "theme_override_colors/font_color:a", 0.0, 1.5)
@@ -560,6 +566,7 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 	var voice_path : String = ""
 	var pause_after : float = 1.5
 	var emphasis : bool = false
+	var glitch : bool = false
 
 	var voice_dur : float = 0.0
 
@@ -568,6 +575,7 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 		voice_path = line.get("voice", "")
 		pause_after = float(line.get("pause", 1.5))
 		emphasis = line.get("emphasis", false)
+		glitch = line.get("glitch", false)
 		voice_dur = float(line.get("voice_dur", 0.0))
 	else:
 		text = str(line)
@@ -598,8 +606,13 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 
 	# ── emphasis: 画面中央に巨大テキスト + 特殊演出 ──
 	if emphasis:
+		if glitch:
+			await _glitch_burst(9.0, 1)
 		await _show_emphasis_line(text, pause_after, voice_dur)
 		return
+
+	if glitch:
+		await _glitch_burst(8.0, 1)
 
 	# ── 通常テキスト ──
 	var fmt_text : String = "[center]%s[/center]" % text
@@ -615,6 +628,11 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 	var type_dur : float = voice_dur if voice_dur > 0.1 else float(text.length()) * 0.045
 	var tw_type := create_tween()
 	tw_type.tween_property(_text_label, "visible_ratio", 1.0, type_dur)
+
+	if glitch and is_instance_valid(_heartbeat_overlay):
+		var tw_hb := create_tween()
+		tw_hb.tween_property(_heartbeat_overlay, "color:a", 0.12, 0.08)
+		tw_hb.tween_property(_heartbeat_overlay, "color:a", 0.0, 0.25)
 
 	# 音声が終わるまで待つ（テキストと音声の長い方）
 	if not _skip_requested:
@@ -675,6 +693,8 @@ func _show_emphasis_line(text: String, pause_after: float, voice_dur: float = 0.
 		if ch == "\n" or ch == "。" or ch == "、":
 			await get_tree().create_timer(pause_char).timeout
 		else:
+			if randf() < 0.12:
+				_shake_amount = 5.0
 			await get_tree().create_timer(per_char).timeout
 
 	# 全文字出た後の演出
@@ -693,6 +713,7 @@ func _show_emphasis_line(text: String, pause_after: float, voice_dur: float = 0.
 
 	# シェイク
 	_shake_amount = 4.0
+	await _glitch_burst(10.0, 1)
 
 	# 音声が終わるまで待つ
 	if is_instance_valid(_current_audio) and _current_audio.playing:

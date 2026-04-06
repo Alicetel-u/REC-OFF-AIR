@@ -10,42 +10,30 @@ const VP := Vector2(1280, 720)
 const FLOW_NODES : Array[Dictionary] = [
 	{"id": "cp1", "label": "CP1", "name": "廃村入口", "type": "chapter", "pos": Vector2(110, 200)},
 	{"id": "cp2", "label": "CP2", "name": "廃倉庫", "type": "chapter", "pos": Vector2(300, 200)},
-	{"id": "cp3", "label": "CP3", "name": "村の探索", "type": "chapter", "pos": Vector2(500, 200)},
-	{"id": "cp4", "label": "CP4", "name": "???", "type": "chapter", "pos": Vector2(720, 200)},
-	{"id": "cp5", "label": "CP5", "name": "???", "type": "chapter", "pos": Vector2(940, 200)},
+	{"id": "cp3_1", "label": "CP3-1", "name": "霧原神社", "type": "chapter", "pos": Vector2(540, 200)},
+	{"id": "cp3_2", "label": "CP3-2", "name": "３択分岐", "type": "chapter", "pos": Vector2(780, 200)},
 	{"id": "bad_hikikomori", "ending_id": "bad_hikikomori", "name": "ひきこもり", "type": "bad",
 	 "pos": Vector2(150, 380), "tag": "BAD END"},
 	{"id": "bad_eien", "ending_id": "bad_eien", "name": "永遠の配信", "type": "bad",
 	 "pos": Vector2(400, 380), "tag": "BAD END"},
 	{"id": "bad_ido", "ending_id": "bad_ido", "name": "アナタノカワリニ", "type": "bad",
-	 "pos": Vector2(600, 310), "tag": "BAD END"},
+	 "pos": Vector2(700, 380), "tag": "BAD END"},
 	{"id": "true_bad_end", "ending_id": "true_bad_end", "name": "視線ノ供物", "type": "ending",
-	 "pos": Vector2(600, 420), "tag": "TRUE BAD END"},
+	 "pos": Vector2(920, 430), "tag": "TRUE BAD END"},
 	{"id": "bad_predator", "ending_id": "bad_predator", "name": "盲目の捕食者", "type": "bad",
-	 "pos": Vector2(600, 530), "tag": "BAD END"},
-	{"id": "normal_end", "ending_id": "normal_end", "name": "???", "type": "ending",
-	 "pos": Vector2(1100, 310), "tag": "NORMAL END"},
-	{"id": "true_end", "ending_id": "true_end", "name": "???", "type": "ending",
-	 "pos": Vector2(1100, 420), "tag": "TRUE END"},
-	{"id": "bad_thumbnail", "ending_id": "bad_thumbnail", "name": "???", "type": "bad",
-	 "pos": Vector2(1100, 530), "tag": "BAD END"},
+	 "pos": Vector2(1080, 380), "tag": "BAD END"},
 ]
 
 # ── 接続定義 [from_id, to_id, style] ──
 const FLOW_CONNS : Array[Array] = [
 	["cp1", "cp2", "progress"],
-	["cp2", "cp3", "progress"],
-	["cp3", "cp4", "progress"],
-	["cp4", "cp5", "progress"],
+	["cp2", "cp3_1", "progress"],
+	["cp3_1", "cp3_2", "progress"],
 	["cp1", "bad_hikikomori", "bad"],
 	["cp2", "bad_eien", "bad"],
-	["cp3", "bad_eien", "bad"],
-	["cp3", "bad_ido", "bad"],
-	["cp3", "true_bad_end", "ending"],
-	["cp3", "bad_predator", "bad"],
-	["cp5", "normal_end", "ending"],
-	["cp5", "true_end", "ending"],
-	["cp5", "bad_thumbnail", "bad"],
+	["cp3_2", "bad_ido", "bad"],
+	["cp3_2", "true_bad_end", "ending"],
+	["cp3_2", "bad_predator", "bad"],
 ]
 
 # ── 色定義 ──
@@ -250,7 +238,7 @@ func _make_chapter_node(nd: Dictionary) -> Control:
 
 	# 進行度ドット（到達済みチャプターなら光る）
 	var chapter_idx : int = _get_chapter_index(nd["id"])
-	var reached : bool = chapter_idx <= GameManager.chapter_index
+	var reached : bool = _is_chapter_reached(nd["id"])
 	var dot_y : float = h - 10.0
 	for d in range(3):
 		var dot := ColorRect.new()
@@ -601,10 +589,24 @@ func _get_chapter_index(id: String) -> int:
 	match id:
 		"cp1": return 0
 		"cp2": return 1
-		"cp3": return 2
-		"cp4": return 3
-		"cp5": return 4
+		"cp3_1": return 2
+		"cp3_2": return 3
 		_:     return -1
+
+
+func _is_chapter_reached(id: String) -> bool:
+	var chapter_idx : int = _get_chapter_index(id)
+	if chapter_idx < 0:
+		return false
+	if chapter_idx <= GameManager.chapter_index:
+		return true
+
+	if id in ["cp3_1", "cp3_2"]:
+		for ending_id in ["bad_ido", "true_bad_end", "bad_predator"]:
+			if ending_id == _current_ending_id or GameManager.is_ending_unlocked(ending_id):
+				return true
+
+	return false
 
 
 func _make_styled_button(text: String) -> Button:
