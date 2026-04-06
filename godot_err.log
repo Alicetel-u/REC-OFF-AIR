@@ -1,0 +1,29 @@
+WARNING: Screen-space indirect lighting (SSIL) is only available when using the Forward+ renderer.
+   at: environment_set_ssil (servers/rendering/storage/environment_storage.cpp:775)
+   GDScript backtrace (most recent call first):
+       [0] generate (res://scripts/StageGenerator.gd:23)
+       [1] _ready (res://scripts/Main.gd:84)
+WARNING: SDFGI is only available when using the Forward+ renderer.
+   at: environment_set_sdfgi (servers/rendering/storage/environment_storage.cpp:822)
+   GDScript backtrace (most recent call first):
+       [0] generate (res://scripts/StageGenerator.gd:23)
+       [1] _ready (res://scripts/Main.gd:84)
+WARNING: Volumetric fog is only available when using the Forward+ renderer.
+   at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+   GDScript backtrace (most recent call first):
+       [0] generate (res://scripts/StageGenerator.gd:23)
+       [1] _ready (res://scripts/Main.gd:84)
+WARNING: res://scenes/Stage_Village.tscn:11 - ext_resource, invalid UID: uid://bpck6gd6ji2aa - using text path instead: res://shaders/mossy_stone.gdshader
+   at: load (scene/resources/resource_format_text.cpp:500)
+   GDScript backtrace (most recent call first):
+       [0] generate (res://scripts/StageGenerator.gd:23)
+       [1] _ready (res://scripts/Main.gd:84)
+WARNING: res://scenes/Stage_Village.tscn:18 - ext_resource, invalid UID: uid://c4tkk7nofoaxx - using text path instead: res://scripts/KakashiGlow.gd
+   at: load (scene/resources/resource_format_text.cpp:500)
+   GDScript backtrace (most recent call first):
+       [0] generate (res://scripts/StageGenerator.gd:23)
+       [1] _ready (res://scripts/Main.gd:84)
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+   at: cleanup (core/object/object.cpp:2641)
+ERROR: 12 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:810)

@@ -1,0 +1,12 @@
+SCRIPT ERROR: Parse Error: There is already a variable named "minimap_layer" declared in this scope.
+   at: GDScript::reload (res://scripts/Main.gd:1340)
+   GDScript backtrace (most recent call first):
+       [0] _go_to_chapter (res://scripts/Opening.gd:957)
+       [1] <anonymous lambda> (res://scripts/Opening.gd:1864)
+ERROR: Failed to load script "res://scripts/Main.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript.cpp:2907)
+   GDScript backtrace (most recent call first):
+       [0] _go_to_chapter (res://scripts/Opening.gd:957)
+       [1] <anonymous lambda> (res://scripts/Opening.gd:1864)
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+   at: cleanup (core/object/object.cpp:2641)

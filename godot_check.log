@@ -1,0 +1,12 @@
+WARNING: Detected another project.godot at res://霧原村内マップ. The folder will be ignored.
+   at: _should_skip_directory (editor/file_system/editor_file_system.cpp:3458)
+WARNING: Screen-space indirect lighting (SSIL) is only available when using the Forward+ renderer.
+   at: environment_set_ssil (servers/rendering/storage/environment_storage.cpp:775)
+WARNING: SDFGI is only available when using the Forward+ renderer.
+   at: environment_set_sdfgi (servers/rendering/storage/environment_storage.cpp:822)
+WARNING: Volumetric fog is only available when using the Forward+ renderer.
+   at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+WARNING: res://scenes/Stage_Village.tscn:11 - ext_resource, invalid UID: uid://bpck6gd6ji2aa - using text path instead: res://shaders/mossy_stone.gdshader
+   at: load (scene/resources/resource_format_text.cpp:500)
+WARNING: res://scenes/Stage_Village.tscn:18 - ext_resource, invalid UID: uid://c4tkk7nofoaxx - using text path instead: res://scripts/KakashiGlow.gd
+   at: load (scene/resources/resource_format_text.cpp:500)

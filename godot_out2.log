@@ -1,0 +1,5 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 576.52 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4060
+
+[SoundManager] play_bgm requested: res://assets/audio/bgm/山あいのわらべ歌.mp3 Vol: -10.0 FadeIn: 0.0 Start: 0.0
+[SoundManager] BGM playback started.
