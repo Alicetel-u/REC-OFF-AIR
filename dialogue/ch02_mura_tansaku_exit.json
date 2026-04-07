@@ -1602,7 +1602,7 @@
                 {
                     "title": "今も、配信中",
                     "mood": "dark",
-                    "image": "res://assets/textures/true_bad_eyes.jpg",
+                    "image": "res://assets/textures/pandemic_scene.png",
                     "wait": 3.0,
                     "lines": [
                         {
@@ -1610,7 +1610,15 @@
                             "pause": 4.0,
                             "voice": "e032",
                             "voice_dur": 5.766
-                        },
+                        }
+                    ]
+                },
+                {
+                    "title": "今も、配信中",
+                    "mood": "dark",
+                    "image": "res://assets/textures/true_bad_eyes.jpg",
+                    "wait": 1.0,
+                    "lines": [
                         {
                             "text": "発症者たちは、怯えた声で同じ証言を繰り返した。",
                             "pause": 3.8,
