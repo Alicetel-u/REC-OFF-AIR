@@ -194,11 +194,16 @@ func _process(delta: float) -> void:
 		timecode_label.text = "%02d:%02d:%02d.%02d" % [h, m, s, f]
 
 	# ── 放置中のランダムコメント ──
-	idle_chat_t += delta
-	if idle_chat_t >= _chat_next:
-		idle_chat_t = 0.0
-		_chat_next = randf_range(6.0, 14.0)
-		_add_chat(CHAT_LINES[randi() % CHAT_LINES.size()])
+	var can_spawn_idle_chat := true
+	if is_instance_valid(_chrome) and _chrome._view_count <= 10:
+		can_spawn_idle_chat = false
+
+	if can_spawn_idle_chat:
+		idle_chat_t += delta
+		if idle_chat_t >= _chat_next:
+			idle_chat_t = 0.0
+			_chat_next = randf_range(6.0, 14.0)
+			_add_chat(CHAT_LINES[randi() % CHAT_LINES.size()])
 
 	# ── スケアフラッシュのフェードアウト ──
 	if scare_t > 0.0:
