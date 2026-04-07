@@ -448,6 +448,17 @@ func _play_section(section: Dictionary, idx: int) -> void:
 	if typewriter_text != "" and not _skip_requested:
 		if mood == "fear":
 			await _glitch_burst(8.0, 1)
+		# タイプライター音声
+		var tw_voice_path : String = section.get("typewriter_voice", "")
+		if tw_voice_path != "":
+			var tw_stream : AudioStream = load(tw_voice_path)
+			if tw_stream:
+				var tw_audio := AudioStreamPlayer.new()
+				tw_audio.stream = tw_stream
+				tw_audio.volume_db = -2.0
+				add_child(tw_audio)
+				tw_audio.play()
+				tw_audio.finished.connect(tw_audio.queue_free)
 		_center_big.text = ""
 		_center_big.add_theme_color_override("font_color", Color(0.8, 0.05, 0.05, 0.0))
 		var tw_cshow := create_tween()

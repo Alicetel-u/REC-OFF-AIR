@@ -1449,6 +1449,7 @@
                     "image": "res://assets/textures/true_bad_hand.png",
                     "wait": 1.5,
                     "typewriter": "視 線 が 呪 い を 完 成 さ せ る",
+                    "typewriter_voice": "res://assets/audio/voice/ch02_mura/tw001.wav",
                     "lines": [
                         {
                             "text": "霧原の呪いは——「視線」を喰らって増殖する。",
@@ -1496,9 +1497,11 @@
                     "image": "res://assets/textures/true_bad_eyes.jpg",
                     "wait": 0.5,
                     "typewriter": "み ん な が ず っ と み て い た",
+                    "typewriter_voice": "res://assets/audio/voice/ch02_mura/tw002.wav",
                     "lines": [
                         {
                             "text": "暗闇の至る所で、不気味に蠢（うごめ）く無数の赤い光。",
+                            "reading": "暗闇の至る所で、不気味にうごめく無数の赤い光。",
                             "pause": 3.2,
                             "voice": "res://assets/audio/voice/ch02_mura/e018.wav",
                             "voice_dur": 5.312
