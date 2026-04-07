@@ -162,7 +162,7 @@
             "msg": "力ずくは無理か",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c034"
+            "voice": "c001"
         },
         {
             "type": "wait",
@@ -172,7 +172,7 @@
             "type": "chat",
             "msg": "詰んでない？",
             "user": "視聴者A",
-            "voice": "c035"
+            "voice": "c002"
         },
         {
             "type": "wait",
@@ -183,7 +183,7 @@
             "msg": "お札！！お札使え！！",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c036"
+            "voice": "c003"
         },
         {
             "type": "wait",
@@ -315,7 +315,7 @@
             "type": "chat",
             "msg": "お札つえー！",
             "user": "まっちゃん",
-            "voice": "c037"
+            "voice": "c004"
         },
         {
             "type": "wait",
@@ -326,7 +326,7 @@
             "msg": "おばあちゃんに感謝",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c038"
+            "voice": "c005"
         },
         {
             "type": "wait",
@@ -337,7 +337,7 @@
             "msg": "逃げろ！！",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c039"
+            "voice": "c006"
         },
         {
             "type": "wait",
@@ -347,7 +347,7 @@
             "type": "chat",
             "msg": "走れ走れ！！",
             "user": "視聴者A",
-            "voice": "c040"
+            "voice": "c007"
         },
         {
             "type": "wait",
@@ -428,7 +428,7 @@
             "msg": "走れ走れ走れ",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c003"
+            "voice": "c008"
         },
         {
             "type": "wait",
@@ -439,7 +439,7 @@
             "msg": "後ろ見るなよ絶対",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c004"
+            "voice": "c009"
         },
         {
             "type": "wait",
@@ -449,7 +449,7 @@
             "type": "chat",
             "msg": "息切れやばい",
             "user": "まっちゃん",
-            "voice": "c005"
+            "voice": "c010"
         },
         {
             "type": "wait",
@@ -459,7 +459,7 @@
             "type": "chat",
             "msg": "心拍数やべえだろこれ",
             "user": "視聴者A",
-            "voice": "c006"
+            "voice": "c011"
         },
         {
             "type": "wait",
@@ -517,7 +517,7 @@
             "type": "chat",
             "msg": "生きてたｗ",
             "user": "視聴者A",
-            "voice": "c007"
+            "voice": "c012"
         },
         {
             "type": "wait",
@@ -528,7 +528,7 @@
             "msg": "心臓もたん",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c008"
+            "voice": "c013"
         },
         {
             "type": "wait",
@@ -539,7 +539,7 @@
             "msg": "よかった……",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c009"
+            "voice": "c014"
         },
         {
             "type": "wait",
@@ -612,7 +612,7 @@
             "type": "chat",
             "msg": "コンセントないのに映ってるの怖すぎ",
             "user": "まっちゃん",
-            "voice": "c010"
+            "voice": "c015"
         },
         {
             "type": "wait",
@@ -623,7 +623,7 @@
             "msg": "逃げろ逃げろ逃げろ",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c011"
+            "voice": "c016"
         },
         {
             "type": "wait",
@@ -633,7 +633,7 @@
             "type": "chat",
             "msg": "え、待ってなんか映ってない？",
             "user": "視聴者A",
-            "voice": "c012"
+            "voice": "c017"
         },
         {
             "type": "wait",
@@ -679,7 +679,7 @@
             "msg": "1994年の映像……？",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c013"
+            "voice": "c018"
         },
         {
             "type": "wait",
@@ -690,7 +690,7 @@
             "msg": "見ている",
             "user": "K",
             "utype": "horror",
-            "voice": "c014"
+            "voice": "c019"
         },
         {
             "type": "wait",
@@ -742,7 +742,7 @@
             "type": "chat",
             "msg": "同じ顔じゃん",
             "user": "まっちゃん",
-            "voice": "c015"
+            "voice": "c020"
         },
         {
             "type": "wait",
@@ -753,7 +753,7 @@
             "msg": "時空越えてて草",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c016"
+            "voice": "c021"
         },
         {
             "type": "wait",
@@ -764,7 +764,7 @@
             "msg": "これガチでやばいやつ",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c017"
+            "voice": "c022"
         },
         {
             "type": "wait",
@@ -884,7 +884,7 @@
             "msg": "呪いのメッセージだろこれ",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c018"
+            "voice": "c023"
         },
         {
             "type": "wait",
@@ -894,7 +894,7 @@
             "type": "chat",
             "msg": "神社行くしかないじゃん",
             "user": "視聴者A",
-            "voice": "c019"
+            "voice": "c024"
         },
         {
             "type": "wait",
@@ -905,7 +905,7 @@
             "msg": "行くな",
             "user": "K",
             "utype": "horror",
-            "voice": "c020"
+            "voice": "c025"
         },
         {
             "type": "wait",
@@ -916,7 +916,7 @@
             "msg": "行くな行くな行くな行くな行くな",
             "user": "K",
             "utype": "horror",
-            "voice": "c021"
+            "voice": "c026"
         },
         {
             "type": "wait",
@@ -926,7 +926,7 @@
             "type": "chat",
             "msg": "Kこわい",
             "user": "まっちゃん",
-            "voice": "c022"
+            "voice": "c027"
         },
         {
             "type": "wait",
@@ -971,7 +971,7 @@
             "msg": "しゅっちならやると思った",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c023"
+            "voice": "c028"
         },
         {
             "type": "wait",
@@ -981,7 +981,7 @@
             "type": "chat",
             "msg": "承認欲求の化物",
             "user": "まっちゃん",
-            "voice": "c024"
+            "voice": "c029"
         },
         {
             "type": "wait",
@@ -992,7 +992,7 @@
             "msg": "いや行くなって",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c025"
+            "voice": "c030"
         },
         {
             "type": "wait",

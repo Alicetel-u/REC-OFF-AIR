@@ -27,7 +27,7 @@ var _monster_idx   : int = 0
 
 var _voice      : AudioStreamPlayer = null
 var _chat_voice : AudioStreamPlayer = null
-var chat_voice_muted : bool = false  ## チャット音声ミュート（設定パネルでトグル）
+var chat_voice_muted : bool = true  ## チャット音声ミュート（設定パネルでトグル）
 
 const SETTINGS_PATH := "user://settings.json"
 var _chat_voice_queue : Array[Dictionary] = []  ## チャットボイスキュー（順番待ち）

@@ -70,14 +70,31 @@ SKIP_DUPLICATE = True
 
 # Kの特殊パラメータ（不気味さを出す）
 K_PARAMS = {
-    "speedScale": 0.9,
-    "intonationScale": 0.6,
-    "pitchScale": -0.08,
+    "speedScale": 0.82,
+    "intonationScale": 0.35,
+    "pitchScale": -0.16,
 }
 
 
-def compute_hash(text: str, speaker_id: int) -> str:
-    h = hashlib.md5(f"{text}|{speaker_id}".encode("utf-8")).hexdigest()[:12]
+def get_voice_profile(user: str, speaker_id: int) -> dict:
+    if user == "K":
+        return {
+            "speaker_id": speaker_id,
+            "speedScale": K_PARAMS["speedScale"],
+            "intonationScale": K_PARAMS["intonationScale"],
+            "pitchScale": K_PARAMS["pitchScale"],
+        }
+    return {
+        "speaker_id": speaker_id,
+        "speedScale": SPEED_SCALE,
+        "intonationScale": INTONATION_SCALE,
+        "pitchScale": PITCH_SCALE,
+    }
+
+
+def compute_hash(text: str, speaker_id: int, user: str = "") -> str:
+    profile = get_voice_profile(user, speaker_id)
+    h = hashlib.md5(f"{text}|{json.dumps(profile, sort_keys=True)}".encode("utf-8")).hexdigest()[:12]
     return h
 
 
@@ -93,14 +110,10 @@ def generate_voicevox(text: str, speaker_id: int, user: str = "") -> bytes:
     query = resp.json()
 
     # パラメータ調整
-    if user == "K":
-        query["speedScale"] = K_PARAMS["speedScale"]
-        query["intonationScale"] = K_PARAMS["intonationScale"]
-        query["pitchScale"] = K_PARAMS["pitchScale"]
-    else:
-        query["speedScale"] = SPEED_SCALE
-        query["intonationScale"] = INTONATION_SCALE
-        query["pitchScale"] = PITCH_SCALE
+    profile = get_voice_profile(user, speaker_id)
+    query["speedScale"] = profile["speedScale"]
+    query["intonationScale"] = profile["intonationScale"]
+    query["pitchScale"] = profile["pitchScale"]
 
     query["prePhonemeLength"] = PRE_PHONEME_LENGTH
     query["postPhonemeLength"] = POST_PHONEME_LENGTH
@@ -190,7 +203,7 @@ def main():
         msg = ev["msg"]
         speaker_id = USER_SPEAKER_MAP[user]
 
-        new_hash = compute_hash(msg, speaker_id)
+        new_hash = compute_hash(msg, speaker_id, user)
         old_hash = hashes.get(voice_id, "")
         out_path = os.path.join(output_dir, f"{voice_id}.wav")
 

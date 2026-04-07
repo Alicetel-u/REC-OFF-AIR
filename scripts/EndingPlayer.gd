@@ -377,9 +377,10 @@ func play(sections: Array, ending_title: String = "", ending_tag: String = "BAD 
 ## セクション再生
 ## ──────────────────────────────────────────────────────
 func _play_section(section: Dictionary, idx: int) -> void:
-	var section_title : String = ""
+	var section_title : String = section.get("title", "")
 	var lines : Array = section.get("lines", [])
 	var image_path : String = section.get("image", "")
+	var video_path : String = section.get("video", "")
 	var post_wait : float = section.get("wait", 2.0)
 	var mood : String = section.get("mood", "dark")
 	_current_mood = mood
@@ -398,30 +399,46 @@ func _play_section(section: Dictionary, idx: int) -> void:
 
 	# ── mood別エフェクト ──
 	_apply_mood_effects(mood)
+	if video_path != "" and not _skip_requested:
+		await _play_inline_video(video_path)
 
 	# ── 背景画像（あれば） ──
 	if image_path != "":
 		var tex := load(image_path) as Texture2D
 		if tex:
 			var tint_a : float = 0.7 if mood == "dark" else 0.8
-			_bg_rect2.texture = tex
-			_bg_rect2.modulate = Color(0.85, 0.8, 0.85, 0.0)
-			_bg_rect2.scale = Vector2(1.0, 1.0)
+			if _bg_rect.texture == null or _bg_rect.modulate.a <= 0.01:
+				_bg_rect.texture = tex
+				_bg_rect.modulate = Color(0.85, 0.8, 0.85, tint_a)
+				_bg_rect.scale = Vector2(1.0, 1.0)
+				_bg_rect2.texture = null
+				_bg_rect2.modulate.a = 0.0
+			else:
+				_bg_rect2.texture = tex
+				_bg_rect2.modulate = Color(0.85, 0.8, 0.85, 0.0)
+				_bg_rect2.scale = Vector2(1.0, 1.0)
 
-			var tw_cross := create_tween().set_parallel(true)
-			tw_cross.tween_property(_bg_rect, "modulate:a", 0.0, 2.5)
-			tw_cross.tween_property(_bg_rect2, "modulate:a", tint_a, 3.0).set_trans(Tween.TRANS_SINE)
-			await tw_cross.finished
+				var tw_cross := create_tween().set_parallel(true)
+				tw_cross.tween_property(_bg_rect, "modulate:a", 0.0, 2.5)
+				tw_cross.tween_property(_bg_rect2, "modulate:a", tint_a, 3.0).set_trans(Tween.TRANS_SINE)
+				await tw_cross.finished
 
-			_bg_rect.texture = tex
-			_bg_rect.modulate = _bg_rect2.modulate
-			_bg_rect.scale = Vector2(1.0, 1.0)
-			_bg_rect2.modulate.a = 0.0
+				_bg_rect.texture = tex
+				_bg_rect.modulate = _bg_rect2.modulate
+				_bg_rect.scale = Vector2(1.0, 1.0)
+				_bg_rect2.texture = null
+				_bg_rect2.modulate.a = 0.0
 
 			if _zoom_tween and _zoom_tween.is_valid():
 				_zoom_tween.kill()
 			_zoom_tween = create_tween()
 			_zoom_tween.tween_property(_bg_rect, "scale", Vector2(1.06, 1.06), 25.0)
+		else:
+			push_warning("EndingPlayer: image not found: " + image_path)
+			_bg_rect.texture = null
+			_bg_rect.modulate.a = 0.0
+			_bg_rect2.texture = null
+			_bg_rect2.modulate.a = 0.0
 
 	# ── セクションタイトル ──
 	if section_title != "":
@@ -578,6 +595,7 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 	var pause_after : float = 1.5
 	var emphasis : bool = false
 	var glitch : bool = false
+	var number_glitch : bool = false
 
 	var voice_dur : float = 0.0
 
@@ -589,6 +607,7 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 		pause_after = float(line.get("pause", 1.5))
 		emphasis = line.get("emphasis", false)
 		glitch = line.get("glitch", false)
+		number_glitch = line.get("number_glitch", false)
 		voice_dur = float(line.get("voice_dur", 0.0))
 		video_path = line.get("video", "")
 	else:
@@ -619,10 +638,18 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 			)
 
 	# ── emphasis: 画面中央に巨大テキスト + 特殊演出 ──
+	if number_glitch:
+		await _show_number_glitch_line(text, pause_after, voice_dur, glitch)
+		if video_path != "" and not _skip_requested:
+			await _play_inline_video(video_path)
+		return
+
 	if emphasis:
 		if glitch:
 			await _glitch_burst(9.0, 1)
 		await _show_emphasis_line(text, pause_after, voice_dur)
+		if video_path != "" and not _skip_requested:
+			await _play_inline_video(video_path)
 		return
 
 	if glitch:
@@ -642,6 +669,10 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 	var type_dur : float = voice_dur if voice_dur > 0.1 else float(text.length()) * 0.045
 	var tw_type := create_tween()
 	tw_type.tween_property(_text_label, "visible_ratio", 1.0, type_dur)
+
+	if number_glitch:
+		_text_label.visible_ratio = 1.0
+		await _animate_number_glitch(text, type_dur)
 
 	if glitch and is_instance_valid(_heartbeat_overlay):
 		var tw_hb := create_tween()
@@ -671,6 +702,167 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 	# ビデオ再生（videoフィールドがある場合）
 	if video_path != "" and not _skip_requested:
 		await _play_inline_video(video_path)
+
+
+func _show_number_glitch_line(text: String, pause_after: float, voice_dur: float = 0.0, with_glitch: bool = false) -> void:
+	var digits := ""
+	for ch in text:
+		if ch >= "0" and ch <= "9":
+			digits += ch
+	if digits == "":
+		await _show_emphasis_line(text, pause_after, voice_dur)
+		return
+
+	_text_label.modulate.a = 0.0
+	_center_big.text = ""
+	_center_big.scale = Vector2.ONE
+
+	var overlay := Control.new()
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_container.add_child(overlay)
+
+	var blood_flash := ColorRect.new()
+	blood_flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	blood_flash.color = Color(0.2, 0.0, 0.0, 0.0)
+	blood_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.add_child(blood_flash)
+
+	var vp_size := get_viewport().get_visible_rect().size
+	if vp_size.x <= 0.0 or vp_size.y <= 0.0:
+		vp_size = Vector2(1280, 720)
+
+	var center_noise := Label.new()
+	center_noise.text = text
+	center_noise.set_anchors_preset(Control.PRESET_CENTER)
+	center_noise.position = Vector2(vp_size.x * 0.5 - 380.0, vp_size.y * 0.5 - 48.0)
+	center_noise.size = Vector2(760, 96)
+	center_noise.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	center_noise.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	center_noise.add_theme_font_size_override("font_size", 34)
+	center_noise.add_theme_color_override("font_color", Color(1.0, 0.08, 0.08, 0.0))
+	center_noise.add_theme_color_override("font_shadow_color", Color(0.25, 0.0, 0.0, 0.9))
+	center_noise.add_theme_constant_override("shadow_offset_x", 3)
+	center_noise.add_theme_constant_override("shadow_offset_y", 3)
+	overlay.add_child(center_noise)
+
+	var ghost_labels : Array[Label] = []
+	for i in range(24):
+		var lbl := Label.new()
+		lbl.text = digits
+		lbl.add_theme_font_size_override("font_size", 28 + (i % 5) * 12)
+		lbl.add_theme_color_override("font_color", Color(1.0, 0.02 + randf() * 0.08, 0.02 + randf() * 0.08, 0.0))
+		lbl.add_theme_color_override("font_shadow_color", Color(0.1, 0.0, 0.0, 0.95))
+		lbl.add_theme_constant_override("shadow_offset_x", 4)
+		lbl.add_theme_constant_override("shadow_offset_y", 4)
+		lbl.position = Vector2(randf_range(-40.0, vp_size.x - 120.0), randf_range(-20.0, vp_size.y - 60.0))
+		lbl.rotation = randf_range(-0.4, 0.4)
+		overlay.add_child(lbl)
+		ghost_labels.append(lbl)
+
+	var garble_labels : Array[Label] = []
+	for i in range(18):
+		var garble := Label.new()
+		garble.text = ""
+		garble.add_theme_font_size_override("font_size", 18 + (i % 4) * 8)
+		garble.add_theme_color_override("font_color", Color(0.9, 0.0, 0.0, 0.0))
+		garble.position = Vector2(randf_range(0.0, vp_size.x - 240.0), randf_range(0.0, vp_size.y - 40.0))
+		overlay.add_child(garble)
+		garble_labels.append(garble)
+
+	var total := maxf(voice_dur if voice_dur > 0.1 else pause_after * 0.75, 1.8)
+	var elapsed := 0.0
+	while elapsed < total and not _skip_requested:
+		var progress := clampf(elapsed / total, 0.0, 1.0)
+		_shake_amount = 10.0 if with_glitch or randf() < 0.35 else 6.0
+		blood_flash.color.a = clampf(0.08 + progress * 0.28 + randf() * 0.12, 0.0, 0.42)
+		center_noise.text = _build_glitch_number_text(text, progress, true)
+		center_noise.modulate.a = clampf(0.2 + progress * 0.65 + randf() * 0.1, 0.0, 0.95)
+		center_noise.position = Vector2(
+			vp_size.x * 0.5 - 380.0 + randf_range(-20.0, 20.0),
+			vp_size.y * 0.5 - 48.0 + randf_range(-12.0, 12.0)
+		)
+		for i in range(ghost_labels.size()):
+			var lbl := ghost_labels[i]
+			if not is_instance_valid(lbl):
+				continue
+			lbl.text = _build_glitch_number_text(digits, progress, false)
+			lbl.position += Vector2(randf_range(-30.0, 30.0), randf_range(-22.0, 22.0))
+			lbl.position.x = clampf(lbl.position.x, -60.0, vp_size.x - 20.0)
+			lbl.position.y = clampf(lbl.position.y, -20.0, vp_size.y - 10.0)
+			lbl.modulate.a = clampf(0.12 + progress * 0.7 + sin(elapsed * 10.0 + i) * 0.1, 0.0, 1.0)
+			lbl.scale = Vector2.ONE * (1.0 + progress * 0.35 + sin(elapsed * 6.0 + i) * 0.08)
+		for i in range(garble_labels.size()):
+			var garble := garble_labels[i]
+			if not is_instance_valid(garble):
+				continue
+			garble.text = _build_glitch_number_text(text, progress, true).substr(0, mini(18 + randi_range(0, 18), text.length()))
+			garble.position += Vector2(randf_range(-24.0, 24.0), randf_range(-16.0, 16.0))
+			garble.position.x = clampf(garble.position.x, -40.0, vp_size.x - 60.0)
+			garble.position.y = clampf(garble.position.y, -10.0, vp_size.y - 20.0)
+			garble.modulate.a = clampf(progress * 0.55 + randf() * 0.2, 0.0, 0.8)
+		await get_tree().process_frame
+		elapsed += get_process_delta_time()
+
+	if is_instance_valid(_current_audio) and _current_audio.playing:
+		await _current_audio.finished
+
+	var remaining := pause_after - voice_dur
+	if remaining > 0.1:
+		await _wait(remaining)
+
+	var tw_out := create_tween().set_parallel(true)
+	tw_out.tween_property(overlay, "modulate:a", 0.0, 0.5)
+	await tw_out.finished
+	overlay.queue_free()
+	_center_big.text = ""
+	_center_big.scale = Vector2.ONE
+
+
+func _animate_number_glitch(text: String, duration: float) -> void:
+	var has_digit := false
+	for ch in text:
+		if ch >= "0" and ch <= "9":
+			has_digit = true
+			break
+	if not has_digit:
+		return
+
+	var total := maxf(duration, 1.2)
+	var elapsed := 0.0
+	while elapsed < total and not _skip_requested:
+		var t := clampf(elapsed / total, 0.0, 1.0)
+		_text_label.text = "[center]%s[/center]" % _build_glitch_number_text(text, t)
+		await get_tree().process_frame
+		elapsed += get_process_delta_time()
+	_text_label.text = "[center]%s[/center]" % text
+
+
+func _build_glitch_number_text(text: String, progress: float, allow_garble: bool = false) -> String:
+	var glyphs := ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ",", ":", "・", "¦", "|", "/", "\\", "?", "ﾒ", "ｦ", "縺", "呪", "死", "赤"]
+	var result := ""
+	for i in range(text.length()):
+		var ch := text[i]
+		if ch >= "0" and ch <= "9":
+			if progress < 0.75:
+				var target := int(ch)
+				var floor_digit := mini(target, int(progress * 12.0))
+				var ceiling_digit := mini(9, floor_digit + 4)
+				var digit := randi_range(floor_digit, maxi(floor_digit, ceiling_digit))
+				if randf() < 0.35:
+					digit = mini(9, target + randi_range(0, 2))
+				result += str(digit)
+			else:
+				if randf() < (1.0 - progress) * 2.0:
+					result += str(randi_range(0, 9))
+				else:
+					result += ch
+		else:
+			if allow_garble and ch != " " and randf() < clampf(0.15 + progress * 0.5, 0.0, 0.7):
+				result += glyphs[randi_range(0, glyphs.size() - 1)]
+			else:
+				result += ch
+	return result
 
 
 ## ──────────────────────────────────────────────────────
@@ -844,12 +1036,17 @@ func _show_ending_title(title: String, tag: String = "BAD END") -> void:
 
 ## インラインビデオ再生（セリフ後に全画面で流す）
 func _play_inline_video(path: String) -> void:
+	if not ResourceLoader.exists(path):
+		push_warning("EndingPlayer: video path does not exist: " + path)
+		return
 	var stream : VideoStream = load(path) as VideoStream
 	if not stream:
-		push_warning("EndingPlayer: video not found: " + path)
+		push_warning("EndingPlayer: video could not be loaded as VideoStream: " + path)
 		return
 
-	var vp_size := Vector2(1280, 720)
+	var vp_size := get_viewport().get_visible_rect().size
+	if vp_size.x <= 0.0 or vp_size.y <= 0.0:
+		vp_size = Vector2(1280, 720)
 
 	# 黒背景フェードイン
 	var overlay := ColorRect.new()

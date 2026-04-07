@@ -1372,6 +1372,7 @@
                             "text": "画面の端で、数字だけが狂ったように跳ね上がっていく。同接：89,247人。",
                             "pause": 4.5,
                             "emphasis": true,
+                            "number_glitch": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e002.wav",
                             "voice_dur": 7.758
                         },
@@ -1543,7 +1544,6 @@
                             "pause": 6.0,
                             "emphasis": true,
                             "glitch": true,
-                            "video": "res://assets/video/opm-5.ogv",
                             "voice": "res://assets/audio/voice/ch02_mura/e024.wav",
                             "voice_dur": 3.674
                         }
@@ -1641,7 +1641,15 @@
                             "pause": 4.0,
                             "voice": "res://assets/audio/voice/ch02_mura/e035.wav",
                             "voice_dur": 4.157
-                        },
+                        }
+                    ]
+                },
+                {
+                    "title": "",
+                    "mood": "dark",
+                    "image": "res://assets/textures/_2K_202604071523_fixed.png",
+                    "wait": 3.5,
+                    "lines": [
                         {
                             "text": "そして、あの夜から「しゅっち」の行方は分かっていない。",
                             "pause": 7.0,
@@ -1729,27 +1737,12 @@
                         "name": ""
                     },
                     {
-                        "role": "",
-                        "name": "「ご視聴ありがとうございました。」",
-                        "style": "whisper"
+                        "role": "エグゼクティブプロデューサー",
+                        "name": "しゅっち"
                     },
                     {
-                        "role": "",
-                        "name": "「また見てくださいね。」",
-                        "style": "whisper"
-                    },
-                    {
-                        "role": "",
-                        "name": ""
-                    },
-                    {
-                        "role": "",
-                        "name": ""
-                    },
-                    {
-                        "role": "",
-                        "name": "REC : OFF : AIR",
-                        "style": "whisper"
+                        "role": "実装エンジニア",
+                        "name": "シライシ ユキ"
                     }
                 ]
             }

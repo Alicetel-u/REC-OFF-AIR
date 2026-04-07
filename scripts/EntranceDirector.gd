@@ -489,6 +489,7 @@ func run_from_path(json_path: String) -> void:
 				# エンドクレジット（credits フィールドがあれば再生）
 				var credits_data : Dictionary = ev.get("credits", {})
 				if not credits_data.is_empty():
+					await _fade_black(0.2, 1.0)
 					await _show_credits(credits_data)
 				# BAD END後: フローチャート表示 + 選択肢
 				var pe_return : String = ev.get("return_label", "")
@@ -1270,11 +1271,12 @@ func _play_ending(ev: Dictionary) -> void:
 	if ev.get("credits", {}).is_empty():
 		await ep.fade_out(1.5)
 	else:
-		ep.queue_free()
+		await ep.fade_out(0.3)
 
 
 ## バッドエンド演出：暗転 → 画像+タイトル表示 → 「選択肢に戻る？」→ タイトルへ or 分岐戻り
 func _bad_end(title_text: String, return_label: String, fade_dur: float, display_dur: float, image_path: String = "") -> void:
+	var vp_size := get_viewport().get_visible_rect().size
 	# 暗転
 	await _fade_black(fade_dur, 1.0)
 	await get_tree().create_timer(0.5).timeout
@@ -1287,6 +1289,7 @@ func _bad_end(title_text: String, return_label: String, fade_dur: float, display
 	# コンテナ（全画面、黒背景）
 	var container := Control.new()
 	container.anchors_preset = Control.PRESET_FULL_RECT
+	container.size = vp_size
 	container.modulate.a = 0.0
 	canvas.add_child(container)
 
@@ -1876,6 +1879,7 @@ func _show_credits(credits_data: Dictionary) -> void:
 	var entries : Array = credits_data.get("entries", [])
 	var title_text : String = credits_data.get("title", "— STAFF ROLL —")
 	var scroll_speed : float = float(credits_data.get("scroll_speed", 38))
+	var vp_size := get_viewport().get_visible_rect().size
 
 	var canvas := CanvasLayer.new()
 	canvas.layer = 165
@@ -1883,6 +1887,7 @@ func _show_credits(credits_data: Dictionary) -> void:
 
 	var container := Control.new()
 	container.anchors_preset = Control.PRESET_FULL_RECT
+	container.size = vp_size
 	container.modulate.a = 1.0  # コンテナは即不透明（背景が透けて下が見えるバグ防止）
 	canvas.add_child(container)
 
