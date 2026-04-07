@@ -380,6 +380,7 @@ func _play_section(section: Dictionary, idx: int) -> void:
 	var section_title : String = section.get("title", "")
 	var lines : Array = section.get("lines", [])
 	var image_path : String = section.get("image", "")
+	var image_fit : String = section.get("image_fit", "cover")
 	var video_path : String = section.get("video", "")
 	var post_wait : float = section.get("wait", 2.0)
 	var mood : String = section.get("mood", "dark")
@@ -403,6 +404,12 @@ func _play_section(section: Dictionary, idx: int) -> void:
 		await _play_inline_video(video_path)
 
 	# ── 背景画像（あれば） ──
+	var image_stretch := TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	if image_fit == "contain":
+		image_stretch = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_bg_rect.stretch_mode = image_stretch
+	_bg_rect2.stretch_mode = image_stretch
+
 	if image_path != "":
 		var tex := load(image_path) as Texture2D
 		if tex:

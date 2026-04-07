@@ -1605,7 +1605,8 @@
                 {
                     "title": "今も、配信中",
                     "mood": "dark",
-                    "image": "res://assets/textures/pandemic_scene.png",
+                    "image": "res://assets/textures/_2K_202604071403_fixed.png",
+                    "image_fit": "contain",
                     "wait": 3.0,
                     "lines": [
                         {
@@ -1648,6 +1649,7 @@
                     "title": "",
                     "mood": "dark",
                     "image": "res://assets/textures/_2K_202604071523_fixed.png",
+                    "image_fit": "contain",
                     "wait": 3.5,
                     "lines": [
                         {
