@@ -1363,26 +1363,36 @@
                     "lines": [
                         {
                             "text": "古びた灯籠の前に、震える手でスマホを置いた。",
-                            "pause": 3.0
+                            "pause": 3.0,
+                            "voice": "e001",
+                            "voice_dur": 3.674
                         },
                         {
                             "text": "画面の端で、数字だけが狂ったように跳ね上がっていく。同接：89,247人。",
                             "pause": 4.5,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "e002",
+                            "voice_dur": 7.758
                         },
                         {
                             "text": "早くここから離れなければ——本能がそう叫び、闇の中を走り出した。",
-                            "pause": 3.5
+                            "pause": 3.5,
+                            "voice": "e003",
+                            "voice_dur": 5.622
                         },
                         {
                             "text": "だが、逃げ切れないことは分かっていた。",
-                            "pause": 2.5
+                            "pause": 2.5,
+                            "voice": "e004",
+                            "voice_dur": 2.785
                         },
                         {
                             "text": "この配信は、もう誰にも止められない。",
                             "pause": 5.0,
                             "emphasis": true,
-                            "glitch": true
+                            "glitch": true,
+                            "voice": "e005",
+                            "voice_dur": 2.882
                         }
                     ]
                 },
@@ -1394,29 +1404,41 @@
                     "lines": [
                         {
                             "text": "霧原みゆき。享年17歳。",
-                            "pause": 2.8
+                            "pause": 2.8,
+                            "voice": "e006",
+                            "voice_dur": 2.69
                         },
                         {
                             "text": "儀式は無惨な失敗に終わった。",
-                            "pause": 2.8
+                            "pause": 2.8,
+                            "voice": "e007",
+                            "voice_dur": 2.335
                         },
                         {
                             "text": "彼女の魂は、この廃村の泥濘に縛りつけられた。",
-                            "pause": 3.8
+                            "pause": 3.8,
+                            "voice": "e008",
+                            "voice_dur": 4.396
                         },
                         {
                             "text": "解放の条件は、ただひとつ。",
-                            "pause": 2.6
+                            "pause": 2.6,
+                            "voice": "e009",
+                            "voice_dur": 2.295
                         },
                         {
                             "text": "誰かが、彼女の代わりに儀式を完遂すること。",
                             "pause": 4.2,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "e010",
+                            "voice_dur": 3.747
                         },
                         {
                             "text": "そして今、その「器」がようやく目の前に現れた。",
                             "pause": 4.8,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "e011",
+                            "voice_dur": 4.41
                         }
                     ]
                 },
@@ -1430,28 +1452,40 @@
                         {
                             "text": "霧原の呪いは——「視線」を喰らって増殖する。",
                             "pause": 4.0,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "e012",
+                            "voice_dur": 3.663
                         },
                         {
                             "text": "絶命の瞬間。",
-                            "pause": 2.2
+                            "pause": 2.2,
+                            "voice": "e013",
+                            "voice_dur": 1.303
                         },
                         {
                             "text": "万を超える視線が注がれたとき、呪いは真の姿を現す。",
-                            "pause": 4.2
+                            "pause": 4.2,
+                            "voice": "e014",
+                            "voice_dur": 4.576
                         },
                         {
                             "text": "あの夜、瞳が足りなかった。",
-                            "pause": 2.6
+                            "pause": 2.6,
+                            "voice": "e015",
+                            "voice_dur": 2.206
                         },
                         {
                             "text": "だから彼女は、首のない霊として永い時を彷徨い続けた。",
-                            "pause": 4.4
+                            "pause": 4.4,
+                            "voice": "e016",
+                            "voice_dur": 4.652
                         },
                         {
                             "text": "次の「万の目」が訪れる、その瞬間を待ちわびて。",
                             "pause": 6.0,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "e017",
+                            "voice_dur": 4.46
                         }
                     ]
                 },
@@ -1464,35 +1498,50 @@
                     "lines": [
                         {
                             "text": "暗闇の至る所で、不気味に蠢（うごめ）く無数の赤い光。",
-                            "pause": 3.2
+                            "pause": 3.2,
+                            "voice": "e018",
+                            "voice_dur": 5.312
                         },
                         {
                             "text": "それは村人の霊なんかじゃない。",
-                            "pause": 2.4
+                            "pause": 2.4,
+                            "voice": "e019",
+                            "voice_dur": 2.227
                         },
                         {
                             "text": "液晶の向こう側にいる、視聴者たちの飢えた目だ。",
                             "pause": 4.2,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "e020",
+                            "voice_dur": 3.747
                         },
                         {
                             "text": "89,247人。",
                             "pause": 2.0,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "e021",
+                            "voice_dur": 2.638
                         },
                         {
                             "text": "その全員が、神社の闇を一睡もせず凝視していた。",
-                            "pause": 4.2
+                            "pause": 4.2,
+                            "voice": "e022",
+                            "voice_dur": 4.026
                         },
                         {
                             "text": "みゆきに欠けていた最後のピースを——",
-                            "pause": 3.5
+                            "pause": 3.5,
+                            "voice": "e023",
+                            "voice_dur": 2.344
                         },
                         {
                             "text": "「しゅっち」が、最悪の形で揃えてしまった。",
                             "pause": 6.0,
                             "emphasis": true,
-                            "glitch": true
+                            "glitch": true,
+                            "video": "res://assets/video/opm-5.ogv",
+                            "voice": "e024",
+                            "voice_dur": 3.674
                         }
                     ]
                 },
@@ -1504,34 +1553,48 @@
                     "lines": [
                         {
                             "text": "廃村の最深部。",
-                            "pause": 2.0
+                            "pause": 2.0,
+                            "voice": "e025",
+                            "voice_dur": 1.331
                         },
                         {
                             "text": "89,247の視線が、針のように神社へ突き刺さった。",
-                            "pause": 4.2
+                            "pause": 4.2,
+                            "voice": "e026",
+                            "voice_dur": 5.477
                         },
                         {
                             "text": "みゆきが、数年の孤独の中で待ち続けた「条件」が——",
-                            "pause": 3.8
+                            "pause": 3.8,
+                            "voice": "e027",
+                            "voice_dur": 4.76
                         },
                         {
                             "text": "たった一晩の「生中継」によって、無慈悲に達成された。",
                             "pause": 4.5,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "e028",
+                            "voice_dur": 4.847
                         },
                         {
                             "text": "霧原みゆきは、ついに解き放たれた。",
-                            "pause": 4.0
+                            "pause": 4.0,
+                            "voice": "e029",
+                            "voice_dur": 2.917
                         },
                         {
                             "text": "村に淀んでいた呪いは——",
-                            "pause": 3.5
+                            "pause": 3.5,
+                            "voice": "e030",
+                            "voice_dur": 1.782
                         },
                         {
                             "text": "89,247人の「目」という回路を通って、一気に外界へと氾濫した。",
                             "pause": 7.0,
                             "emphasis": true,
-                            "glitch": true
+                            "glitch": true,
+                            "voice": "e031",
+                            "voice_dur": 7.279
                         }
                     ]
                 },
@@ -1543,26 +1606,36 @@
                     "lines": [
                         {
                             "text": "数週間後、世界各地で原因不明の集団症例が報告され始める。",
-                            "pause": 4.0
+                            "pause": 4.0,
+                            "voice": "e032",
+                            "voice_dur": 5.766
                         },
                         {
                             "text": "発症者たちは、怯えた声で同じ証言を繰り返した。",
-                            "pause": 3.8
+                            "pause": 3.8,
+                            "voice": "e033",
+                            "voice_dur": 4.262
                         },
                         {
                             "text": "「暗闇の中に、こちらを覗き込む無数の赤い目が見える」と。",
                             "pause": 4.8,
                             "emphasis": true,
-                            "glitch": true
+                            "glitch": true,
+                            "voice": "e034",
+                            "voice_dur": 4.819
                         },
                         {
                             "text": "感染経路も、治療法も、いまだ解明されていない。",
-                            "pause": 4.0
+                            "pause": 4.0,
+                            "voice": "e035",
+                            "voice_dur": 4.157
                         },
                         {
                             "text": "そして、あの夜から「しゅっち」の行方は分かっていない。",
                             "pause": 7.0,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "e036",
+                            "voice_dur": 4.194
                         }
                     ]
                 }
@@ -1571,28 +1644,101 @@
                 "title": "— STAFF ROLL —",
                 "scroll_speed": 30,
                 "entries": [
-                    {"role": "", "name": "REC : OFF : AIR", "style": "game_title"},
-                    {"role": "", "name": ""},
-                    {"role": "", "name": ""},
-                    {"role": "企画 / シナリオ / 開発", "name": "Alicetel-u"},
-                    {"role": "", "name": ""},
-                    {"role": "", "name": "── TOOLS ──", "style": "section"},
-                    {"role": "ゲームエンジン", "name": "Godot Engine 4.6"},
-                    {"role": "音声合成", "name": "Style-Bert-VITS2"},
-                    {"role": "音声合成", "name": "VOICEVOX"},
-                    {"role": "", "name": ""},
-                    {"role": "", "name": "── SPECIAL THANKS ──", "style": "section"},
-                    {"role": "", "name": ""},
-                    {"role": "", "name": "この配信を最後まで見てくれたあなたへ。"},
-                    {"role": "", "name": ""},
-                    {"role": "", "name": ""},
-                    {"role": "", "name": "── 霧原村より ──", "style": "section"},
-                    {"role": "", "name": ""},
-                    {"role": "", "name": "「ご視聴ありがとうございました。」", "style": "whisper"},
-                    {"role": "", "name": "「また見てくださいね。」", "style": "whisper"},
-                    {"role": "", "name": ""},
-                    {"role": "", "name": ""},
-                    {"role": "", "name": "REC : OFF : AIR", "style": "whisper"}
+                    {
+                        "role": "",
+                        "name": "REC : OFF : AIR",
+                        "style": "game_title"
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "企画 / シナリオ / 開発",
+                        "name": "Alicetel-u"
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
+                        "name": "── TOOLS ──",
+                        "style": "section"
+                    },
+                    {
+                        "role": "ゲームエンジン",
+                        "name": "Godot Engine 4.6"
+                    },
+                    {
+                        "role": "音声合成",
+                        "name": "Style-Bert-VITS2"
+                    },
+                    {
+                        "role": "音声合成",
+                        "name": "VOICEVOX"
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
+                        "name": "── SPECIAL THANKS ──",
+                        "style": "section"
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
+                        "name": "この配信を最後まで見てくれたあなたへ。"
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
+                        "name": "── 霧原村より ──",
+                        "style": "section"
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
+                        "name": "「ご視聴ありがとうございました。」",
+                        "style": "whisper"
+                    },
+                    {
+                        "role": "",
+                        "name": "「また見てくださいね。」",
+                        "style": "whisper"
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
+                        "name": "REC : OFF : AIR",
+                        "style": "whisper"
+                    }
                 ]
             }
         },

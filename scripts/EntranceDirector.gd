@@ -1249,10 +1249,11 @@ func _play_ending(ev: Dictionary) -> void:
 	if ending_id != "":
 		GameManager.unlock_ending(ending_id)
 
-	# YouTubeChrome を非表示
+	# YouTubeChrome を非表示 + 処理停止（コメントSE・スーパーチャットチャイム防止）
 	var chrome = hud.get_node_or_null("YouTubeChrome") if hud else null
 	if chrome:
 		chrome.visible = false
+		chrome.process_mode = Node.PROCESS_MODE_DISABLED
 
 	# 暗転
 	await _fade_black(1.5, 1.0)
@@ -1261,10 +1262,15 @@ func _play_ending(ev: Dictionary) -> void:
 	var ep := CanvasLayer.new()
 	ep.set_script(EndingPlayerScript)
 	get_tree().root.add_child(ep)
-	await ep.play(sections, ending_title)
+	var ending_tag : String = "TRUE BAD END" if ending_id == "true_bad_end" else "BAD END"
+	await ep.play(sections, ending_title, ending_tag)
 
 	# EndingPlayer をフェードアウト
-	await ep.fade_out(1.5)
+	# クレジットがある場合は即解放（layer165のクレジットcanvasが黒背景で覆うため、暗転状態を維持）
+	if ev.get("credits", {}).is_empty():
+		await ep.fade_out(1.5)
+	else:
+		ep.queue_free()
 
 
 ## バッドエンド演出：暗転 → 画像+タイトル表示 → 「選択肢に戻る？」→ タイトルへ or 分岐戻り

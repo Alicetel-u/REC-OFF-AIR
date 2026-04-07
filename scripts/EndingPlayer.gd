@@ -328,7 +328,7 @@ func _wait(sec: float) -> void:
 		await get_tree().process_frame
 
 
-func play(sections: Array, ending_title: String = "") -> void:
+func play(sections: Array, ending_title: String = "", ending_tag: String = "BAD END") -> void:
 	visible = true
 	_is_playing = true
 	_skip_requested = false
@@ -361,7 +361,7 @@ func play(sections: Array, ending_title: String = "") -> void:
 
 	# ── バッドエンドタイトル表示 ──
 	if ending_title != "":
-		await _show_ending_title(ending_title)
+		await _show_ending_title(ending_title, ending_tag)
 
 	# スキップ時はアンビエントを止める
 	if is_instance_valid(ambient):
@@ -570,6 +570,8 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 
 	var voice_dur : float = 0.0
 
+	var video_path : String = ""
+
 	if line is Dictionary:
 		text = line.get("text", "")
 		voice_path = line.get("voice", "")
@@ -577,6 +579,7 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 		emphasis = line.get("emphasis", false)
 		glitch = line.get("glitch", false)
 		voice_dur = float(line.get("voice_dur", 0.0))
+		video_path = line.get("video", "")
 	else:
 		text = str(line)
 
@@ -653,6 +656,10 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 		await tw_out.finished
 	else:
 		_text_label.modulate.a = 0.0
+
+	# ビデオ再生（videoフィールドがある場合）
+	if video_path != "" and not _skip_requested:
+		await _play_inline_video(video_path)
 
 
 ## ──────────────────────────────────────────────────────
@@ -752,7 +759,7 @@ func _glitch_burst(intensity: float = 8.0, count: int = 3) -> void:
 
 
 ## バッドエンドタイトル演出
-func _show_ending_title(title: String) -> void:
+func _show_ending_title(title: String, tag: String = "BAD END") -> void:
 	var vp_size := Vector2(1280, 720)
 
 	# テキスト類だけ消す（背景画像は残す）
@@ -771,12 +778,14 @@ func _show_ending_title(title: String) -> void:
 
 	# BAD END ラベル（小さめ、上）
 	var bad_lbl := Label.new()
-	bad_lbl.text = "BAD END"
+	bad_lbl.text = tag
 	bad_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	bad_lbl.size = Vector2(vp_size.x, 40)
-	bad_lbl.position = Vector2(0, vp_size.y * 0.38)
-	bad_lbl.add_theme_font_size_override("font_size", 16)
-	bad_lbl.add_theme_color_override("font_color", Color(0.6, 0.15, 0.15, 0.0))
+	bad_lbl.size = Vector2(vp_size.x, 50)
+	bad_lbl.position = Vector2(0, vp_size.y * 0.37)
+	var is_true_bad : bool = (tag == "TRUE BAD END")
+	bad_lbl.add_theme_font_size_override("font_size", 26 if is_true_bad else 16)
+	var tag_col : Color = Color(0.72, 0.22, 0.68, 0.0) if is_true_bad else Color(0.6, 0.15, 0.15, 0.0)
+	bad_lbl.add_theme_color_override("font_color", tag_col)
 	bad_lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.5))
 	bad_lbl.add_theme_constant_override("shadow_offset_x", 1)
 	bad_lbl.add_theme_constant_override("shadow_offset_y", 1)
@@ -790,8 +799,10 @@ func _show_ending_title(title: String) -> void:
 	title_lbl.size = Vector2(vp_size.x, 60)
 	title_lbl.position = Vector2(0, vp_size.y * 0.45)
 	title_lbl.add_theme_font_size_override("font_size", 40)
-	title_lbl.add_theme_color_override("font_color", Color(0.9, 0.75, 0.7, 0.0))
-	title_lbl.add_theme_color_override("font_shadow_color", Color(0.3, 0.0, 0.0, 0.8))
+	var title_col : Color = Color(0.85, 0.75, 0.88, 0.0) if is_true_bad else Color(0.9, 0.75, 0.7, 0.0)
+	title_lbl.add_theme_color_override("font_color", title_col)
+	var shadow_col : Color = Color(0.25, 0.0, 0.25, 0.8) if is_true_bad else Color(0.3, 0.0, 0.0, 0.8)
+	title_lbl.add_theme_color_override("font_shadow_color", shadow_col)
 	title_lbl.add_theme_constant_override("shadow_offset_x", 2)
 	title_lbl.add_theme_constant_override("shadow_offset_y", 2)
 	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -799,7 +810,7 @@ func _show_ending_title(title: String) -> void:
 
 	# 区切り線
 	var line_rect := ColorRect.new()
-	line_rect.color = Color(0.5, 0.1, 0.1, 0.0)
+	line_rect.color = Color(0.5, 0.2, 0.5, 0.0) if is_true_bad else Color(0.5, 0.1, 0.1, 0.0)
 	line_rect.size = Vector2(0, 1)
 	line_rect.position = Vector2(vp_size.x * 0.5, vp_size.y * 0.43)
 	line_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -807,7 +818,8 @@ func _show_ending_title(title: String) -> void:
 
 	# フェードイン
 	var tw_in := create_tween().set_parallel(true)
-	tw_in.tween_property(bad_lbl, "theme_override_colors/font_color:a", 0.8, 1.5).set_trans(Tween.TRANS_SINE)
+	var tag_alpha : float = 0.25 if is_true_bad else 0.8
+	tw_in.tween_property(bad_lbl, "theme_override_colors/font_color:a", tag_alpha, 1.5).set_trans(Tween.TRANS_SINE)
 	tw_in.tween_property(title_lbl, "theme_override_colors/font_color:a", 1.0, 2.0).set_trans(Tween.TRANS_SINE).set_delay(0.5)
 	tw_in.tween_property(line_rect, "color:a", 0.4, 1.5)
 	tw_in.tween_property(line_rect, "size:x", 300.0, 2.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
@@ -817,6 +829,48 @@ func _show_ending_title(title: String) -> void:
 
 	# しばらく表示
 	await _wait(4.0)
+
+
+## インラインビデオ再生（セリフ後に全画面で流す）
+func _play_inline_video(path: String) -> void:
+	var stream : VideoStream = load(path) as VideoStream
+	if not stream:
+		push_warning("EndingPlayer: video not found: " + path)
+		return
+
+	var vp_size := Vector2(1280, 720)
+
+	# 黒背景フェードイン
+	var overlay := ColorRect.new()
+	overlay.color = Color(0, 0, 0, 0.0)
+	overlay.size = vp_size
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_container.add_child(overlay)
+	var tw_fade := create_tween()
+	tw_fade.tween_property(overlay, "color:a", 1.0, 0.4)
+	await tw_fade.finished
+
+	# VideoStreamPlayer（全画面）
+	var vsp := VideoStreamPlayer.new()
+	vsp.stream = stream
+	vsp.expand = true
+	vsp.size = vp_size
+	vsp.position = Vector2.ZERO
+	vsp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_container.add_child(vsp)
+
+	overlay.queue_free()
+	vsp.play()
+
+	# 再生終了まで待つ
+	while vsp.is_playing() and not _skip_requested:
+		await get_tree().process_frame
+
+	# フェードアウト
+	var tw_out := create_tween()
+	tw_out.tween_property(vsp, "modulate:a", 0.0, 0.5)
+	await tw_out.finished
+	vsp.queue_free()
 
 
 ## フェードアウトして終了
