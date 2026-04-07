@@ -97,6 +97,11 @@
             "type": "say_clear"
         },
         {
+            "type": "bgm",
+            "file": "Temple_On_Channel_Three.mp3",
+            "vol": -4.0
+        },
+        {
             "type": "bg_walk_start",
             "speed": 0.5,
             "zoom_end": 1.1,
@@ -498,6 +503,11 @@
             "type": "say",
             "text": "……はぁ……はぁ……。追ってきてない……よね？　足音、自分のだけ。……大丈夫。もう大丈夫だから。",
             "voice": "v111"
+        },
+        {
+            "type": "bgm",
+            "file": "",
+            "fade": 3.0
         },
         {
             "type": "wait",

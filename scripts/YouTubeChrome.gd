@@ -656,25 +656,31 @@ func _process(delta: float) -> void:
 	_view_t += delta
 	if _view_t >= 3.5:
 		_view_t = 0.0
-		_view_count = max(800, _view_count + randi_range(-30, 60))
-		if is_instance_valid(_view_label):
-			_view_label.text = "%s 人が視聴中" % _fmt_count(_view_count)
+		if _view_count > 10:
+			if _view_count >= 800:
+				_view_count = max(800, _view_count + randi_range(-30, 60))
+			else:
+				_view_count = max(11, _view_count + randi_range(-2, 5))
+			if is_instance_valid(_view_label):
+				_view_label.text = "%s 人が視聴中" % _fmt_count(_view_count)
 
 	# 高評価数ゆらぎ（次回閾値を事前計算して毎フレームのrandf_rangeを回避）
-	_like_t += delta
-	if _like_t >= _like_next:
-		_like_t = 0.0
-		_like_next = randf_range(20.0, 40.0)
-		_like_count += randi_range(5, 30)
-		if is_instance_valid(_like_label):
-			_like_label.text = _fmt_count(_like_count)
+	if _view_count > 10:
+		_like_t += delta
+		if _like_t >= _like_next:
+			_like_t = 0.0
+			_like_next = randf_range(20.0, 40.0)
+			_like_count += randi_range(5, 30)
+			if is_instance_valid(_like_label):
+				_like_label.text = _fmt_count(_like_count)
 
 	# スーパーチャット
-	_superchat_t += delta
-	if _superchat_t >= _superchat_next:
-		_superchat_t = 0.0
-		_superchat_next = randf_range(50.0, 110.0)
-		_spawn_superchat()
+	if _view_count > 10:
+		_superchat_t += delta
+		if _superchat_t >= _superchat_next:
+			_superchat_t = 0.0
+			_superchat_next = randf_range(50.0, 110.0)
+			_spawn_superchat()
 
 
 # ════════════════════════════════════════════════════════════════
