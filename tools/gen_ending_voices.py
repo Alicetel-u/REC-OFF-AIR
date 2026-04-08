@@ -19,15 +19,13 @@ SPEED_SCALE = 1.0
 INTONATION_SCALE = 0.3
 PITCH_SCALE = 0.0
 
-# ポーズ制御
-MAX_PAUSE_LENGTH = 0.15
-PRE_PHONEME_LENGTH = 0.05
-POST_PHONEME_LENGTH = 0.05
-
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "audio", "voice", "ch02_mura")
 
 SILENCE_THRESHOLD = 2000
 TAIL_MARGIN_MS = 40
+
+# NOTE: pause制御（prePhonemeLength/postPhonemeLength短縮・pause_moraクリップ）は
+# ch01主人公用の高テンション設定。ナレーションにはVOICEVOXデフォルトのまま使う。
 
 # 発音修正
 PRONUNCIATION_FIXES = {
@@ -108,11 +106,7 @@ def generate(text: str, out_path: str) -> tuple[bool, float]:
         query_data["speedScale"] = SPEED_SCALE
         query_data["intonationScale"] = INTONATION_SCALE
         query_data["pitchScale"] = PITCH_SCALE
-        query_data["prePhonemeLength"] = PRE_PHONEME_LENGTH
-        query_data["postPhonemeLength"] = POST_PHONEME_LENGTH
-        for mora in query_data.get("accent_phrases", []):
-            if mora.get("pause_mora") and mora["pause_mora"].get("vowel_length", 0) > MAX_PAUSE_LENGTH:
-                mora["pause_mora"]["vowel_length"] = MAX_PAUSE_LENGTH
+        # pause制御はVOICEVOXデフォルトのまま（ナレーションは自然な間を保つ）
 
         synth_res = requests.post(
             f"{VOICEVOX_URL}/synthesis",
