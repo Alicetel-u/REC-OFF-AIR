@@ -1604,15 +1604,7 @@
                             "pause": 4.0,
                             "voice": "res://assets/audio/voice/ch02_mura/e032.wav",
                             "voice_dur": 4.853
-                        }
-                    ]
-                },
-                {
-                    "title": "今も、配信中",
-                    "mood": "dark",
-                    "image": "res://assets/textures/true_bad_eyes.jpg",
-                    "wait": 1.0,
-                    "lines": [
+                        },
                         {
                             "text": "発症者たちは、怯えた声で同じ証言を繰り返した。",
                             "pause": 3.8,
