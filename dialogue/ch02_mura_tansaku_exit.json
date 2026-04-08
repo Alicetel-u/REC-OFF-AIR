@@ -1366,7 +1366,7 @@
                             "text": "古びた祠の前に、震える手でスマホを置いた。",
                             "pause": 3.0,
                             "voice": "res://assets/audio/voice/ch02_mura/e001.wav",
-                            "voice_dur": 3.158
+                            "voice_dur": 2.607
                         },
                         {
                             "text": "画面の端で、数字だけが狂ったように跳ね上がっていく。同接：89,247人。",
@@ -1375,7 +1375,7 @@
                             "emphasis": true,
                             "number_glitch": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e002.wav",
-                            "voice_dur": 6.384
+                            "voice_dur": 5.428
                         },
                         {
                             "text": "早くここから離れなければ——本能がそう叫び、闇の中を走り出した。",
@@ -1422,7 +1422,7 @@
                             "reading": "彼女の魂は、このはいそんの泥濘に縛りつけられた。",
                             "pause": 3.8,
                             "voice": "res://assets/audio/voice/ch02_mura/e008.wav",
-                            "voice_dur": 3.878
+                            "voice_dur": 3.098
                         },
                         {
                             "text": "解放の条件は、ただひとつ。",
@@ -1556,7 +1556,7 @@
                             "reading": "はいそんの最深部、霧原神社への無数の意識。",
                             "pause": 3.5,
                             "voice": "res://assets/audio/voice/ch02_mura/e025.wav",
-                            "voice_dur": 3.19
+                            "voice_dur": 2.688
                         },
                         {
                             "text": "みゆきが、数年の孤独の中で待ち続けた「条件」が——",
@@ -1589,7 +1589,7 @@
                             "emphasis": true,
                             "glitch": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e031.wav",
-                            "voice_dur": 3.344
+                            "voice_dur": 2.991
                         }
                     ]
                 },
