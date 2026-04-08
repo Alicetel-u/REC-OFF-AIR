@@ -1,15 +1,16 @@
 """
 真エンド音声生成スクリプト
 e*** / tw*** 音声を VOICEVOX Speaker 14 / intonationScale=0.3 で生成する
-（感情なし・ゆっくり読み = ナレーション統一）
+（e003 と同じ既存系）
 """
-import requests
+
 import io
 import os
-import sys
-import json
-import wave
 import struct
+import sys
+import wave
+
+import requests
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
@@ -24,10 +25,6 @@ OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "audio", "v
 SILENCE_THRESHOLD = 2000
 TAIL_MARGIN_MS = 40
 
-# NOTE: pause制御（prePhonemeLength/postPhonemeLength短縮・pause_moraクリップ）は
-# ch01主人公用の高テンション設定。ナレーションにはVOICEVOXデフォルトのまま使う。
-
-# 発音修正
 PRONUNCIATION_FIXES = {
     "廃村": "はいそん",
     "お札": "おふだ",
@@ -35,7 +32,6 @@ PRONUNCIATION_FIXES = {
     "首": "くび",
 }
 
-# text は表示用、reading は実際に読ませるテキスト（Noneなら text を使う）
 VOICES = [
     ("e001", "古びた祠の前に、震える手でスマホを置いた。", None),
     ("e002", "画面の端で、数字だけが狂ったように跳ね上がっていく。どうせつ：89,247人。", None),
@@ -60,6 +56,7 @@ def trim_trailing_silence(wav_bytes: bytes, threshold: int = 2000, margin_ms: in
         sw = wf.getsampwidth()
         fr = wf.getframerate()
         frames = wf.readframes(wf.getnframes())
+
     total_frames = len(frames) // (nch * sw)
     margin_frames = int(fr * margin_ms / 1000)
     last_loud = 0
@@ -69,12 +66,13 @@ def trim_trailing_silence(wav_bytes: bytes, threshold: int = 2000, margin_ms: in
         for c in range(nch):
             s_off = offset + c * sw
             if sw == 2:
-                s = struct.unpack_from("<h", frames, s_off)[0]
+                sample = struct.unpack_from("<h", frames, s_off)[0]
             else:
-                s = struct.unpack_from("<b", frames, s_off)[0] * 256
-            sample_sum += abs(s)
+                sample = struct.unpack_from("<b", frames, s_off)[0] * 256
+            sample_sum += abs(sample)
         if sample_sum // nch >= threshold:
             last_loud = i
+
     cut = min(last_loud + margin_frames + 1, total_frames)
     trimmed = frames[:cut * nch * sw]
     out = io.BytesIO()
@@ -98,7 +96,7 @@ def generate(text: str, out_path: str) -> tuple[bool, float]:
         query_res = requests.post(
             f"{VOICEVOX_URL}/audio_query",
             params={"text": tts_text, "speaker": SPEAKER_ID},
-            timeout=30
+            timeout=30,
         )
         query_res.raise_for_status()
         query_data = query_res.json()
@@ -106,15 +104,15 @@ def generate(text: str, out_path: str) -> tuple[bool, float]:
         query_data["speedScale"] = SPEED_SCALE
         query_data["intonationScale"] = INTONATION_SCALE
         query_data["pitchScale"] = PITCH_SCALE
-        # pause制御はVOICEVOXデフォルトのまま（ナレーションは自然な間を保つ）
 
         synth_res = requests.post(
             f"{VOICEVOX_URL}/synthesis",
             params={"speaker": SPEAKER_ID},
             json=query_data,
-            timeout=60
+            timeout=60,
         )
         synth_res.raise_for_status()
+
         wav = trim_trailing_silence(synth_res.content, SILENCE_THRESHOLD, TAIL_MARGIN_MS)
         dur = get_wav_duration(wav)
         with open(out_path, "wb") as f:
@@ -125,12 +123,12 @@ def generate(text: str, out_path: str) -> tuple[bool, float]:
         return False, 0.0
 
 
-def main():
+def main() -> None:
     print(f"=== 真エンド音声生成 [VOICEVOX Speaker {SPEAKER_ID} / intonation={INTONATION_SCALE}] ===")
     print(f"出力先: {OUTPUT_DIR}")
     print()
 
-    results = {}
+    results: dict[str, float] = {}
     for voice_id, text, reading in VOICES:
         tts_text = reading if reading else text
         out_path = os.path.join(OUTPUT_DIR, f"{voice_id}.wav")
@@ -140,15 +138,13 @@ def main():
             print(f"  -> OK ({dur:.3f}s)")
             results[voice_id] = dur
         else:
-            print(f"  -> FAILED")
+            print("  -> FAILED")
         print()
 
     print("=== 完了 ===")
     print("以下の voice_dur を JSON に反映してください：")
     for vid, dur in results.items():
         print(f'  "{vid}": {dur:.3f}')
-    print()
-    print("その後 godot --headless --import を実行してください。")
 
 
 if __name__ == "__main__":

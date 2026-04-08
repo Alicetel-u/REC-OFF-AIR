@@ -743,12 +743,13 @@ func _show_number_glitch_line(text: String, pause_after: float, voice_dur: float
 	center_noise.text = text
 	center_noise.set_anchors_preset(Control.PRESET_CENTER)
 	center_noise.position = Vector2(vp_size.x * 0.5 - 380.0, vp_size.y * 0.5 - 48.0)
-	center_noise.size = Vector2(760, 96)
+	center_noise.size = Vector2(920, 120)
 	center_noise.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	center_noise.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	center_noise.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	center_noise.add_theme_font_size_override("font_size", 34)
-	center_noise.add_theme_color_override("font_color", Color(1.0, 0.08, 0.08, 0.0))
-	center_noise.add_theme_color_override("font_shadow_color", Color(0.25, 0.0, 0.0, 0.9))
+	center_noise.add_theme_color_override("font_color", Color(1.0, 0.01, 0.01, 0.0))
+	center_noise.add_theme_color_override("font_shadow_color", Color(0.45, 0.0, 0.0, 0.95))
 	center_noise.add_theme_constant_override("shadow_offset_x", 3)
 	center_noise.add_theme_constant_override("shadow_offset_y", 3)
 	overlay.add_child(center_noise)
@@ -758,8 +759,8 @@ func _show_number_glitch_line(text: String, pause_after: float, voice_dur: float
 		var lbl := Label.new()
 		lbl.text = digits
 		lbl.add_theme_font_size_override("font_size", 28 + (i % 5) * 12)
-		lbl.add_theme_color_override("font_color", Color(1.0, 0.02 + randf() * 0.08, 0.02 + randf() * 0.08, 0.0))
-		lbl.add_theme_color_override("font_shadow_color", Color(0.1, 0.0, 0.0, 0.95))
+		lbl.add_theme_color_override("font_color", Color(1.0, randf() * 0.03, randf() * 0.03, 0.0))
+		lbl.add_theme_color_override("font_shadow_color", Color(0.22, 0.0, 0.0, 0.98))
 		lbl.add_theme_constant_override("shadow_offset_x", 4)
 		lbl.add_theme_constant_override("shadow_offset_y", 4)
 		lbl.position = Vector2(randf_range(-40.0, vp_size.x - 120.0), randf_range(-20.0, vp_size.y - 60.0))
@@ -772,7 +773,7 @@ func _show_number_glitch_line(text: String, pause_after: float, voice_dur: float
 		var garble := Label.new()
 		garble.text = ""
 		garble.add_theme_font_size_override("font_size", 18 + (i % 4) * 8)
-		garble.add_theme_color_override("font_color", Color(0.9, 0.0, 0.0, 0.0))
+		garble.add_theme_color_override("font_color", Color(1.0, 0.0, 0.0, 0.0))
 		garble.position = Vector2(randf_range(0.0, vp_size.x - 240.0), randf_range(0.0, vp_size.y - 40.0))
 		overlay.add_child(garble)
 		garble_labels.append(garble)
@@ -783,11 +784,11 @@ func _show_number_glitch_line(text: String, pause_after: float, voice_dur: float
 		var progress := clampf(elapsed / total, 0.0, 1.0)
 		_shake_amount = 10.0 if with_glitch or randf() < 0.35 else 6.0
 		blood_flash.color.a = clampf(0.08 + progress * 0.28 + randf() * 0.12, 0.0, 0.42)
-		center_noise.text = _build_glitch_number_text(text, progress, true)
-		center_noise.modulate.a = clampf(0.2 + progress * 0.65 + randf() * 0.1, 0.0, 0.95)
+		center_noise.text = _build_glitch_number_text(text, progress, false)
+		center_noise.modulate.a = clampf(0.72 + progress * 0.18 + randf() * 0.04, 0.0, 0.98)
 		center_noise.position = Vector2(
-			vp_size.x * 0.5 - 380.0 + randf_range(-20.0, 20.0),
-			vp_size.y * 0.5 - 48.0 + randf_range(-12.0, 12.0)
+			vp_size.x * 0.5 - 460.0 + randf_range(-6.0, 6.0),
+			vp_size.y * 0.5 - 60.0 + randf_range(-3.0, 3.0)
 		)
 		for i in range(ghost_labels.size()):
 			var lbl := ghost_labels[i]
@@ -1081,6 +1082,7 @@ func _play_inline_video(path: String) -> void:
 	vsp.expand = true
 	vsp.size = vp_size
 	vsp.position = Vector2.ZERO
+	vsp.volume_db = -80.0
 	vsp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_container.add_child(vsp)
 

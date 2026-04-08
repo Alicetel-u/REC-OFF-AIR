@@ -12,16 +12,19 @@ const FLOW_NODES : Array[Dictionary] = [
 	{"id": "cp2", "label": "CP2", "name": "廃倉庫", "type": "chapter", "pos": Vector2(300, 200)},
 	{"id": "cp3_1", "label": "CP3-1", "name": "霧原神社", "type": "chapter", "pos": Vector2(540, 200)},
 	{"id": "cp3_2", "label": "CP3-2", "name": "３択分岐", "type": "chapter", "pos": Vector2(780, 200)},
+    {"id": "route_smash", "label": "ROUTE A", "name": "スマホを壊す", "type": "branch", "pos": Vector2(580, 320)},
+    {"id": "route_take", "label": "ROUTE B", "name": "スマホを持ち帰る", "type": "branch", "pos": Vector2(780, 320)},
+    {"id": "route_stop", "label": "ROUTE C", "name": "配信を止める", "type": "branch", "pos": Vector2(980, 320)},
 	{"id": "bad_hikikomori", "ending_id": "bad_hikikomori", "name": "ひきこもり", "type": "bad",
 	 "pos": Vector2(150, 380), "tag": "BAD END"},
 	{"id": "bad_eien", "ending_id": "bad_eien", "name": "永遠の配信", "type": "bad",
 	 "pos": Vector2(400, 380), "tag": "BAD END"},
 	{"id": "bad_ido", "ending_id": "bad_ido", "name": "アナタノカワリニ", "type": "bad",
-	 "pos": Vector2(700, 380), "tag": "BAD END"},
+	 "pos": Vector2(580, 440), "tag": "BAD END"},
 	{"id": "true_bad_end", "ending_id": "true_bad_end", "name": "視線ノ供物", "type": "ending",
-	 "pos": Vector2(920, 430), "tag": "TRUE BAD END"},
+	 "pos": Vector2(780, 470), "tag": "TRUE BAD END"},
 	{"id": "bad_predator", "ending_id": "bad_predator", "name": "盲目の捕食者", "type": "bad",
-	 "pos": Vector2(1080, 380), "tag": "BAD END"},
+	 "pos": Vector2(980, 440), "tag": "BAD END"},
 ]
 
 # ── 接続定義 [from_id, to_id, style] ──
@@ -31,9 +34,12 @@ const FLOW_CONNS : Array[Array] = [
 	["cp3_1", "cp3_2", "progress"],
 	["cp1", "bad_hikikomori", "bad"],
 	["cp2", "bad_eien", "bad"],
-	["cp3_2", "bad_ido", "bad"],
-	["cp3_2", "true_bad_end", "ending"],
-	["cp3_2", "bad_predator", "bad"],
+	["cp3_2", "route_smash", "progress"],
+	["cp3_2", "route_take", "progress"],
+	["cp3_2", "route_stop", "progress"],
+	["route_smash", "bad_ido", "bad"],
+	["route_take", "true_bad_end", "ending"],
+	["route_stop", "bad_predator", "bad"],
 ]
 
 # ── 色定義 ──
@@ -181,10 +187,13 @@ func _build() -> void:
 func _build_nodes() -> void:
 	for nd in FLOW_NODES:
 		var ctrl : Control
-		if nd["type"] == "chapter":
-			ctrl = _make_chapter_node(nd)
-		else:
-			ctrl = _make_ending_node(nd)
+		match nd["type"]:
+			"chapter":
+				ctrl = _make_chapter_node(nd)
+			"branch":
+				ctrl = _make_branch_node(nd)
+			_:
+				ctrl = _make_ending_node(nd)
 		ctrl.position = nd["pos"] - ctrl.size * 0.5
 		ctrl.modulate.a = 0.0
 		ctrl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -364,6 +373,49 @@ func _make_ending_node(nd: Dictionary) -> Control:
 
 	return panel
 
+
+func _make_branch_node(nd: Dictionary) -> Control:
+	var w : float = 132.0
+	var h : float = 46.0
+	var panel := Control.new()
+	panel.size = Vector2(w, h)
+
+	var reached := _is_chapter_reached(nd["id"])
+	var bg := ColorRect.new()
+	bg.size = panel.size
+	bg.color = Color(0.08, 0.07, 0.12, 0.92) if reached else Color(0.04, 0.04, 0.07, 0.75)
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(bg)
+
+	var accent := ColorRect.new()
+	accent.size = Vector2(w, 2)
+	accent.color = Color(0.75, 0.3, 0.2, 0.85) if reached else Color(0.25, 0.25, 0.32, 0.5)
+	accent.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(accent)
+
+	_add_border(panel, panel.size, Color(0.5, 0.2, 0.15, 0.75) if reached else Color(0.18, 0.18, 0.25, 0.45))
+
+	var lbl_tag := Label.new()
+	lbl_tag.text = nd.get("label", "")
+	lbl_tag.size = Vector2(w, 14)
+	lbl_tag.position = Vector2(0, 5)
+	lbl_tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_tag.add_theme_font_size_override("font_size", 8)
+	lbl_tag.add_theme_color_override("font_color", Color(0.85, 0.55, 0.4, 0.9) if reached else COL_TEXT_DIM)
+	lbl_tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(lbl_tag)
+
+	var lbl_name := Label.new()
+	lbl_name.text = nd.get("name", "")
+	lbl_name.size = Vector2(w, 20)
+	lbl_name.position = Vector2(0, 19)
+	lbl_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl_name.add_theme_font_size_override("font_size", 11)
+	lbl_name.add_theme_color_override("font_color", COL_TEXT if reached else COL_TEXT_DIM)
+	lbl_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(lbl_name)
+
+	return panel
 
 func _build_connections() -> void:
 	var pos_map := {}
@@ -597,6 +649,10 @@ func _get_chapter_index(id: String) -> int:
 func _is_chapter_reached(id: String) -> bool:
 	var chapter_idx : int = _get_chapter_index(id)
 	if chapter_idx < 0:
+		if id in ["route_smash", "route_take", "route_stop"]:
+			for ending_id in ["bad_ido", "true_bad_end", "bad_predator"]:
+				if ending_id == _current_ending_id or GameManager.is_ending_unlocked(ending_id):
+					return true
 		return false
 	if chapter_idx <= GameManager.chapter_index:
 		return true
