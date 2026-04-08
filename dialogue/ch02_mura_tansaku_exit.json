@@ -1539,7 +1539,7 @@
                             "pause": 6.0,
                             "emphasis": true,
                             "glitch": true,
-                            "video": "res://assets/video/opm-5_godot.ogv",
+                            "video": "res://assets/video/opm-5_godot_silent.ogv",
                             "voice": "res://assets/audio/voice/ch02_mura/e024.wav",
                             "voice_dur": 3.088
                         }
