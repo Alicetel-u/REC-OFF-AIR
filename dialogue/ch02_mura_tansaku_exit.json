@@ -1489,6 +1489,7 @@
                             "text": "次の「万の目」が訪れる、その瞬間を待ちわびて。",
                             "pause": 6.0,
                             "emphasis": true,
+                            "video": "res://assets/video/opm-5.ogv",
                             "voice": "res://assets/audio/voice/ch02_mura/e017.wav",
                             "voice_dur": 3.495
                         }
