@@ -1379,8 +1379,8 @@
                             "number_glitch": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e002.wav",
                             "voice_dur": 7.577,
-                            "sfx": "res://assets/audio/sfx/glass/impactGlass_medium_003.ogg",
-                            "sfx_volume": -18.0
+                            "sfx": "res://assets/audio/sfx/ambient_wind/Ambient Wind (4).mp3",
+                            "sfx_volume": -24.0
                         },
                         {
                             "text": "早くここから離れなければ——本能がそう叫び、闇の中を走り出した。",
@@ -1505,9 +1505,7 @@
                     "title": "赤い目の正体",
                     "mood": "fear",
                     "image": "res://assets/textures/true_bad_eyes.jpg",
-                    "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog_alt.mp3",
-                    "bgm_volume": -13.0,
-                    "bgm_fade": 3.0,
+                    "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog.mp3",
                     "wait": 0.5,
                     "typewriter": "みんながずっとみていた",
                     "typewriter_voice": "res://assets/audio/voice/ch02_mura/tw002.wav",
@@ -1518,8 +1516,8 @@
                             "pause": 3.2,
                             "voice": "res://assets/audio/voice/ch02_mura/e018.wav",
                             "voice_dur": 3.971,
-                            "sfx": "res://assets/audio/sfx/horror_voice/creepy_moan_long.wav",
-                            "sfx_volume": -24.0
+                            "sfx": "res://assets/audio/sfx/monster/kimo2.wav",
+                            "sfx_volume": -26.0
                         },
                         {
                             "text": "それは村人の霊なんかじゃない。",
@@ -1554,8 +1552,8 @@
                             "video": "res://assets/video/opm-5_godot.ogv",
                             "voice": "res://assets/audio/voice/ch02_mura/e024.wav",
                             "voice_dur": 3.088,
-                            "sfx": "res://assets/audio/sfx/bell/impactBell_heavy_003.ogg",
-                            "sfx_volume": -16.0
+                            "sfx": "res://assets/audio/sfx/door/creak3.ogg",
+                            "sfx_volume": -22.0
                         }
                     ]
                 },
@@ -1563,7 +1561,7 @@
                     "title": "儀式の完成",
                     "mood": "fear",
                     "image": "res://assets/textures/true_bad_miyuki_face_fixed.png",
-                    "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog_alt.mp3",
+                    "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog.mp3",
                     "wait": 1.0,
                     "lines": [
                         {
@@ -1613,7 +1611,7 @@
                     "mood": "dark",
                     "image": "res://assets/textures/_2K_202604071403_fixed.png",
                     "image_fit": "contain",
-                    "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog_alt.mp3",
+                    "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog.mp3",
                     "wait": 3.0,
                     "lines": [
                         {
@@ -1651,8 +1649,6 @@
                     "mood": "dark",
                     "image": "res://assets/textures/_2K_202604071523_fixed.png",
                     "image_fit": "contain",
-                    "bgm_stop": true,
-                    "bgm_fade": 4.0,
                     "wait": 3.5,
                     "lines": [
                         {
@@ -1667,6 +1663,9 @@
             ],
             "credits": {
                 "title": "— STAFF ROLL —",
+                "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog_alt.mp3",
+                "bgm_volume": -13.5,
+                "bgm_fade": 2.5,
                 "scroll_speed": 30,
                 "entries": [
                     {

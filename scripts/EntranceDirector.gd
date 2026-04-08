@@ -1876,7 +1876,13 @@ func _show_credits(credits_data: Dictionary) -> void:
 	var entries : Array = credits_data.get("entries", [])
 	var title_text : String = credits_data.get("title", "— STAFF ROLL —")
 	var scroll_speed : float = float(credits_data.get("scroll_speed", 38))
+	var bgm_path : String = credits_data.get("bgm", "")
+	var bgm_volume : float = float(credits_data.get("bgm_volume", -14.0))
+	var bgm_fade : float = float(credits_data.get("bgm_fade", 2.0))
 	var vp_size := get_viewport().get_visible_rect().size
+
+	if bgm_path != "":
+		SoundManager.play_bgm(bgm_path, bgm_volume, 1.0, bgm_fade)
 
 	var canvas := CanvasLayer.new()
 	canvas.layer = 165
