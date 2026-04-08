@@ -486,11 +486,6 @@ func run_from_path(json_path: String) -> void:
 
 			"play_ending":
 				await _play_ending(ev)
-				# エンドクレジット（credits フィールドがあれば再生）
-				var credits_data : Dictionary = ev.get("credits", {})
-				if not credits_data.is_empty():
-					await _fade_black(0.2, 1.0)
-					await _show_credits(credits_data)
 				# BAD END後: フローチャート表示 + 選択肢
 				var pe_return : String = ev.get("return_label", "")
 				var pe_eid : String = ev.get("id", "")
@@ -1266,12 +1261,14 @@ func _play_ending(ev: Dictionary) -> void:
 	var ending_tag : String = "TRUE BAD END" if ending_id == "true_bad_end" else "BAD END"
 	await ep.play(sections, ending_title, ending_tag)
 
-	# EndingPlayer をフェードアウト
-	# クレジットがある場合は即解放（layer165のクレジットcanvasが黒背景で覆うため、暗転状態を維持）
-	if ev.get("credits", {}).is_empty():
+	# スタッフロールがある場合: EndingPlayer (layer150) を維持したままクレジット (layer165) を重ねる
+	# → YouTubeフレームに戻ることなく ending から直接スタッフロールへ seamless に遷移
+	var credits_data_inner : Dictionary = ev.get("credits", {})
+	if credits_data_inner.is_empty():
 		await ep.fade_out(1.5)
 	else:
-		await ep.fade_out(0.3)
+		await _show_credits(credits_data_inner)
+		ep.queue_free()
 
 
 ## バッドエンド演出：暗転 → 画像+タイトル表示 → 「選択肢に戻る？」→ タイトルへ or 分岐戻り

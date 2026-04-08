@@ -634,7 +634,7 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 				voice_dur = voice_stream.get_length()
 			var audio := AudioStreamPlayer.new()
 			audio.stream = voice_stream
-			audio.volume_db = -2.0
+			audio.volume_db = 3.0
 			add_child(audio)
 			audio.play()
 			_current_audio = audio
@@ -1039,6 +1039,16 @@ func _show_ending_title(title: String, tag: String = "BAD END") -> void:
 
 	# しばらく表示
 	await _wait(4.0)
+
+	# タイトル文字をフェードアウト（スタッフロールへ seamless に繋げるため）
+	if not _skip_requested:
+		var tw_fade_out := create_tween().set_parallel(true)
+		tw_fade_out.tween_property(bad_lbl, "theme_override_colors/font_color:a", 0.0, 1.5)
+		tw_fade_out.tween_property(title_lbl, "theme_override_colors/font_color:a", 0.0, 1.5)
+		tw_fade_out.tween_property(line_rect, "color:a", 0.0, 1.5)
+		tw_fade_out.tween_property(_bg_color, "color", Color(0, 0, 0, 1), 1.5)
+		await tw_fade_out.finished
+	await _wait(0.5)
 
 
 ## インラインビデオ再生（セリフ後に全画面で流す）

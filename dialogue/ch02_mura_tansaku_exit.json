@@ -1363,18 +1363,19 @@
                     "wait": 2.5,
                     "lines": [
                         {
-                            "text": "古びた灯籠の前に、震える手でスマホを置いた。",
+                            "text": "古びた祠の前に、震える手でスマホを置いた。",
                             "pause": 3.0,
                             "voice": "res://assets/audio/voice/ch02_mura/e001.wav",
-                            "voice_dur": 3.674
+                            "voice_dur": 3.158
                         },
                         {
                             "text": "画面の端で、数字だけが狂ったように跳ね上がっていく。同接：89,247人。",
+                            "reading": "画面の端で、数字だけが狂ったように跳ね上がっていく。どうせつ：89,247人。",
                             "pause": 4.5,
                             "emphasis": true,
                             "number_glitch": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e002.wav",
-                            "voice_dur": 7.758
+                            "voice_dur": 6.384
                         },
                         {
                             "text": "早くここから離れなければ——本能がそう叫び、闇の中を走り出した。",
@@ -1418,9 +1419,10 @@
                         },
                         {
                             "text": "彼女の魂は、この廃村の泥濘に縛りつけられた。",
+                            "reading": "彼女の魂は、このはいそんの泥濘に縛りつけられた。",
                             "pause": 3.8,
                             "voice": "res://assets/audio/voice/ch02_mura/e008.wav",
-                            "voice_dur": 4.396
+                            "voice_dur": 3.878
                         },
                         {
                             "text": "解放の条件は、ただひとつ。",
@@ -1449,7 +1451,7 @@
                     "mood": "fear",
                     "image": "res://assets/textures/true_bad_hand.png",
                     "wait": 1.5,
-                    "typewriter": "視 線 が 呪 い を 完 成 さ せ る",
+                    "typewriter": "視線が呪いを完成させる",
                     "typewriter_voice": "res://assets/audio/voice/ch02_mura/tw001.wav",
                     "lines": [
                         {
@@ -1497,7 +1499,7 @@
                     "mood": "fear",
                     "image": "res://assets/textures/true_bad_eyes.jpg",
                     "wait": 0.5,
-                    "typewriter": "み ん な が ず っ と み て い た",
+                    "typewriter": "みんながずっとみていた",
                     "typewriter_voice": "res://assets/audio/voice/ch02_mura/tw002.wav",
                     "lines": [
                         {
@@ -1519,13 +1521,6 @@
                             "emphasis": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e020.wav",
                             "voice_dur": 3.747
-                        },
-                        {
-                            "text": "89,247人。",
-                            "pause": 2.0,
-                            "emphasis": true,
-                            "voice": "res://assets/audio/voice/ch02_mura/e021.wav",
-                            "voice_dur": 2.638
                         },
                         {
                             "text": "その全員が、神社の闇を一睡もせず凝視していた。",
@@ -1556,16 +1551,11 @@
                     "wait": 1.0,
                     "lines": [
                         {
-                            "text": "廃村の最深部。",
-                            "pause": 2.0,
+                            "text": "廃村の最深部、霧原神社への無数の意識。",
+                            "reading": "はいそんの最深部、霧原神社への無数の意識。",
+                            "pause": 3.5,
                             "voice": "res://assets/audio/voice/ch02_mura/e025.wav",
-                            "voice_dur": 1.331
-                        },
-                        {
-                            "text": "89,247の視線が、針のように神社へ突き刺さった。",
-                            "pause": 4.2,
-                            "voice": "res://assets/audio/voice/ch02_mura/e026.wav",
-                            "voice_dur": 5.477
+                            "voice_dur": 3.190
                         },
                         {
                             "text": "みゆきが、数年の孤独の中で待ち続けた「条件」が——",
@@ -1593,12 +1583,12 @@
                             "voice_dur": 1.782
                         },
                         {
-                            "text": "89,247人の「目」という回路を通って、一気に外界へと氾濫した。",
-                            "pause": 7.0,
+                            "text": "「目」という回路を通って、一気に外界へと氾濫した。",
+                            "pause": 6.0,
                             "emphasis": true,
                             "glitch": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e031.wav",
-                            "voice_dur": 7.279
+                            "voice_dur": 3.344
                         }
                     ]
                 },
