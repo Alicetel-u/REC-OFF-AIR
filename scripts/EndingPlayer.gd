@@ -37,6 +37,8 @@ var _shake_amount  : float = 0.0
 var _base_pos      : Vector2 = Vector2.ZERO
 var _section_idx   : int = 0
 var _current_audio : AudioStreamPlayer = null
+var _bgm_audio : AudioStreamPlayer = null
+var _bgm_path : String = ""
 var _skip_requested : bool = false
 var _skip_btn : Button = null
 
@@ -328,6 +330,76 @@ func _wait(sec: float) -> void:
 		await get_tree().process_frame
 
 
+func _make_looping_stream(path: String) -> AudioStream:
+	var stream := load(path) as AudioStream
+	if stream == null:
+		push_warning("EndingPlayer: BGM not found: " + path)
+		return null
+	var dup := stream.duplicate()
+	if dup is AudioStreamMP3:
+		dup.loop = true
+	elif dup is AudioStreamOggVorbis:
+		dup.loop = true
+	return dup
+
+
+func _ensure_bgm_player() -> void:
+	if is_instance_valid(_bgm_audio):
+		return
+	_bgm_audio = AudioStreamPlayer.new()
+	_bgm_audio.bus = "Master"
+	add_child(_bgm_audio)
+
+
+func _fade_stop_bgm(fade_sec: float = 1.5) -> void:
+	if not is_instance_valid(_bgm_audio) or not _bgm_audio.playing:
+		_bgm_path = ""
+		return
+	var from_volume := _bgm_audio.volume_db
+	if fade_sec <= 0.05:
+		_bgm_audio.stop()
+		_bgm_path = ""
+		return
+	var tw := create_tween()
+	tw.tween_property(_bgm_audio, "volume_db", -60.0, fade_sec)
+	await tw.finished
+	if is_instance_valid(_bgm_audio):
+		_bgm_audio.stop()
+		_bgm_audio.volume_db = from_volume
+	_bgm_path = ""
+
+
+func _play_section_bgm(path: String, volume_db: float = -15.0, fade_sec: float = 1.5, restart: bool = false, seek_sec: float = 0.0) -> void:
+	_ensure_bgm_player()
+	if not restart and _bgm_path == path and _bgm_audio.playing:
+		if absf(_bgm_audio.volume_db - volume_db) > 0.1:
+			var tw_same := create_tween()
+			tw_same.tween_property(_bgm_audio, "volume_db", volume_db, minf(fade_sec, 1.0))
+			await tw_same.finished
+		return
+
+	var next_stream := _make_looping_stream(path)
+	if next_stream == null:
+		return
+
+	if _bgm_audio.playing:
+		if fade_sec > 0.05:
+			var tw_out := create_tween()
+			tw_out.tween_property(_bgm_audio, "volume_db", -60.0, fade_sec)
+			await tw_out.finished
+		_bgm_audio.stop()
+
+	_bgm_audio.stream = next_stream
+	_bgm_audio.volume_db = -60.0 if fade_sec > 0.05 else volume_db
+	_bgm_audio.play(seek_sec)
+	_bgm_path = path
+
+	if fade_sec > 0.05:
+		var tw_in := create_tween()
+		tw_in.tween_property(_bgm_audio, "volume_db", volume_db, fade_sec)
+		await tw_in.finished
+
+
 func play(sections: Array, ending_title: String = "", ending_tag: String = "BAD END") -> void:
 	visible = true
 	_is_playing = true
@@ -366,6 +438,7 @@ func play(sections: Array, ending_title: String = "", ending_tag: String = "BAD 
 	# スキップ時はアンビエントを止める
 	if is_instance_valid(ambient):
 		ambient.stop()
+	await _fade_stop_bgm(1.5)
 	# ボイス停止
 	if is_instance_valid(_current_audio):
 		_current_audio.stop()
@@ -384,7 +457,18 @@ func _play_section(section: Dictionary, idx: int) -> void:
 	var video_path : String = section.get("video", "")
 	var post_wait : float = section.get("wait", 2.0)
 	var mood : String = section.get("mood", "dark")
+	var bgm_path : String = section.get("bgm", "")
+	var bgm_volume : float = float(section.get("bgm_volume", -15.0))
+	var bgm_fade : float = float(section.get("bgm_fade", 1.5))
+	var bgm_restart : bool = bool(section.get("bgm_restart", false))
+	var bgm_seek : float = float(section.get("bgm_seek", 0.0))
+	var bgm_stop : bool = bool(section.get("bgm_stop", false))
 	_current_mood = mood
+
+	if bgm_stop:
+		await _fade_stop_bgm(bgm_fade)
+	elif bgm_path != "":
+		await _play_section_bgm(bgm_path, bgm_volume, bgm_fade, bgm_restart, bgm_seek)
 
 	# ── mood別の背景色変化 ──
 	var target_bg : Color
@@ -607,6 +691,8 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 	var voice_dur : float = 0.0
 
 	var video_path : String = ""
+	var sfx_path : String = ""
+	var sfx_volume : float = -12.0
 
 	if line is Dictionary:
 		text = line.get("text", "")
@@ -617,6 +703,8 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 		number_glitch = line.get("number_glitch", false)
 		voice_dur = float(line.get("voice_dur", 0.0))
 		video_path = line.get("video", "")
+		sfx_path = line.get("sfx", "")
+		sfx_volume = float(line.get("sfx_volume", -12.0))
 	else:
 		text = str(line)
 
@@ -625,6 +713,10 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 		_current_audio.stop()
 		_current_audio.queue_free()
 		_current_audio = null
+
+	# ── 効果音 ──
+	if sfx_path != "":
+		SoundManager.play_sfx_file(sfx_path, sfx_volume)
 
 	# ── 音声再生 ──
 	if voice_path != "":
