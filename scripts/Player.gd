@@ -24,6 +24,8 @@ const HEAD_PITCH_MAX := 1.2    # 見上げ限界 (rad)
 var bob_t        : float = 0.0
 var flashlight_on: bool  = true
 var _prev_moving : bool  = false
+var _camera_bob_offset   : Vector3 = Vector3.ZERO
+var _camera_shake_offset : Vector3 = Vector3.ZERO
 var battery      : float = 1.0   # 0.0 〜 1.0
 var _sway_t      : float = 0.0   # 手ブレ用タイマー
 var forced_moving : bool = false  # EntranceDirector等から強制的に移動中扱い
@@ -56,6 +58,7 @@ func _ready() -> void:
 	battery = 1.0
 	flashlight_on = true
 	flashlight.visible = true
+	camera.position = Vector3.ZERO
 
 
 var input_disabled : bool = false:
@@ -178,6 +181,7 @@ func _physics_process(delta: float) -> void:
 			SoundManager.play_footstep(GameManager.chapter_index, dashing)
 	_do_flashlight_sway(delta, now_moving or forced_moving)
 	_do_camera_shake(delta)
+	camera.position = _camera_bob_offset + _camera_shake_offset
 
 
 
@@ -191,10 +195,10 @@ func _do_camera_bob(delta: float, moving: bool) -> void:
 			abs(sin(bob_t))  * BOB_AMP,
 			0.0
 		)
-		camera.position = camera.position.lerp(target, delta * 12.0)
+		_camera_bob_offset = _camera_bob_offset.lerp(target, delta * 12.0)
 	else:
 		bob_t = 0.0
-		camera.position = camera.position.lerp(Vector3.ZERO, delta * 6.0)
+		_camera_bob_offset = _camera_bob_offset.lerp(Vector3.ZERO, delta * 6.0)
 
 
 ## カメラシェイク開始（intensity: 強さ、duration: 秒）
@@ -205,13 +209,13 @@ func start_camera_shake(intensity: float = 0.05, duration: float = 0.5) -> void:
 
 func _do_camera_shake(delta: float) -> void:
 	if _shake_intensity <= 0.0:
+		_camera_shake_offset = _camera_shake_offset.lerp(Vector3.ZERO, delta * 20.0)
 		return
-	var offset := Vector3(
+	_camera_shake_offset = Vector3(
 		randf_range(-1.0, 1.0) * _shake_intensity,
 		randf_range(-1.0, 1.0) * _shake_intensity,
 		0.0
 	)
-	camera.position += offset
 	_shake_intensity = max(_shake_intensity - _shake_decay * delta, 0.0)
 
 
