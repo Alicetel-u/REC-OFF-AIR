@@ -41,6 +41,7 @@ var _bgm_audio : AudioStreamPlayer = null
 var _bgm_path : String = ""
 var _skip_requested : bool = false
 var _skip_btn : Button = null
+var _title_image_path : String = ""
 
 
 func _ready() -> void:
@@ -164,10 +165,17 @@ func _process(delta: float) -> void:
 func _build_ui() -> void:
 	var vp_size := Vector2(1280, 720)
 
+	# クリップ用の親（揺れで画面外がはみ出ないようにする）
+	var _clip := Control.new()
+	_clip.size = vp_size
+	_clip.clip_contents = true
+	_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_clip)
+
 	_container = Control.new()
 	_container.size = vp_size
 	_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_container)
+	_clip.add_child(_container)
 	_base_pos = _container.position
 
 	# 動的背景色（黒→mood色にゆっくり変化）
@@ -260,14 +268,16 @@ func _build_ui() -> void:
 	_top_bar.position = Vector2(0, 0)
 	_top_bar.size = Vector2(1280, bar_h)
 	_top_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_container.add_child(_top_bar)
+	add_child(_top_bar)  # 揺れないようコンテナ外に配置
 
 	_bot_bar = ColorRect.new()
 	_bot_bar.color = Color(0, 0, 0, 1)
 	_bot_bar.position = Vector2(0, 720 - bar_h)
 	_bot_bar.size = Vector2(1280, bar_h)
 	_bot_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_container.add_child(_bot_bar)
+	add_child(_bot_bar)  # 揺れないようコンテナ外に配置
+	_top_bar.move_to_front()
+	_bot_bar.move_to_front()
 
 	# セクションタイトル
 	_section_lbl = Label.new()
@@ -400,7 +410,8 @@ func _play_section_bgm(path: String, volume_db: float = -15.0, fade_sec: float =
 		await tw_in.finished
 
 
-func play(sections: Array, ending_title: String = "", ending_tag: String = "BAD END") -> void:
+func play(sections: Array, ending_title: String = "", ending_tag: String = "BAD END", title_image: String = "") -> void:
+	_title_image_path = title_image
 	visible = true
 	_is_playing = true
 	_skip_requested = false
@@ -1064,28 +1075,60 @@ func _glitch_burst(intensity: float = 8.0, count: int = 3) -> void:
 ## バッドエンドタイトル演出
 func _show_ending_title(title: String, tag: String = "BAD END") -> void:
 	var vp_size := Vector2(1280, 720)
+	var is_true_bad : bool = (tag == "TRUE BAD END")
 
 	# テキスト類だけ消す（背景画像は残す）
 	var tw_dark := create_tween().set_parallel(true)
 	tw_dark.tween_property(_text_label, "modulate:a", 0.0, 1.0)
 	tw_dark.tween_property(_center_big, "theme_override_colors/font_color:a", 0.0, 1.0)
 	tw_dark.tween_property(_section_lbl, "theme_override_colors/font_color:a", 0.0, 1.0)
-	# 背景画像があれば暗めにして残す、なければ黒に
-	if _bg_rect.modulate.a > 0.1:
-		tw_dark.tween_property(_bg_rect, "modulate", Color(0.3, 0.25, 0.3, 0.7), 2.0)
-	else:
-		tw_dark.tween_property(_bg_color, "color", Color(0, 0, 0, 1), 2.0)
+	# 背景を完全に黒に
+	tw_dark.tween_property(_bg_rect, "modulate:a", 0.0, 1.5)
+	tw_dark.tween_property(_bg_rect2, "modulate:a", 0.0, 1.5)
+	tw_dark.tween_property(_bg_color, "color", Color(0, 0, 0, 1), 1.5)
 	await tw_dark.finished
 
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(0.5).timeout
 
+	# TRUE BAD END かつ title_image が指定されている場合は画像タイトルカードを表示
+	if is_true_bad and _title_image_path != "" and ResourceLoader.exists(_title_image_path):
+		var tex := load(_title_image_path) as Texture2D
+		if tex:
+			var img_rect := TextureRect.new()
+			img_rect.texture = tex
+			img_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+			img_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			img_rect.size = vp_size
+			img_rect.position = Vector2.ZERO
+			img_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			img_rect.modulate.a = 0.0
+			_container.add_child(img_rect)
+
+			# フェードイン
+			if not _skip_requested:
+				var tw_img_in := create_tween()
+				tw_img_in.tween_property(img_rect, "modulate:a", 1.0, 2.0).set_trans(Tween.TRANS_SINE)
+				await tw_img_in.finished
+
+			# 表示キープ
+			await _wait(4.5)
+
+			# フェードアウト → 黒へ
+			if not _skip_requested:
+				var tw_img_out := create_tween()
+				tw_img_out.tween_property(img_rect, "modulate:a", 0.0, 1.5).set_trans(Tween.TRANS_SINE)
+				await tw_img_out.finished
+			img_rect.queue_free()
+			await _wait(0.5)
+			return
+
+	# ── テキストタイトル表示（通常バッドエンド用）──
 	# BAD END ラベル（小さめ、上）
 	var bad_lbl := Label.new()
 	bad_lbl.text = tag
 	bad_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	bad_lbl.size = Vector2(vp_size.x, 50)
 	bad_lbl.position = Vector2(0, vp_size.y * 0.37)
-	var is_true_bad : bool = (tag == "TRUE BAD END")
 	bad_lbl.add_theme_font_size_override("font_size", 26 if is_true_bad else 16)
 	var tag_col : Color = Color(0.72, 0.22, 0.68, 0.0) if is_true_bad else Color(0.6, 0.15, 0.15, 0.0)
 	bad_lbl.add_theme_color_override("font_color", tag_col)

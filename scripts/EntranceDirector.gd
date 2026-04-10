@@ -538,6 +538,11 @@ func run_from_path(json_path: String) -> void:
 			"vhs_reset":
 				_vhs_reset()
 
+			"remove_vhs_overlay":
+				var _main := _get_main()
+				if _main and _main.has_method("_remove_vhs_overlay"):
+					_main._remove_vhs_overlay()
+
 			"fisheye":
 				_fisheye_on(
 					float(ev.get("distortion", 0.5)),
@@ -1259,7 +1264,8 @@ func _play_ending(ev: Dictionary) -> void:
 	ep.set_script(EndingPlayerScript)
 	get_tree().root.add_child(ep)
 	var ending_tag : String = "TRUE BAD END" if ending_id == "true_bad_end" else "BAD END"
-	await ep.play(sections, ending_title, ending_tag)
+	var title_image : String = ev.get("title_image", "")
+	await ep.play(sections, ending_title, ending_tag, title_image)
 
 	# スタッフロールがある場合: EndingPlayer (layer150) を維持したままクレジット (layer165) を重ねる
 	# → YouTubeフレームに戻ることなく ending から直接スタッフロールへ seamless に遷移

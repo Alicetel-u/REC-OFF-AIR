@@ -1162,7 +1162,8 @@
                             "voice": "res://assets/audio/voice/ch02_mura/v441.wav",
                             "pause": 3.5
                         }
-                    ]
+                    ],
+                    "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog.mp3"
                 },
                 {
                     "title": "",
@@ -1354,6 +1355,7 @@
             "type": "play_ending",
             "id": "true_bad_end",
             "ending_title": "視線ノ供物",
+            "title_image": "res://assets/textures/true_bad_end_title.png",
             "return_label": "cp3_choice",
             "sections": [
                 {
@@ -1369,7 +1371,7 @@
                             "text": "古びた祠の前に、震える手でスマホを置いた。",
                             "pause": 3.0,
                             "voice": "res://assets/audio/voice/ch02_mura/e001.wav",
-                            "voice_dur": 3.474
+                            "voice_dur": 3.613
                         },
                         {
                             "text": "画面の端で、数字だけが狂ったように跳ね上がっていく。同接：89,247人。",
@@ -1378,7 +1380,7 @@
                             "emphasis": true,
                             "number_glitch": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e002.wav",
-                            "voice_dur": 7.577,
+                            "voice_dur": 7.936,
                             "sfx": "res://assets/audio/sfx/ambient_wind/Ambient Wind (4).mp3",
                             "sfx_volume": -24.0
                         },
@@ -1386,13 +1388,13 @@
                             "text": "早くここから離れなければ——本能がそう叫び、闇の中を走り出した。",
                             "pause": 3.5,
                             "voice": "res://assets/audio/voice/ch02_mura/e003.wav",
-                            "voice_dur": 5.294
+                            "voice_dur": 5.745
                         },
                         {
                             "text": "だが、逃げ切れないことは分かっていた。",
                             "pause": 2.5,
                             "voice": "res://assets/audio/voice/ch02_mura/e004.wav",
-                            "voice_dur": 2.506
+                            "voice_dur": 2.929
                         },
                         {
                             "text": "この配信は、もう誰にも止められない。",
@@ -1400,7 +1402,7 @@
                             "emphasis": true,
                             "glitch": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e005.wav",
-                            "voice_dur": 2.705
+                            "voice_dur": 2.965
                         }
                     ]
                 },
@@ -1415,40 +1417,40 @@
                             "text": "霧原みゆき。享年17歳。",
                             "pause": 2.8,
                             "voice": "res://assets/audio/voice/ch02_mura/e006.wav",
-                            "voice_dur": 2.415
+                            "voice_dur": 2.757
                         },
                         {
                             "text": "儀式は無惨な失敗に終わった。",
                             "pause": 2.8,
                             "voice": "res://assets/audio/voice/ch02_mura/e007.wav",
-                            "voice_dur": 1.927
+                            "voice_dur": 2.265
                         },
                         {
                             "text": "彼女の魂は、この廃村の泥濘に縛りつけられた。",
                             "reading": "彼女の魂は、このはいそんの泥濘に縛りつけられた。",
                             "pause": 3.8,
                             "voice": "res://assets/audio/voice/ch02_mura/e008.wav",
-                            "voice_dur": 4.067
+                            "voice_dur": 4.284
                         },
                         {
                             "text": "解放の条件は、ただひとつ。",
                             "pause": 2.6,
                             "voice": "res://assets/audio/voice/ch02_mura/e009.wav",
-                            "voice_dur": 1.993
+                            "voice_dur": 2.598
                         },
                         {
                             "text": "誰かが、彼女の代わりに儀式を完遂すること。",
                             "pause": 4.2,
                             "emphasis": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e010.wav",
-                            "voice_dur": 3.309
+                            "voice_dur": 3.758
                         },
                         {
                             "text": "そして今、その「器」がようやく目の前に現れた。",
                             "pause": 4.8,
                             "emphasis": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e011.wav",
-                            "voice_dur": 3.459
+                            "voice_dur": 4.684
                         }
                     ]
                 },
@@ -1466,38 +1468,38 @@
                             "pause": 4.0,
                             "emphasis": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e012.wav",
-                            "voice_dur": 3.204
+                            "voice_dur": 3.707
                         },
                         {
                             "text": "絶命の瞬間。",
                             "pause": 2.2,
                             "voice": "res://assets/audio/voice/ch02_mura/e013.wav",
-                            "voice_dur": 1.161
+                            "voice_dur": 1.257
                         },
                         {
                             "text": "万を超える視線が注がれたとき、呪いは真の姿を現す。",
                             "pause": 4.2,
                             "voice": "res://assets/audio/voice/ch02_mura/e014.wav",
-                            "voice_dur": 3.901
+                            "voice_dur": 4.721
                         },
                         {
                             "text": "あの夜、瞳が足りなかった。",
                             "pause": 2.6,
                             "voice": "res://assets/audio/voice/ch02_mura/e015.wav",
-                            "voice_dur": 1.985
+                            "voice_dur": 2.426
                         },
                         {
                             "text": "だから彼女は、首のない霊として永い時を彷徨い続けた。",
                             "pause": 4.4,
                             "voice": "res://assets/audio/voice/ch02_mura/e016.wav",
-                            "voice_dur": 3.936
+                            "voice_dur": 4.546
                         },
                         {
                             "text": "次の「万の目」が訪れる、その瞬間を待ちわびて。",
                             "pause": 6.0,
                             "emphasis": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e017.wav",
-                            "voice_dur": 3.495
+                            "voice_dur": 4.784
                         }
                     ]
                 },
@@ -1515,7 +1517,7 @@
                             "reading": "暗闇の至る所で、不気味にうごめく無数の赤い光。",
                             "pause": 3.2,
                             "voice": "res://assets/audio/voice/ch02_mura/e018.wav",
-                            "voice_dur": 3.971,
+                            "voice_dur": 4.372,
                             "sfx": "res://assets/audio/sfx/monster/kimo2.wav",
                             "sfx_volume": -26.0
                         },
@@ -1523,26 +1525,26 @@
                             "text": "それは村人の霊なんかじゃない。",
                             "pause": 2.4,
                             "voice": "res://assets/audio/voice/ch02_mura/e019.wav",
-                            "voice_dur": 1.916
+                            "voice_dur": 2.151
                         },
                         {
                             "text": "液晶の向こう側にいる、視聴者たちの飢えた目だ。",
                             "pause": 4.2,
                             "emphasis": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e020.wav",
-                            "voice_dur": 3.053
+                            "voice_dur": 3.724
                         },
                         {
                             "text": "その全員が、神社の闇を一睡もせず凝視していた。",
                             "pause": 4.2,
                             "voice": "res://assets/audio/voice/ch02_mura/e022.wav",
-                            "voice_dur": 3.704
+                            "voice_dur": 4.012
                         },
                         {
                             "text": "みゆきに欠けていた最後のピースを——",
                             "pause": 3.5,
                             "voice": "res://assets/audio/voice/ch02_mura/e023.wav",
-                            "voice_dur": 2.09
+                            "voice_dur": 2.265
                         },
                         {
                             "text": "「しゅっち」が、最悪の形で揃えてしまった。",
@@ -1551,7 +1553,7 @@
                             "glitch": true,
                             "video": "res://assets/video/opm-5_godot.ogv",
                             "voice": "res://assets/audio/voice/ch02_mura/e024.wav",
-                            "voice_dur": 3.088,
+                            "voice_dur": 4.071,
                             "sfx": "res://assets/audio/sfx/door/creak3.ogg",
                             "sfx_volume": -22.0
                         }
@@ -1569,32 +1571,32 @@
                             "reading": "はいそんの最深部、霧原神社への無数の意識。",
                             "pause": 3.5,
                             "voice": "res://assets/audio/voice/ch02_mura/e025.wav",
-                            "voice_dur": 3.694
+                            "voice_dur": 3.919
                         },
                         {
                             "text": "みゆきが、数年の孤独の中で待ち続けた「条件」が——",
                             "pause": 3.8,
                             "voice": "res://assets/audio/voice/ch02_mura/e027.wav",
-                            "voice_dur": 3.773
+                            "voice_dur": 4.941
                         },
                         {
                             "text": "たった一晩の「生中継」によって、無慈悲に達成された。",
                             "pause": 4.5,
                             "emphasis": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e028.wav",
-                            "voice_dur": 3.692
+                            "voice_dur": 5.175
                         },
                         {
                             "text": "霧原みゆきは、ついに解き放たれた。",
                             "pause": 4.0,
                             "voice": "res://assets/audio/voice/ch02_mura/e029.wav",
-                            "voice_dur": 2.682
+                            "voice_dur": 2.93
                         },
                         {
                             "text": "村に淀んでいた呪いは——",
                             "pause": 3.5,
                             "voice": "res://assets/audio/voice/ch02_mura/e030.wav",
-                            "voice_dur": 1.637
+                            "voice_dur": 1.743
                         },
                         {
                             "text": "「目」という回路を通って、一気に外界へと氾濫した。",
@@ -1602,7 +1604,7 @@
                             "emphasis": true,
                             "glitch": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e031.wav",
-                            "voice_dur": 4.242
+                            "voice_dur": 4.46
                         }
                     ]
                 },
@@ -1618,13 +1620,13 @@
                             "text": "数週間後、世界各地で原因不明の集団症例が報告され始める。",
                             "pause": 4.0,
                             "voice": "res://assets/audio/voice/ch02_mura/e032.wav",
-                            "voice_dur": 4.853
+                            "voice_dur": 5.679
                         },
                         {
                             "text": "発症者たちは、怯えた声で同じ証言を繰り返した。",
                             "pause": 3.8,
                             "voice": "res://assets/audio/voice/ch02_mura/e033.wav",
-                            "voice_dur": 3.564
+                            "voice_dur": 4.306
                         },
                         {
                             "text": "「暗闇の中に、こちらを覗き込む無数の赤い目が見える」と。",
@@ -1632,7 +1634,7 @@
                             "emphasis": true,
                             "glitch": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e034.wav",
-                            "voice_dur": 4.296,
+                            "voice_dur": 4.95,
                             "sfx": "res://assets/audio/sfx/metal/impactMetal_heavy_003.ogg",
                             "sfx_volume": -20.0
                         },
@@ -1640,7 +1642,7 @@
                             "text": "感染経路も、治療法も、いまだ解明されていない。",
                             "pause": 4.0,
                             "voice": "res://assets/audio/voice/ch02_mura/e035.wav",
-                            "voice_dur": 3.796
+                            "voice_dur": 4.282
                         }
                     ]
                 },
@@ -1656,7 +1658,7 @@
                             "pause": 7.0,
                             "emphasis": true,
                             "voice": "res://assets/audio/voice/ch02_mura/e036.wav",
-                            "voice_dur": 3.39
+                            "voice_dur": 4.645
                         }
                     ]
                 }
@@ -1714,18 +1716,6 @@
                         "role": "",
                         "name": "── SPECIAL THANKS ──",
                         "style": "section"
-                    },
-                    {
-                        "role": "",
-                        "name": ""
-                    },
-                    {
-                        "role": "",
-                        "name": "この配信を最後まで見てくれたあなたへ。"
-                    },
-                    {
-                        "role": "",
-                        "name": ""
                     },
                     {
                         "role": "",
@@ -1845,7 +1835,8 @@
                             "text": "あの子を縛っていたデジタルな法則も、消失した。",
                             "pause": 4.0
                         }
-                    ]
+                    ],
+                    "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog.mp3"
                 },
                 {
                     "title": "",

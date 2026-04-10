@@ -2381,36 +2381,21 @@ func _show_caught() -> void:
 	get_tree().root.add_child(ep)
 	await ep.play(sections, ending_title)
 
-	# 再生完了 → タイトルに戻るボタン
-	await get_tree().create_timer(1.0).timeout
+	# 再生完了 → フローチャート表示 + 選択肢
+	await ep.fade_out(1.5)
 
-	var btn_canvas := CanvasLayer.new()
-	btn_canvas.layer = 160
-	get_tree().root.add_child(btn_canvas)
+	var fc := CanvasLayer.new()
+	fc.set_script(preload("res://scripts/EndingFlowchart.gd"))
+	get_tree().root.add_child(fc)
+	fc.show_flowchart("bad_eien")
+	var eien_choice : int = await fc.show_return_choice()
+	fc.queue_free()
 
-	var retry_btn := Button.new()
-	retry_btn.text = "タイトルに戻る"
-	retry_btn.add_theme_font_size_override("font_size", 18)
-	retry_btn.size = Vector2(220, 44)
-	retry_btn.position = Vector2((vp_size.x - 220) * 0.5, vp_size.y * 0.70)
-	retry_btn.modulate.a = 0.0
-	btn_canvas.add_child(retry_btn)
-
-	var tw_btn := create_tween()
-	tw_btn.tween_property(retry_btn, "modulate:a", 1.0, 0.5)
-	await tw_btn.finished
-
-	retry_btn.pressed.connect(func() -> void:
-		await ep.fade_out(1.5)
-		btn_canvas.queue_free()
-		# フローチャート表示
-		var fc := CanvasLayer.new()
-		fc.set_script(preload("res://scripts/EndingFlowchart.gd"))
-		get_tree().root.add_child(fc)
-		fc.show_flowchart("bad_eien")
-		await fc.closed
+	if eien_choice == 0:
+		# 選択肢の直前に戻る → チャプター再スタート
+		GameManager.restart()
+	else:
 		get_tree().change_scene_to_file("res://scenes/Opening.tscn")
-	)
 
 
 # ── バッドエンド補助関数 ──────────────────────────────────
@@ -2594,7 +2579,7 @@ func _setup_debug_ui() -> void:
 	_debug_label.add_theme_constant_override("shadow_offset_x", 1)
 	_debug_label.add_theme_constant_override("shadow_offset_y", 1)
 	_debug_label.position = Vector2(8, 8)
-	_debug_label.visible = true  # デバッグラベル表示
+	_debug_label.visible = false
 	cl.add_child(_debug_label)
 	_refresh_debug_label()
 

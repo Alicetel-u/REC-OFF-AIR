@@ -674,13 +674,7 @@ func _process(delta: float) -> void:
 			if is_instance_valid(_like_label):
 				_like_label.text = _fmt_count(_like_count)
 
-	# スーパーチャット
-	if _view_count > 10:
-		_superchat_t += delta
-		if _superchat_t >= _superchat_next:
-			_superchat_t = 0.0
-			_superchat_next = randf_range(50.0, 110.0)
-			_spawn_superchat()
+
 
 
 # ════════════════════════════════════════════════════════════════
@@ -788,7 +782,6 @@ func spawn_story_superchat(sc_name: String, sc_msg: String, amount: int) -> void
 func _spawn_superchat() -> void:
 	if not is_instance_valid(_superchat_area):
 		return
-	SoundManager.play_superchat_chime()
 	var amount : int    = [200, 500, 1000, 2000, 5000][randi() % 5]
 	var name_  : String = SUPERCHAT_NAMES[randi() % SUPERCHAT_NAMES.size()]
 	var msg_   : String = SUPERCHAT_MSGS[randi()  % SUPERCHAT_MSGS.size()]

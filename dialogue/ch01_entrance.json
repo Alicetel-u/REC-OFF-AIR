@@ -43,7 +43,7 @@
         },
         {
             "type": "wait",
-            "sec": 8.94
+            "sec": 9.0
         },
         {
             "type": "chat",
@@ -82,7 +82,7 @@
         },
         {
             "type": "wait",
-            "sec": 10.37
+            "sec": 10.33
         },
         {
             "type": "chat",
@@ -136,7 +136,7 @@
         },
         {
             "type": "wait",
-            "sec": 2.16
+            "sec": 2.19
         },
         {
             "type": "_comment",
@@ -159,7 +159,7 @@
         },
         {
             "type": "wait",
-            "sec": 7.34
+            "sec": 7.27
         },
         {
             "type": "chat",
@@ -248,7 +248,7 @@
         },
         {
             "type": "wait",
-            "sec": 7.88
+            "sec": 7.99
         },
         {
             "type": "chat",
@@ -389,13 +389,13 @@
         },
         {
             "type": "say",
-            "text": "この村、20年前に『みゆき事件』っていう未解決事件があってさ。17歳の女の子……霧原みゆきちゃんが、村の公衆トイレで首を撥ねられたの。犯人は見つかってない。",
+            "text": "この村、30年前に『みゆき事件』っていう未解決事件があってさ。17歳の女の子……霧原みゆきちゃんが、村の公衆トイレで首を撥ねられたの。犯人は見つかってない。",
             "voice": "v004",
-            "reading": "この村、20年前に『みゆき事件』っていう未解決事件があってさ。17歳の女の子……霧原みゆきちゃんが、村の公衆トイレでくびを撥ねられたの。犯人は見つかってない。"
+            "reading": "この村、30年前に『みゆき事件』っていう未解決事件があってさ。17歳の女の子……霧原みゆきちゃんが、村の公衆トイレでくびを撥ねられたの。犯人は見つかってない。"
         },
         {
             "type": "wait",
-            "sec": 12.63
+            "sec": 12.64
         },
         {
             "type": "chat",
@@ -439,11 +439,11 @@
             "type": "say",
             "text": "……ほら、ここ見て。案山子の首の切り口、全部同じ角度なんだよね。まるで刀で一太刀……ぞっとするでしょ。",
             "voice": "v005",
-            "reading": "……ほら、ここ見て。案山子のくびの切り口、全部同じ角度なんだよね。まるで刀で一太刀……ぞっとするでしょ。"
+            "reading": "……ほら、ここ見て。案山子のくびの切り口、全部同じ角度なんだよね。まるで刀でひとたち……ぞっとするでしょ。"
         },
         {
             "type": "wait",
-            "sec": 8.76
+            "sec": 8.82
         },
         {
             "type": "rot_y",
@@ -488,7 +488,7 @@
         },
         {
             "type": "wait",
-            "sec": 10.64
+            "sec": 10.71
         },
         {
             "type": "_comment",
@@ -665,7 +665,7 @@
         },
         {
             "type": "wait",
-            "sec": 4.83
+            "sec": 4.86
         },
         {
             "type": "chat",
@@ -690,12 +690,12 @@
         },
         {
             "type": "say",
-            "text": "ていうかさ、この村の地面めっちゃぬかるんでるんだけど。スニーカー終わった。新品のナイキなのに。",
+            "text": "ていうかさ、この村の地面めっちゃぬかるんでるんだけど。スニーカー終わった。新品のネイキなのに。",
             "voice": "v009a"
         },
         {
             "type": "wait",
-            "sec": 6.87
+            "sec": 7.04
         },
         {
             "type": "chat",
@@ -726,7 +726,7 @@
         },
         {
             "type": "wait",
-            "sec": 6.25
+            "sec": 6.36
         },
         {
             "type": "chat",
@@ -744,7 +744,7 @@
         },
         {
             "type": "superchat",
-            "msg": "ナイキ代の足しにして",
+            "msg": "ネイキ代の足しにして",
             "user": "ガクブル太郎",
             "amount": 200
         },
@@ -759,7 +759,7 @@
         },
         {
             "type": "wait",
-            "sec": 5.05
+            "sec": 5.07
         },
         {
             "type": "chat",
@@ -790,7 +790,7 @@
         },
         {
             "type": "wait",
-            "sec": 6.73
+            "sec": 6.8
         },
         {
             "type": "chat",
@@ -831,7 +831,7 @@
         },
         {
             "type": "wait",
-            "sec": 8.3
+            "sec": 8.51
         },
         {
             "type": "chat",
@@ -861,7 +861,7 @@
         },
         {
             "type": "wait",
-            "sec": 7.95
+            "sec": 7.92
         },
         {
             "type": "chat",
@@ -899,7 +899,7 @@
         },
         {
             "type": "wait",
-            "sec": 4.36
+            "sec": 4.43
         },
         {
             "type": "chat",
@@ -950,7 +950,7 @@
         },
         {
             "type": "wait",
-            "sec": 8.52
+            "sec": 8.51
         },
         {
             "type": "chat",
@@ -1027,7 +1027,7 @@
         },
         {
             "type": "wait",
-            "sec": 5.93
+            "sec": 5.91
         },
         {
             "type": "chat",
@@ -1079,7 +1079,7 @@
         },
         {
             "type": "wait",
-            "sec": 6.91
+            "sec": 6.93
         },
         {
             "type": "chat",
@@ -1132,7 +1132,7 @@
         },
         {
             "type": "wait",
-            "sec": 7.38
+            "sec": 7.42
         },
         {
             "type": "chat",
@@ -1198,7 +1198,7 @@
         },
         {
             "type": "wait",
-            "sec": 6.33
+            "sec": 6.43
         },
         {
             "type": "chat",
@@ -1357,7 +1357,7 @@
         },
         {
             "type": "wait",
-            "sec": 5.92
+            "sec": 5.98
         },
         {
             "type": "_comment",
@@ -1469,7 +1469,7 @@
         },
         {
             "type": "wait",
-            "sec": 6.98
+            "sec": 7.03
         },
         {
             "type": "_comment",
@@ -1498,7 +1498,7 @@
         },
         {
             "type": "wait",
-            "sec": 4.69
+            "sec": 4.72
         },
         {
             "type": "fade_clear",
@@ -1574,7 +1574,7 @@
         },
         {
             "type": "wait",
-            "sec": 5.09
+            "sec": 5.01
         },
         {
             "type": "fade_clear",
@@ -1778,7 +1778,7 @@
         },
         {
             "type": "wait",
-            "sec": 4.14
+            "sec": 4.12
         },
         {
             "type": "scare_flash",
@@ -1971,7 +1971,7 @@
         },
         {
             "type": "wait",
-            "sec": 8.15
+            "sec": 8.22
         },
         {
             "type": "_comment",
@@ -2009,7 +2009,7 @@
         },
         {
             "type": "wait",
-            "sec": 5.52
+            "sec": 5.43
         },
         {
             "type": "sfx",
@@ -2090,7 +2090,7 @@
         },
         {
             "type": "wait",
-            "sec": 5.14
+            "sec": 5.03
         },
         {
             "type": "sfx",
@@ -2409,7 +2409,7 @@
         },
         {
             "type": "wait",
-            "sec": 1.15
+            "sec": 1.21
         },
         {
             "type": "say_clear"
@@ -2782,7 +2782,7 @@
         },
         {
             "type": "wait",
-            "sec": 4.81
+            "sec": 4.88
         },
         {
             "type": "_comment",
@@ -2911,7 +2911,7 @@
         },
         {
             "type": "wait",
-            "sec": 4.43
+            "sec": 4.49
         },
         {
             "type": "chat",
@@ -3119,7 +3119,7 @@
         },
         {
             "type": "wait",
-            "sec": 9.92
+            "sec": 10.06
         },
         {
             "type": "chat",
@@ -3522,7 +3522,7 @@
         },
         {
             "type": "wait",
-            "sec": 4.69
+            "sec": 4.82
         },
         {
             "type": "chat",
@@ -3762,7 +3762,7 @@
         },
         {
             "type": "wait",
-            "sec": 3.61
+            "sec": 3.75
         },
         {
             "type": "sfx",
@@ -4077,6 +4077,13 @@
             "type": "vhs_reset"
         },
         {
+            "type": "remove_vhs_overlay"
+        },
+        {
+            "type": "fade_black",
+            "dur": 0.3
+        },
+        {
             "type": "stage_swap",
             "scene": "res://scenes/Stage_Village.tscn",
             "spawn": [
@@ -4087,7 +4094,7 @@
         },
         {
             "type": "wait",
-            "sec": 0.5
+            "sec": 0.3
         },
         {
             "type": "rot_y",
@@ -4119,7 +4126,7 @@
         },
         {
             "type": "wait",
-            "sec": 4.68
+            "sec": 4.79
         },
         {
             "type": "chat",
@@ -4263,7 +4270,7 @@
         },
         {
             "type": "wait",
-            "sec": 4.38
+            "sec": 4.27
         },
         {
             "type": "_comment",
@@ -4308,38 +4315,29 @@
         },
         {
             "type": "chat",
-            "msg": "迷ってる場合じゃないだろ",
-            "user": "深夜組",
+            "msg": "あ、ビビった",
+            "user": "名無しさん",
             "voice": "c161"
         },
         {
             "type": "wait",
-            "sec": 0.4
+            "sec": 0.3
         },
         {
             "type": "chat",
-            "msg": "悩むってことはもう答え出てるんだよ",
-            "user": "ゆきんこ77",
-            "utype": "moderator",
+            "msg": "ビビってんじゃんｗｗｗ",
+            "user": "配信民99",
+            "utype": "member",
             "voice": "c162"
         },
         {
             "type": "wait",
-            "sec": 0.5
-        },
-        {
-            "type": "say",
-            "text": "……わかってる。わかってるけど。",
-            "voice": "v048"
-        },
-        {
-            "type": "wait",
-            "sec": 2.47
+            "sec": 0.3
         },
         {
             "type": "chat",
-            "msg": "5万人待ってんだよ 早く決めろ",
-            "user": "名無しさん",
+            "msg": "足震えてそうｗ",
+            "user": "深夜組",
             "voice": "c163"
         },
         {
@@ -4347,10 +4345,110 @@
             "sec": 0.4
         },
         {
+            "type": "say",
+            "text": "震えてないし！ちょっと心の準備してるだけ！",
+            "voice": "v048"
+        },
+        {
+            "type": "wait",
+            "sec": 3.19
+        },
+        {
+            "type": "chat",
+            "msg": "心の準備って言いながら5分経ってるやつ",
+            "user": "ゆきんこ77",
+            "utype": "moderator",
+            "voice": "c164"
+        },
+        {
+            "type": "wait",
+            "sec": 0.35
+        },
+        {
+            "type": "chat",
+            "msg": "行けーーー！！！",
+            "user": "視聴者A",
+            "voice": "c165"
+        },
+        {
+            "type": "wait",
+            "sec": 0.25
+        },
+        {
+            "type": "chat",
+            "msg": "ビビるな！！",
+            "user": "ホラー好き太郎",
+            "voice": "c166"
+        },
+        {
+            "type": "wait",
+            "sec": 0.25
+        },
+        {
+            "type": "chat",
+            "msg": "しゅっちなら大丈夫！！たぶん！！",
+            "user": "ゆきんこ77",
+            "utype": "moderator",
+            "voice": "c167"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "たぶんってなんだよｗｗ",
+            "user": "深夜組",
+            "voice": "c168"
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "say",
+            "text": "「たぶん」って言ったぞ今……たぶんって言ったよね？",
+            "voice": "v053"
+        },
+        {
+            "type": "wait",
+            "sec": 3.55
+        },
+        {
+            "type": "chat",
+            "msg": "保証はしないけど応援はするｗ",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c169"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "俺ら画面越しだから安全なんだよな～",
+            "user": "名無しさん",
+            "voice": "c170"
+        },
+        {
+            "type": "wait",
+            "sec": 0.4
+        },
+        {
+            "type": "say",
+            "text": "最悪それかーい！！",
+            "voice": "v054"
+        },
+        {
+            "type": "wait",
+            "sec": 1.35
+        },
+        {
             "type": "superchat",
             "user": "ホラー好き太郎",
-            "amount": 2000,
-            "msg": "しゅっち、行くか帰るかどっちかにしろ！"
+            "amount": 1000,
+            "msg": "これ見てる全員お前の味方だからな！！行けーー！！"
         },
         {
             "type": "wait",
@@ -4358,18 +4456,23 @@
         },
         {
             "type": "chat",
-            "msg": "待ってても何も変わらないぞ",
-            "user": "配信民99",
-            "utype": "member",
-            "voice": "c164"
+            "msg": "スパチャに背中押されてて草",
+            "user": "幽霊ガチ勢",
+            "voice": "c171"
+        },
+        {
+            "type": "wait",
+            "sec": 0.4
+        },
+        {
+            "type": "chat",
+            "msg": "もういい覚悟決めろ",
+            "user": "深夜組",
+            "voice": "c172"
         },
         {
             "type": "wait",
             "sec": 0.8
-        },
-        {
-            "type": "_comment",
-            "_": "── 2択で再表示（迷い選択肢なし） ──"
         },
         {
             "type": "label",
@@ -4411,7 +4514,7 @@
             "type": "chat",
             "msg": "え、帰るの？",
             "user": "深夜組",
-            "voice": "c165"
+            "voice": "c173"
         },
         {
             "type": "wait",
@@ -4422,7 +4525,7 @@
             "msg": "ここまで来て！？",
             "user": "ホラー好き太郎",
             "utype": "member",
-            "voice": "c166"
+            "voice": "c174"
         },
         {
             "type": "wait",
@@ -4435,13 +4538,13 @@
         },
         {
             "type": "wait",
-            "sec": 5.0
+            "sec": 4.87
         },
         {
             "type": "chat",
             "msg": "5万人の前で逃げんのかよ",
             "user": "名無しさん",
-            "voice": "c167"
+            "voice": "c175"
         },
         {
             "type": "wait",
@@ -4464,13 +4567,13 @@
         },
         {
             "type": "wait",
-            "sec": 4.08
+            "sec": 4.17
         },
         {
             "type": "chat",
             "msg": "草",
             "user": "視聴者A",
-            "voice": "c168"
+            "voice": "c176"
         },
         {
             "type": "wait",
@@ -4481,7 +4584,7 @@
             "msg": "配信者の鑑",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c169"
+            "voice": "c177"
         },
         {
             "type": "wait",
@@ -4491,7 +4594,7 @@
             "type": "chat",
             "msg": "生存ルートで草",
             "user": "ガクブル太郎",
-            "voice": "c170"
+            "voice": "c178"
         },
         {
             "type": "wait",
@@ -4509,6 +4612,7 @@
             "type": "play_ending",
             "id": "bad_hikikomori",
             "ending_title": "ひきこもり",
+            "return_label": "cp4_choice",
             "sections": [
                 {
                     "title": "帰路",
@@ -4540,7 +4644,8 @@
                             "emphasis": true
                         }
                     ],
-                    "wait": 2.5
+                    "wait": 2.5,
+                    "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog.mp3"
                 },
                 {
                     "title": "削除",
@@ -4695,14 +4800,6 @@
             ]
         },
         {
-            "type": "bad_end",
-            "title": "BAD END\n「ひきこもり」",
-            "image": "res://assets/textures/bad_end_hikikomori.png",
-            "return_label": "cp4_choice",
-            "fade_dur": 0.5,
-            "display_dur": 5.0
-        },
-        {
             "type": "_comment",
             "_": "── 正規ルート続行：葛藤→決意 ──"
         },
@@ -4722,13 +4819,13 @@
         },
         {
             "type": "wait",
-            "sec": 6.05
+            "sec": 5.9
         },
         {
             "type": "chat",
             "msg": "正直でいいぞ",
             "user": "深夜組",
-            "voice": "c171"
+            "voice": "c179"
         },
         {
             "type": "wait",
@@ -4738,7 +4835,7 @@
             "type": "chat",
             "msg": "今からでも帰れるんだぞ？",
             "user": "ガクブル太郎",
-            "voice": "c172"
+            "voice": "c180"
         },
         {
             "type": "wait",
@@ -4751,7 +4848,7 @@
         },
         {
             "type": "wait",
-            "sec": 4.0
+            "sec": 4.07
         },
         {
             "type": "say",
@@ -4767,7 +4864,7 @@
             "msg": "……",
             "user": "ホラー好き太郎",
             "utype": "member",
-            "voice": "c173"
+            "voice": "c181"
         },
         {
             "type": "wait",
@@ -4777,7 +4874,7 @@
             "type": "chat",
             "msg": "急にマジトーンやめろ",
             "user": "名無しさん",
-            "voice": "c174"
+            "voice": "c182"
         },
         {
             "type": "wait",
@@ -4800,13 +4897,13 @@
         },
         {
             "type": "wait",
-            "sec": 4.85
+            "sec": 4.79
         },
         {
             "type": "chat",
             "msg": "目の色変わったぞこいつ",
             "user": "深夜組",
-            "voice": "c175"
+            "voice": "c183"
         },
         {
             "type": "wait",
@@ -4827,7 +4924,7 @@
             "msg": "スパチャ止まんねえ",
             "user": "ホラー好き太郎",
             "utype": "member",
-            "voice": "c176"
+            "voice": "c184"
         },
         {
             "type": "wait",
@@ -4838,7 +4935,7 @@
             "msg": "こいつ行く気だぞ",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c177"
+            "voice": "c185"
         },
         {
             "type": "wait",
@@ -4855,7 +4952,7 @@
         },
         {
             "type": "wait",
-            "sec": 4.51
+            "sec": 4.44
         },
         {
             "type": "rot_y",
@@ -4870,7 +4967,7 @@
             "type": "chat",
             "msg": "うわ振り返った",
             "user": "ガクブル太郎",
-            "voice": "c178"
+            "voice": "c186"
         },
         {
             "type": "wait",
@@ -4880,7 +4977,7 @@
             "type": "chat",
             "msg": "承認欲求モンスター",
             "user": "名無しさん",
-            "voice": "c179"
+            "voice": "c187"
         },
         {
             "type": "wait",
@@ -4891,7 +4988,7 @@
             "msg": "いいぞ！！！！",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c180"
+            "voice": "c188"
         },
         {
             "type": "wait",
@@ -4933,14 +5030,14 @@
         },
         {
             "type": "wait",
-            "sec": 5.44
+            "sec": 5.5
         },
         {
             "type": "chat",
             "msg": "かっけえ……",
             "user": "ホラー好き太郎",
             "utype": "member",
-            "voice": "c181"
+            "voice": "c189"
         },
         {
             "type": "wait",
@@ -4970,7 +5067,7 @@
             "msg": "スパチャで背中押すの草",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c182"
+            "voice": "c190"
         },
         {
             "type": "wait",
@@ -4980,7 +5077,7 @@
             "type": "chat",
             "msg": "6万いくぞこれ",
             "user": "視聴者A",
-            "voice": "c183"
+            "voice": "c191"
         },
         {
             "type": "wait",
