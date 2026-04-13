@@ -562,6 +562,10 @@ func stop_nav() -> void:
 		_nav_poly = null
 		_nav_title_lbl = null
 		_nav_dist_lbl = null
+	# 「出口へ向かえ」ガイドパネルも一緒に消す
+	if is_instance_valid(_exit_guide):
+		_exit_guide.queue_free()
+		_exit_guide = null
 
 
 func _build_nav_arrow() -> void:
