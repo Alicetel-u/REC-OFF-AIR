@@ -1408,7 +1408,7 @@ func _run_escape_nav_sequence() -> void:
 	if is_instance_valid(stage_gen) and is_instance_valid(stage_gen.exit_node):
 		stage_gen.exit_node.active = true
 
-	_schedule_real_exit_reveal(60.0)
+	_schedule_real_exit_reveal(10.0)
 
 
 func _wait_for_entrance_arrival(entrance_pos: Vector3) -> void:
