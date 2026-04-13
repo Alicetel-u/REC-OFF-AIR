@@ -1255,6 +1255,8 @@ func _play_ending(ev: Dictionary) -> void:
 	if chrome:
 		chrome.visible = false
 		chrome.process_mode = Node.PROCESS_MODE_DISABLED
+		if chrome.has_method("chat_horror_clear"):
+			chrome.chat_horror_clear()
 
 	# 暗転
 	await _fade_black(1.5, 1.0)
@@ -1275,6 +1277,7 @@ func _play_ending(ev: Dictionary) -> void:
 	else:
 		await _show_credits(credits_data_inner)
 		ep.queue_free()
+	SoundManager.stop_bgm(0.6)
 
 
 ## バッドエンド演出：暗転 → 画像+タイトル表示 → 「選択肢に戻る？」→ タイトルへ or 分岐戻り
@@ -1923,6 +1926,7 @@ func _show_credits(credits_data: Dictionary) -> void:
 	skip_btn.add_theme_stylebox_override("normal", sb)
 	skip_btn.add_theme_font_size_override("font_size", 13)
 	skip_btn.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
+	skip_btn.visible = false
 	skip_btn.pressed.connect(func() -> void: _skip.v = true)
 	container.add_child(skip_btn)
 
@@ -1950,6 +1954,29 @@ func _show_credits(credits_data: Dictionary) -> void:
 		var role : String = entry.get("role", "")
 		var ntext : String = entry.get("name", "")
 		var style : String = entry.get("style", "")
+		var image_path : String = entry.get("image", "")
+
+		if image_path != "":
+			var logo_tex := load(image_path) as Texture2D
+			if logo_tex:
+				var logo_wrap := CenterContainer.new()
+				logo_wrap.size_flags_horizontal = Control.SIZE_FILL
+				vbox.add_child(logo_wrap)
+
+				var logo := TextureRect.new()
+				logo.texture = logo_tex
+				logo.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+				logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				var max_w := 360.0
+				var max_h := 110.0
+				var scale := min(max_w / float(logo_tex.get_width()), max_h / float(logo_tex.get_height()), 1.0)
+				logo.custom_minimum_size = Vector2(float(logo_tex.get_width()) * scale, float(logo_tex.get_height()) * scale)
+				logo_wrap.add_child(logo)
+
+				var logo_gap := Control.new()
+				logo_gap.custom_minimum_size = Vector2(0.0, 14.0)
+				vbox.add_child(logo_gap)
+			continue
 
 		if role == "" and ntext == "":
 			var gap := Control.new()
@@ -1992,7 +2019,15 @@ func _show_credits(credits_data: Dictionary) -> void:
 		if role == "":
 			nlbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			nlbl.size_flags_horizontal = Control.SIZE_FILL
-		nlbl.text = ntext
+		elif ntext == "":
+			nlbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			nlbl.size_flags_horizontal = Control.SIZE_FILL
+			nlbl.add_theme_font_size_override("font_size", 15)
+			nlbl.add_theme_color_override("font_color", Color(0.60, 0.60, 0.68))
+		if ntext == "":
+			nlbl.text = role
+		else:
+			nlbl.text = ntext
 		row.add_child(nlbl)
 
 		var gap2 := Control.new()
@@ -2001,7 +2036,7 @@ func _show_credits(credits_data: Dictionary) -> void:
 
 	# 末尾の余白
 	var tail := Control.new()
-	tail.custom_minimum_size = Vector2(0.0, 500.0)
+	tail.custom_minimum_size = Vector2(0.0, 260.0)
 	vbox.add_child(tail)
 
 	# テキストだけフェードイン（bg は既に不透明なので container は触らない）
@@ -2022,15 +2057,12 @@ func _show_credits(credits_data: Dictionary) -> void:
 	var tw_scroll := create_tween()
 	tw_scroll.tween_property(vbox, "position:y", end_y, scroll_dur).set_trans(Tween.TRANS_LINEAR)
 
-	while tw_scroll.is_running():
-		if _skip.v:
-			tw_scroll.kill()
-			break
-		await get_tree().process_frame
+	await tw_scroll.finished
 
 	# テキストだけフェードアウト（背景黒は最後まで維持）
 	var tw_out := create_tween()
-	tw_out.tween_property(vbox, "modulate:a", 0.0, 2.5).set_trans(Tween.TRANS_SINE)
+	tw_out.tween_property(vbox, "modulate:a", 0.0, 0.9).set_trans(Tween.TRANS_SINE)
 	await tw_out.finished
 
 	canvas.queue_free()
+	SoundManager.stop_bgm(0.6)

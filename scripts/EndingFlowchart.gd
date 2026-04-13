@@ -60,26 +60,26 @@ const FLOW_CONNS : Array[Array] = [
 ]
 
 # ── カラー ──
-const C_BG       := Color(0.02, 0.02, 0.04)
-const C_CH_BG    := Color(0.05, 0.08, 0.15, 0.97)
-const C_CH_ACC   := Color(0.35, 0.58, 0.88)
-const C_DEC_BG   := Color(0.13, 0.07, 0.02, 0.97)
-const C_DEC_ACC  := Color(0.95, 0.60, 0.15)
-const C_BR_BG    := Color(0.09, 0.06, 0.03, 0.95)
-const C_BR_ACC   := Color(0.78, 0.38, 0.10)
-const C_BAD_BG   := Color(0.13, 0.03, 0.02, 0.97)
-const C_BAD_ACC  := Color(0.90, 0.15, 0.10)
-const C_TRUE_BG  := Color(0.09, 0.03, 0.12, 0.97)
-const C_TRUE_ACC := Color(0.82, 0.28, 0.92)
-const C_LOCK_BG  := Color(0.04, 0.04, 0.06, 0.85)
-const C_LOCK_ACC := Color(0.22, 0.22, 0.27)
-const C_TEXT     := Color(0.92, 0.92, 0.95)
-const C_TEXT_DIM := Color(0.30, 0.30, 0.36)
+const C_BG       := Color(0.04, 0.04, 0.08)
+const C_CH_BG    := Color(0.06, 0.10, 0.20, 0.97)
+const C_CH_ACC   := Color(0.45, 0.70, 1.00)
+const C_DEC_BG   := Color(0.16, 0.09, 0.02, 0.97)
+const C_DEC_ACC  := Color(1.00, 0.70, 0.20)
+const C_BR_BG    := Color(0.12, 0.08, 0.03, 0.95)
+const C_BR_ACC   := Color(0.92, 0.48, 0.14)
+const C_BAD_BG   := Color(0.18, 0.04, 0.02, 0.97)
+const C_BAD_ACC  := Color(1.00, 0.22, 0.14)
+const C_TRUE_BG  := Color(0.12, 0.04, 0.18, 0.97)
+const C_TRUE_ACC := Color(0.92, 0.40, 1.00)
+const C_LOCK_BG  := Color(0.05, 0.05, 0.08, 0.85)
+const C_LOCK_ACC := Color(0.30, 0.30, 0.38)
+const C_TEXT     := Color(0.96, 0.96, 1.00)
+const C_TEXT_DIM := Color(0.50, 0.50, 0.58)
 
-const C_LINE_PROG := Color(0.28, 0.50, 0.80, 0.70)
-const C_LINE_BAD  := Color(0.80, 0.12, 0.10, 0.62)
-const C_LINE_CHO  := Color(0.78, 0.46, 0.12, 0.62)
-const C_LINE_END  := Color(0.65, 0.28, 0.84, 0.65)
+const C_LINE_PROG := Color(0.35, 0.60, 0.95, 0.85)
+const C_LINE_BAD  := Color(0.90, 0.18, 0.12, 0.80)
+const C_LINE_CHO  := Color(0.92, 0.56, 0.16, 0.80)
+const C_LINE_END  := Color(0.78, 0.38, 0.96, 0.82)
 
 var _current_ending_id : String = ""
 var _root              : Control = null
@@ -161,7 +161,7 @@ func _build_header() -> void:
 	title.position = Vector2(0.0, 14.0)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 26)
-	title.add_theme_color_override("font_color", Color(0.75, 0.72, 0.84, 0.95))
+	title.add_theme_color_override("font_color", Color(0.90, 0.87, 1.00, 1.0))
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(title)
 
@@ -183,7 +183,7 @@ func _build_header() -> void:
 	sub.position = Vector2(0.0, 62.0)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sub.add_theme_font_size_override("font_size", 11)
-	sub.add_theme_color_override("font_color", Color(0.42, 0.42, 0.52, 0.75))
+	sub.add_theme_color_override("font_color", Color(0.60, 0.60, 0.72, 0.92))
 	sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(sub)
 
@@ -248,8 +248,8 @@ func _make_connection(fc: Vector2, fsz: Vector2, tc: Vector2, tsz: Vector2, styl
 	match style:
 		"progress":
 			# 横線（チャプター間）
-			var col : Color = Color(0.72, 0.86, 1.0, 0.95) if is_current_path else C_LINE_PROG
-			var thick : float = 7.0 if is_current_path else 2.5
+			var col : Color = Color(0.82, 0.94, 1.0, 1.0) if is_current_path else C_LINE_PROG
+			var thick : float = 9.0 if is_current_path else 3.0
 			var x0 : float = fc.x + fsz.x * 0.5
 			var x1 : float = tc.x - tsz.x * 0.5
 			if is_current_path:
@@ -261,8 +261,8 @@ func _make_connection(fc: Vector2, fsz: Vector2, tc: Vector2, tsz: Vector2, styl
 			# 縦線（真下方向）
 			var col : Color = C_LINE_END if style == "end_down" else C_LINE_BAD
 			if is_current_path:
-				col = Color(1.0, 0.42, 0.28, 0.98) if style == "bad_down" else Color(0.96, 0.66, 1.0, 0.98)
-			var thick : float = 7.0 if is_current_path else 2.0
+				col = Color(1.0, 0.48, 0.32, 1.0) if style == "bad_down" else Color(0.98, 0.72, 1.0, 1.0)
+			var thick : float = 9.0 if is_current_path else 2.5
 			var y0 : float = fc.y + fsz.y * 0.5
 			var y1 : float = tc.y - tsz.y * 0.5
 			if is_current_path:
@@ -272,8 +272,8 @@ func _make_connection(fc: Vector2, fsz: Vector2, tc: Vector2, tsz: Vector2, styl
 
 		"choice":
 			# CP3-2 → ルート: 下に trunk → 横 → 縦
-			var col : Color = Color(1.0, 0.78, 0.36, 0.94) if is_current_path else C_LINE_CHO
-			var thick : float = 6.0 if is_current_path else 1.8
+			var col : Color = Color(1.0, 0.86, 0.45, 1.0) if is_current_path else C_LINE_CHO
+			var thick : float = 8.0 if is_current_path else 2.2
 			var trunk_x  : float = fc.x
 			var trunk_y0 : float = fc.y + fsz.y * 0.5
 			var trunk_y1 : float = CHOICE_JUNCTION_Y
@@ -343,20 +343,20 @@ func _make_chapter_node(nd: Dictionary) -> Control:
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	if reached:
-		var glow_alpha : float = 0.12 if on_path else 0.06
-		var glow_pad : float = 7.0 if on_path else 6.0
+		var glow_alpha : float = 0.35 if on_path else 0.10
+		var glow_pad : float = 10.0 if on_path else 6.0
 		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, glow_alpha), glow_pad))
 	panel.add_child(_make_col_rect(Vector2.ZERO, sz, bg_col))
 	if on_path:
-		panel.add_child(_make_col_rect(Vector2.ZERO, sz, Color(acc.r, acc.g, acc.b, 0.10)))
-	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(3.0, sz.y), acc))
-	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(sz.x, 1.0), Color(acc.r, acc.g, acc.b, 0.35)))
-	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.72 if on_path else (0.38 if reached else 0.18)))
+		panel.add_child(_make_col_rect(Vector2.ZERO, sz, Color(acc.r, acc.g, acc.b, 0.22)))
+	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(4.0, sz.y), acc))
+	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(sz.x, 2.0), Color(acc.r, acc.g, acc.b, 0.60 if on_path else 0.35)))
+	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.98 if on_path else (0.50 if reached else 0.22)))
 	if on_path:
 		var inner_frame := Control.new()
 		inner_frame.position = Vector2(4.0, 4.0)
 		inner_frame.size = sz - Vector2(8.0, 8.0)
-		_add_border(inner_frame, inner_frame.size, Color(acc.r, acc.g, acc.b, 0.42))
+		_add_border(inner_frame, inner_frame.size, Color(acc.r, acc.g, acc.b, 0.65))
 		panel.add_child(inner_frame)
 
 	var chapter_label : String = "CP3" if nd["id"] == "cp3_1" else nd.get("label", "")
@@ -386,20 +386,20 @@ func _make_decision_node(nd: Dictionary) -> Control:
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	if reached:
-		var glow_alpha : float = 0.15 if on_path else 0.08
-		var glow_pad : float = 8.0 if on_path else 7.0
+		var glow_alpha : float = 0.38 if on_path else 0.12
+		var glow_pad : float = 11.0 if on_path else 7.0
 		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, glow_alpha), glow_pad))
 	panel.add_child(_make_col_rect(Vector2.ZERO, sz, bg_col))
 	if on_path:
-		panel.add_child(_make_col_rect(Vector2.ZERO, sz, Color(acc.r, acc.g, acc.b, 0.12)))
-	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(3.0, sz.y), acc))
-	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(sz.x, 2.0), Color(acc.r, acc.g, acc.b, 0.45)))
-	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.78 if on_path else (0.5 if reached else 0.2)))
+		panel.add_child(_make_col_rect(Vector2.ZERO, sz, Color(acc.r, acc.g, acc.b, 0.24)))
+	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(4.0, sz.y), acc))
+	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(sz.x, 2.0), Color(acc.r, acc.g, acc.b, 0.65 if on_path else 0.45)))
+	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.98 if on_path else (0.62 if reached else 0.24)))
 	if on_path:
 		var inner_frame := Control.new()
 		inner_frame.position = Vector2(4.0, 4.0)
 		inner_frame.size = sz - Vector2(8.0, 8.0)
-		_add_border(inner_frame, inner_frame.size, Color(acc.r, acc.g, acc.b, 0.48))
+		_add_border(inner_frame, inner_frame.size, Color(acc.r, acc.g, acc.b, 0.68))
 		panel.add_child(inner_frame)
 
 	panel.add_child(_make_label(nd.get("label", ""), Vector2(8.0, 7.0), Vector2(sz.x - 26.0, 15.0), 9,
@@ -426,19 +426,19 @@ func _make_branch_node(nd: Dictionary) -> Control:
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	if reached:
-		var glow_alpha : float = 0.14 if on_path else 0.06
-		var glow_pad : float = 8.0 if on_path else 7.0
+		var glow_alpha : float = 0.34 if on_path else 0.10
+		var glow_pad : float = 10.0 if on_path else 7.0
 		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, glow_alpha), glow_pad))
 	panel.add_child(_make_col_rect(Vector2.ZERO, sz, bg_col))
 	if on_path:
-		panel.add_child(_make_col_rect(Vector2.ZERO, sz, Color(acc.r, acc.g, acc.b, 0.11)))
-	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(3.0, sz.y), acc))
-	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.74 if on_path else (0.38 if reached else 0.16)))
+		panel.add_child(_make_col_rect(Vector2.ZERO, sz, Color(acc.r, acc.g, acc.b, 0.22)))
+	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(4.0, sz.y), acc))
+	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.96 if on_path else (0.50 if reached else 0.20)))
 	if on_path:
 		var inner_frame := Control.new()
 		inner_frame.position = Vector2(4.0, 4.0)
 		inner_frame.size = sz - Vector2(8.0, 8.0)
-		_add_border(inner_frame, inner_frame.size, Color(acc.r, acc.g, acc.b, 0.44))
+		_add_border(inner_frame, inner_frame.size, Color(acc.r, acc.g, acc.b, 0.64))
 		panel.add_child(inner_frame)
 
 	panel.add_child(_make_label(nd.get("label", ""), Vector2(8.0, 4.0), Vector2(sz.x - 8.0, 14.0), 8,
@@ -476,21 +476,21 @@ func _make_ending_node(nd: Dictionary) -> Control:
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	# グロー
-	var glow_a : float = 0.18 if is_current else (0.12 if on_path else (0.05 if is_unlocked else 0.0))
+	var glow_a : float = 0.28 if is_current else (0.32 if on_path else (0.08 if is_unlocked else 0.0))
 	if glow_a > 0.0:
-		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, glow_a), 8.0 if on_path else 6.0))
+		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, glow_a), 11.0 if on_path else 7.0))
 
 	panel.add_child(_make_col_rect(Vector2.ZERO, sz, bg_col))
 	if on_path:
-		panel.add_child(_make_col_rect(Vector2.ZERO, sz, Color(acc.r, acc.g, acc.b, 0.14 if is_current else 0.10)))
-	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(4.0, sz.y), acc))
-	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(sz.x, 1.0), Color(acc.r, acc.g, acc.b, 0.5 if active else 0.14)))
-	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 1.0 if is_current else (0.86 if on_path else (0.55 if active else 0.18))))
+		panel.add_child(_make_col_rect(Vector2.ZERO, sz, Color(acc.r, acc.g, acc.b, 0.24 if is_current else 0.20)))
+	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(5.0, sz.y), acc))
+	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(sz.x, 2.0), Color(acc.r, acc.g, acc.b, 0.70 if active else 0.18)))
+	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 1.0 if is_current else (0.96 if on_path else (0.65 if active else 0.22))))
 	if on_path:
 		var inner_frame := Control.new()
 		inner_frame.position = Vector2(5.0, 5.0)
 		inner_frame.size = sz - Vector2(10.0, 10.0)
-		_add_border(inner_frame, inner_frame.size, Color(acc.r, acc.g, acc.b, 0.52 if is_current else 0.40))
+		_add_border(inner_frame, inner_frame.size, Color(acc.r, acc.g, acc.b, 0.68 if is_current else 0.55))
 		panel.add_child(inner_frame)
 
 	# タグ

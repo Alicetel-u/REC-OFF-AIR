@@ -39,6 +39,7 @@ var _section_idx   : int = 0
 var _current_audio : AudioStreamPlayer = null
 var _bgm_audio : AudioStreamPlayer = null
 var _bgm_path : String = ""
+var _section_voice_volume : float = 0.0
 var _skip_requested : bool = false
 var _skip_btn : Button = null
 var _title_image_path : String = ""
@@ -492,6 +493,7 @@ func _play_section(section: Dictionary, idx: int) -> void:
 	var bgm_restart : bool = bool(section.get("bgm_restart", false))
 	var bgm_seek : float = float(section.get("bgm_seek", 0.0))
 	var bgm_stop : bool = bool(section.get("bgm_stop", false))
+	_section_voice_volume = float(section.get("voice_volume", 0.0))
 	_current_mood = mood
 
 	if bgm_stop:
@@ -592,7 +594,7 @@ func _play_section(section: Dictionary, idx: int) -> void:
 			if tw_stream:
 				var tw_audio := AudioStreamPlayer.new()
 				tw_audio.stream = tw_stream
-				tw_audio.volume_db = -2.0
+				tw_audio.volume_db = float(section.get("typewriter_voice_volume", -4.0))
 				add_child(tw_audio)
 				tw_audio.play()
 				tw_audio.finished.connect(tw_audio.queue_free)
@@ -722,6 +724,7 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 	var video_path : String = ""
 	var sfx_path : String = ""
 	var sfx_volume : float = -12.0
+	var voice_volume : float = _section_voice_volume
 
 	if line is Dictionary:
 		text = line.get("text", "")
@@ -734,6 +737,7 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 		video_path = line.get("video", "")
 		sfx_path = line.get("sfx", "")
 		sfx_volume = float(line.get("sfx_volume", -12.0))
+		voice_volume = float(line.get("voice_volume", _section_voice_volume))
 	else:
 		text = str(line)
 
@@ -755,7 +759,7 @@ func _show_line(line, line_idx: int, total_lines: int) -> void:
 				voice_dur = voice_stream.get_length()
 			var audio := AudioStreamPlayer.new()
 			audio.stream = voice_stream
-			audio.volume_db = 3.0
+			audio.volume_db = voice_volume
 			add_child(audio)
 			audio.play()
 			_current_audio = audio
@@ -1112,6 +1116,8 @@ func _show_ending_title(title: String, tag: String = "BAD END") -> void:
 	if is_true_bad and _title_image_path != "" and ResourceLoader.exists(_title_image_path):
 		var tex := load(_title_image_path) as Texture2D
 		if tex:
+			await _show_true_bad_title_image(tex, vp_size)
+			return
 			var img_rect := TextureRect.new()
 			img_rect.texture = tex
 			img_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
@@ -1206,6 +1212,69 @@ func _show_ending_title(title: String, tag: String = "BAD END") -> void:
 
 
 ## インラインビデオ再生（セリフ後に全画面で流す）
+func _show_true_bad_title_image(tex: Texture2D, vp_size: Vector2) -> void:
+	var title_wrap := Control.new()
+	title_wrap.set_anchors_preset(Control.PRESET_FULL_RECT)
+	title_wrap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_wrap.modulate.a = 0.0
+	_container.add_child(title_wrap)
+
+	var flash_bg := ColorRect.new()
+	flash_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	flash_bg.color = Color(0.08, 0.0, 0.0, 0.0)
+	flash_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_wrap.add_child(flash_bg)
+
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_wrap.add_child(center)
+
+	var img_rect := TextureRect.new()
+	img_rect.texture = tex
+	img_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	img_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	img_rect.custom_minimum_size = vp_size
+	img_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	img_rect.pivot_offset = vp_size * 0.5
+	img_rect.scale = Vector2(1.14, 1.14)
+	center.add_child(img_rect)
+
+	var grain_flash := ColorRect.new()
+	grain_flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	grain_flash.color = Color(1.0, 0.08, 0.04, 0.0)
+	grain_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_wrap.add_child(grain_flash)
+
+	if not _skip_requested:
+		var tw_img_in := create_tween().set_parallel(true)
+		tw_img_in.tween_property(title_wrap, "modulate:a", 1.0, 0.7).set_trans(Tween.TRANS_SINE)
+		tw_img_in.tween_property(img_rect, "scale", Vector2(1.0, 1.0), 2.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tw_img_in.tween_property(flash_bg, "color:a", 0.45, 0.9).set_trans(Tween.TRANS_SINE)
+		tw_img_in.tween_property(grain_flash, "color:a", 0.16, 0.18).set_trans(Tween.TRANS_SINE)
+		tw_img_in.tween_property(grain_flash, "color:a", 0.0, 0.45).set_trans(Tween.TRANS_SINE).set_delay(0.18)
+		await tw_img_in.finished
+
+	await _wait(2.8)
+
+	if not _skip_requested:
+		var tw_pulse := create_tween().set_parallel(true)
+		tw_pulse.tween_property(img_rect, "scale", Vector2(1.03, 1.03), 0.45).set_trans(Tween.TRANS_SINE)
+		tw_pulse.tween_property(flash_bg, "color:a", 0.58, 0.45).set_trans(Tween.TRANS_SINE)
+		await tw_pulse.finished
+
+	await _wait(0.7)
+
+	if not _skip_requested:
+		var tw_img_out := create_tween().set_parallel(true)
+		tw_img_out.tween_property(title_wrap, "modulate:a", 0.0, 1.4).set_trans(Tween.TRANS_SINE)
+		tw_img_out.tween_property(_bg_color, "color", Color(0, 0, 0, 1), 1.4).set_trans(Tween.TRANS_SINE)
+		await tw_img_out.finished
+
+	title_wrap.queue_free()
+	await _wait(0.45)
+
+
 func _play_inline_video(path: String) -> void:
 	if not ResourceLoader.exists(path):
 		push_warning("EndingPlayer: video path does not exist: " + path)

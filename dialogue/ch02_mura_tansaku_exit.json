@@ -1355,7 +1355,7 @@
             "type": "play_ending",
             "id": "true_bad_end",
             "ending_title": "視線ノ供物",
-            "title_image": "res://assets/textures/true_bad_end_title.png",
+            "title_image": "res://assets/textures/TRUE_BAD_END_202604140147.png",
             "return_label": "cp3_choice",
             "sections": [
                 {
@@ -1363,7 +1363,7 @@
                     "mood": "cold",
                     "image": "res://assets/textures/true_bad_shrine.png",
                     "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog.mp3",
-                    "bgm_volume": -14.5,
+                    "bgm_volume": -17.0,
                     "bgm_fade": 2.5,
                     "wait": 2.5,
                     "lines": [
@@ -1666,9 +1666,9 @@
             "credits": {
                 "title": "— STAFF ROLL —",
                 "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog_alt.mp3",
-                "bgm_volume": -13.5,
+                "bgm_volume": -16.5,
                 "bgm_fade": 2.5,
-                "scroll_speed": 30,
+                "scroll_speed": 42,
                 "entries": [
                     {
                         "role": "",
@@ -1684,8 +1684,13 @@
                         "name": ""
                     },
                     {
-                        "role": "企画 / シナリオ / 開発",
-                        "name": "Alicetel-u"
+                        "role": "開発",
+                        "name": "Alicetel"
+                    },
+                    {
+                        "role": "",
+                        "name": "",
+                        "image": "res://assets/textures/Alicetel.png"
                     },
                     {
                         "role": "",
@@ -1722,20 +1727,35 @@
                         "name": ""
                     },
                     {
-                        "role": "",
-                        "name": "── 霧原村より ──",
-                        "style": "section"
-                    },
-                    {
-                        "role": "",
+                        "role": "エグゼクティブプロデューサー",
                         "name": ""
                     },
                     {
-                        "role": "エグゼクティブプロデューサー",
+                        "role": "シナリオ原案 / BGM / 3Dモデル",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
                         "name": "しゅっち"
                     },
                     {
                         "role": "実装エンジニア",
+                        "name": ""
+                    },
+                    {
+                        "role": "ゲームデザイン / プランナー",
+                        "name": ""
+                    },
+                    {
+                        "role": "アートディレクター",
+                        "name": ""
+                    },
+                    {
+                        "role": "QA",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
                         "name": "シライシ ユキ"
                     }
                 ]
