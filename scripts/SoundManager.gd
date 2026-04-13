@@ -27,7 +27,7 @@ var _monster_idx   : int = 0
 
 var _voice      : AudioStreamPlayer = null
 var _chat_voice : AudioStreamPlayer = null
-var chat_voice_muted : bool = true  ## チャット音声ミュート（設定パネルでトグル）
+var chat_voice_muted : bool = false  ## 常時ON（設定廃止）
 
 const SETTINGS_PATH := "user://settings.json"
 var _chat_voice_queue : Array[Dictionary] = []  ## チャットボイスキュー（順番待ち）
@@ -49,18 +49,11 @@ func _ready() -> void:
 
 
 func save_settings() -> void:
-	var f := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
-	if f:
-		f.store_string(JSON.stringify({"chat_voice_muted": chat_voice_muted}))
+	pass  # チャットボイス設定廃止のため保存不要
 
 
 func _load_settings() -> void:
-	if FileAccess.file_exists(SETTINGS_PATH):
-		var f := FileAccess.open(SETTINGS_PATH, FileAccess.READ)
-		if f:
-			var parsed = JSON.parse_string(f.get_as_text())
-			if parsed is Dictionary and parsed.has("chat_voice_muted"):
-				chat_voice_muted = bool(parsed["chat_voice_muted"])
+	pass  # チャットボイス設定廃止のため読み込み不要
 
 
 func _process(delta: float) -> void:

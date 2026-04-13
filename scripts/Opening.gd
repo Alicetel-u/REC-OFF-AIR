@@ -1253,7 +1253,6 @@ func _show_settings_top() -> void:
 		{"name": "エンディング集", "sub": "解放したエンディングを閲覧", "icon": "📖", "action": "_show_ending_gallery"},
 		{"name": "ストーリーマップ", "sub": "分岐フローチャート・達成率", "icon": "◈", "action": "_show_story_map"},
 		{"name": "自動探索モード", "sub": ("ON — 操作なしで進行" if GameManager.auto_explore_mode else "OFF — 通常操作"), "icon": "♿", "action": "_toggle_auto_explore"},
-		{"name": "チャットボイス", "sub": ("ON — コメントボイス再生中" if not SoundManager.chat_voice_muted else "OFF — コメントボイス無音"), "icon": "🔊", "action": "_toggle_chat_voice"},
 		{"name": "グラフィック", "sub": "画質・エフェクト設定", "icon": "🖥", "action": ""},
 	]
 
@@ -1265,14 +1264,6 @@ func _show_settings_top() -> void:
 	bot_pad.custom_minimum_size = Vector2(0, 8)
 	list.add_child(bot_pad)
 
-
-func _toggle_chat_voice() -> void:
-	SoundManager.chat_voice_muted = not SoundManager.chat_voice_muted
-	SoundManager.save_settings()
-	if SoundManager.chat_voice_muted:
-		SoundManager.stop_chat_voice()
-	_play_sfx("metal/metalClick.ogg", -6.0)
-	_show_settings_top()
 
 
 func _toggle_auto_explore() -> void:

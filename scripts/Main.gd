@@ -2413,7 +2413,7 @@ func _show_caught() -> void:
 
 	if eien_choice == 0:
 		# 選択肢の直前に戻る → チャプター再スタート
-		GameManager.restart_to_section(2)
+		GameManager.restart_to_section(1)
 	else:
 		get_tree().change_scene_to_file("res://scenes/Opening.tscn")
 

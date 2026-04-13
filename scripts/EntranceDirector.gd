@@ -1376,6 +1376,10 @@ func _stage_swap(scene_path: String, spawn: Array) -> void:
 	if not main:
 		return
 
+	# ステージ遷移時にナビ矢印をクリア
+	if is_instance_valid(hud) and hud.has_method("stop_nav"):
+		hud.stop_nav()
+
 	# 現在のステージ系ノードを削除（Player/HUD/UI/カメラ等は残す）
 	var keep_names : Array = ["Player", "HUD", "WorldEnvironment",
 		"DirectionalLight3D", "OverlayLayer", "YouTubeChrome",
@@ -1969,7 +1973,7 @@ func _show_credits(credits_data: Dictionary) -> void:
 				logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 				var max_w := 360.0
 				var max_h := 110.0
-				var scale := min(max_w / float(logo_tex.get_width()), max_h / float(logo_tex.get_height()), 1.0)
+				var scale : float = min(max_w / float(logo_tex.get_width()), max_h / float(logo_tex.get_height()), 1.0)
 				logo.custom_minimum_size = Vector2(float(logo_tex.get_width()) * scale, float(logo_tex.get_height()) * scale)
 				logo_wrap.add_child(logo)
 
