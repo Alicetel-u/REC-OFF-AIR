@@ -564,7 +564,7 @@ func _update_visuals(delta: float) -> void:
 	# 表示高さを底上げ（廃倉庫と村の探索のみ）
 	var base_h : float = 0.0
 	var cur_chapter := GameManager.current_chapter
-	if cur_chapter and cur_chapter.chapter_id in ["ch02_haison_souko", "ch02_mura_tansaku"]:
+	if cur_chapter and cur_chapter.chapter_id in ["ch02_haison_souko"]:
 		base_h = 0.6
 
 	_motion_timer += delta

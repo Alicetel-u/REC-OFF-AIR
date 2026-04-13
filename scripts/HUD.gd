@@ -304,15 +304,7 @@ func _update_item_label(count: int) -> void:
 	var total := GameManager.items_total
 	item_label.visible = total > 0
 	
-	# チャプターに応じてアイコンとテキストを切り替え
-	var is_mura := false
-	if GameManager.current_chapter and GameManager.current_chapter.chapter_id == "ch02_mura_tansaku":
-		is_mura = true
-	
-	if is_mura:
-		item_label.text = "🏮 ITEM  %d / %d" % [count, total]
-	else:
-		item_label.text = "📼 VHS  %d / %d" % [count, total]
+	item_label.text = "📼 VHS  %d / %d" % [count, total]
 
 
 func add_chat(msg: String, user: String = "", user_type: String = "") -> void:

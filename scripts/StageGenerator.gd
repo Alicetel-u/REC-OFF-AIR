@@ -4,7 +4,6 @@ extends Node
 
 const GhostScene := preload("res://scenes/Ghost.tscn")
 const ItemScene  := preload("res://scenes/Item.tscn")
-const VillageItemScene := preload("res://scenes/VillageItem.tscn")
 const ExitScript   := preload("res://scripts/Exit.gd")
 const UsePointScript := preload("res://scripts/UsePoint.gd")
 const ChapterDataScript := preload("res://scripts/ChapterData.gd")
@@ -53,19 +52,14 @@ func generate(chapter: Resource) -> Dictionary:
 
 	# 3. アイテムをスポーン
 	item_count = chapter.item_positions.size()
-	if chapter.chapter_id == "ch02_mura_tansaku":
-		_spawn_village_items(chapter, parent)
-	else:
-		for i in range(item_count):
-			var item := ItemScene.instantiate()
-			item.name = "Item_%d" % (i + 1)
-			item.position = chapter.item_positions[i]
-			parent.add_child(item)
+	for i in range(item_count):
+		var item := ItemScene.instantiate()
+		item.name = "Item_%d" % (i + 1)
+		item.position = chapter.item_positions[i]
+		parent.add_child(item)
 
 	# 4. 出口を生成
 	exit_node = _create_exit(chapter.exit_position)
-	if chapter.chapter_id == "ch02_mura_tansaku":
-		exit_node._requires_ofuda = true
 	parent.add_child(exit_node)
 
 	# 5. エリアライトを生成
@@ -108,40 +102,6 @@ func _create_exit(pos: Vector3) -> Area3D:
 
 	return exit
 
-
-## CP3 村の探索: JSON外部定義からアイテム・使用ポイントを生成
-func _spawn_village_items(chapter: Resource, parent: Node) -> void:
-	var cfg := _load_json("res://dialogue/ch02_mura_items_config.json")
-
-	# アイテム生成
-	var items_arr : Array = cfg.get("items", [])
-	for i in range(mini(items_arr.size(), chapter.item_positions.size())):
-		var d : Dictionary = items_arr[i]
-		var vi := VillageItemScene.instantiate()
-		vi.name = "VillageItem_%d" % (i + 1)
-		vi.position = chapter.item_positions[i]
-		vi.item_id = d.get("id", "item_%d" % i)
-		vi.item_display_name = d.get("name", "???")
-		vi.item_description = d.get("description", "")
-		var gc : Array = d.get("glow_color", [0.5, 0.5, 0.5])
-		vi.glow_color = Color(gc[0], gc[1], gc[2])
-		vi.item_image_path = d.get("image", "")
-		vi.item_dialogue = d.get("dialogue", "")
-		vi.item_mesh_type = d.get("mesh", "sphere")
-		parent.add_child(vi)
-
-	# 使用ポイント生成
-	var use_points_arr : Array = cfg.get("use_points", [])
-	for up_data in use_points_arr:
-		var p : Array = up_data.get("position", [0, 0, 0])
-		var point := _create_use_point(
-			Vector3(p[0], p[1], p[2]),
-			up_data.get("id", ""),
-			up_data.get("required_item", ""),
-			up_data.get("use_message", ""),
-			up_data.get("locked_message", "")
-		)
-		parent.add_child(point)
 
 
 func _load_json(path: String) -> Dictionary:
