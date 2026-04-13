@@ -281,8 +281,10 @@ func _ready() -> void:
 	if cur_chapter and cur_chapter.chapter_id == "ch02_haison_souko":
 		stage_gen.exit_node.on_exit_callback = Callable(self, "_play_souko_exit")
 		stage_gen.exit_node.skip_advance = true
-		# 真出口は偽出口（入口閉塞）イベント後に手動で有効化するため、自動接続を切り離す
-		GameManager.item_collected.disconnect(stage_gen.exit_node._on_item_collected)
+		# 真出口は偽出口（入口閉塞）イベント後に手動で有効化するため自動active化を無効にする
+		stage_gen.exit_node.manual_only = true
+		if GameManager.item_collected.is_connected(stage_gen.exit_node._on_item_collected):
+			GameManager.item_collected.disconnect(stage_gen.exit_node._on_item_collected)
 	# [CP3村探索廃止] CP3村探索ゴール時コールバック（廃止）
 	#if cur_chapter and cur_chapter.chapter_id == "ch02_mura_tansaku":
 	#	stage_gen.exit_node.on_exit_callback = Callable(self, "_play_mura_exit")

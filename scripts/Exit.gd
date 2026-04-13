@@ -6,10 +6,12 @@ extends Area3D
 
 @onready var exit_light : OmniLight3D = $ExitLight
 
-var active  : bool  = false
-var pulse_t : float = 0.0
+var active      : bool  = false
+var pulse_t     : float = 0.0
 var _locked_msg_cooldown : float = 0.0
 var _requires_ofuda : bool = false
+## trueにすると item_collected シグナルによる自動active化を無効にする（手動でactiveを制御するチャプター用）
+var manual_only : bool  = false
 
 
 func _ready() -> void:
@@ -28,6 +30,8 @@ func _process(delta: float) -> void:
 
 
 func _on_item_collected(count: int, total: int) -> void:
+	if manual_only:
+		return
 	if count >= total:
 		active = true
 
