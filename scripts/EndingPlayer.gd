@@ -42,6 +42,9 @@ var _bgm_path : String = ""
 var _skip_requested : bool = false
 var _skip_btn : Button = null
 var _title_image_path : String = ""
+var _ending_id : String = ""
+var _skip_unlocked : bool = false
+var _top_right_skip_clicks : int = 0
 
 
 func _ready() -> void:
@@ -58,6 +61,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	# クリックまたはキー押下でスキップボタンを表示
 	var is_key : bool = event is InputEventKey and event.pressed and not event.echo
 	var is_click : bool = event is InputEventMouseButton and event.pressed
+	if not _skip_unlocked and is_click:
+		var mb := event as InputEventMouseButton
+		var in_hotspot : bool = mb.button_index == MOUSE_BUTTON_LEFT and mb.position.x >= 1080.0 and mb.position.y <= 120.0
+		if in_hotspot:
+			_top_right_skip_clicks += 1
+			if _top_right_skip_clicks >= 3 and not is_instance_valid(_skip_btn):
+				_show_skip_btn()
+		else:
+			_top_right_skip_clicks = 0
+		return
 	if (is_key or is_click) and not is_instance_valid(_skip_btn):
 		_show_skip_btn()
 
@@ -410,11 +423,14 @@ func _play_section_bgm(path: String, volume_db: float = -15.0, fade_sec: float =
 		await tw_in.finished
 
 
-func play(sections: Array, ending_title: String = "", ending_tag: String = "BAD END", title_image: String = "") -> void:
+func play(sections: Array, ending_title: String = "", ending_tag: String = "BAD END", title_image: String = "", ending_id: String = "") -> void:
 	_title_image_path = title_image
+	_ending_id = ending_id
 	visible = true
 	_is_playing = true
 	_skip_requested = false
+	_skip_unlocked = GameManager.can_skip_ending(ending_id)
+	_top_right_skip_clicks = 0
 	_container.modulate.a = 0.0
 
 	# エンディング専用アンビエント（静かな風の音）
@@ -454,6 +470,8 @@ func play(sections: Array, ending_title: String = "", ending_tag: String = "BAD 
 	if is_instance_valid(_current_audio):
 		_current_audio.stop()
 	_is_playing = false
+	if ending_id != "":
+		GameManager.mark_ending_viewed(ending_id)
 	ending_finished.emit()
 
 

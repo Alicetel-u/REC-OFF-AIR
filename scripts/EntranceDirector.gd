@@ -1265,7 +1265,7 @@ func _play_ending(ev: Dictionary) -> void:
 	get_tree().root.add_child(ep)
 	var ending_tag : String = "TRUE BAD END" if ending_id == "true_bad_end" else "BAD END"
 	var title_image : String = ev.get("title_image", "")
-	await ep.play(sections, ending_title, ending_tag, title_image)
+	await ep.play(sections, ending_title, ending_tag, title_image, ending_id)
 
 	# スタッフロールがある場合: EndingPlayer (layer150) を維持したままクレジット (layer165) を重ねる
 	# → YouTubeフレームに戻ることなく ending から直接スタッフロールへ seamless に遷移

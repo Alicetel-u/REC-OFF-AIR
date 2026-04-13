@@ -235,39 +235,45 @@ func _build_connections() -> void:
 		var fsz    : Vector2 = size_map.get(fid,   SZ_CH)
 		var tsz    : Vector2 = size_map.get(tid,   SZ_CH)
 
-		var line := _make_connection(fc, fsz, tc, tsz, style)
+		var line := _make_connection(fc, fsz, tc, tsz, style, _is_connection_on_current_path(fid, tid))
 		line.modulate.a = 0.0
 		_content.add_child(line)
 		_line_controls.append(line)
 
 
-func _make_connection(fc: Vector2, fsz: Vector2, tc: Vector2, tsz: Vector2, style: String) -> Control:
+func _make_connection(fc: Vector2, fsz: Vector2, tc: Vector2, tsz: Vector2, style: String, is_current_path: bool = false) -> Control:
 	var container := Control.new()
 	container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	match style:
 		"progress":
 			# 横線（チャプター間）
-			var col : Color = C_LINE_PROG
-			var thick : float = 2.5
+			var col : Color = Color(0.72, 0.86, 1.0, 0.95) if is_current_path else C_LINE_PROG
+			var thick : float = 7.0 if is_current_path else 2.5
 			var x0 : float = fc.x + fsz.x * 0.5
 			var x1 : float = tc.x - tsz.x * 0.5
+			if is_current_path:
+				container.add_child(_make_col_rect(Vector2(x0, fc.y - 7.0), Vector2(x1 - x0, 14.0), Color(col.r, col.g, col.b, 0.18)))
 			container.add_child(_make_col_rect(Vector2(x0, fc.y - thick * 0.5), Vector2(x1 - x0, thick), col))
 			_add_flow_dot(container, Vector2(x0, fc.y), Vector2(x1, tc.y), col)
 
 		"bad_down", "end_down":
 			# 縦線（真下方向）
 			var col : Color = C_LINE_END if style == "end_down" else C_LINE_BAD
-			var thick : float = 2.0
+			if is_current_path:
+				col = Color(1.0, 0.42, 0.28, 0.98) if style == "bad_down" else Color(0.96, 0.66, 1.0, 0.98)
+			var thick : float = 7.0 if is_current_path else 2.0
 			var y0 : float = fc.y + fsz.y * 0.5
 			var y1 : float = tc.y - tsz.y * 0.5
+			if is_current_path:
+				container.add_child(_make_col_rect(Vector2(fc.x - 7.0, y0), Vector2(14.0, y1 - y0), Color(col.r, col.g, col.b, 0.18)))
 			container.add_child(_make_col_rect(Vector2(fc.x - thick * 0.5, y0), Vector2(thick, y1 - y0), col))
 			_add_flow_dot(container, Vector2(fc.x, y0), Vector2(tc.x, y1), col)
 
 		"choice":
 			# CP3-2 → ルート: 下に trunk → 横 → 縦
-			var col : Color = C_LINE_CHO
-			var thick : float = 1.8
+			var col : Color = Color(1.0, 0.78, 0.36, 0.94) if is_current_path else C_LINE_CHO
+			var thick : float = 6.0 if is_current_path else 1.8
 			var trunk_x  : float = fc.x
 			var trunk_y0 : float = fc.y + fsz.y * 0.5
 			var trunk_y1 : float = CHOICE_JUNCTION_Y
@@ -275,16 +281,28 @@ func _make_connection(fc: Vector2, fsz: Vector2, tc: Vector2, tsz: Vector2, styl
 			var branch_y1 : float = tc.y - tsz.y * 0.5
 
 			# 縦: trunk
+			if is_current_path:
+				container.add_child(_make_col_rect(
+					Vector2(trunk_x - 6.5, trunk_y0),
+					Vector2(13.0, trunk_y1 - trunk_y0), Color(col.r, col.g, col.b, 0.18)))
 			container.add_child(_make_col_rect(
 				Vector2(trunk_x - thick * 0.5, trunk_y0),
 				Vector2(thick, trunk_y1 - trunk_y0), col))
 			# 横: junction → branch x
 			var hx0 : float = minf(trunk_x, branch_x)
 			var hx1 : float = maxf(trunk_x, branch_x)
+			if is_current_path:
+				container.add_child(_make_col_rect(
+					Vector2(hx0, trunk_y1 - 6.5),
+					Vector2(hx1 - hx0, 13.0), Color(col.r, col.g, col.b, 0.18)))
 			container.add_child(_make_col_rect(
 				Vector2(hx0, trunk_y1 - thick * 0.5),
 				Vector2(hx1 - hx0, thick), col))
 			# 縦: branch x down to route
+			if is_current_path:
+				container.add_child(_make_col_rect(
+					Vector2(branch_x - 6.5, trunk_y1),
+					Vector2(13.0, branch_y1 - trunk_y1), Color(col.r, col.g, col.b, 0.18)))
 			container.add_child(_make_col_rect(
 				Vector2(branch_x - thick * 0.5, trunk_y1),
 				Vector2(thick, branch_y1 - trunk_y1), col))
@@ -316,6 +334,7 @@ func _build_nodes() -> void:
 func _make_chapter_node(nd: Dictionary) -> Control:
 	var sz      : Vector2 = nd.get("sz", SZ_CH)
 	var reached : bool    = _is_chapter_reached(nd["id"])
+	var on_path : bool    = _is_node_on_current_path(nd["id"])
 	var acc     : Color   = C_CH_ACC if reached else Color(0.2, 0.26, 0.42, 0.5)
 	var bg_col  : Color   = C_CH_BG  if reached else Color(0.03, 0.04, 0.07, 0.9)
 
@@ -324,11 +343,21 @@ func _make_chapter_node(nd: Dictionary) -> Control:
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	if reached:
-		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, 0.06), 6.0))
+		var glow_alpha : float = 0.12 if on_path else 0.06
+		var glow_pad : float = 7.0 if on_path else 6.0
+		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, glow_alpha), glow_pad))
 	panel.add_child(_make_col_rect(Vector2.ZERO, sz, bg_col))
+	if on_path:
+		panel.add_child(_make_col_rect(Vector2.ZERO, sz, Color(acc.r, acc.g, acc.b, 0.10)))
 	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(3.0, sz.y), acc))
 	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(sz.x, 1.0), Color(acc.r, acc.g, acc.b, 0.35)))
-	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.38 if reached else 0.18))
+	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.72 if on_path else (0.38 if reached else 0.18)))
+	if on_path:
+		var inner_frame := Control.new()
+		inner_frame.position = Vector2(4.0, 4.0)
+		inner_frame.size = sz - Vector2(8.0, 8.0)
+		_add_border(inner_frame, inner_frame.size, Color(acc.r, acc.g, acc.b, 0.42))
+		panel.add_child(inner_frame)
 
 	var chapter_label : String = "CP3" if nd["id"] == "cp3_1" else nd.get("label", "")
 	panel.add_child(_make_label(chapter_label, Vector2(8.0, 7.0), Vector2(sz.x - 8.0, 15.0), 9,
@@ -348,6 +377,7 @@ func _make_chapter_node(nd: Dictionary) -> Control:
 func _make_decision_node(nd: Dictionary) -> Control:
 	var sz      : Vector2 = nd.get("sz", SZ_DEC)
 	var reached : bool    = _is_chapter_reached(nd["id"])
+	var on_path : bool    = _is_node_on_current_path(nd["id"])
 	var acc     : Color   = C_DEC_ACC if reached else Color(0.42, 0.30, 0.10, 0.5)
 	var bg_col  : Color   = C_DEC_BG  if reached else Color(0.05, 0.04, 0.02, 0.9)
 
@@ -356,11 +386,21 @@ func _make_decision_node(nd: Dictionary) -> Control:
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	if reached:
-		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, 0.08), 7.0))
+		var glow_alpha : float = 0.15 if on_path else 0.08
+		var glow_pad : float = 8.0 if on_path else 7.0
+		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, glow_alpha), glow_pad))
 	panel.add_child(_make_col_rect(Vector2.ZERO, sz, bg_col))
+	if on_path:
+		panel.add_child(_make_col_rect(Vector2.ZERO, sz, Color(acc.r, acc.g, acc.b, 0.12)))
 	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(3.0, sz.y), acc))
 	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(sz.x, 2.0), Color(acc.r, acc.g, acc.b, 0.45)))
-	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.5 if reached else 0.2))
+	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.78 if on_path else (0.5 if reached else 0.2)))
+	if on_path:
+		var inner_frame := Control.new()
+		inner_frame.position = Vector2(4.0, 4.0)
+		inner_frame.size = sz - Vector2(8.0, 8.0)
+		_add_border(inner_frame, inner_frame.size, Color(acc.r, acc.g, acc.b, 0.48))
+		panel.add_child(inner_frame)
 
 	panel.add_child(_make_label(nd.get("label", ""), Vector2(8.0, 7.0), Vector2(sz.x - 26.0, 15.0), 9,
 		Color(acc.r, acc.g, acc.b, 0.95) if reached else C_TEXT_DIM))
@@ -377,6 +417,7 @@ func _make_decision_node(nd: Dictionary) -> Control:
 func _make_branch_node(nd: Dictionary) -> Control:
 	var sz      : Vector2 = nd.get("sz", SZ_BR)
 	var reached : bool    = _is_chapter_reached(nd["id"])
+	var on_path : bool    = _is_node_on_current_path(nd["id"])
 	var acc     : Color   = C_BR_ACC if reached else Color(0.32, 0.22, 0.08, 0.5)
 	var bg_col  : Color   = C_BR_BG  if reached else Color(0.04, 0.03, 0.02, 0.88)
 
@@ -384,9 +425,21 @@ func _make_branch_node(nd: Dictionary) -> Control:
 	panel.size = sz
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
+	if reached:
+		var glow_alpha : float = 0.14 if on_path else 0.06
+		var glow_pad : float = 8.0 if on_path else 7.0
+		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, glow_alpha), glow_pad))
 	panel.add_child(_make_col_rect(Vector2.ZERO, sz, bg_col))
+	if on_path:
+		panel.add_child(_make_col_rect(Vector2.ZERO, sz, Color(acc.r, acc.g, acc.b, 0.11)))
 	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(3.0, sz.y), acc))
-	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.38 if reached else 0.16))
+	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.74 if on_path else (0.38 if reached else 0.16)))
+	if on_path:
+		var inner_frame := Control.new()
+		inner_frame.position = Vector2(4.0, 4.0)
+		inner_frame.size = sz - Vector2(8.0, 8.0)
+		_add_border(inner_frame, inner_frame.size, Color(acc.r, acc.g, acc.b, 0.44))
+		panel.add_child(inner_frame)
 
 	panel.add_child(_make_label(nd.get("label", ""), Vector2(8.0, 4.0), Vector2(sz.x - 8.0, 14.0), 8,
 		Color(acc.r, acc.g, acc.b, 0.90) if reached else C_TEXT_DIM))
@@ -401,9 +454,11 @@ func _make_branch_node(nd: Dictionary) -> Control:
 
 func _make_ending_node(nd: Dictionary) -> Control:
 	var sz         : Vector2 = nd.get("sz", SZ_END)
+	var node_id    : String  = nd.get("id", "")
 	var ending_id  : String  = nd.get("ending_id", "")
 	var is_unlocked : bool   = GameManager.is_ending_unlocked(ending_id)
 	var is_current  : bool   = ending_id == _current_ending_id
+	var on_path     : bool   = _is_node_on_current_path(node_id)
 	var tag         : String = nd.get("tag", "BAD END")
 	var active      : bool   = is_unlocked or is_current
 
@@ -418,34 +473,43 @@ func _make_ending_node(nd: Dictionary) -> Control:
 
 	var panel := Control.new()
 	panel.size = sz
-	panel.mouse_filter = Control.MOUSE_FILTER_STOP if active else Control.MOUSE_FILTER_IGNORE
-	if active:
-		panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	# グロー
-	var glow_a : float = 0.10 if is_current else (0.05 if is_unlocked else 0.0)
+	var glow_a : float = 0.18 if is_current else (0.12 if on_path else (0.05 if is_unlocked else 0.0))
 	if glow_a > 0.0:
-		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, glow_a), 8.0))
+		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, glow_a), 8.0 if on_path else 6.0))
 
 	panel.add_child(_make_col_rect(Vector2.ZERO, sz, bg_col))
+	if on_path:
+		panel.add_child(_make_col_rect(Vector2.ZERO, sz, Color(acc.r, acc.g, acc.b, 0.14 if is_current else 0.10)))
 	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(4.0, sz.y), acc))
 	panel.add_child(_make_col_rect(Vector2.ZERO, Vector2(sz.x, 1.0), Color(acc.r, acc.g, acc.b, 0.5 if active else 0.14)))
-	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 0.55 if active else 0.18))
+	_add_border(panel, sz, Color(acc.r, acc.g, acc.b, 1.0 if is_current else (0.86 if on_path else (0.55 if active else 0.18))))
+	if on_path:
+		var inner_frame := Control.new()
+		inner_frame.position = Vector2(5.0, 5.0)
+		inner_frame.size = sz - Vector2(10.0, 10.0)
+		_add_border(inner_frame, inner_frame.size, Color(acc.r, acc.g, acc.b, 0.52 if is_current else 0.40))
+		panel.add_child(inner_frame)
 
 	# タグ
+	var top_y : float = 22.0 if is_current else 6.0
+	var line_y : float = 38.0 if is_current else 22.0
+	var name_y : float = 43.0 if is_current else 27.0
 	panel.add_child(_make_label(
 		tag if active else "? ? ?",
-		Vector2(10.0, 6.0), Vector2(sz.x - 28.0, 14.0), 9,
+		Vector2(10.0, top_y), Vector2(sz.x - 28.0, 14.0), 9,
 		Color(acc.r, acc.g, acc.b, 0.90) if active else C_TEXT_DIM))
 
 	# セパレーター
-	panel.add_child(_make_col_rect(Vector2(10.0, 22.0), Vector2(sz.x * 0.6, 1.0),
+	panel.add_child(_make_col_rect(Vector2(10.0, line_y), Vector2(sz.x * 0.6, 1.0),
 		Color(acc.r, acc.g, acc.b, 0.20 if active else 0.07)))
 
 	# 名前
 	panel.add_child(_make_label(
 		nd.get("name", "") if active else "? ? ? ? ? ?",
-		Vector2(10.0, 27.0), Vector2(sz.x - 14.0, 26.0), 14,
+		Vector2(10.0, name_y), Vector2(sz.x - 14.0, 26.0), 14,
 		C_TEXT if active else C_TEXT_DIM))
 
 	# アイコン
@@ -455,23 +519,23 @@ func _make_ending_node(nd: Dictionary) -> Control:
 							  else Color(0.3, 0.3, 0.36, 0.5)))
 	panel.add_child(_make_label(icon_text, Vector2(sz.x - 22.0, sz.y - 21.0), Vector2(18.0, 18.0), 11, icon_col))
 
+	if is_current:
+		panel.add_child(_glow_rect(sz, Color(acc.r, acc.g, acc.b, 0.16), 12.0))
+		var focus := Control.new()
+		focus.name = "CurrentFocusFrame"
+		focus.position = Vector2(-8.0, -8.0)
+		focus.size = sz + Vector2(16.0, 16.0)
+		_add_border(focus, focus.size, Color(acc.r, acc.g, acc.b, 0.95))
+		panel.add_child(focus)
+		panel.add_child(_make_label("YOU ARE HERE", Vector2(10.0, 8.0), Vector2(sz.x - 20.0, 14.0), 9, Color(1.0, 0.92, 0.82, 0.96)))
+
 	if not active:
 		panel.modulate.a = 0.48
 
 	if active:
 		_ending_panels[ending_id] = panel
-		panel.mouse_entered.connect(_on_ending_hover.bind(panel, true))
-		panel.mouse_exited.connect(_on_ending_hover.bind(panel, false))
 
 	return panel
-
-
-func _on_ending_hover(panel: Control, enter: bool) -> void:
-	var tw := create_tween()
-	if enter:
-		tw.tween_property(panel, "modulate", Color(1.18, 1.12, 1.08), 0.10)
-	else:
-		tw.tween_property(panel, "modulate", Color(1.0, 1.0, 1.0), 0.18)
 
 
 # ────────────────────────────────────────────────
@@ -521,6 +585,9 @@ func _process(delta: float) -> void:
 			var pulse_speed : float = 3.2 if eid == _current_ending_id else 2.0
 			var base_a : float = 0.09 if eid == _current_ending_id else 0.04
 			g.color.a = base_a + base_a * sin(_time * pulse_speed)
+		var focus := p.get_node_or_null("CurrentFocusFrame")
+		if focus is Control:
+			focus.modulate.a = 0.72 + 0.28 * (0.5 + 0.5 * sin(_time * 3.6))
 
 	_update_particles(delta)
 	_draw_scanlines()
@@ -678,6 +745,34 @@ func _is_chapter_reached(id: String) -> bool:
 			if eid == _current_ending_id or GameManager.is_ending_unlocked(eid):
 				return true
 	return false
+
+
+func _is_connection_on_current_path(from_id: String, to_id: String) -> bool:
+	var path := _get_current_path_ids()
+	for i in range(path.size() - 1):
+		if path[i] == from_id and path[i + 1] == to_id:
+			return true
+	return false
+
+
+func _is_node_on_current_path(node_id: String) -> bool:
+	return node_id in _get_current_path_ids()
+
+
+func _get_current_path_ids() -> Array[String]:
+	match _current_ending_id:
+		"bad_hikikomori":
+			return ["cp1", "bad_hikikomori"]
+		"bad_eien":
+			return ["cp1", "cp2", "bad_eien"]
+		"bad_ido":
+			return ["cp1", "cp2", "cp3_1", "route_smash", "bad_ido"]
+		"true_bad_end":
+			return ["cp1", "cp2", "cp3_1", "route_take", "true_bad_end"]
+		"bad_predator":
+			return ["cp1", "cp2", "cp3_1", "route_stop", "bad_predator"]
+		_:
+			return []
 
 
 func _make_button(text: String) -> Button:

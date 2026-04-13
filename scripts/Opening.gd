@@ -8,6 +8,7 @@ extends Control
 ## ─────────────────────────────────────────────────────────
 
 const EndingPlayerScript := preload("res://scripts/EndingPlayer.gd")
+const SAFE_BOOT_TITLE := true
 
 enum Phase { TITLE, VIDEO, PROLOGUE, DONE }
 
@@ -91,6 +92,9 @@ func _ready() -> void:
 	_build_ui()
 	_build_settings_button()
 	_phase = Phase.TITLE
+	if SAFE_BOOT_TITLE:
+		_show_safe_title()
+		return
 	_run_title()
 
 
@@ -243,6 +247,11 @@ func _update_title_anim() -> void:
 
 
 func _advance_from_title() -> void:
+	if SAFE_BOOT_TITLE:
+		_title_ready = false
+		_phase = Phase.DONE
+		_go_to_game()
+		return
 	_title_ready = false
 	_phase = Phase.VIDEO
 	SoundManager.stop_bgm(1.1)
@@ -254,6 +263,17 @@ func _advance_from_title() -> void:
 	await get_tree().create_timer(0.1).timeout
 	if _skipped: return
 	_play_video()
+
+
+func _show_safe_title() -> void:
+	_title_bg.visible = true
+	_title_dark.visible = true
+	_title_dark.color = Color(0, 0, 0, 0.35)
+	_title_bg.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	_build_title_hud()
+	if is_instance_valid(_prompt_label):
+		_prompt_label.visible = true
+	_title_ready = true
 
 
 # ════════════════════════════════════════════════════════════
@@ -1437,7 +1457,7 @@ func _play_ending_from_gallery(ed: Dictionary) -> void:
 	var player := CanvasLayer.new()
 	player.set_script(EndingPlayerScript)
 	get_tree().root.add_child(player)
-	await player.play(sections, ending_title)
+	await player.play(sections, ending_title, ed.get("type", "BAD END"), "", ending_id)
 
 	# EndingPlayer をフェードアウト
 	await player.fade_out(1.5)

@@ -1019,6 +1019,7 @@ func _spawn_danmaku(msg: String, user: String, utype: String) -> void:
 		"moderator": col = Color(0.55, 0.82, 1.0,  0.92)
 		"owner":     col = Color(1.0,  0.85, 0.2,  0.95)
 		"superchat": col = Color(1.0,  0.45, 0.35, 0.95)
+		"horror":    col = Color(0.65, 0.05, 0.05, 0.95)
 	lbl.add_theme_color_override("font_color", col)
 
 	# Y はクリップ内の相対座標（クリップが TOP_H から始まるため offset 不要）

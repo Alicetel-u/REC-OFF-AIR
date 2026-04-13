@@ -1,4 +1,4 @@
-extends Node3D
+﻿extends Node3D
 
 const EntranceDirectorScript := preload("res://scripts/EntranceDirector.gd")
 const EndingPlayerScript := preload("res://scripts/EndingPlayer.gd")
@@ -281,6 +281,8 @@ func _ready() -> void:
 	if cur_chapter and cur_chapter.chapter_id == "ch02_haison_souko":
 		stage_gen.exit_node.on_exit_callback = Callable(self, "_play_souko_exit")
 		stage_gen.exit_node.skip_advance = true
+		# 真出口は偽出口（入口閉塞）イベント後に手動で有効化するため、自動接続を切り離す
+		GameManager.item_collected.disconnect(stage_gen.exit_node._on_item_collected)
 	# [CP3村探索廃止] CP3村探索ゴール時コールバック（廃止）
 	#if cur_chapter and cur_chapter.chapter_id == "ch02_mura_tansaku":
 	#	stage_gen.exit_node.on_exit_callback = Callable(self, "_play_mura_exit")
@@ -1402,6 +1404,10 @@ func _run_escape_nav_sequence() -> void:
 		ghost.process_mode = Node.PROCESS_MODE_INHERIT
 
 	# ── 60秒後に真の出口を表示（自力で見つければ待たなくてOK）──
+	# \u504f\u51fa\u53e3\uff08\u5165\u53e3\u9589\u585e\uff09\u30a4\u30d9\u30f3\u30c8\u5b8c\u4e86 \u2192 \u771f\u51fa\u53e3\u3092\u6709\u52b9\u5316
+	if is_instance_valid(stage_gen) and is_instance_valid(stage_gen.exit_node):
+		stage_gen.exit_node.active = true
+
 	_schedule_real_exit_reveal(60.0)
 
 
@@ -1418,6 +1424,9 @@ func _schedule_real_exit_reveal(delay: float) -> void:
 	## delay秒後に真の出口をナビ矢印+ミニマップに表示
 	await get_tree().create_timer(delay).timeout
 	if not is_inside_tree():
+		return
+	# \u30d0\u30c3\u30c9\u30a8\u30f3\u30c9\u7b49\u3067\u30b2\u30fc\u30e0\u304c\u7d42\u4e86\u3057\u3066\u3044\u305f\u3089\u4f55\u3082\u3057\u306a\u3044
+	if GameManager.state != GameManager.State.PLAYING:
 		return
 	var exit_pos : Vector3 = GameManager.current_chapter.exit_position if GameManager.current_chapter else Vector3(23, 1.5, 15)
 	var voice_dir2 : String = "res://assets/audio/voice/ch02_souko/"
@@ -2376,10 +2385,21 @@ func _show_caught() -> void:
 	]
 
 	# EndingPlayerで再生
+	var f := FileAccess.open("res://dialogue/bad_eien.json", FileAccess.READ)
+	if f:
+		var json := JSON.new()
+		if json.parse(f.get_as_text()) == OK:
+			var data : Array = json.data if json.data is Array else json.data.get("events", [])
+			for ev in data:
+				if ev is Dictionary and ev.get("type", "") == "play_ending" and ev.get("id", "") == "bad_eien":
+					ending_title = ev.get("ending_title", ending_title)
+					sections = ev.get("sections", sections)
+					break
+
 	var ep := CanvasLayer.new()
 	ep.set_script(EndingPlayerScript)
 	get_tree().root.add_child(ep)
-	await ep.play(sections, ending_title)
+	await ep.play(sections, ending_title, "BAD END", "", "bad_eien")
 
 	# 再生完了 → フローチャート表示 + 選択肢
 	await ep.fade_out(1.5)
@@ -2393,7 +2413,7 @@ func _show_caught() -> void:
 
 	if eien_choice == 0:
 		# 選択肢の直前に戻る → チャプター再スタート
-		GameManager.restart()
+		GameManager.restart_to_section(2)
 	else:
 		get_tree().change_scene_to_file("res://scenes/Opening.tscn")
 

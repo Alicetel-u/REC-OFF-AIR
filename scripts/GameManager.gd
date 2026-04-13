@@ -50,6 +50,7 @@ var chapter_order: Array[String] = [
 ## ── エンディング集 ──
 const SAVE_PATH := "user://endings.json"
 var unlocked_endings : Dictionary = {}  # { "ending_id": true }
+var ending_view_counts : Dictionary = {}  # { "ending_id": int }
 
 signal item_collected(count: int, total: int)
 signal player_caught
@@ -145,6 +146,20 @@ func restart() -> void:
 
 ## ── エンディング開放・セーブ ──
 
+func restart_to_section(section: int) -> void:
+	# 現在章を維持したまま、指定セクションの導入へ戻す
+	SoundManager.stop_all()
+
+	state = State.PLAYING
+	items_found = 0
+	hit_count = 0
+	_hit_invincible = false
+	ending_route = -1
+	ofuda_count = 3
+	start_section = section
+	get_tree().reload_current_scene()
+
+
 func unlock_ending(ending_id: String) -> void:
 	unlocked_endings[ending_id] = true
 	_save_endings()
@@ -152,10 +167,22 @@ func unlock_ending(ending_id: String) -> void:
 func is_ending_unlocked(ending_id: String) -> bool:
 	return unlocked_endings.has(ending_id)
 
+func can_skip_ending(ending_id: String) -> bool:
+	return int(ending_view_counts.get(ending_id, 0)) >= 1
+
+func mark_ending_viewed(ending_id: String) -> void:
+	if ending_id == "":
+		return
+	ending_view_counts[ending_id] = int(ending_view_counts.get(ending_id, 0)) + 1
+	_save_endings()
+
 func _save_endings() -> void:
 	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if f:
-		f.store_string(JSON.stringify(unlocked_endings))
+		f.store_string(JSON.stringify({
+			"unlocked_endings": unlocked_endings,
+			"ending_view_counts": ending_view_counts,
+		}))
 
 func _load_endings() -> void:
 	if FileAccess.file_exists(SAVE_PATH):
@@ -163,7 +190,14 @@ func _load_endings() -> void:
 		if f:
 			var parsed = JSON.parse_string(f.get_as_text())
 			if parsed is Dictionary:
-				unlocked_endings = parsed
+				if parsed.has("unlocked_endings") or parsed.has("ending_view_counts"):
+					var unlocked = parsed.get("unlocked_endings", {})
+					var viewed = parsed.get("ending_view_counts", {})
+					unlocked_endings = unlocked if unlocked is Dictionary else {}
+					ending_view_counts = viewed if viewed is Dictionary else {}
+				else:
+					unlocked_endings = parsed
+					ending_view_counts = {}
 
 func load_debug_chapter(path: String) -> void:
 	## デバッグチャプターを直接ロード（タイトル画面のF8、またはコード指定で使用）

@@ -75,6 +75,19 @@ K_PARAMS = {
     "pitchScale": -0.16,
 }
 
+PRONUNCIATION_FIXES = {
+    "CLIPTOK": "クリップトック",
+    "ClipTok": "クリップトック",
+    "cliptok": "クリップトック",
+    "TIKTOK": "クリップトック",
+    "TikTok": "クリップトック",
+    "tiktok": "クリップトック",
+    "廃村": "はいそん",
+    "同接": "どうせつ",
+    "お札": "おふだ",
+    "首": "くび",
+}
+
 
 def get_voice_profile(user: str, speaker_id: int) -> dict:
     if user == "K":
@@ -92,14 +105,22 @@ def get_voice_profile(user: str, speaker_id: int) -> dict:
     }
 
 
+def fix_pronunciation(text: str) -> str:
+    for original, fixed in PRONUNCIATION_FIXES.items():
+        text = text.replace(original, fixed)
+    return text
+
+
 def compute_hash(text: str, speaker_id: int, user: str = "") -> str:
     profile = get_voice_profile(user, speaker_id)
-    h = hashlib.md5(f"{text}|{json.dumps(profile, sort_keys=True)}".encode("utf-8")).hexdigest()[:12]
+    var_text = fix_pronunciation(text)
+    h = hashlib.md5(f"{var_text}|{json.dumps(profile, sort_keys=True)}".encode("utf-8")).hexdigest()[:12]
     return h
 
 
 def generate_voicevox(text: str, speaker_id: int, user: str = "") -> bytes:
     """VOICEVOX APIで音声合成"""
+    text = fix_pronunciation(text)
     # audio_query
     resp = requests.post(
         f"{VOICEVOX_URL}/audio_query",
