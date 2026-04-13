@@ -709,11 +709,15 @@ func add_message(msg: String, user: String, user_type: String = "viewer") -> voi
 	if not is_instance_valid(_chat_vbox):
 		return
 
+	# しゅっち（配信者本人）はチャット欄に表示しない
+	if user_type == "owner":
+		return
+
 	# ── Kユーザー判定（ホラー演出） ──
 	var is_k := user_type == "horror" or user == "K"
 
 	var user_colors: Dictionary = {
-		"owner":     Color(1.00, 0.84, 0.00),
+		"owner":     Color(0.88, 0.88, 0.88),
 		"moderator": Color(0.37, 0.52, 0.95),
 		"member":    Color(0.17, 0.65, 0.25),
 		"viewer":    Color(0.78, 0.78, 0.78),
