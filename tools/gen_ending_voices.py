@@ -75,6 +75,30 @@ VOICES = [
     ("tw002", "みんながずっとみていた", None),
 ]
 
+# ── 3択読み上げ音声 ──
+# qa_[choice番号]_p = prompt / qa_[choice番号]_[a/b/c] = 選択肢
+CHOICE_VOICES = [
+    # CP1-3 トイレ前
+    ("qa_c1_p",  "……この先に、みゆきちゃんが殺されたトイレがある。どうする？", None),
+    ("qa_c1_a",  "A。怖いけど……約束したし。行こう。", None),
+    ("qa_c1_b",  "B。同接伸びてるし、ここで引いたら終わりでしょ。", "B。どうせつ伸びてるし、ここで引いたら終わりでしょ。"),
+    ("qa_c1_c",  "C。トイレ凸って泣いてる女配信者とか最高にバズるじゃん。行くっしょ。", None),
+    # CP1-4 第1択
+    ("qa_c4_p",  "どうする？", None),
+    ("qa_c4_a",  "A。……奥に進む。この目で確かめる。", None),
+    ("qa_c4_b",  "B。……少し待って。まだ決められない。", None),
+    ("qa_c4_c",  "C。……やっぱ帰る。無理。", None),
+    # CP1-4 最終択
+    ("qa_c4f_p", "もう迷ってる時間はない。", None),
+    ("qa_c4f_a", "A。……奥に進む。この目で確かめる。", None),
+    ("qa_c4f_b", "B。……やっぱ帰る。無理。", None),
+    # CP6 灯籠 エンディング分岐
+    ("qa_c6_p",  "目の前の灯籠に、自分の配信を映し続けるスマホ。どうする？", None),
+    ("qa_c6_a",  "A。スマホを壊す。呪いの元を断つ。", None),
+    ("qa_c6_b",  "B。スマホを置き去る。お札で封じ、神社に捧ぐ。", "B。スマホを置き去る。おふだで封じ、神社に捧ぐ。"),
+    ("qa_c6_c",  "C。配信を止める。もう誰にも見せない。", None),
+]
+
 
 def normalize_wav(wav_bytes: bytes, target_peak: float = 0.92) -> bytes:
     """ピーク正規化: 最大振幅を target_peak (0.0〜1.0) に合わせる"""
@@ -188,12 +212,24 @@ def generate(text: str, out_path: str) -> tuple[bool, float]:
 
 
 def main() -> None:
-    print(f"=== 真エンド音声生成 [VOICEVOX Speaker {SPEAKER_ID} / intonation={INTONATION_SCALE} / speed={SPEED_SCALE} / pitch={PITCH_SCALE}] ===")
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", choices=["ending", "choice", "all"], default="ending",
+                        help="ending=真エンド音声 / choice=3択読み上げ / all=両方")
+    args = parser.parse_args()
+
+    targets = []
+    if args.mode in ("ending", "all"):
+        targets.extend(VOICES)
+    if args.mode in ("choice", "all"):
+        targets.extend(CHOICE_VOICES)
+
+    print(f"=== 音声生成 [{args.mode}] [VOICEVOX Speaker {SPEAKER_ID} / intonation={INTONATION_SCALE} / speed={SPEED_SCALE} / pitch={PITCH_SCALE}] ===")
     print(f"出力先: {OUTPUT_DIR}")
     print()
 
     results: dict[str, float] = {}
-    for voice_id, text, reading in VOICES:
+    for voice_id, text, reading in targets:
         tts_text = reading if reading else text
         out_path = os.path.join(OUTPUT_DIR, f"{voice_id}.wav")
         print(f"[{voice_id}] {text}")
@@ -206,7 +242,6 @@ def main() -> None:
         print()
 
     print("=== 完了 ===")
-    print("以下の voice_dur を JSON に反映してください：")
     for vid, dur in results.items():
         print(f'  "{vid}": {dur:.3f}')
 

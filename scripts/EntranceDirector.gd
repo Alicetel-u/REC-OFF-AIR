@@ -635,8 +635,12 @@ func _show_horror_choice(ev: Dictionary) -> int:
 	var choices : Array = ev.get("choices", [])
 	var title_text : String = ev.get("title", "")
 	var danger : bool = ev.get("danger", false)
+	var prompt_voice : String = ev.get("prompt_voice", "")
+	var choice_voices : Array = []
+	for c: Dictionary in choices:
+		choice_voices.append(c.get("voice", ""))
 
-	panel.show_choice(prompt, choices, title_text, danger)
+	panel.show_choice(prompt, choices, title_text, danger, prompt_voice, choice_voices)
 
 	var result : int = await panel.choice_selected
 	panel.queue_free()

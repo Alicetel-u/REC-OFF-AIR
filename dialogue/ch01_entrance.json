@@ -992,18 +992,22 @@
             "type": "choice",
             "title": "▼  あ な た の 覚 悟  ▼",
             "prompt": "……この先にみゆきちゃんが殺されたトイレがある。どうする？",
+            "prompt_voice": "res://assets/audio/voice/ch02_mura/qa_c1_p.wav",
             "choices": [
                 {
                     "text": "怖いけど……約束したし。行こう。",
-                    "sub": ""
+                    "sub": "",
+                    "voice": "res://assets/audio/voice/ch02_mura/qa_c1_a.wav"
                 },
                 {
                     "text": "同接伸びてるし、ここで引いたら終わりでしょ。",
-                    "sub": ""
+                    "sub": "",
+                    "voice": "res://assets/audio/voice/ch02_mura/qa_c1_b.wav"
                 },
                 {
                     "text": "トイレ凸って泣いてる女配信者とか最高にバズるじゃん。行くっしょ。",
-                    "sub": ""
+                    "sub": "",
+                    "voice": "res://assets/audio/voice/ch02_mura/qa_c1_c.wav"
                 }
             ],
             "targets": [
@@ -4286,18 +4290,22 @@
             "title": "▼  引 き 返 せ な い  ▼",
             "danger": true,
             "prompt": "どうする？",
+            "prompt_voice": "res://assets/audio/voice/ch02_mura/qa_c4_p.wav",
             "choices": [
                 {
                     "text": "……奥に進む。この目で確かめる。",
-                    "sub": ""
+                    "sub": "",
+                    "voice": "res://assets/audio/voice/ch02_mura/qa_c4_a.wav"
                 },
                 {
                     "text": "……少し待って。まだ決められない。",
-                    "sub": "迷っている"
+                    "sub": "迷っている",
+                    "voice": "res://assets/audio/voice/ch02_mura/qa_c4_b.wav"
                 },
                 {
                     "text": "……やっぱ帰る。無理。",
-                    "sub": "怖気づいてしまった"
+                    "sub": "怖気づいてしまった",
+                    "voice": "res://assets/audio/voice/ch02_mura/qa_c4_c.wav"
                 }
             ],
             "targets": [
@@ -4484,14 +4492,17 @@
             "title": "▼  逃 げ る か 、 進 む か  ▼",
             "danger": true,
             "prompt": "もう迷ってる時間はない。",
+            "prompt_voice": "res://assets/audio/voice/ch02_mura/qa_c4f_p.wav",
             "choices": [
                 {
                     "text": "……奥に進む。この目で確かめる。",
-                    "sub": ""
+                    "sub": "",
+                    "voice": "res://assets/audio/voice/ch02_mura/qa_c4f_a.wav"
                 },
                 {
                     "text": "……やっぱ帰る。無理。",
-                    "sub": "怖気づいてしまった"
+                    "sub": "怖気づいてしまった",
+                    "voice": "res://assets/audio/voice/ch02_mura/qa_c4f_b.wav"
                 }
             ],
             "targets": [

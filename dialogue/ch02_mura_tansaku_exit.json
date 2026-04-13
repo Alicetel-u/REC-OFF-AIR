@@ -834,18 +834,22 @@
             "type": "choice",
             "title": "▼  灯 籠 の ス マ ホ  ▼",
             "prompt": "目の前の灯籠に、自分の配信を映し続けるスマホ。どうする？",
+            "prompt_voice": "res://assets/audio/voice/ch02_mura/qa_c6_p.wav",
             "choices": [
                 {
                     "text": "スマホを壊す",
-                    "sub": "呪いの元を断つ"
+                    "sub": "呪いの元を断つ",
+                    "voice": "res://assets/audio/voice/ch02_mura/qa_c6_a.wav"
                 },
                 {
                     "text": "スマホを置き去る",
-                    "sub": "お札で封じ、神社に捧ぐ"
+                    "sub": "お札で封じ、神社に捧ぐ",
+                    "voice": "res://assets/audio/voice/ch02_mura/qa_c6_b.wav"
                 },
                 {
                     "text": "配信を止める",
-                    "sub": "もう誰にも見せない"
+                    "sub": "もう誰にも見せない",
+                    "voice": "res://assets/audio/voice/ch02_mura/qa_c6_c.wav"
                 }
             ],
             "targets": [

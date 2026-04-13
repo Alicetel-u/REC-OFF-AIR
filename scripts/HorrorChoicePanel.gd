@@ -34,13 +34,22 @@ var _vote_current  : Array[float]       = []
 var _glitch_label  : Label  # グリッチテキスト用
 var _prev_mouse_mode : int = Input.MOUSE_MODE_CAPTURED
 
+# ── 読み上げ ──
+var _narration_cancelled : bool = false
+var _prompt_voice   : String = ""
+var _choice_voices  : Array  = []
+
 
 func _ready() -> void:
 	layer = 25  # 全UIの最前面
 	visible = false
 
 
-func show_choice(prompt: String, choices: Array, title_text: String = "", danger: bool = false) -> void:
+func show_choice(prompt: String, choices: Array, title_text: String = "", danger: bool = false,
+		prompt_voice: String = "", choice_voices: Array = []) -> void:
+	_prompt_voice  = prompt_voice
+	_choice_voices = choice_voices
+	_narration_cancelled = false
 	# マウスカーソルを表示（シネマティック中はCAPTURED状態のため）
 	_prev_mouse_mode = Input.get_mouse_mode()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -54,6 +63,8 @@ func show_choice(prompt: String, choices: Array, title_text: String = "", danger
 	# マウスモードを再確認（他の処理で上書きされる可能性がある）
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	_start_vote(choices)
+	# 読み上げ開始（タイプライター演出と並行）
+	_narrate_choices.call_deferred()
 
 
 ## バッドエンド注意喚起演出
@@ -256,13 +267,18 @@ func _build_ui(prompt: String, choices: Array, title_text: String = "") -> void:
 	sep1.add_theme_color_override("color", Color(0.35, 0.1, 0.1, 0.6))
 	vbox.add_child(sep1)
 
-	# ── プロンプト ──
+	# ── プロンプト（タイプライター演出） ──
 	_prompt_label = RichTextLabel.new()
 	_prompt_label.bbcode_enabled = true
 	_prompt_label.fit_content = true
 	_prompt_label.scroll_active = false
 	_prompt_label.bbcode_text = "[color=#ddcccc][font_size=15]%s[/font_size][/color]" % prompt
+	_prompt_label.visible_characters = 0  # タイプライター用：最初は非表示
 	vbox.add_child(_prompt_label)
+	# タイプライター: 1文字ずつ表示（読み上げ音声と並行）
+	var total_chars : int = _prompt_label.get_total_character_count()
+	var tw_type := create_tween()
+	tw_type.tween_property(_prompt_label, "visible_characters", total_chars, float(total_chars) * 0.045)
 
 	# ── 区切り線 ──
 	var sep2 := HSeparator.new()
@@ -426,10 +442,71 @@ func _process(delta: float) -> void:
 		_on_choice(2)
 
 
+## promptと選択肢テキストをタイプライターに合わせて順番に読み上げる
+func _narrate_choices() -> void:
+	# promptタイプライター完了まで待つ（RichTextLabelのvisible_characters）
+	if is_instance_valid(_prompt_label):
+		var full_len : int = _prompt_label.get_total_character_count()
+		while is_instance_valid(_prompt_label) and _prompt_label.visible_characters < full_len:
+			if _narration_cancelled or not _voting_active:
+				return
+			await get_tree().process_frame
+
+	# prompt読み上げ
+	if not _narration_cancelled and not _prompt_voice.is_empty():
+		SoundManager.play_voice(_prompt_voice)
+		# 再生完了 or 選択まで待つ
+		while SoundManager._voice.playing:
+			if _narration_cancelled:
+				return
+			await get_tree().process_frame
+
+	# 各選択肢を順番に読み上げ
+	for i in range(_choice_voices.size()):
+		if _narration_cancelled or not _voting_active:
+			return
+		var cv : String = _choice_voices[i]
+		if cv.is_empty():
+			continue
+		# 対応ボタンを一時ハイライト
+		if i < _choice_btns.size() and is_instance_valid(_choice_btns[i]):
+			var hl := StyleBoxFlat.new()
+			hl.bg_color = Color(0.22, 0.08, 0.08, 0.9)
+			hl.border_color = Color(0.8, 0.3, 0.3, 0.8)
+			hl.set_border_width_all(2)
+			hl.set_corner_radius_all(3)
+			hl.set_content_margin_all(6)
+			_choice_btns[i].add_theme_stylebox_override("normal", hl)
+		SoundManager.play_voice(cv)
+		while SoundManager._voice.playing:
+			if _narration_cancelled:
+				# ハイライトを元に戻す
+				_reset_btn_style(i)
+				return
+			await get_tree().process_frame
+		_reset_btn_style(i)
+		# 選択肢間に短い間
+		await get_tree().create_timer(0.3).timeout
+
+
+func _reset_btn_style(i: int) -> void:
+	if i < _choice_btns.size() and is_instance_valid(_choice_btns[i]):
+		var normal_style := StyleBoxFlat.new()
+		normal_style.bg_color = Color(0.10, 0.04, 0.04, 0.9)
+		normal_style.border_color = Color(0.4, 0.12, 0.12, 0.7)
+		normal_style.set_border_width_all(1)
+		normal_style.set_corner_radius_all(3)
+		normal_style.set_content_margin_all(6)
+		_choice_btns[i].add_theme_stylebox_override("normal", normal_style)
+
+
 func _on_choice(idx: int) -> void:
 	if not _voting_active:
 		return
 	_voting_active = false
+	# 読み上げ中断
+	_narration_cancelled = true
+	SoundManager.stop_voice()
 
 	# 選択したボタンをハイライト
 	for i in range(_choice_btns.size()):
