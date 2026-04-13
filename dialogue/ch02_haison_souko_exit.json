@@ -99,7 +99,7 @@
         {
             "type": "bgm",
             "file": "Temple_On_Channel_Three.mp3",
-            "vol": -18.0
+            "vol": -10.0
         },
         {
             "type": "bg_walk_start",

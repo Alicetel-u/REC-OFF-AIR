@@ -1425,8 +1425,11 @@ func _schedule_real_exit_reveal(delay: float) -> void:
 	await get_tree().create_timer(delay).timeout
 	if not is_inside_tree():
 		return
-	# \u30d0\u30c3\u30c9\u30a8\u30f3\u30c9\u7b49\u3067\u30b2\u30fc\u30e0\u304c\u7d42\u4e86\u3057\u3066\u3044\u305f\u3089\u4f55\u3082\u3057\u306a\u3044
+	# バッドエンド等でゲームが終了していたら何もしない
 	if GameManager.state != GameManager.State.PLAYING:
+		return
+	# すでに脱出演出中（真の扉に入った後）なら何もしない
+	if _souko_exiting:
 		return
 	var exit_pos : Vector3 = GameManager.current_chapter.exit_position if GameManager.current_chapter else Vector3(23, 1.5, 15)
 	var voice_dir2 : String = "res://assets/audio/voice/ch02_souko/"
