@@ -1914,6 +1914,26 @@ func _show_credits(credits_data: Dictionary) -> void:
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	container.add_child(bg)
 
+	var vignette := ColorRect.new()
+	vignette.anchors_preset = Control.PRESET_FULL_RECT
+	vignette.color = Color(0.08, 0.0, 0.0, 0.16)
+	vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	container.add_child(vignette)
+
+	var top_fade := ColorRect.new()
+	top_fade.size = Vector2(vp_size.x, 150.0)
+	top_fade.position = Vector2.ZERO
+	top_fade.color = Color(0.0, 0.0, 0.0, 0.9)
+	top_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	container.add_child(top_fade)
+
+	var bottom_fade := ColorRect.new()
+	bottom_fade.size = Vector2(vp_size.x, 190.0)
+	bottom_fade.position = Vector2(0.0, vp_size.y - 190.0)
+	bottom_fade.color = Color(0.0, 0.0, 0.0, 0.95)
+	bottom_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	container.add_child(bottom_fade)
+
 	# スキップフラグ（辞書経由で参照渡し）
 	var _skip := {"v": false}
 
@@ -1936,8 +1956,9 @@ func _show_credits(credits_data: Dictionary) -> void:
 
 	# クレジット用 VBox（画面下から流れ上がる）
 	var vbox := VBoxContainer.new()
-	vbox.custom_minimum_size = Vector2(760.0, 0.0)
-	vbox.position = Vector2(260.0, 780.0)
+	vbox.custom_minimum_size = Vector2(920.0, 0.0)
+	vbox.position = Vector2((vp_size.x - 920.0) * 0.5, 820.0)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	container.add_child(vbox)
 
 	# タイトル行
@@ -1945,12 +1966,21 @@ func _show_credits(credits_data: Dictionary) -> void:
 	tlbl.text = title_text
 	tlbl.size_flags_horizontal = Control.SIZE_FILL
 	tlbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	tlbl.add_theme_font_size_override("font_size", 20)
-	tlbl.add_theme_color_override("font_color", Color(0.58, 0.52, 0.65))
+	tlbl.add_theme_font_size_override("font_size", 28)
+	tlbl.add_theme_color_override("font_color", Color(0.78, 0.72, 0.82))
+	tlbl.add_theme_color_override("font_shadow_color", Color(0.18, 0.0, 0.0, 0.9))
+	tlbl.add_theme_constant_override("shadow_offset_x", 0)
+	tlbl.add_theme_constant_override("shadow_offset_y", 2)
 	vbox.add_child(tlbl)
 
+	var title_rule := ColorRect.new()
+	title_rule.color = Color(0.42, 0.16, 0.16, 0.85)
+	title_rule.custom_minimum_size = Vector2(360.0, 2.0)
+	title_rule.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	vbox.add_child(title_rule)
+
 	var sp0 := Control.new()
-	sp0.custom_minimum_size = Vector2(0.0, 50.0)
+	sp0.custom_minimum_size = Vector2(0.0, 64.0)
 	vbox.add_child(sp0)
 
 	# エントリー
@@ -1971,20 +2001,20 @@ func _show_credits(credits_data: Dictionary) -> void:
 				logo.texture = logo_tex
 				logo.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 				logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				var max_w := 360.0
-				var max_h := 110.0
+				var max_w := 520.0
+				var max_h := 180.0
 				var scale : float = min(max_w / float(logo_tex.get_width()), max_h / float(logo_tex.get_height()), 1.0)
 				logo.custom_minimum_size = Vector2(float(logo_tex.get_width()) * scale, float(logo_tex.get_height()) * scale)
 				logo_wrap.add_child(logo)
 
 				var logo_gap := Control.new()
-				logo_gap.custom_minimum_size = Vector2(0.0, 14.0)
+				logo_gap.custom_minimum_size = Vector2(0.0, 28.0)
 				vbox.add_child(logo_gap)
 			continue
 
 		if role == "" and ntext == "":
 			var gap := Control.new()
-			gap.custom_minimum_size = Vector2(0.0, 24.0)
+			gap.custom_minimum_size = Vector2(0.0, 34.0)
 			vbox.add_child(gap)
 			continue
 
@@ -1995,52 +2025,55 @@ func _show_credits(credits_data: Dictionary) -> void:
 		if role != "" and ntext != "":
 			var rlbl := Label.new()
 			rlbl.text = role
-			rlbl.custom_minimum_size = Vector2(330.0, 0.0)
+			rlbl.custom_minimum_size = Vector2(380.0, 0.0)
 			rlbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-			rlbl.add_theme_font_size_override("font_size", 14)
-			rlbl.add_theme_color_override("font_color", Color(0.48, 0.48, 0.55))
+			rlbl.add_theme_font_size_override("font_size", 16)
+			rlbl.add_theme_color_override("font_color", Color(0.58, 0.56, 0.64))
 			row.add_child(rlbl)
 			var sep := Label.new()
 			sep.text = "  ─  "
-			sep.add_theme_font_size_override("font_size", 14)
-			sep.add_theme_color_override("font_color", Color(0.28, 0.28, 0.32))
+			sep.add_theme_font_size_override("font_size", 16)
+			sep.add_theme_color_override("font_color", Color(0.36, 0.24, 0.24))
 			row.add_child(sep)
 
 		var nlbl := Label.new()
 		match style:
 			"game_title":
-				nlbl.add_theme_font_size_override("font_size", 30)
-				nlbl.add_theme_color_override("font_color", Color(0.92, 0.90, 0.95))
+				nlbl.add_theme_font_size_override("font_size", 40)
+				nlbl.add_theme_color_override("font_color", Color(0.95, 0.94, 0.98))
 			"whisper":
-				nlbl.add_theme_font_size_override("font_size", 16)
-				nlbl.add_theme_color_override("font_color", Color(0.52, 0.42, 0.60))
+				nlbl.add_theme_font_size_override("font_size", 18)
+				nlbl.add_theme_color_override("font_color", Color(0.60, 0.48, 0.66))
 			"section":
-				nlbl.add_theme_font_size_override("font_size", 13)
-				nlbl.add_theme_color_override("font_color", Color(0.42, 0.42, 0.50))
+				nlbl.add_theme_font_size_override("font_size", 16)
+				nlbl.add_theme_color_override("font_color", Color(0.62, 0.58, 0.68))
 			_:
-				nlbl.add_theme_font_size_override("font_size", 17)
-				nlbl.add_theme_color_override("font_color", Color(0.88, 0.87, 0.92))
+				nlbl.add_theme_font_size_override("font_size", 22)
+				nlbl.add_theme_color_override("font_color", Color(0.92, 0.90, 0.95))
 		if role == "":
 			nlbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			nlbl.size_flags_horizontal = Control.SIZE_FILL
 		elif ntext == "":
 			nlbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			nlbl.size_flags_horizontal = Control.SIZE_FILL
-			nlbl.add_theme_font_size_override("font_size", 15)
-			nlbl.add_theme_color_override("font_color", Color(0.60, 0.60, 0.68))
+			nlbl.add_theme_font_size_override("font_size", 18)
+			nlbl.add_theme_color_override("font_color", Color(0.70, 0.68, 0.76))
 		if ntext == "":
 			nlbl.text = role
 		else:
 			nlbl.text = ntext
+		nlbl.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.45))
+		nlbl.add_theme_constant_override("shadow_offset_x", 0)
+		nlbl.add_theme_constant_override("shadow_offset_y", 2)
 		row.add_child(nlbl)
 
 		var gap2 := Control.new()
-		gap2.custom_minimum_size = Vector2(0.0, 10.0)
+		gap2.custom_minimum_size = Vector2(0.0, 22.0)
 		vbox.add_child(gap2)
 
 	# 末尾の余白
 	var tail := Control.new()
-	tail.custom_minimum_size = Vector2(0.0, 260.0)
+	tail.custom_minimum_size = Vector2(0.0, 340.0)
 	vbox.add_child(tail)
 
 	# テキストだけフェードイン（bg は既に不透明なので container は触らない）
@@ -2056,7 +2089,7 @@ func _show_credits(credits_data: Dictionary) -> void:
 	# スクロール
 	var total_h : float = vbox.size.y
 	var end_y : float = -total_h
-	var scroll_dur : float = (780.0 - end_y) / scroll_speed
+	var scroll_dur : float = (820.0 - end_y) / scroll_speed
 
 	var tw_scroll := create_tween()
 	tw_scroll.tween_property(vbox, "position:y", end_y, scroll_dur).set_trans(Tween.TRANS_LINEAR)

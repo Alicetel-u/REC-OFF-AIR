@@ -1355,7 +1355,7 @@
             "type": "play_ending",
             "id": "true_bad_end",
             "ending_title": "視線ノ供物",
-            "title_image": "res://assets/textures/TRUE_BAD_END_202604140147.png",
+            "title_image": "res://assets/textures/TRUE_BAD_END_202604140147_fixed.png",
             "return_label": "cp3_choice",
             "sections": [
                 {
