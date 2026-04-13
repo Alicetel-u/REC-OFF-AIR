@@ -1825,15 +1825,21 @@
                     "lines": [
                         {
                             "text": "配信を止めた瞬間、世界から「光」が消えた。",
-                            "pause": 3.5
+                            "pause": 3.5,
+                            "voice": "res://assets/audio/voice/ch02_mura/p001.wav",
+                            "voice_dur": 3.204
                         },
                         {
                             "text": "視聴者という観測者がいなくなったことで……",
-                            "pause": 4.0
+                            "pause": 4.0,
+                            "voice": "res://assets/audio/voice/ch02_mura/p002.wav",
+                            "voice_dur": 2.822
                         },
                         {
                             "text": "あの子を縛っていたデジタルな法則も、消失した。",
-                            "pause": 4.0
+                            "pause": 4.0,
+                            "voice": "res://assets/audio/voice/ch02_mura/p003.wav",
+                            "voice_dur": 3.413
                         }
                     ],
                     "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog.mp3"
@@ -1845,11 +1851,15 @@
                     "lines": [
                         {
                             "text": "暗闇の中から、這い寄る音が聞こえる。",
-                            "pause": 3.0
+                            "pause": 3.0,
+                            "voice": "res://assets/audio/voice/ch02_mura/p004.wav",
+                            "voice_dur": 2.786
                         },
                         {
                             "text": "「観てる間」だけは、あの子は画面の中に留まっていたんだ。",
-                            "pause": 4.0
+                            "pause": 4.0,
+                            "voice": "res://assets/audio/voice/ch02_mura/p005.wav",
+                            "voice_dur": 3.831
                         }
                     ]
                 },
@@ -1860,12 +1870,16 @@
                     "lines": [
                         {
                             "text": "目が合ったような気がした。……いや、あの子に目はない。",
-                            "pause": 4.0
+                            "pause": 4.0,
+                            "voice": "res://assets/audio/voice/ch02_mura/p006.wav",
+                            "voice_dur": 3.611
                         },
                         {
                             "text": "でも、私の喉を掴む指の感触は、あまりにもリアルで——",
                             "pause": 4.5,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "res://assets/audio/voice/ch02_mura/p007.wav",
+                            "voice_dur": 4.354
                         },
                         {
                             "text": "——",

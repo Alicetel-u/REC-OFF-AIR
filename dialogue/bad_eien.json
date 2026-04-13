@@ -14,19 +14,27 @@
                     "lines": [
                         {
                             "text": "視聴者A: しゅっち？",
-                            "pause": 1.0
+                            "pause": 1.0,
+                            "voice": "res://assets/audio/voice/bad_eien/be001.wav",
+                            "voice_dur": 0.507
                         },
                         {
                             "text": "配信民99: 映像止まったんだけど",
-                            "pause": 0.8
+                            "pause": 0.8,
+                            "voice": "res://assets/audio/voice/bad_eien/be002.wav",
+                            "voice_dur": 1.018
                         },
                         {
                             "text": "ゆきんこ77: 回線落ちた？",
-                            "pause": 0.8
+                            "pause": 0.8,
+                            "voice": "res://assets/audio/voice/bad_eien/be003.wav",
+                            "voice_dur": 0.822
                         },
                         {
                             "text": "まっちゃん: 画面真っ暗",
-                            "pause": 1.0
+                            "pause": 1.0,
+                            "voice": "res://assets/audio/voice/bad_eien/be004.wav",
+                            "voice_dur": 0.629
                         }
                     ],
                     "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog.mp3"
@@ -39,39 +47,57 @@
                     "lines": [
                         {
                             "text": "視聴者A: あ、映った",
-                            "pause": 0.8
+                            "pause": 0.8,
+                            "voice": "res://assets/audio/voice/bad_eien/be005.wav",
+                            "voice_dur": 0.826
                         },
                         {
                             "text": "配信民99: しゅっち映ってるけど……動かなくない？",
-                            "pause": 1.0
+                            "pause": 1.0,
+                            "voice": "res://assets/audio/voice/bad_eien/be006.wav",
+                            "voice_dur": 1.633
                         },
                         {
                             "text": "ゆきんこ77: 目が……こっち見てる",
-                            "pause": 1.0
+                            "pause": 1.0,
+                            "voice": "res://assets/audio/voice/bad_eien/be007.wav",
+                            "voice_dur": 0.907
                         },
                         {
                             "text": "まっちゃん: なんで笑ってるの",
-                            "pause": 1.2
+                            "pause": 1.2,
+                            "voice": "res://assets/audio/voice/bad_eien/be008.wav",
+                            "voice_dur": 0.781
                         },
                         {
                             "text": "配信民99: コメント読まないの初めてじゃね",
-                            "pause": 1.0
+                            "pause": 1.0,
+                            "voice": "res://assets/audio/voice/bad_eien/be009.wav",
+                            "voice_dur": 1.387
                         },
                         {
                             "text": "まっちゃん: え……泣いてる？",
-                            "pause": 1.2
+                            "pause": 1.2,
+                            "voice": "res://assets/audio/voice/bad_eien/be010.wav",
+                            "voice_dur": 0.659
                         },
                         {
                             "text": "ゆきんこ77: 「たすけて」って言ってない？",
-                            "pause": 1.2
+                            "pause": 1.2,
+                            "voice": "res://assets/audio/voice/bad_eien/be011.wav",
+                            "voice_dur": 1.114
                         },
                         {
                             "text": "視聴者A: 配信閉じれないんだけど",
-                            "pause": 1.0
+                            "pause": 1.0,
+                            "voice": "res://assets/audio/voice/bad_eien/be012.wav",
+                            "voice_dur": 1.343
                         },
                         {
                             "text": "配信民99: ブラウザ落ちない 何これ",
-                            "pause": 1.5
+                            "pause": 1.5,
+                            "voice": "res://assets/audio/voice/bad_eien/be013.wav",
+                            "voice_dur": 1.187
                         }
                     ]
                 },
@@ -84,17 +110,23 @@
                         {
                             "text": "K: 止まらないよ",
                             "pause": 2.5,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "res://assets/audio/voice/bad_eien/be014.wav",
+                            "voice_dur": 1.044
                         },
                         {
                             "text": "K: 望んだのは君だろう",
                             "pause": 2.5,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "res://assets/audio/voice/bad_eien/be015.wav",
+                            "voice_dur": 1.616
                         },
                         {
                             "text": "K: 永遠に、見てもらえるよ",
                             "pause": 3.0,
-                            "emphasis": true
+                            "emphasis": true,
+                            "voice": "res://assets/audio/voice/bad_eien/be016.wav",
+                            "voice_dur": 2.295
                         }
                     ]
                 }
