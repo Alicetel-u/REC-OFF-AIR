@@ -925,6 +925,8 @@ func _add_chat(msg: String, user: String = "", user_type: String = "") -> void:
 		else:
 			user_type = "viewer"
 
+	if user_type == "owner":
+		return
 	if is_instance_valid(_chrome):
 		_chrome.add_message(msg, user, user_type)
 	if danmaku_func.is_valid():
