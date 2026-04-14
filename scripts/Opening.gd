@@ -266,6 +266,9 @@ func _advance_from_title() -> void:
 
 
 func _show_safe_title() -> void:
+	# NOTE: _run_title() と同じ BGM を必ず再生すること。
+	# SAFE_BOOT_TITLE を変更する際はここも合わせて更新すること。
+	SoundManager.play_bgm("res://assets/audio/bgm/山あいのわらべ歌.mp3", -10.0)
 	_title_bg.visible = true
 	_title_dark.visible = true
 	_title_dark.color = Color(0, 0, 0, 0.35)
