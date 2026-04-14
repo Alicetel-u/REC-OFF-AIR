@@ -11,14 +11,20 @@ import sys
 import wave
 
 import requests
+from protagonist_voice_profile import (
+    VOICEVOX_URL,
+    VOICEVOX_SPEAKER_ID,
+    VOICEVOX_SPEED_SCALE,
+    VOICEVOX_INTONATION_SCALE,
+    VOICEVOX_PITCH_SCALE,
+)
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
-VOICEVOX_URL = "http://127.0.0.1:50021"
-SPEAKER_ID = 14
-SPEED_SCALE = 0.95
-INTONATION_SCALE = 0.6
-PITCH_SCALE = -0.02
+SPEAKER_ID = VOICEVOX_SPEAKER_ID
+SPEED_SCALE = VOICEVOX_SPEED_SCALE
+INTONATION_SCALE = VOICEVOX_INTONATION_SCALE
+PITCH_SCALE = VOICEVOX_PITCH_SCALE
 
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "audio", "voice", "ch02_mura")
 
@@ -98,6 +104,13 @@ CHOICE_VOICES = [
     ("qa_c6_b",  "B。スマホを置き去る。お札で封じ、神社に捧ぐ。", "B。スマホを置き去る。おふだで封じ、神社に捧ぐ。"),
     ("qa_c6_c",  "C。配信を止める。もう誰にも見せない。", None),
 ]
+
+
+def assert_protagonist_voice_profile() -> None:
+    if SPEAKER_ID != VOICEVOX_SPEAKER_ID:
+        raise RuntimeError(
+            "Choice and ending narration must use the canonical protagonist profile."
+        )
 
 
 def normalize_wav(wav_bytes: bytes, target_peak: float = 0.92) -> bytes:
@@ -217,6 +230,7 @@ def main() -> None:
     parser.add_argument("--mode", choices=["ending", "choice", "all"], default="ending",
                         help="ending=真エンド音声 / choice=3択読み上げ / all=両方")
     args = parser.parse_args()
+    assert_protagonist_voice_profile()
 
     targets = []
     if args.mode in ("ending", "all"):

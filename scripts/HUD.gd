@@ -383,8 +383,10 @@ func show_monologue(text: String) -> void:
 
 
 ## ホラータイプライター演出 — 画面中央に1文字ずつ赤く震えながら表示
-func horror_typewriter(text: String, char_delay: float = 0.12, sfx_tick: bool = true) -> void:
+func horror_typewriter(text: String, char_delay: float = 0.12, sfx_tick: bool = true, voice_path: String = "") -> void:
 	_clear_horror_typewriter()
+	if voice_path != "":
+		SoundManager.play_voice(voice_path, -4.0)
 	# 中央に専用ラベルを動的生成
 	var lbl := RichTextLabel.new()
 	lbl.bbcode_enabled = true

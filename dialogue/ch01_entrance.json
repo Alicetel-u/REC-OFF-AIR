@@ -2230,12 +2230,8 @@
         },
         {
             "type": "say",
-            "text": "た...す...け...て..."
-        },
-        {
-            "type": "sfx",
-            "file": "horror_voice/tasukete_new",
-            "vol": -11
+            "text": "た...す...け...て...",
+            "voice": "v_tasukete_whisper"
         },
         {
             "type": "camera_shake",

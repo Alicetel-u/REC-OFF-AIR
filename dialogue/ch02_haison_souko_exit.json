@@ -820,8 +820,9 @@
         },
         {
             "type": "horror_typewriter",
-            "text": "封印解カレタ",
-            "delay": 0.15
+            "text": "封印ハ解カレル",
+            "delay": 0.15,
+            "voice": "res://assets/audio/voice/ch02_mura/tw_cp2_seal_released.wav"
         },
         {
             "type": "wait",
@@ -864,7 +865,8 @@
         {
             "type": "horror_typewriter",
             "text": "霧原神社ニ返セ",
-            "delay": 0.12
+            "delay": 0.12,
+            "voice": "res://assets/audio/voice/ch02_mura/tw_cp2_return_to_shrine.wav"
         },
         {
             "type": "wait",

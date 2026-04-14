@@ -770,7 +770,8 @@
         {
             "type": "horror_typewriter",
             "text": "同接1",
-            "delay": 0.3
+            "delay": 0.3,
+            "voice": "res://assets/audio/voice/ch02_mura/tw_cp3_viewers_one.wav"
         },
         {
             "type": "wait",
@@ -792,7 +793,8 @@
         {
             "type": "horror_typewriter",
             "text": "ダレガミテイル？",
-            "delay": 0.12
+            "delay": 0.12,
+            "voice": "res://assets/audio/voice/ch02_mura/tw_cp3_who_is_watching.wav"
         },
         {
             "type": "wait",
@@ -1465,7 +1467,7 @@
                     "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog.mp3",
                     "wait": 1.5,
                     "typewriter": "視線が呪いを完成させる",
-                    "typewriter_voice": "res://assets/audio/voice/ch02_mura/tw001.wav",
+                    "typewriter_voice": "res://assets/audio/voice/ch02_mura/tw_truebad_curse_complete.wav",
                     "lines": [
                         {
                             "text": "霧原の呪いは——「視線」を喰らって増殖する。",
@@ -1514,7 +1516,7 @@
                     "bgm": "res://assets/audio/bgm/Suzu_in_the_Fog.mp3",
                     "wait": 0.5,
                     "typewriter": "みんながずっとみていた",
-                    "typewriter_voice": "res://assets/audio/voice/ch02_mura/tw002.wav",
+                    "typewriter_voice": "res://assets/audio/voice/ch02_mura/tw_truebad_everyone_watched.wav",
                     "lines": [
                         {
                             "text": "暗闇の至る所で、不気味に蠢（うごめ）く無数の赤い光。",

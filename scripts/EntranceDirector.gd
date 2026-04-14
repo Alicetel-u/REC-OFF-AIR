@@ -398,7 +398,8 @@ func run_from_path(json_path: String) -> void:
 					await hud.horror_typewriter(
 						ev.get("text", ""),
 						float(ev.get("delay", 0.12)),
-						bool(ev.get("sfx", true)))
+						bool(ev.get("sfx", true)),
+						ev.get("voice", ""))
 
 			"horror_red":
 				if is_instance_valid(hud):
