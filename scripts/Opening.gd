@@ -8,7 +8,7 @@ extends Control
 ## ─────────────────────────────────────────────────────────
 
 const EndingPlayerScript := preload("res://scripts/EndingPlayer.gd")
-const SAFE_BOOT_TITLE := true
+const SAFE_BOOT_TITLE := false
 
 enum Phase { TITLE, VIDEO, PROLOGUE, DONE }
 
