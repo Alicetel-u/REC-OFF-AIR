@@ -28,7 +28,7 @@
 - `assets/video/opm-5.ogv`（20MB）→ 未参照（`opm-5_godot.ogv` が使用中）
 - `assets/video/opm-5_godot_silent.ogv`（4MB）→ 未参照
 
-### 未使用BGM（-10MB）
+### 未使用BGM（-10MB、要フルプレイ確認）
 - `assets/audio/bgm/BGM1.mp3`（4.8MB）→ スクリプト・JSON 参照なし
 - `assets/audio/bgm/BGM2.mp3`（5.0MB）→ スクリプト・JSON 参照なし
 - ⚠️ EntranceDirector が BGM をファイル名文字列で動的ロードするため、除外後は一度フルプレイ確認すること
@@ -36,13 +36,17 @@
 ### 孤立 import ファイル（軽微）
 - `assets/audio/bgm/toilet_bgm.mp3.import` → 実ファイルが存在しない孤立 import、削除でOK
 
+### 未使用バックアップシーン（-38MB、Web 配布にも有効）
+- `scenes/Main_Restored.tscn`（38MB）→ 旧バックアップシーン・未参照
+- `export_filter="all_resources"` では含まれる可能性があるため、Web 用 `exclude_filter` にも追加する
+
 ---
 
 ## B. 短期作業（1〜2時間）
 
 ### Main_Restored.tscn 削除（-38MB、リポジトリ削減）
 - `scenes/Main_Restored.tscn`（38MB）→ 旧バックアップシーン・未参照
-- Git から削除して `.gitignore` に追加するか、`exclude_filter` に追加
+- 当面は Web 用 `exclude_filter` で配布から外し、後続で Git から削除して `.gitignore` に追加する
 
 ### WAV リサンプリング（-46MB ソースサイズ）
 - `ch01/` の152本と `ch02/` の116本が **44100Hz** で録音されている（合計268本）
@@ -51,10 +55,11 @@
 - AI 音声合成の標準は 24KHz なので品質劣化はほぼなし
 - ツール候補: `tools/wav_utils.py` が既存
 
-### Inventory/addons GLB 重複整理（要 md5 確認、潜在 -43MB）
-- `Inventory/` と `addons/` に同名・同サイズの GLB が存在する疑惑:
+### Inventory/addons GLB 重複整理（MD5 一致確認済み、潜在 -43MB）
+- `Inventory/` と `addons/` に同名・同サイズの GLB が存在:
   - `便器.glb`(11MB) / `トイレドアノブl.glb`(11MB) / `トイレットペーパー.glb`(11MB) / `蛍光灯glb.glb`(9.4MB)
-- `md5sum` で一致確認後、`Inventory/` 側を削除して `addons/` に統一
+- `Get-FileHash -Algorithm MD5` で一致確認済み
+- `Inventory/` 側を削除して `addons/` に統一
 
 ---
 
@@ -68,7 +73,8 @@
 
 ### フォントの Git 管理除外（-14MB リポジトリ）
 - `NotoSansCJK-Regular.ttc` は CI で `sudo apt-get install fonts-noto-cjk` → コピーしている
-- Git から削除し CI に任せれば -14MB だが、ローカル開発者への周知が必要
+- ただし現状は `validate` ジョブより後にフォント配置しているため、そのまま Git から外すと CI が壊れる可能性あり
+- 実施するなら `validate` 側にも同じフォント配置処理を追加してから
 
 ---
 
@@ -95,16 +101,16 @@
 ## 優先度別ロードマップ
 
 ```
-即効 (deploy.yml修正のみ・リスクゼロ):
+即効 (deploy.yml修正のみ・低リスク):
   未使用テクスチャ4本を exclude_filter  → -16MB
   opm-5.ogv / opm-5_godot_silent.ogv   → -24MB
-  BGM1.mp3 / BGM2.mp3                  → -10MB
-  小計: -50MB
+  BGM1.mp3 / BGM2.mp3                  → -10MB (要確認)
+  Main_Restored.tscn                   → -38MB
+  小計: -88MB
 
 短期 (1〜2時間):
-  Main_Restored.tscn 削除              → -38MB (リポジトリ)
   44100Hz WAV 268本を 24000Hz に変換   → -46MB (ソース)
-  Inventory/addons 重複整理 (要確認)   → 最大 -43MB
+  Inventory/addons 重複整理            → 最大 -43MB
 
 中期 (品質確認必要):
   テクスチャ圧縮設定変更               → 変動
