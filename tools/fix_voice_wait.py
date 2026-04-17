@@ -32,6 +32,7 @@ import argparse
 import re
 from datetime import datetime
 from wav_utils import get_wav_duration as _wav_duration
+from wav_utils import read_wav_samples as _read_wav_samples
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
@@ -82,6 +83,37 @@ def check_wav_internal_silence(voice_id: str, threshold_rms: float = 50.0,
     path = os.path.join(VOICE_DIR, f"{voice_id}.wav")
     if not os.path.exists(path):
         return issues
+    info = _read_wav_samples(path)
+    if "error" in info:
+        return issues
+    samples = info["mono"]
+    n_frames = info["n_frames"]
+    framerate = info["framerate"]
+    chunk = int(framerate * 0.1)  # 100ms chunks
+
+    # Ignore leading/trailing silence; only care about gaps inside the spoken part.
+    start_chunk = 1
+    end_chunk = max(1, n_frames // chunk - 2)
+
+    silent_run = 0
+    for ci in range(start_chunk, end_chunk):
+        seg = samples[ci * chunk:(ci + 1) * chunk]
+        rms = math.sqrt(sum(s * s for s in seg) / len(seg)) if seg else 0
+        if rms < threshold_rms:
+            silent_run += 1
+        else:
+            if silent_run * 0.1 >= min_gap_sec:
+                gap_start = (ci - silent_run) * 0.1
+                issues.append(
+                    f"INTERNAL_SILENCE: {voice_id}.wav {gap_start:.1f}s付近に"
+                    f"{silent_run * 0.1:.1f}秒の無音区間")
+            silent_run = 0
+    if silent_run * 0.1 >= min_gap_sec:
+        gap_start = (end_chunk - silent_run) * 0.1
+        issues.append(
+            f"INTERNAL_SILENCE: {voice_id}.wav {gap_start:.1f}s付近に"
+            f"{silent_run * 0.1:.1f}秒の無音区間")
+    return issues
     with wave.open(path, "rb") as wf:
         n_frames = wf.getnframes()
         framerate = wf.getframerate()
