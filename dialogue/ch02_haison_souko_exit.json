@@ -1,6 +1,7 @@
 {
     "chapter": "ch02_haison_souko_exit",
     "voice_dir": "res://assets/audio/voice/ch02_souko/",
+    "chat_voice_dir": "res://assets/audio/voice/ch02_souko_chat/",
     "_note": "CP2-2 廃倉庫脱出（紙芝居演出） — 異変→閉じ込め→お札脱出→全力逃走→安堵→ブラウン管ホラー→VHS映像→自分が映る恐怖→神社決意",
     "events": [
         {
@@ -547,6 +548,78 @@
         },
         {
             "type": "_comment",
+            "_": "── スマホ警告ダイアログ演出 ──"
+        },
+        {
+            "type": "phone_warning",
+            "dialogs": [
+                {
+                    "title": "📊 配信レポート",
+                    "msg": "離脱率: 0.0%\n全員がまだ見ています"
+                },
+                {
+                    "title": "🔔 新しいフォロワー",
+                    "msg": "霧原みゆき が\nあなたをフォローしました"
+                },
+                {
+                    "title": "⚠ システム通知",
+                    "msg": "あなたの声は\nここに 永く 残ります"
+                },
+                {
+                    "title": "霧原みゆき が\nあなたを みています",
+                    "msg": ""
+                }
+            ]
+        },
+        {
+            "type": "wait",
+            "sec": 0.5
+        },
+        {
+            "type": "say",
+            "text": "な、なに……っ！？　なんで切れないの……！　配信も……カメラも……止まらない……！！",
+            "voice": "v111b"
+        },
+        {
+            "type": "wait",
+            "sec": 1.5
+        },
+        {
+            "type": "chat",
+            "msg": "え待って、どういうこと？？",
+            "user": "視聴者A",
+            "voice": "c015"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "配信止まらないの？？",
+            "user": "まっちゃん",
+            "voice": "c016"
+        },
+        {
+            "type": "wait",
+            "sec": 0.3
+        },
+        {
+            "type": "chat",
+            "msg": "早く逃げて！！",
+            "user": "配信民99",
+            "utype": "member",
+            "voice": "c017"
+        },
+        {
+            "type": "wait",
+            "sec": 3.0
+        },
+        {
+            "type": "say_clear"
+        },
+        {
+            "type": "_comment",
             "_": "════════════════════════════════════════"
         },
         {
@@ -612,7 +685,7 @@
             "type": "chat",
             "msg": "コンセントないのに映ってるの怖すぎ",
             "user": "まっちゃん",
-            "voice": "c015"
+            "voice": "c018"
         },
         {
             "type": "wait",
@@ -623,7 +696,7 @@
             "msg": "逃げろ逃げろ逃げろ",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c016"
+            "voice": "c019"
         },
         {
             "type": "wait",
@@ -633,7 +706,7 @@
             "type": "chat",
             "msg": "え、待ってなんか映ってない？",
             "user": "視聴者A",
-            "voice": "c017"
+            "voice": "c020"
         },
         {
             "type": "wait",
@@ -679,7 +752,7 @@
             "msg": "1994年の映像……？",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c018"
+            "voice": "c021"
         },
         {
             "type": "wait",
@@ -690,7 +763,7 @@
             "msg": "見ている",
             "user": "K",
             "utype": "horror",
-            "voice": "c019"
+            "voice": "c022"
         },
         {
             "type": "wait",
@@ -742,7 +815,7 @@
             "type": "chat",
             "msg": "同じ顔じゃん",
             "user": "まっちゃん",
-            "voice": "c020"
+            "voice": "c023"
         },
         {
             "type": "wait",
@@ -753,7 +826,7 @@
             "msg": "時空越えてて草",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c021"
+            "voice": "c024"
         },
         {
             "type": "wait",
@@ -764,7 +837,7 @@
             "msg": "これガチでやばいやつ",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c022"
+            "voice": "c025"
         },
         {
             "type": "wait",
@@ -886,7 +959,7 @@
             "msg": "呪いのメッセージだろこれ",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c023"
+            "voice": "c026"
         },
         {
             "type": "wait",
@@ -896,7 +969,7 @@
             "type": "chat",
             "msg": "神社行くしかないじゃん",
             "user": "視聴者A",
-            "voice": "c024"
+            "voice": "c027"
         },
         {
             "type": "wait",
@@ -907,7 +980,7 @@
             "msg": "行くな",
             "user": "K",
             "utype": "horror",
-            "voice": "c025"
+            "voice": "c028"
         },
         {
             "type": "wait",
@@ -918,7 +991,7 @@
             "msg": "行くな行くな行くな行くな行くな",
             "user": "K",
             "utype": "horror",
-            "voice": "c026"
+            "voice": "c029"
         },
         {
             "type": "wait",
@@ -928,7 +1001,7 @@
             "type": "chat",
             "msg": "Kこわい",
             "user": "まっちゃん",
-            "voice": "c027"
+            "voice": "c030"
         },
         {
             "type": "wait",
@@ -973,7 +1046,7 @@
             "msg": "しゅっちならやると思った",
             "user": "ゆきんこ77",
             "utype": "moderator",
-            "voice": "c028"
+            "voice": "c031"
         },
         {
             "type": "wait",
@@ -983,7 +1056,7 @@
             "type": "chat",
             "msg": "承認欲求の化物",
             "user": "まっちゃん",
-            "voice": "c029"
+            "voice": "c032"
         },
         {
             "type": "wait",
@@ -994,7 +1067,7 @@
             "msg": "いや行くなって",
             "user": "配信民99",
             "utype": "member",
-            "voice": "c030"
+            "voice": "c033"
         },
         {
             "type": "wait",
@@ -1032,6 +1105,5 @@
         {
             "type": "say_clear"
         }
-    ],
-    "chat_voice_dir": "res://assets/audio/voice/ch02_souko_chat/"
+    ]
 }

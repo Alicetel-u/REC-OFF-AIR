@@ -835,6 +835,7 @@
         {
             "type": "choice",
             "title": "▼  灯 籠 の ス マ ホ  ▼",
+            "ofuda": 1,
             "prompt": "目の前の灯籠に、自分の配信を映し続けるスマホ。どうする？",
             "prompt_voice": "res://assets/audio/voice/ch02_mura/qa_c6_p.wav",
             "choices": [
@@ -1678,7 +1679,7 @@
                 "entries": [
                     {
                         "role": "",
-                        "name": "REC : OFF : AIR",
+                        "name": "REC:OFF-AIR",
                         "style": "game_title"
                     },
                     {
@@ -1725,7 +1726,7 @@
                     },
                     {
                         "role": "",
-                        "name": "── SPECIAL THANKS ──",
+                        "name": "── CREATIVE ──",
                         "style": "section"
                     },
                     {
@@ -1734,35 +1735,75 @@
                     },
                     {
                         "role": "エグゼクティブプロデューサー",
-                        "name": ""
-                    },
-                    {
-                        "role": "シナリオ原案 / BGM / 3Dモデル",
-                        "name": ""
-                    },
-                    {
-                        "role": "",
                         "name": "しゅっち"
                     },
                     {
-                        "role": "実装エンジニア",
-                        "name": ""
+                        "role": "シナリオ原案",
+                        "name": "しゅっち"
                     },
                     {
-                        "role": "ゲームデザイン / プランナー",
-                        "name": ""
+                        "role": "BGM",
+                        "name": "しゅっち"
                     },
                     {
-                        "role": "アートディレクター",
-                        "name": ""
+                        "role": "3Dモデル",
+                        "name": "しゅっち"
                     },
                     {
-                        "role": "QA",
+                        "role": "",
                         "name": ""
                     },
                     {
                         "role": "",
+                        "name": "── TECHNICAL ──",
+                        "style": "section"
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "実装エンジニア",
                         "name": "シライシ ユキ"
+                    },
+                    {
+                        "role": "ゲームデザイン",
+                        "name": "シライシ ユキ"
+                    },
+                    {
+                        "role": "プランナー",
+                        "name": "シライシ ユキ"
+                    },
+                    {
+                        "role": "アートディレクター",
+                        "name": "シライシ ユキ"
+                    },
+                    {
+                        "role": "QA",
+                        "name": "シライシ ユキ"
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
+                        "name": "── ──",
+                        "style": "section"
+                    },
+                    {
+                        "role": "",
+                        "name": ""
+                    },
+                    {
+                        "role": "",
+                        "name": "このゲームをプレイしてくださったあなたへ",
+                        "style": "whisper"
+                    },
+                    {
+                        "role": "",
+                        "name": "ありがとうございました",
+                        "style": "whisper"
                     }
                 ]
             }

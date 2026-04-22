@@ -485,6 +485,13 @@ func run_from_path(json_path: String) -> void:
 			"fade_clear":
 				await _fade_clear(float(ev.get("dur", 0.8)), float(ev.get("target", 0.0)))
 
+			"phone_warning":
+				var _pwd := CanvasLayer.new()
+				_pwd.set_script(preload("res://scripts/PhoneWarningDialog.gd"))
+				get_tree().root.add_child(_pwd)
+				_pwd.show_dialogs(ev.get("dialogs", []))
+				await _pwd.finished
+
 			"play_ending":
 				await _play_ending(ev)
 				# BAD END後: フローチャート表示 + 選択肢
@@ -637,11 +644,12 @@ func _show_horror_choice(ev: Dictionary) -> int:
 	var title_text : String = ev.get("title", "")
 	var danger : bool = ev.get("danger", false)
 	var prompt_voice : String = ev.get("prompt_voice", "")
+	var ofuda : int = ev.get("ofuda", -1)
 	var choice_voices : Array = []
 	for c: Dictionary in choices:
 		choice_voices.append(c.get("voice", ""))
 
-	panel.show_choice(prompt, choices, title_text, danger, prompt_voice, choice_voices)
+	panel.show_choice(prompt, choices, title_text, danger, prompt_voice, choice_voices, ofuda)
 
 	var result : int = await panel.choice_selected
 	panel.queue_free()

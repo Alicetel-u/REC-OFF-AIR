@@ -46,7 +46,7 @@ func _ready() -> void:
 
 
 func show_choice(prompt: String, choices: Array, title_text: String = "", danger: bool = false,
-		prompt_voice: String = "", choice_voices: Array = []) -> void:
+		prompt_voice: String = "", choice_voices: Array = [], ofuda: int = -1) -> void:
 	_prompt_voice  = prompt_voice
 	_choice_voices = choice_voices
 	_narration_cancelled = false
@@ -57,7 +57,7 @@ func show_choice(prompt: String, choices: Array, title_text: String = "", danger
 		await _danger_warning()
 	# queue_free済みノードをツリーから除去してからUI構築
 	await get_tree().process_frame
-	_build_ui(prompt, choices, title_text)
+	_build_ui(prompt, choices, title_text, ofuda)
 	# ボタンがGodotの入力システムに登録されるのを待つ
 	await get_tree().process_frame
 	# マウスモードを再確認（他の処理で上書きされる可能性がある）
@@ -120,6 +120,7 @@ func _danger_warning() -> void:
 	# Phase 2: 1文字ずつ「選択を誤ると——」を表示
 	var line1 := "選 択 を 誤 る と ——"
 	warn.add_theme_color_override("font_color", Color(0.95, 0.08, 0.05, 1.0))
+	SoundManager.play_voice("res://assets/audio/voice/ch02_mura/danger_warn_1.wav")
 	for i in range(line1.length()):
 		warn.text = line1.substr(0, i + 1)
 		# ノイズラインをランダムに瞬かせる
@@ -164,6 +165,7 @@ func _danger_warning() -> void:
 	warn.text = line2
 	warn.add_theme_color_override("font_color", Color(1.0, 0.1, 0.05, 1.0))
 	red_glow.color.a = 0.25
+	SoundManager.play_voice("res://assets/audio/voice/ch02_mura/danger_warn_2.wav")
 
 	# 画面全体を一瞬赤くフラッシュ
 	var flash := ColorRect.new()
@@ -194,7 +196,7 @@ func _danger_warning() -> void:
 	# ここで visible = false にせず、そのまま _build_ui へ繋ぐ
 
 
-func _build_ui(prompt: String, choices: Array, title_text: String = "") -> void:
+func _build_ui(prompt: String, choices: Array, title_text: String = "", ofuda: int = -1) -> void:
 	# 既存UIをクリア
 	for child in get_children():
 		child.queue_free()
@@ -257,7 +259,7 @@ func _build_ui(prompt: String, choices: Array, title_text: String = "") -> void:
 	ofuda_row.add_theme_constant_override("separation", 4)
 	vbox.add_child(ofuda_row)
 	var ofuda_label := Label.new()
-	ofuda_label.text = "残りのお札: %d枚" % GameManager.ofuda_count
+	ofuda_label.text = "残りのお札: %d枚" % (ofuda if ofuda >= 0 else GameManager.ofuda_count)
 	ofuda_label.add_theme_font_size_override("font_size", 13)
 	ofuda_label.add_theme_color_override("font_color", COL_MUTED)
 	ofuda_row.add_child(ofuda_label)

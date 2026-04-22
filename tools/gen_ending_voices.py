@@ -105,6 +105,14 @@ CHOICE_VOICES = [
     ("qa_c6_c",  "C。配信を止める。もう誰にも見せない。", None),
 ]
 
+# ── 警告演出音声（選択肢前の danger_warning）──
+# qa_* と同じ Speaker14 / speed=0.95 / intonation=0.6 / pitch=-0.02 で生成すること
+# 再生成コマンド: python gen_ending_voices.py --mode danger
+DANGER_VOICES = [
+    ("danger_warn_1", "選択を誤ると", None),
+    ("danger_warn_2", "取り返しがつかない", None),
+]
+
 
 def assert_protagonist_voice_profile() -> None:
     if SPEAKER_ID != VOICEVOX_SPEAKER_ID:
@@ -224,12 +232,53 @@ def generate(text: str, out_path: str) -> tuple[bool, float]:
         return False, 0.0
 
 
+def _generate_danger_voices() -> None:
+    """警告演出音声を qa_* と同じ Legacy パラメータ（Speaker14）で生成する"""
+    LEGACY_SPEAKER = 14
+    LEGACY_SPEED = 0.95
+    LEGACY_INTONATION = 0.6
+    LEGACY_PITCH = -0.02
+    print(f"=== 警告演出音声生成 [VOICEVOX Speaker {LEGACY_SPEAKER} / intonation={LEGACY_INTONATION} / speed={LEGACY_SPEED} / pitch={LEGACY_PITCH}] ===")
+    print(f"出力先: {OUTPUT_DIR}")
+    print()
+    for voice_id, text, reading in DANGER_VOICES:
+        tts_text = reading if reading else text
+        tts_text = fix_pronunciation(tts_text)
+        out_path = os.path.join(OUTPUT_DIR, f"{voice_id}.wav")
+        print(f"[{voice_id}] {text}")
+        try:
+            q = requests.post(f"{VOICEVOX_URL}/audio_query", params={"text": tts_text, "speaker": LEGACY_SPEAKER}, timeout=30)
+            q.raise_for_status()
+            aq = q.json()
+            aq["speedScale"] = LEGACY_SPEED
+            aq["intonationScale"] = LEGACY_INTONATION
+            aq["pitchScale"] = LEGACY_PITCH
+            s = requests.post(f"{VOICEVOX_URL}/synthesis", params={"speaker": LEGACY_SPEAKER}, json=aq, timeout=60)
+            s.raise_for_status()
+            wav = trim_trailing_silence(s.content, SILENCE_THRESHOLD, TAIL_MARGIN_MS)
+            wav = normalize_wav(wav)
+            dur = get_wav_duration(wav)
+            with open(out_path, "wb") as f:
+                f.write(wav)
+            print(f"  -> OK ({dur:.3f}s)")
+        except Exception as e:
+            print(f"  ERROR: {e}")
+        print()
+    print("=== 完了 ===")
+
+
 def main() -> None:
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=["ending", "choice", "all"], default="ending",
-                        help="ending=真エンド音声 / choice=3択読み上げ / all=両方")
+    parser.add_argument("--mode", choices=["ending", "choice", "danger", "all"], default="ending",
+                        help="ending=真エンド音声 / choice=3択読み上げ / danger=警告演出音声 / all=全部")
     args = parser.parse_args()
+
+    # danger モードは Legacy Speaker14 パラメータで別途生成
+    if args.mode == "danger":
+        _generate_danger_voices()
+        return
+
     assert_protagonist_voice_profile()
 
     targets = []
